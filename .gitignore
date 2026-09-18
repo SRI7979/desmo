@@ -1,0 +1,18 @@
+# Dependencies and generated output
+node_modules/
+.next/
+out/
+build/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
+
+# Local credentials; keep the empty template shareable
+.env*
+!.env.example
+
+# Local machine and tooling files
+.DS_Store
+*.log
+.vercel/
+.playwright-mcp/
