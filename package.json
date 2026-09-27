@@ -7,22 +7,36 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
-    "typecheck": "next typegen && tsc --noEmit"
+    "typecheck": "next typegen && tsc --noEmit",
+    "setup:check": "tsx scripts/check-setup.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "bench": "tsx scripts/bench-solve.mts",
+    "eval": "tsx evals/run-evals.mts"
   },
   "engines": {
-    "node": ">=20.9.0"
+    "node": ">=22.0.0"
   },
   "dependencies": {
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
+    "katex": "0.18.7",
     "next": "16.3.5",
+    "openai": "7.18.0",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "server-only": "^0.0.1",
+    "sharp": "^0.35.4",
+    "zod": "4.6.5"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@types/katex": "0.16.8",
     "@types/node": "26.6.1",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.5",
+    "tsx": "4.23.13",
     "typescript": "6.0.3"
   }
 }

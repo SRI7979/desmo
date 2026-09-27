@@ -1,0 +1,283 @@
+[
+  {
+    "id": "001",
+    "question": "(12x + 28)/4 - s/13 = r(x - 8). In the given equation, s and r are constants, and s > 0. If the equation has infinitely many solutions, what is the value of s?",
+    "answer_choices": {},
+    "correct_answer": "403",
+    "strategy_name": "Parameter regression using multiple x-values",
+    "trigger_pattern": "Equation contains unknown constants and says it has infinitely many solutions or is true for all x. Generate several x-values in a list and use regression to solve the parameters.",
+    "desmos_steps": [
+      "x_1=[1...5]",
+      "(12x_1+28)/4-s/13 ~ r(x_1-8)",
+      "Read the regression parameters: s=403 and r=3"
+    ],
+    "why_preferred": "Desmos solves both unknown constants automatically. No coefficient matching, distributing, or manual algebra is needed.",
+    "needs_review": false,
+    "trick": "Identity regression"
+  },
+  {
+    "id": "002",
+    "question": "Hector used a tool called an auger to remove corn from a storage bin at a constant rate. The bin contained 24,000 bushels of corn when Hector began to use the auger. After 5 hours of using the auger, 19,350 bushels of corn remained in the bin. If the auger continues to remove corn at this rate, what is the total number of hours Hector will have been using the auger when 12,840 bushels of corn remain in the bin?",
+    "answer_choices": {
+      "A": "3",
+      "B": "7",
+      "C": "8",
+      "D": "12"
+    },
+    "correct_answer": "D",
+    "strategy_name": "Two-stage parameter regression for constant-rate word problems",
+    "trigger_pattern": "Constant-rate word problem where you know an initial amount, an amount after a known time, and need the time for another target amount.",
+    "desmos_steps": [
+      "19350 ~ 24000 - 5x_1",
+      "Read x_1=930",
+      "12840 ~ 24000 - p930",
+      "Read p=12"
+    ],
+    "why_preferred": "Desmos finds the hourly removal rate first, then directly solves for the requested time with almost no manual arithmetic or algebra.",
+    "needs_review": false,
+    "trick": "Two-step parameter regression"
+  },
+  {
+    "id": "003",
+    "question": "A manufacturing plant makes 10-inch, 9-inch, and 7-inch frying pans. During a certain day, the number of 10-inch frying pans that the manufacturing plant makes is 4 times the number n of 9-inch frying pans it makes, and the number of 7-inch frying pans it makes is 10. During this day, the manufacturing plant makes 100 frying pans total. Which equation represents this situation?",
+    "answer_choices": {
+      "A": "10(4n) + 9n + 7(10) = 100",
+      "B": "10n + 9n + 7n = 100",
+      "C": "4n + 10 = 100",
+      "D": "5n + 10 = 100"
+    },
+    "correct_answer": "D",
+    "strategy_name": "Direct conceptual translation - stop at the requested model",
+    "trigger_pattern": "Question asks which equation or expression represents/models a word problem. Translate each quantity, combine them according to the words, simplify only enough to match a choice, and do not solve the resulting equation.",
+    "desmos_steps": [
+      "9-inch pans: n",
+      "10-inch pans: 4n",
+      "7-inch pans: 10",
+      "Total: 4n+n+10=100",
+      "Combine to get 5n+10=100"
+    ],
+    "why_preferred": "The requested answer is the model itself. Graphing or solving would happen only after the semantic translation is already complete, so it provides no useful Desmos outsourcing. The 10, 9, and 7 are pan sizes, not quantities to multiply by.",
+    "needs_review": false,
+    "trick": "Translate the words (no calculator)"
+  },
+  {
+    "id": "004",
+    "question": "x(r - 9) + 4 = 19x + 27. In the given equation, r is a positive integer. If the given equation has exactly one solution, what CANNOT be the value of r?",
+    "answer_choices": {
+      "A": "4",
+      "B": "9",
+      "C": "23",
+      "D": "28"
+    },
+    "correct_answer": "D",
+    "strategy_name": "Derivative regression to detect equal slopes",
+    "trigger_pattern": "Two linear expressions with an unknown parameter and a question about exactly one solution or which parameter causes the condition to fail. Define each side as a function and use derivative regression to find when the slopes become equal.",
+    "desmos_steps": [
+      "f(x)=x(r-9)+4",
+      "g(x)=19x+27",
+      "f'(x)~g'(x)",
+      "Read r=28",
+      "Therefore 28 cannot be r"
+    ],
+    "why_preferred": "It directly asks Desmos to find when the two linear expressions have the same slope, which is exactly when they stop having one unique intersection. It does not rely on answer choices and also works for student-produced-response versions.",
+    "needs_review": false,
+    "trick": "Derivative regression for equal slopes"
+  },
+  {
+    "id": "005",
+    "question": "Alan drives an average of 100 miles each week. His car can travel an average of 25 miles per gallon of gasoline. Alan would like to reduce his weekly expenditure on gasoline by $5. Assuming gasoline costs $4 per gallon, which equation can Alan use to determine how many fewer average miles, m, he should drive each week?",
+    "answer_choices": {
+      "A": "(25/4)m = 95",
+      "B": "(25/4)m = 5",
+      "C": "(4/25)m = 95",
+      "D": "(4/25)m = 5"
+    },
+    "correct_answer": "D",
+    "strategy_name": "Unit-rate modeling - no Desmos needed",
+    "trigger_pattern": "Word problem asks which equation represents a rate or cost relationship, especially when units like dollars per gallon and miles per gallon must be combined.",
+    "desmos_steps": [
+      "Gas costs $4 per gallon",
+      "Car travels 25 miles per gallon",
+      "Cost per mile is 4/25",
+      "If m is the number of fewer miles driven, money saved is (4/25)m",
+      "Set (4/25)m=5"
+    ],
+    "why_preferred": "The main task is identifying the correct units and equation, not solving anything. Desmos adds no value.",
+    "needs_review": false,
+    "trick": "Translate the units (no calculator)"
+  },
+  {
+    "id": "006",
+    "question": "How many solutions does the equation 10(15x - 9) = -15(6 - 10x) have?",
+    "answer_choices": {
+      "A": "Exactly one",
+      "B": "Exactly two",
+      "C": "Infinitely many",
+      "D": "Zero"
+    },
+    "correct_answer": "C",
+    "strategy_name": "Graph both sides and count intersections",
+    "trigger_pattern": "Equation asks how many solutions. Graph the left side and right side separately as y= expressions and inspect intersections.",
+    "desmos_steps": [
+      "y=10(15x-9)",
+      "y=-15(6-10x)",
+      "Inspect the two graphs",
+      "The graphs lie directly on top of each other, so they intersect at every point",
+      "Therefore there are infinitely many solutions"
+    ],
+    "why_preferred": "No distributing, combining like terms, or symbolic checking is needed. Desmos visually determines the number of solutions by showing how the two sides intersect.",
+    "needs_review": false,
+    "trick": "Graph both sides, count intersections"
+  },
+  {
+    "id": "007",
+    "question": "3(kx + 13) = (48/17)x + 36. In the given equation, k is a constant. The equation has no solution. What is the value of k?",
+    "answer_choices": {},
+    "correct_answer": "16/17",
+    "strategy_name": "Derivative regression to force equal slopes",
+    "trigger_pattern": "Linear equation containing an unknown parameter and says no solution. Define each side as a function and regress their derivatives so Desmos solves the parameter that makes the slopes equal.",
+    "desmos_steps": [
+      "f(x)=3(kx+13)",
+      "g(x)=(48/17)x+36",
+      "f'(x)~g'(x)",
+      "Read k=0.941176",
+      "Interpret as 16/17"
+    ],
+    "why_preferred": "For a linear equation to have no solution, the two sides must graph as parallel lines: same slope, different intercepts. Derivative regression lets Desmos solve directly for the parameter with basically no algebra.",
+    "needs_review": false,
+    "trick": "Derivative regression for equal slopes"
+  },
+  {
+    "id": "008",
+    "question": "-x - wy = -337 and 2x - wy = 47. In the given system of equations, w is a constant. In the xy-plane, the graphs of these equations intersect at the point (q, 19), where q is a constant. What is the value of w?",
+    "answer_choices": {},
+    "correct_answer": "11",
+    "strategy_name": "Direct bracket regression for a small system",
+    "trigger_pattern": "A small system contains unknown constants and a supplied coordinate. Put each complete left side in one bracket and each right side in the matching position in the other bracket, then regress. Do not extract separate coefficient lists.",
+    "desmos_steps": [
+      "[-q-19w,2q-19w] ~ [-337,47]",
+      "Read w=11 under the regression. q=128 is also fitted; no elimination is needed."
+    ],
+    "why_preferred": "Copy the equations with the supplied y=19 and replace the equals signs by one bracket regression. This does the same fitting work as coefficient lists with less setup and bookkeeping; q and w are fitted parameters, not graph coordinates.",
+    "needs_review": false,
+    "trick": "Bracket regression"
+  },
+  {
+    "id": "009",
+    "question": "7rx + 12sy = 3 and 3rx + 4sy = 5. In the given system of equations, r and s are constants. If the solution to the system is (2, y), where y is a constant, what is the value of r?",
+    "answer_choices": {},
+    "correct_answer": "3",
+    "strategy_name": "Bracket regression with a supplied coordinate",
+    "trigger_pattern": "Two or three equations have unknown constants and a given coordinate. Copy the original sides into aligned brackets and define the supplied coordinate with a subscript. Prefer this direct setup to separate coefficient lists; verify that the requested parameter is uniquely determined even if other fitted parameters are not.",
+    "desmos_steps": [
+      "x_{1}=2",
+      "[7rx_{1}+12sy_{1},3rx_{1}+4sy_{1}] ~ [3,5]",
+      "Read r=3 under line 2. The separate fitted values of s and y_{1} are not unique; only r is requested.",
+      "If the redundant fit is numerically fragile, use the single-row bracket regression [7r(2)+12p,3r(2)+4p] ~ [3,5], where p represents sy. Do not build coefficient lists."
+    ],
+    "why_preferred": "Two entries copy the original equations and the given coordinate. Bracket regression finds r directly, without extraction of coefficients, three helper lists, elimination, or manual calculation. Extra coefficient lists do not perform additional useful Desmos work. Internally, the two independent linear conditions in r and sy establish that r=3 is unique; the arbitrary s and y_1 fit must not be called unique.",
+    "needs_review": false,
+    "trick": "Bracket regression"
+  },
+  {
+    "id": "010",
+    "question": "34z^14 + bz^7 + 70. In the given expression, b is a positive constant. If the expression can be written as (2z^7 + p)(17z^7 + q), where p and q are positive integers, which of the following could be the value of b?",
+    "answer_choices": {
+      "A": "78",
+      "B": "184",
+      "C": "212",
+      "D": "350"
+    },
+    "correct_answer": "B",
+    "strategy_name": "Factorization by identity regression, then constrained branch enumeration",
+    "trigger_pattern": "A polynomial is known to factor into parameterized factors and a coefficient is asked for. Fit the original polynomial against the proposed factorization at deterministic inputs (the list stands for u=z^7). When unknowns remain on both sides the identity does not determine them uniquely, so enumerate the branches the stated constraints allow instead of trusting the first fitted branch.",
+    "desmos_steps": [
+      "x_1=[1...5]",
+      "34x_1^2+bx_1+70 ~ (2x_1+p)(17x_1+q)",
+      "The fit reports one branch; the identity only forces pq=70 and b=2q+17p, so b is not unique.",
+      "P=[1,2,5,7,10,14,35,70]",
+      "Q=70/P",
+      "2Q+17P",
+      "Read the list on line 6 and find the entry that appears among the choices: 184, choice B (P=10, Q=7)."
+    ],
+    "why_preferred": "No expansion or coefficient matching by hand. The regression shows the structure, and the positive-integer constraint turns the remaining freedom into a short justified list rather than an arbitrary brute-force range.",
+    "needs_review": false,
+    "trick": "Factorization identity regression"
+  },
+  {
+    "id": "011",
+    "question": "The function f is defined by f(x) = (x^2 + ax + b)/(x + c), where a, b, and c are constants. The graph of y = f(x) has x-intercepts at x = 5 and x = 6, and f is undefined at x = 4. What is the value of a + b + c?",
+    "answer_choices": {},
+    "correct_answer": "15",
+    "strategy_name": "Pack several conditions into one regression",
+    "trigger_pattern": "Several independent facts about one function with unknown constants: roots, points, intercepts, a hole or vertical asymptote, equal outputs, or known outputs. Translate each fact into a numerical condition (root at k → f(k)=0, undefined at k → denominator(k)=0, point (p,q) → f(p)=q) and fit them together as one list regression.",
+    "desmos_steps": [
+      "f(x)=(x^2+ax+b)/(x+c)",
+      "[f(5),f(6),4+c] ~ [0,0,0]",
+      "a+b+c",
+      "Read a=-11, b=30, c=-4 under line 2 and the requested sum 15 on line 3."
+    ],
+    "why_preferred": "Three facts become three conditions solved at once. The student never factors (x-5)(x-6), expands, or reasons about the denominator by hand; the requested combination is read from its own row.",
+    "needs_review": false,
+    "trick": "Packed-conditions regression"
+  },
+  {
+    "id": "012",
+    "question": "The function f is defined by f(x) = 15b^x, where b is a constant greater than 1. Which expression gives the percent increase in f(x) for each increase of 1 in x, in terms of b?",
+    "answer_choices": {
+      "A": "100(b - 1)",
+      "B": "100b",
+      "C": "100(1 - b)",
+      "D": "b - 1"
+    },
+    "correct_answer": "A",
+    "strategy_name": "Strategic-value testing for symbolic multiple choice",
+    "trigger_pattern": "The answer is an expression in a parameter, the relationship holds generally, and there are finitely many choices. Choose one value that satisfies every domain restriction, let Desmos compute the requested quantity numerically, and evaluate all choices at that value; test a second value only if two choices collide.",
+    "desmos_steps": [
+      "b=1.5",
+      "f(x)=15b^x",
+      "(f(1)-f(0))/f(0)*100",
+      "[100(b-1),100b,100(1-b),b-1]",
+      "Line 3 shows 50; line 4 shows [50,150,-50,0.5], so only entry 1 matches: choice A. This is finite elimination among the given choices, not a proof of the general formula."
+    ],
+    "why_preferred": "Replaces recalling and manipulating the percent-growth formula with one numeric evaluation. The chosen b=1.5 satisfies b>1, and the four choices separate cleanly at that value.",
+    "needs_review": false,
+    "trick": "Strategic-value choice test"
+  },
+  {
+    "id": "013",
+    "question": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+    "answer_choices": {},
+    "correct_answer": "3",
+    "strategy_name": "Factor → shared zero → slider",
+    "trigger_pattern": "A linear factor with an unknown constant is stated to divide a polynomial, or the question asks which expression has a given factor. Graph the factor and the polynomial as given with the unknown as an integer slider and drag until they share an x-intercept; never derive a closed formula for the constant first.",
+    "desmos_steps": [
+      "b=1",
+      "Give row 1 slider bounds min 1, max 10, step 1 (the slider field), so b steps through positive integers.",
+      "y=x+2b",
+      "y=3x^2+25x+14b",
+      "Drag b until the line and the parabola share an x-intercept; that happens at b=3."
+    ],
+    "why_preferred": "Three rows typed exactly as given, no polynomial division, no substitution, no derived formula for b. The shared intercept is visible, and the integer slider makes the search reproducible.",
+    "needs_review": false,
+    "trick": "Shared-zero slider"
+  },
+  {
+    "id": "014",
+    "question": "In the xy-plane, the graph of y = |x − 3| + k, where k is a constant, intersects the line y = 2 at exactly one point. What is the value of k?",
+    "answer_choices": {},
+    "correct_answer": "2",
+    "strategy_name": "Slider until a graphical condition appears",
+    "trigger_pattern": "A parameter must be found so that a graph shows a visual condition: exactly one intersection, tangency, overlap, a shared intercept. When no regression or deterministic list expresses the condition directly, define the parameter as a slider with a starting value that is not the answer and a reasonable range, graph the original relation, and drag until the condition appears.",
+    "desmos_steps": [
+      "k=0",
+      "Give row 1 slider bounds min -5, max 5, step 1 (the slider field).",
+      "y=\\left|x-3\\right|+k",
+      "y=2",
+      "Drag k until the V-shaped graph touches y=2 at exactly one point; that happens at k=2, read from the slider."
+    ],
+    "why_preferred": "The condition is visual and the parameter range is small, so the student never reasons about the vertex (3, k) algebraically. The slider starts at 0, not at the answer, and the read instruction names the condition to watch for.",
+    "needs_review": false,
+    "trick": "Slider until the graphs touch"
+  }
+]

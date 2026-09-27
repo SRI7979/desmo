@@ -1,0 +1,133 @@
+{
+  "status": "solved",
+  "question": "The function g is a rational function defined by g(x) = f(x)/(x + 2), where f is a quadratic function. The y-intercept of the graph of f is (0,10), and g passes through the points shown in the table: (1,5) and (4,7). What is g(3)?",
+  "choices": null,
+  "clarification": null,
+  "structure": "Several facts about one function with unknown coefficients: f is quadratic with f(0)=10 and g(x)=f(x)/(x+2) with two known g-values; fits the \"Unknown parameter regression\" / \"Packed-conditions regression\" pattern.",
+  "candidates": [
+    {
+      "id": "C1",
+      "name": "Packed-conditions regression on g(x) built from f(x) with f(0) known",
+      "trick": "Packed-conditions regression",
+      "reusable": true,
+      "techniques": [
+        "parameter_regression",
+        "lists",
+        "function_evaluation",
+        "regression",
+        "numeric_evaluation"
+      ],
+      "scores": {
+        "correctness": 5,
+        "simplicity": 5,
+        "student_effort": 1,
+        "manual_math_knowledge": 0,
+        "manual_algebra": 0,
+        "manual_calculation": 0,
+        "desmos_outsourcing": 5,
+        "reliability": 5,
+        "steps_time": 1
+      },
+      "humanWork": "Understand that f(x)=ax^2+bx+10 (since f(0)=10) and translate g(1)=5, g(4)=7 into regression conditions; then read fitted a,b and evaluate g(3).",
+      "desmosWork": "Fit parameters a and b from the two paired conditions y_{1}~(a x_{1}^2 + b x_{1} + 10)/(x_{1}+2), then compute g(3) directly from the fitted a and b.",
+      "validityNote": "Two independent conditions (g at x=1 and x=4) determine the two unknowns a and b uniquely; regression on x_{1}=[1,4] is deterministic and reliable."
+    },
+    {
+      "id": "C2",
+      "name": "Slider-search on integer coefficients for f(x)",
+      "trick": "Shared-zero/slider search (not ideal)",
+      "reusable": false,
+      "techniques": [
+        "lists",
+        "lists",
+        "function_evaluation",
+        "numeric_evaluation",
+        "restrictions"
+      ],
+      "scores": {
+        "correctness": 5,
+        "simplicity": 3,
+        "student_effort": 2,
+        "manual_math_knowledge": 1,
+        "manual_algebra": 1,
+        "manual_calculation": 1,
+        "desmos_outsourcing": 3,
+        "reliability": 4,
+        "steps_time": 3
+      },
+      "humanWork": "Set integer sliders for a and b (if integers are plausible), plot g and adjust until g(1)=5 and g(4)=7, then read g(3).",
+      "desmosWork": "Visual search via sliders; automates evaluation but requires dragging and may be slower or non-reusable when a,b noninteger.",
+      "validityNote": "Works only if a and b happen to be integers in a small range; less reliable and more effort than regression."
+    },
+    {
+      "id": "C3",
+      "name": "Two-equation bracket regression (copy each g-equation into bracket form)",
+      "trick": "Bracket regression",
+      "reusable": true,
+      "techniques": [
+        "parameter_regression",
+        "lists",
+        "function_evaluation",
+        "regression"
+      ],
+      "scores": {
+        "correctness": 5,
+        "simplicity": 4,
+        "student_effort": 1,
+        "manual_math_knowledge": 0,
+        "manual_algebra": 0,
+        "manual_calculation": 0,
+        "desmos_outsourcing": 5,
+        "reliability": 5,
+        "steps_time": 2
+      },
+      "humanWork": "Translate g(1)=5 and g(4)=7 into two bracketed expressions and regress them simultaneously for a and b, then evaluate g(3).",
+      "desmosWork": "Solves a and b from aligned bracket regression and computes g(3).",
+      "validityNote": "Equivalent in effect to candidate C1 but uses bracket list form; also deterministic and reliable."
+    }
+  ],
+  "selectedCandidateId": "C1",
+  "solution": {
+    "answer": "31/5",
+    "method": "desmos",
+    "why": "f(0)=10 lets write f(x)=ax^2+bx+10; use regression on the two given g-values to find a and b, then evaluate g(3) = f(3)/(3+2).",
+    "steps": [
+      "x_{1}=[1,4]",
+      "y_{1}=[5,7]",
+      "y_{1}~\\frac{a x_{1}^2 + b x_{1} + 10}{x_{1}+2}",
+      "g3=\\frac{a\\cdot9 + b\\cdot3 + 10}{5}"
+    ],
+    "readAnswer": "Read g3 from row 4 as 31/5.",
+    "expressions": [
+      {
+        "latex": "x_{1}=[1,4]",
+        "purpose": "paired list of the x-values where g is known",
+        "slider": null
+      },
+      {
+        "latex": "y_{1}=[5,7]",
+        "purpose": "paired list of the corresponding g(x) outputs",
+        "slider": null
+      },
+      {
+        "latex": "y_{1}~\\frac{a x_{1}^2 + b x_{1} + 10}{x_{1}+2}",
+        "purpose": "regress to determine the unknown quadratic coefficients a and b in f(x)=ax^2+bx+10 so that g(x)=f(x)/(x+2) fits the two given points",
+        "slider": null
+      },
+      {
+        "latex": "g3=\\frac{a\\cdot9 + b\\cdot3 + 10}{5}",
+        "purpose": "evaluate g(3)=f(3)/(3+2) using the fitted a and b",
+        "slider": null
+      }
+    ],
+    "result": {
+      "row": 4,
+      "value": 6.2,
+      "listIndex": null,
+      "answerFrom": "value",
+      "choiceLabel": null,
+      "detail": "g(3)=31/5 = 6.2 computed from fitted a and b"
+    },
+    "graphBounds": null
+  }
+}

@@ -1,0 +1,23 @@
+.page { min-height: 100svh; padding: var(--space-10) var(--space-4) var(--space-12); background: var(--surface); }
+.card { width: min(100%, 440px); margin: auto; padding: var(--space-8); border: 1px solid var(--border); border-radius: var(--radius-xl); background: #fff; box-shadow: var(--shadow-card); }
+.card h1 { margin: 0 0 var(--space-2); font-size: clamp(1.5rem, 3vw, 1.75rem); font-weight: 720; letter-spacing: -.04em; }
+.subtitle, .setup { margin: 0 0 var(--space-6); color: var(--muted); font-size: var(--text-sm); line-height: 1.6; }
+.form { display: grid; gap: var(--space-4); }
+.field { display: grid; gap: var(--space-2); color: var(--foreground); font-size: var(--text-sm); font-weight: 650; }
+.field input { width: 100%; min-height: var(--primary-height); padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: #fff; color: var(--foreground); font-size: var(--text-base); transition: border-color var(--ease-ui), box-shadow var(--ease-ui); }
+.field input:hover:not(:disabled) { border-color: var(--accent); }
+.field input:focus-visible { border-color: var(--accent-pressed); outline: 2px solid #b5e1f0; outline-offset: 1px; }
+.field input:disabled { background: var(--surface); }
+.forgot { justify-self: end; margin-top: calc(-1 * var(--space-2)); color: var(--accent-ink); font-size: var(--text-xs); text-underline-offset: 3px; }
+.button { display: flex; align-items: center; justify-content: center; width: 100%; min-height: var(--primary-height); padding: var(--space-3) var(--space-5); border: 1px solid #1f3540; border-radius: var(--radius-md); background: var(--foreground); color: #fff; font-size: var(--text-sm); font-weight: 700; text-align: center; text-decoration: none; transition: background var(--ease-ui); }
+.button:hover:not(:disabled) { background: #304b5a; }
+.button:active:not(:disabled) { background: #0e2029; }
+.button:disabled { opacity: .55; }
+.switchMode { margin: var(--space-6) 0 0; color: var(--muted); font-size: var(--text-sm); text-align: center; }
+.switchMode a { color: var(--accent-ink); font-weight: 650; text-underline-offset: 3px; }
+.error, .notice { margin: 0; padding: var(--space-3); border: 1px solid #edcece; border-radius: var(--radius-md); background: var(--danger-soft); color: var(--danger); font-size: var(--text-sm); line-height: 1.5; }
+.notice { margin-bottom: var(--space-4); border-color: var(--border-accent); background: var(--accent-soft); color: var(--accent-ink); }
+@media (max-width: 480px) {
+  .page { padding: var(--space-6) var(--space-3) var(--space-10); }
+  .card { padding: var(--space-6); }
+}

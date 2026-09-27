@@ -1,0 +1,4518 @@
+{
+  "label": "baseline",
+  "mode": "desmos_first",
+  "runs": 5,
+  "problemCount": 15,
+  "totalRuns": 75,
+  "metrics": {
+    "answerMatch": 88,
+    "methodMatch": 85.3,
+    "forbiddenHit": 6.7,
+    "methodVariance": 3.07,
+    "worstCase": 33.3
+  },
+  "latencyMs": {
+    "p50": 11908,
+    "p95": 38687,
+    "note": "Phase 1 is a single-call architecture: time-to-first-useful-render and time-to-complete are identical (no progressive rendering exists yet)."
+  },
+  "perProblem": [
+    {
+      "id": "001-quadratic-three-points",
+      "domain": "Advanced Math",
+      "distinctMethods": 2,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Quadratic regression",
+        "Quadratic regression from three points",
+        "Quadratic regression from three points",
+        "Quadratic regression from three points",
+        "Quadratic regression"
+      ]
+    },
+    {
+      "id": "002-quadratic-inequality-integer-count",
+      "domain": "Advanced Math",
+      "distinctMethods": 1,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Integer list filter",
+        "Integer list filter",
+        "Integer list filter",
+        "Integer list filter",
+        "Integer list filter"
+      ]
+    },
+    {
+      "id": "003-representation-linear-model",
+      "domain": "Problem-Solving and Data Analysis",
+      "distinctMethods": 2,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Translate the words (no calculator)",
+        "Translate the words (no calculator)",
+        "Translate the words",
+        "Translate the words",
+        "Translate the words (no calculator)"
+      ]
+    },
+    {
+      "id": "004-factor-shared-zero-integer-slider",
+      "domain": "Advanced Math",
+      "distinctMethods": 2,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Shared-zero slider",
+        "Shared-zero slider",
+        "Integer list filter",
+        "Integer list filter",
+        "Shared-zero slider"
+      ]
+    },
+    {
+      "id": "005-constraint-regression-intersection",
+      "domain": "Algebra",
+      "distinctMethods": 1,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Bracket regression",
+        "Bracket regression",
+        "Bracket regression",
+        "Bracket regression",
+        "Bracket regression"
+      ]
+    },
+    {
+      "id": "006-identity-regression-r-plus-s",
+      "domain": "Advanced Math",
+      "distinctMethods": 1,
+      "worstCaseHit": true,
+      "answerCorrectCount": 4,
+      "forbiddenCount": 1,
+      "tricks": [
+        "Identity regression",
+        "Identity regression",
+        "Identity regression",
+        "Identity regression",
+        "Identity regression"
+      ]
+    },
+    {
+      "id": "007-infinitely-many-ratio",
+      "domain": "Algebra",
+      "distinctMethods": 4,
+      "worstCaseHit": true,
+      "answerCorrectCount": 4,
+      "forbiddenCount": 1,
+      "tricks": [
+        "Coefficient ratio",
+        "FAILED: The selected candidate failed the calculator and explanation checks: Line 3 is an underdetermined regression: 3 free parameters (a, c, k) but only 2 data constraints. Add another data point/equation or reduce the free parameters so the fit is unique.",
+        "Proportional-lines",
+        "Proportionality scaling",
+        "Proportional coefficients"
+      ]
+    },
+    {
+      "id": "008-restricted-domain-minimum",
+      "domain": "Advanced Math",
+      "distinctMethods": 3,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Function evaluation",
+        "Function-evaluation list and min",
+        "Restricted-domain vertex",
+        "Restricted-domain vertex",
+        "Restricted-domain vertex"
+      ]
+    },
+    {
+      "id": "009-integer-list-coefficient-read",
+      "domain": "Advanced Math",
+      "distinctMethods": 4,
+      "worstCaseHit": true,
+      "answerCorrectCount": 4,
+      "forbiddenCount": 1,
+      "tricks": [
+        "Answer-choice testing",
+        "FAILED: The selected candidate failed the calculator and explanation checks: A written solution with 3 points of manual math cannot beat a calculator method in desmos_first mode.",
+        "Integer list filter / evaluate expression list",
+        "Answer-choice list test",
+        "Answer-choice testing with integer parameter list"
+      ]
+    },
+    {
+      "id": "010-infinite-solutions-gk-ratio",
+      "domain": "Algebra",
+      "distinctMethods": 5,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Proportional-coefficients",
+        "Proportional-coefficients (shared-line)",
+        "Packed-conditions regression (equate y from both lines at sample x-values)",
+        "Coefficient-proportion trick",
+        "Coefficient-proportionality"
+      ]
+    },
+    {
+      "id": "011-no-solution-slider-both-graphed",
+      "domain": "Algebra",
+      "distinctMethods": 4,
+      "worstCaseHit": true,
+      "answerCorrectCount": 4,
+      "forbiddenCount": 1,
+      "tricks": [
+        "FAILED: The selected candidate failed the calculator and explanation checks: A written solution with 5 points of manual math cannot beat a calculator method in desmos_first mode.",
+        "Elimination for inconsistency",
+        "Compare coefficients for parallel lines",
+        "Shared-slope slider / parallel-lines",
+        "Shared-slope slider"
+      ]
+    },
+    {
+      "id": "012-circle-radius",
+      "domain": "Geometry and Trigonometry",
+      "distinctMethods": 3,
+      "worstCaseHit": true,
+      "answerCorrectCount": 4,
+      "forbiddenCount": 1,
+      "tricks": [
+        "Expanded-circle regression",
+        "Complete-the-square",
+        "FAILED: The selected candidate failed the calculator and explanation checks: A written solution with 3 points of manual math cannot beat a calculator method in desmos_first mode.",
+        "Complete-the-square center/radius",
+        "Expanded-circle regression"
+      ]
+    },
+    {
+      "id": "013-trig-intersection",
+      "domain": "Geometry and Trigonometry",
+      "distinctMethods": 5,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Graph intersection",
+        "Graph two functions and click the intersection",
+        "Solve by x-intercept of difference",
+        "Solve by zero-of-difference",
+        "Graph two functions and click their intersections"
+      ]
+    },
+    {
+      "id": "014-stdev-list",
+      "domain": "Problem-Solving and Data Analysis",
+      "distinctMethods": 4,
+      "worstCaseHit": false,
+      "answerCorrectCount": 5,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Population stdev built-in",
+        "Use stdevp on the list",
+        "Population stdev function",
+        "stdevp(list)",
+        "Population stdev built-in"
+      ]
+    },
+    {
+      "id": "015-two-way-table-probability",
+      "domain": "Problem-Solving and Data Analysis",
+      "distinctMethods": 5,
+      "worstCaseHit": false,
+      "answerCorrectCount": 1,
+      "forbiddenCount": 0,
+      "tricks": [
+        "Direct fraction evaluation",
+        "Conditional-count subtraction and division",
+        "Direct count subtraction and ratio",
+        "Direct evaluation",
+        "Direct evaluation of the conditional fraction"
+      ]
+    }
+  ],
+  "fullResults": [
+    {
+      "id": "001-quadratic-three-points",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function is defined by f(x) = ax^2 + bx + c. The graph of y = f(x) in the xy-plane passes through the points (1, 7), (2, 15), and (4, 43). What is the value of b?",
+        "choices": null,
+        "correctAnswer": "2",
+        "intendedMethod": "three-point-quadratic-regression",
+        "acceptableMethods": [
+          "bracket-regression-three-points"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "3 points exactly determine a 3-parameter quadratic (a,b,c). y_1~ax_1^2+bx_1+c with x_1 length 3 is exactly determined."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 10740,
+        "attempts": 1,
+        "answer": "2",
+        "trick": "Quadratic regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1,2,4]",
+              "purpose": "Put the three given x-values into a paired list so Desmos will treat them as the inputs for the regression."
+            },
+            {
+              "latex": "y_{1}=[7,15,43]",
+              "purpose": "Put the three given y-values (the function outputs at the x-values) into the matching paired y-list for the regression."
+            },
+            {
+              "latex": "y_{1}\\sim ax_{1}^2+bx_{1}+c",
+              "purpose": "Ask Desmos to fit the quadratic model ax^2+bx+c to the paired lists; Desmos returns fitted parameters a, b, and c under Regression Parameters."
+            },
+            {
+              "latex": "b",
+              "purpose": "Read the fitted parameter b directly as reported by the regression; this is the requested coefficient."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 4,
+            "value": 2,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the fitted parameter b from the quadratic regression (y_1~ax_1^2+bx_1+c)",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2,
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Three facts about one quadratic (three input-output points) → unknown coefficients a,b,c; fits the \"quadratic regression / solve for coefficients from points\" pattern (strategy 18)."
+        }
+      }
+    },
+    {
+      "id": "001-quadratic-three-points",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function is defined by f(x) = ax^2 + bx + c. The graph of y = f(x) in the xy-plane passes through the points (1, 7), (2, 15), and (4, 43). What is the value of b?",
+        "choices": null,
+        "correctAnswer": "2",
+        "intendedMethod": "three-point-quadratic-regression",
+        "acceptableMethods": [
+          "bracket-regression-three-points"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "3 points exactly determine a 3-parameter quadratic (a,b,c). y_1~ax_1^2+bx_1+c with x_1 length 3 is exactly determined."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 11151,
+        "attempts": 1,
+        "answer": "2",
+        "trick": "Quadratic regression from three points",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1,2,4]",
+              "purpose": "Define the three x-coordinates from the given points so they form the independent-list for the regression."
+            },
+            {
+              "latex": "y_{1}=[7,15,43]",
+              "purpose": "Define the matching y-coordinates (function outputs) corresponding to x_1; this is the dependent-list for the regression."
+            },
+            {
+              "latex": "y_{1}\\sim ax_{1}^2+bx_{1}+c",
+              "purpose": "Custom quadratic regression that fits the unknown parameters a, b, and c so the quadratic passes through the three supplied points; Desmos lists fitted values including b, which is the requested coefficient."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 2,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the fitted parameter b from the quadratic regression (row 3)",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Several facts about one quadratic with three unknown coefficients; matches \"Quadratic regression from three points\" / \"Packed-conditions regression\" patterns."
+        }
+      }
+    },
+    {
+      "id": "001-quadratic-three-points",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function is defined by f(x) = ax^2 + bx + c. The graph of y = f(x) in the xy-plane passes through the points (1, 7), (2, 15), and (4, 43). What is the value of b?",
+        "choices": null,
+        "correctAnswer": "2",
+        "intendedMethod": "three-point-quadratic-regression",
+        "acceptableMethods": [
+          "bracket-regression-three-points"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "3 points exactly determine a 3-parameter quadratic (a,b,c). y_1~ax_1^2+bx_1+c with x_1 length 3 is exactly determined."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 12771,
+        "attempts": 1,
+        "answer": "2",
+        "trick": "Quadratic regression from three points",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1,2,4]",
+              "purpose": "Define the three x-coordinates from the given points as a paired list for regression inputs."
+            },
+            {
+              "latex": "y_{1}=[7,15,43]",
+              "purpose": "Define the three matching y-coordinates from the given points as the regression outputs list."
+            },
+            {
+              "latex": "y_{1}~ax_{1}^2+bx_{1}+c",
+              "purpose": "Ask Desmos to fit the quadratic model ax^2+bx+c to the three supplied (x_1,y_1) pairs, producing fitted parameters a, b, c."
+            },
+            {
+              "latex": "b",
+              "purpose": "Display the fitted parameter b from the regression so the student can read its numeric value directly."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 4,
+            "value": 2,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the fitted coefficient b",
+            "type": "numeric",
+            "relatedRows": [
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Three facts about one quadratic (three point constraints) → unknown coefficients a,b,c; matches quadratic regression / packed-conditions regression patterns."
+        }
+      }
+    },
+    {
+      "id": "001-quadratic-three-points",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function is defined by f(x) = ax^2 + bx + c. The graph of y = f(x) in the xy-plane passes through the points (1, 7), (2, 15), and (4, 43). What is the value of b?",
+        "choices": null,
+        "correctAnswer": "2",
+        "intendedMethod": "three-point-quadratic-regression",
+        "acceptableMethods": [
+          "bracket-regression-three-points"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "3 points exactly determine a 3-parameter quadratic (a,b,c). y_1~ax_1^2+bx_1+c with x_1 length 3 is exactly determined."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 12742,
+        "attempts": 1,
+        "answer": "2",
+        "trick": "Quadratic regression from three points",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1,2,4]",
+              "purpose": "Defines the three x-coordinates from the given points so they form the independent-list for regression."
+            },
+            {
+              "latex": "y_{1}=[7,15,43]",
+              "purpose": "Defines the matching y-coordinates from the given points as the dependent-list for regression."
+            },
+            {
+              "latex": "y_{1}~ax_{1}^2+bx_{1}+c",
+              "purpose": "Performs a quadratic regression that fits the unknown coefficients a, b, and c to make f(1)=7, f(2)=15, and f(4)=43; Desmos reports fitted values for a, b, and c."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 2,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the fitted parameter b from the quadratic regression",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Several facts (three points) about one quadratic with unknown coefficients — fits the 'several facts about one function with unknown coefficients' / regression patterns (quadratic regression / packed-conditions regression)."
+        }
+      }
+    },
+    {
+      "id": "001-quadratic-three-points",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function is defined by f(x) = ax^2 + bx + c. The graph of y = f(x) in the xy-plane passes through the points (1, 7), (2, 15), and (4, 43). What is the value of b?",
+        "choices": null,
+        "correctAnswer": "2",
+        "intendedMethod": "three-point-quadratic-regression",
+        "acceptableMethods": [
+          "bracket-regression-three-points"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "3 points exactly determine a 3-parameter quadratic (a,b,c). y_1~ax_1^2+bx_1+c with x_1 length 3 is exactly determined."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 11270,
+        "attempts": 1,
+        "answer": "2",
+        "trick": "Quadratic regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1,2,4]",
+              "purpose": "Define the list of the three x-values from the given points in reproducible order; used as the independent-variable list for the regression."
+            },
+            {
+              "latex": "y_{1}=[7,15,43]",
+              "purpose": "Define the matching list of y-values from the given points; pairs with x_1 for the regression."
+            },
+            {
+              "latex": "y_{1}~ax_{1}^2+bx_{1}+c",
+              "purpose": "Tell Desmos to fit the quadratic model ax^2+bx+c to the three paired points, solving for a, b, and c simultaneously; the regression returns numeric values for a, b, and c."
+            },
+            {
+              "latex": "b",
+              "purpose": "Display the fitted value of the coefficient b produced by the regression so the student can read the requested quantity directly."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 4,
+            "value": 2,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "fitted parameter b",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2,
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Three points determine a quadratic's coefficients; matches quadratic regression / three-point coefficient fit pattern (use paired lists and a quadratic regression)."
+        }
+      }
+    },
+    {
+      "id": "002-quadratic-inequality-integer-count",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "How many positive integers n satisfy the inequality n^2 - 17n + 60 < 0?",
+        "choices": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "correctAnswer": "6",
+        "intendedMethod": "integer-list-filter-count",
+        "acceptableMethods": [
+          "graph-restriction-count"
+        ],
+        "forbiddenMethods": [],
+        "notes": "Roots at n=5 and n=12; count integers strictly between them (6,7,8,9,10,11 = 6 integers)."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 11873,
+        "attempts": 1,
+        "answer": "C) 6",
+        "trick": "Integer list filter",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "N=[1...60]",
+              "purpose": "Define a reproducible list of positive integer candidates (1 through 60), which safely contains every possible positive root-range for this quadratic."
+            },
+            {
+              "latex": "\\operatorname{count}(N[N^2-17N+60<0])",
+              "purpose": "Evaluate n^2-17n+60 for each entry of N, filter to those where the expression is negative, and count how many integers satisfy the inequality; Desmos returns that count as a single number."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 6,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "number of positive integers n satisfying n^2-17n+60<0",
+            "type": "numeric",
+            "relatedRows": [
+              1
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Quadratic inequality asking how many positive integer inputs make a quadratic negative; matches list filtering, graph/intersection, and factor/interval patterns."
+        }
+      }
+    },
+    {
+      "id": "002-quadratic-inequality-integer-count",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "How many positive integers n satisfy the inequality n^2 - 17n + 60 < 0?",
+        "choices": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "correctAnswer": "6",
+        "intendedMethod": "integer-list-filter-count",
+        "acceptableMethods": [
+          "graph-restriction-count"
+        ],
+        "forbiddenMethods": [],
+        "notes": "Roots at n=5 and n=12; count integers strictly between them (6,7,8,9,10,11 = 6 integers)."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 9733,
+        "attempts": 1,
+        "answer": "C) 6",
+        "trick": "Integer list filter",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "N=[1...20]",
+              "purpose": "Create a reproducible list of positive integers to test; 20 safely exceeds the quadratic's positive roots."
+            },
+            {
+              "latex": "S=N[N^2-17N+60<0]",
+              "purpose": "Filter N to keep only those integers for which n^2-17n+60<0; Desmos returns the qualifying integers as a list S."
+            },
+            {
+              "latex": "\\operatorname{count}(S)",
+              "purpose": "Count how many integers are in the filtered list S; this is the requested quantity to compare with the answer choices."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 6,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "number of positive integers n satisfying the inequality",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A quadratic inequality asking for how many positive integer inputs make f(n)=n^2-17n+60 negative; matches integer-list filtering or graph/zeros patterns."
+        }
+      }
+    },
+    {
+      "id": "002-quadratic-inequality-integer-count",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "How many positive integers n satisfy the inequality n^2 - 17n + 60 < 0?",
+        "choices": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "correctAnswer": "6",
+        "intendedMethod": "integer-list-filter-count",
+        "acceptableMethods": [
+          "graph-restriction-count"
+        ],
+        "forbiddenMethods": [],
+        "notes": "Roots at n=5 and n=12; count integers strictly between them (6,7,8,9,10,11 = 6 integers)."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 13094,
+        "attempts": 1,
+        "answer": "C) 6",
+        "trick": "Integer list filter",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "f(x)=x^2-17x+60",
+              "purpose": "Define the quadratic function from the inequality so Desmos can evaluate it on inputs; this is the left-hand side of the inequality."
+            },
+            {
+              "latex": "X=[1...20]",
+              "purpose": "Create a list of positive integers large enough to contain all possible positive solutions; the roots are small, so 1..20 is safe and reproducible."
+            },
+            {
+              "latex": "\\operatorname{count}(X[f(X)<0])",
+              "purpose": "Filter X for those inputs where f(X)<0 and return the count of such integers; this directly answers 'how many positive integers n' satisfy the inequality."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 6,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "number of positive integers n satisfying f(n)<0",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Quadratic inequality asking for how many positive integer inputs make a quadratic negative; matches list-filter, graph/zeros, or direct factorization patterns."
+        }
+      }
+    },
+    {
+      "id": "002-quadratic-inequality-integer-count",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "How many positive integers n satisfy the inequality n^2 - 17n + 60 < 0?",
+        "choices": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "correctAnswer": "6",
+        "intendedMethod": "integer-list-filter-count",
+        "acceptableMethods": [
+          "graph-restriction-count"
+        ],
+        "forbiddenMethods": [],
+        "notes": "Roots at n=5 and n=12; count integers strictly between them (6,7,8,9,10,11 = 6 integers)."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 10351,
+        "attempts": 1,
+        "answer": "C) 6",
+        "trick": "Integer list filter",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "f(x)=x^2-17x+60",
+              "purpose": "Define the quadratic function exactly as given so Desmos can evaluate it and show its graph and zeros."
+            },
+            {
+              "latex": "N=[1...20]",
+              "purpose": "Create a reproducible list of positive integer candidates wide enough to include every positive integer between the roots (roots are near 5 and 12), so Desmos can test each integer automatically."
+            },
+            {
+              "latex": "\\operatorname{count}(N[f(N)<0])",
+              "purpose": "Evaluate f at every integer in N, select those with f(n)<0, and return the count of such integers — this single row gives the requested number directly."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 6,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "count of positive integers n for which f(n)<0 (using N and filter)",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "quadratic inequality asking for integer n in the open interval between the quadratic's real roots (quadratic with numeric coefficients); library patterns: graph zeros and integer-list filtering, or factor/vertex methods."
+        }
+      }
+    },
+    {
+      "id": "002-quadratic-inequality-integer-count",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "How many positive integers n satisfy the inequality n^2 - 17n + 60 < 0?",
+        "choices": [
+          "4",
+          "5",
+          "6",
+          "7"
+        ],
+        "correctAnswer": "6",
+        "intendedMethod": "integer-list-filter-count",
+        "acceptableMethods": [
+          "graph-restriction-count"
+        ],
+        "forbiddenMethods": [],
+        "notes": "Roots at n=5 and n=12; count integers strictly between them (6,7,8,9,10,11 = 6 integers)."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 13075,
+        "attempts": 1,
+        "answer": "C) 6",
+        "trick": "Integer list filter",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "N=[1...20]",
+              "purpose": "Define a list of positive integers to test; 20 is safely larger than the interval between the quadratic's roots so it contains all positive solutions."
+            },
+            {
+              "latex": "L=N\\left[N^2-17N+60<0\\right]",
+              "purpose": "Filter the list N to the entries that satisfy the inequality; Desmos returns a list L of exactly those integers."
+            },
+            {
+              "latex": "\\operatorname{count}(L)",
+              "purpose": "Count how many integers remain in L; this is the requested number of positive integers satisfying the inequality."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 6,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "count of positive integers n with n^2-17n+60<0",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Quadratic inequality asking for how many positive integer inputs produce a negative value (roots define an open interval); matches list filtering/count or graph+intercepts patterns."
+        }
+      }
+    },
+    {
+      "id": "003-representation-linear-model",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
+        "choices": [
+          "n + (2n + 18) = 162",
+          "2n + 18 = 162",
+          "n(2n + 18) = 162",
+          "n - (2n + 18) = 162"
+        ],
+        "correctAnswer": "n + (2n + 18) = 162",
+        "intendedMethod": "conceptual-translation",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "solving-for-n"
+        ],
+        "notes": "The task is choosing the correct model, not solving it. Solving for n afterward is unnecessary work and should not be scored favorably."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 9620,
+        "attempts": 1,
+        "answer": "A) n + (2n + 18) = 162",
+        "trick": "Translate the words (no calculator)",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved/graphed instead of just selecting the model",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": "A",
+            "detail": "written: the equation representing the situation",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Representation: translate a word problem into an equation relating counts (n ninth graders plus (2n+18) tenth graders equals total); pattern: direct conceptual-translation/model-choice."
+        }
+      }
+    },
+    {
+      "id": "003-representation-linear-model",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
+        "choices": [
+          "n + (2n + 18) = 162",
+          "2n + 18 = 162",
+          "n(2n + 18) = 162",
+          "n - (2n + 18) = 162"
+        ],
+        "correctAnswer": "n + (2n + 18) = 162",
+        "intendedMethod": "conceptual-translation",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "solving-for-n"
+        ],
+        "notes": "The task is choosing the correct model, not solving it. Solving for n afterward is unnecessary work and should not be scored favorably."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 8488,
+        "attempts": 1,
+        "answer": "A) n + (2n + 18) = 162",
+        "trick": "Translate the words (no calculator)",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved/graphed instead of just selecting the model",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": "A",
+            "detail": "Equation formed by summing the two group sizes to equal the total 162 (n + (2n + 18) = 162).",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Translate a word problem into an equation relating counts: 'n ninth graders' and '2n+18 tenth graders' sum to 162; matches the representation/model-choice pattern."
+        }
+      }
+    },
+    {
+      "id": "003-representation-linear-model",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
+        "choices": [
+          "n + (2n + 18) = 162",
+          "2n + 18 = 162",
+          "n(2n + 18) = 162",
+          "n - (2n + 18) = 162"
+        ],
+        "correctAnswer": "n + (2n + 18) = 162",
+        "intendedMethod": "conceptual-translation",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "solving-for-n"
+        ],
+        "notes": "The task is choosing the correct model, not solving it. Solving for n afterward is unnecessary work and should not be scored favorably."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 9582,
+        "attempts": 1,
+        "answer": "A) n + (2n + 18) = 162",
+        "trick": "Translate the words",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved/graphed instead of just selecting the model",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": "A",
+            "detail": "Equation representing the sum of ninth and tenth graders",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Translate a word problem into an equation: quantities for ninth graders and tenth graders are summed to equal the total; matches the 'representation/model-choice' pattern."
+        }
+      }
+    },
+    {
+      "id": "003-representation-linear-model",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
+        "choices": [
+          "n + (2n + 18) = 162",
+          "2n + 18 = 162",
+          "n(2n + 18) = 162",
+          "n - (2n + 18) = 162"
+        ],
+        "correctAnswer": "n + (2n + 18) = 162",
+        "intendedMethod": "conceptual-translation",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "solving-for-n"
+        ],
+        "notes": "The task is choosing the correct model, not solving it. Solving for n afterward is unnecessary work and should not be scored favorably."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 11187,
+        "attempts": 1,
+        "answer": "A) n + (2n + 18) = 162",
+        "trick": "Translate the words",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved/graphed instead of just selecting the model",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": "A",
+            "detail": "Model equation: sum of the two group sizes set equal to total",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Translate a word problem into its model: two group sizes (n and 2n+18) are added to give a total; matches the 'representation/model-choice' pattern."
+        }
+      }
+    },
+    {
+      "id": "003-representation-linear-model",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
+        "choices": [
+          "n + (2n + 18) = 162",
+          "2n + 18 = 162",
+          "n(2n + 18) = 162",
+          "n - (2n + 18) = 162"
+        ],
+        "correctAnswer": "n + (2n + 18) = 162",
+        "intendedMethod": "conceptual-translation",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "solving-for-n"
+        ],
+        "notes": "The task is choosing the correct model, not solving it. Solving for n afterward is unnecessary work and should not be scored favorably."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 9877,
+        "attempts": 1,
+        "answer": "A) n + (2n + 18) = 162",
+        "trick": "Translate the words (no calculator)",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved/graphed instead of just selecting the model",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": "A",
+            "detail": "equation modeling total students",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Translate words to a model: two groups (n and 2n+18) summed to give a total; matches the representation-model pattern."
+        }
+      }
+    },
+    {
+      "id": "004-factor-shared-zero-integer-slider",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+        "choices": null,
+        "correctAnswer": "3",
+        "intendedMethod": "integer-slider-shared-zero",
+        "acceptableMethods": [
+          "integer-list-shared-zero"
+        ],
+        "forbiddenMethods": [
+          "derived-factor-formula"
+        ],
+        "notes": "Graph the polynomial with an integer slider/list on b and find where x=-2b is a zero (12b^2-36b=0, b=3); never derive b by polynomial division or factoring by hand."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 41001,
+        "attempts": 2,
+        "answer": "3",
+        "trick": "Shared-zero slider",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "derived b by a formula instead of a slider/list shared zero",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "b=1",
+              "purpose": "Create an integer slider named b that the student will drag; supply integer bounds so the search is reproducible.",
+              "slider": {
+                "min": 1,
+                "max": 10,
+                "step": 1
+              }
+            },
+            {
+              "latex": "y=x+2b",
+              "purpose": "Graph the linear factor as given (the line whose zero is x=-2b). This displays the line for every slider value of b so we can watch its x-intercept move as b changes."
+            },
+            {
+              "latex": "y=3x^2+25x+14b",
+              "purpose": "Graph the given polynomial exactly as written so we can watch when it shares an x-intercept with the line for some integer b."
+            }
+          ],
+          "parameters": [
+            {
+              "name": "b",
+              "integer": true,
+              "min": 1,
+              "max": 10
+            }
+          ],
+          "result": {
+            "row": 1,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "slider value b when line (row 2) and parabola (row 3) share an x-intercept",
+            "type": "slider_condition",
+            "relatedRows": [
+              2,
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": {
+            "param": "b",
+            "value": 3
+          },
+          "method": "desmos",
+          "structure": "A linear factor x+2b means its zero is x = -2b; this matches the library patterns \"Factor → shared zero\" and \"Shared-zero slider/list testing\" (translate factor to root and test integer b values)."
+        }
+      }
+    },
+    {
+      "id": "004-factor-shared-zero-integer-slider",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+        "choices": null,
+        "correctAnswer": "3",
+        "intendedMethod": "integer-slider-shared-zero",
+        "acceptableMethods": [
+          "integer-list-shared-zero"
+        ],
+        "forbiddenMethods": [
+          "derived-factor-formula"
+        ],
+        "notes": "Graph the polynomial with an integer slider/list on b and find where x=-2b is a zero (12b^2-36b=0, b=3); never derive b by polynomial division or factoring by hand."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 15171,
+        "attempts": 1,
+        "answer": "3",
+        "trick": "Shared-zero slider",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "derived b by a formula instead of a slider/list shared zero",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "b=1",
+              "purpose": "Define b as an integer slider starting at 1; give the slider integer bounds min 1, max 10, step 1 so b searches positive integers reproducibly.",
+              "slider": {
+                "min": 1,
+                "max": 10,
+                "step": 1
+              }
+            },
+            {
+              "latex": "y=x+2b",
+              "purpose": "Graph the linear factor exactly as given (its zero is x=-2b); this line moves as b changes so shared intercepts become visible."
+            },
+            {
+              "latex": "y=3x^2+25x+14b",
+              "purpose": "Graph the quadratic exactly as given with the same b; when b is correct the parabola and the line share an x-intercept, showing the factor relationship visually."
+            }
+          ],
+          "parameters": [
+            {
+              "name": "b",
+              "integer": true,
+              "min": 1,
+              "max": 10
+            }
+          ],
+          "result": {
+            "row": 1,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "Slider b value at which the line y=x+2b and the parabola share an x-intercept (shared zero).",
+            "type": "slider_condition",
+            "relatedRows": [
+              2,
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": {
+            "param": "b",
+            "value": 3
+          },
+          "method": "desmos",
+          "structure": "A linear factor x+2b implies the polynomial is zero at x=-2b, so this is a shared-zero / factor problem; matching library patterns: \"Factor → shared zero\" (shared-zero slider) and integer-parameter search."
+        }
+      }
+    },
+    {
+      "id": "004-factor-shared-zero-integer-slider",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+        "choices": null,
+        "correctAnswer": "3",
+        "intendedMethod": "integer-slider-shared-zero",
+        "acceptableMethods": [
+          "integer-list-shared-zero"
+        ],
+        "forbiddenMethods": [
+          "derived-factor-formula"
+        ],
+        "notes": "Graph the polynomial with an integer slider/list on b and find where x=-2b is a zero (12b^2-36b=0, b=3); never derive b by polynomial division or factoring by hand."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 12506,
+        "attempts": 1,
+        "answer": "3",
+        "trick": "Integer list filter",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "derived b by a formula instead of a slider/list shared zero",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "B=[1...10]",
+              "purpose": "Define the list of positive integer candidates for b (adjust range if needed)."
+            },
+            {
+              "latex": "P=3(-2B)^2+25(-2B)+14B",
+              "purpose": "Evaluate the polynomial 3x^2+25x+14b at x=-2b for every candidate in B; Desmos computes a list P of values corresponding to each B."
+            },
+            {
+              "latex": "B[P=0]",
+              "purpose": "Filter the candidate list B to entries where the polynomial evaluation equals 0; this returns the b values for which x+2b is a factor."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 3,
+            "listIndex": 1,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "values of b that make the polynomial zero (filtered from B)",
+            "type": "list_entry",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A linear factor x+2b is given so its zero x=-2b must make the polynomial zero; matches the \"Factor → shared zero\" / integer-list or slider patterns."
+        }
+      }
+    },
+    {
+      "id": "004-factor-shared-zero-integer-slider",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+        "choices": null,
+        "correctAnswer": "3",
+        "intendedMethod": "integer-slider-shared-zero",
+        "acceptableMethods": [
+          "integer-list-shared-zero"
+        ],
+        "forbiddenMethods": [
+          "derived-factor-formula"
+        ],
+        "notes": "Graph the polynomial with an integer slider/list on b and find where x=-2b is a zero (12b^2-36b=0, b=3); never derive b by polynomial division or factoring by hand."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 38687,
+        "attempts": 2,
+        "answer": "3",
+        "trick": "Integer list filter",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "derived b by a formula instead of a slider/list shared zero",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "B=[1...10]",
+              "purpose": "Define a short reproducible list of positive-integer candidates for b; includes the true value and is small for speed."
+            },
+            {
+              "latex": "P=3(-2B)^2+25(-2B)+14B",
+              "purpose": "Evaluate 3x^2+25x+14b at x=-2b for every candidate b in B; Desmos returns a list of results aligned with B so we can test which entries equal zero."
+            },
+            {
+              "latex": "B[P=0]",
+              "purpose": "Filter the candidate list B to the entries where the corresponding entry of P equals zero; the resulting list contains the positive integer(s) b that make x+2b a factor."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 3,
+            "listIndex": 1,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "b that makes the polynomial zero at x=-2b",
+            "type": "list_entry",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A linear factor with an unknown positive-integer constant (x+2b is a factor) — library patterns: shared-zero (factor -> root), integer candidate testing via list or slider, and identity/regression for an unknown parameter."
+        }
+      }
+    },
+    {
+      "id": "004-factor-shared-zero-integer-slider",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+        "choices": null,
+        "correctAnswer": "3",
+        "intendedMethod": "integer-slider-shared-zero",
+        "acceptableMethods": [
+          "integer-list-shared-zero"
+        ],
+        "forbiddenMethods": [
+          "derived-factor-formula"
+        ],
+        "notes": "Graph the polynomial with an integer slider/list on b and find where x=-2b is a zero (12b^2-36b=0, b=3); never derive b by polynomial division or factoring by hand."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 13865,
+        "attempts": 1,
+        "answer": "3",
+        "trick": "Shared-zero slider",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "derived b by a formula instead of a slider/list shared zero",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "b=1",
+              "purpose": "Defines b as an integer slider starting at 1; set slider bounds min 1, max 10, step 1 so the student can test positive integers quickly.",
+              "slider": {
+                "min": 1,
+                "max": 10,
+                "step": 1
+              }
+            },
+            {
+              "latex": "y=x+2b",
+              "purpose": "Graphs the linear factor exactly as given; its x-intercept is x=-2b, so sharing an x-intercept with the quadratic means x+2b is a factor."
+            },
+            {
+              "latex": "y=3x^2+25x+14b",
+              "purpose": "Graphs the quadratic with the same b so the student can visually find the integer b that makes x+2b a factor by locating a shared x-intercept."
+            }
+          ],
+          "parameters": [
+            {
+              "name": "b",
+              "integer": true,
+              "min": 1,
+              "max": 10
+            }
+          ],
+          "result": {
+            "row": 1,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "slider when the line (row 2) and parabola (row 3) share an x-intercept; read b from the slider",
+            "type": "slider_condition",
+            "relatedRows": [
+              2,
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": {
+            "param": "b",
+            "value": 3
+          },
+          "method": "desmos",
+          "structure": "A linear factor x+2b is given, so its zero x = -2b must be a root of the quadratic; this is a 'factor → shared zero' pattern (shared-zero slider, integer parameter)."
+        }
+      }
+    },
+    {
+      "id": "005-constraint-regression-intersection",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "-x - wy = -337 and 2x - wy = 47. The graphs of these two equations intersect at the point (q, 19). What is the value of w?",
+        "choices": null,
+        "correctAnswer": "11",
+        "intendedMethod": "bracket-constraint-regression",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "graphing-non-coordinate-unknowns"
+        ],
+        "notes": "Substitute y=19 and fit q,w via [-q-19w,2q-19w]~[-337,47]; never graph q or w as if they were plotting axes (Desmos only has x,y coordinates)."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 17285,
+        "attempts": 1,
+        "answer": "11",
+        "trick": "Bracket regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "graphed q/w as if they were coordinates",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "[-q-19w,2q-19w]~[-337,47]",
+              "purpose": "Substitute y=19 into each left side: -q-19w and 2q-19w; use a single bracket regression ~ against the corresponding right-side constants -337 and 47 so Desmos fits the unknowns q and w simultaneously."
+            },
+            {
+              "latex": "w",
+              "purpose": "Display the fitted parameter w produced by the regression on row 1 so the student can read its numeric value directly."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 11,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "w",
+            "type": "numeric",
+            "relatedRows": [
+              1
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Two linear equations with unknown constants and a known y-coordinate for their intersection (y=19); matches the library pattern \"Direct bracket regression for a small system\"."
+        }
+      }
+    },
+    {
+      "id": "005-constraint-regression-intersection",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "-x - wy = -337 and 2x - wy = 47. The graphs of these two equations intersect at the point (q, 19). What is the value of w?",
+        "choices": null,
+        "correctAnswer": "11",
+        "intendedMethod": "bracket-constraint-regression",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "graphing-non-coordinate-unknowns"
+        ],
+        "notes": "Substitute y=19 and fit q,w via [-q-19w,2q-19w]~[-337,47]; never graph q or w as if they were plotting axes (Desmos only has x,y coordinates)."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 10754,
+        "attempts": 1,
+        "answer": "11",
+        "trick": "Bracket regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "graphed q/w as if they were coordinates",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "[-q-19w,2q-19w]~[-337,47]",
+              "purpose": "Translate the two given equations with y=19 into numerical conditions: -q-19w = -337 and 2q-19w = 47, and let Desmos fit the unknown parameters q and w simultaneously; the regression returns fitted values for q and w."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 11,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "w, the fitted regression parameter",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Two linear equations with the same -wy term and a known common y-coordinate (y=19) at their intersection; matches the library's small-system/bracket-regression pattern."
+        }
+      }
+    },
+    {
+      "id": "005-constraint-regression-intersection",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "-x - wy = -337 and 2x - wy = 47. The graphs of these two equations intersect at the point (q, 19). What is the value of w?",
+        "choices": null,
+        "correctAnswer": "11",
+        "intendedMethod": "bracket-constraint-regression",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "graphing-non-coordinate-unknowns"
+        ],
+        "notes": "Substitute y=19 and fit q,w via [-q-19w,2q-19w]~[-337,47]; never graph q or w as if they were plotting axes (Desmos only has x,y coordinates)."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 10856,
+        "attempts": 1,
+        "answer": "11",
+        "trick": "Bracket regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "graphed q/w as if they were coordinates",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "[-q-19w,\\;2q-19w]\\sim[-337,\\;47]",
+              "purpose": "Replace y with 19 in both left sides so each equation becomes a numeric condition: -q-19w=-337 and 2q-19w=47; put the two left sides in one bracket and the two right constants in the matching bracket, then use ~ so Desmos fits the unknown parameters q and w from those two conditions."
+            },
+            {
+              "latex": "w",
+              "purpose": "Read the fitted parameter w produced by the regression on the previous row; this displays the numeric value of w so the student can report it."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 11,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the fitted parameter w",
+            "type": "numeric",
+            "relatedRows": [
+              1
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Two linear equations with unknown constants and a supplied y-coordinate (y=19) for their intersection; matches the small-system bracket-regression pattern (fit unknown parameters by replacing = with ~ on aligned sides)."
+        }
+      }
+    },
+    {
+      "id": "005-constraint-regression-intersection",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "-x - wy = -337 and 2x - wy = 47. The graphs of these two equations intersect at the point (q, 19). What is the value of w?",
+        "choices": null,
+        "correctAnswer": "11",
+        "intendedMethod": "bracket-constraint-regression",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "graphing-non-coordinate-unknowns"
+        ],
+        "notes": "Substitute y=19 and fit q,w via [-q-19w,2q-19w]~[-337,47]; never graph q or w as if they were plotting axes (Desmos only has x,y coordinates)."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 11263,
+        "attempts": 1,
+        "answer": "11",
+        "trick": "Bracket regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "graphed q/w as if they were coordinates",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "[-q-19w,2q-19w]~[-337,47]",
+              "purpose": "This single regression row encodes the two given numeric conditions after substituting y=19: -q-19w = -337 and 2q-19w = 47, letting Desmos fit the unknown parameters q and w simultaneously."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 11,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the fitted parameter w (from the regression)",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Two linear equations with two unknown constants (q and w) and the y-coordinate of their intersection given (y=19); matches the library pattern \"Direct bracket regression for a small system\"."
+        }
+      }
+    },
+    {
+      "id": "005-constraint-regression-intersection",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "-x - wy = -337 and 2x - wy = 47. The graphs of these two equations intersect at the point (q, 19). What is the value of w?",
+        "choices": null,
+        "correctAnswer": "11",
+        "intendedMethod": "bracket-constraint-regression",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "graphing-non-coordinate-unknowns"
+        ],
+        "notes": "Substitute y=19 and fit q,w via [-q-19w,2q-19w]~[-337,47]; never graph q or w as if they were plotting axes (Desmos only has x,y coordinates)."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 11465,
+        "attempts": 1,
+        "answer": "11",
+        "trick": "Bracket regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "graphed q/w as if they were coordinates",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "[-q-19w,2q-19w]~[-337,47]",
+              "purpose": "This single bracket regression copies each complete left side with y replaced by 19 into the left list and the matching right sides into the right list; Desmos fits the parameters q and w that make both expressions equal to the given constants."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 11,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the fitted parameter w",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Two linear equations with unknown constants; given intersection's y-coordinate (y=19) → small-system bracket regression or direct substitution patterns apply (Bracket regression / Condition translation)."
+        }
+      }
+    },
+    {
+      "id": "006-identity-regression-r-plus-s",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For all real values of x, (12x + 28)/4 - s/13 = r(x - 8), where r and s are positive constants. What is the value of r + s?",
+        "choices": [
+          "390",
+          "403",
+          "406",
+          "416"
+        ],
+        "correctAnswer": "406",
+        "intendedMethod": "identity-regression-sum-readout",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "reports-intermediate-parameter-403"
+        ],
+        "notes": "A known regression trap: r=3, s=403 individually, but the requested value is r+s=406, not the intermediate s=403. This check specifically verifies the returned answer is 406, not 403."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 11486,
+        "attempts": 1,
+        "answer": "C) 406",
+        "trick": "Identity regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "reported the intermediate parameter 403 instead of r+s=406",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1...5]",
+              "purpose": "Provide a small deterministic list of distinct x-values to test the identity; these stand for several inputs so the regression can determine the unknown constants."
+            },
+            {
+              "latex": "(12x_{1}+28)/4 - s/13 \\sim r(x_{1}-8)",
+              "purpose": "Replace the equation's equals with a regression tilde and feed both sides evaluated at the list x_1; Desmos fits the unknown parameters r and s so the identity holds at every listed x-value."
+            },
+            {
+              "latex": "r+s",
+              "purpose": "Compute the requested combination of the fitted parameters; Desmos evaluates this using the regression's returned values for r and s."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 406,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "r+s (sum of fitted regression parameters)",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "An identity (equation true for all x) with two unknown constants; matches the Identity/Parameter Regression pattern (pack several x-values and fit the unknowns)."
+        }
+      }
+    },
+    {
+      "id": "006-identity-regression-r-plus-s",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For all real values of x, (12x + 28)/4 - s/13 = r(x - 8), where r and s are positive constants. What is the value of r + s?",
+        "choices": [
+          "390",
+          "403",
+          "406",
+          "416"
+        ],
+        "correctAnswer": "406",
+        "intendedMethod": "identity-regression-sum-readout",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "reports-intermediate-parameter-403"
+        ],
+        "notes": "A known regression trap: r=3, s=403 individually, but the requested value is r+s=406, not the intermediate s=403. This check specifically verifies the returned answer is 406, not 403."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 8946,
+        "attempts": 1,
+        "answer": "C) 406",
+        "trick": "Identity regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "reported the intermediate parameter 403 instead of r+s=406",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1...5]",
+              "purpose": "Provides several distinct x-values to test the identity; deterministic inputs let Desmos solve the unknown constants reproducibly."
+            },
+            {
+              "latex": "(12x_{1}+28)/4 - s/13 \\sim r(x_{1}-8)",
+              "purpose": "Replace the equation's equals with a regression tilde and use the x-list on both sides so Desmos fits the unknown parameters r and s to make the two sides equal for every listed x; this determines r and s without algebra."
+            },
+            {
+              "latex": "r+s",
+              "purpose": "Compute the requested combination directly from the fitted regression parameters; this numeric row is the final answer to read."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 406,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "r+s (sum of fitted parameters)",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "An identity in x (equation true for all real x) → polynomial identity / coefficient-matching pattern; matches the library's \"Identity regression\" / \"Packed-conditions regression\" patterns."
+        }
+      }
+    },
+    {
+      "id": "006-identity-regression-r-plus-s",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For all real values of x, (12x + 28)/4 - s/13 = r(x - 8), where r and s are positive constants. What is the value of r + s?",
+        "choices": [
+          "390",
+          "403",
+          "406",
+          "416"
+        ],
+        "correctAnswer": "406",
+        "intendedMethod": "identity-regression-sum-readout",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "reports-intermediate-parameter-403"
+        ],
+        "notes": "A known regression trap: r=3, s=403 individually, but the requested value is r+s=406, not the intermediate s=403. This check specifically verifies the returned answer is 406, not 403."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 11392,
+        "attempts": 1,
+        "answer": "C) 406",
+        "trick": "Identity regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "reported the intermediate parameter 403 instead of r+s=406",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1...5]",
+              "purpose": "Provide a deterministic set of distinct x-values (at least degree+1 inputs) to test the identity so the regression has independent samples."
+            },
+            {
+              "latex": "\\frac{12x_{1}+28}{4}-\\frac{s}{13} \\sim r(x_{1}-8)",
+              "purpose": "Replace the equals sign with a regression ~ and copy both full sides exactly with x replaced by the list x_1; Desmos fits the parameters r and s that make the two sides equal for all listed x-values."
+            },
+            {
+              "latex": "r+s",
+              "purpose": "Compute the requested combination of the fitted parameters so Desmos displays the numeric value of r+s to match the answer choices."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 406,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "r+s",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "An identity true for all real x (polynomial/affine identity) with two unknown constants; matches the library pattern 'identity regression' (pack several x-values and fit parameters)."
+        }
+      }
+    },
+    {
+      "id": "006-identity-regression-r-plus-s",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For all real values of x, (12x + 28)/4 - s/13 = r(x - 8), where r and s are positive constants. What is the value of r + s?",
+        "choices": [
+          "390",
+          "403",
+          "406",
+          "416"
+        ],
+        "correctAnswer": "406",
+        "intendedMethod": "identity-regression-sum-readout",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "reports-intermediate-parameter-403"
+        ],
+        "notes": "A known regression trap: r=3, s=403 individually, but the requested value is r+s=406, not the intermediate s=403. This check specifically verifies the returned answer is 406, not 403."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 15874,
+        "attempts": 1,
+        "answer": "C) 406",
+        "trick": "Identity regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "reported the intermediate parameter 403 instead of r+s=406",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1...5]",
+              "purpose": "Defines five deterministic x-values to test the identity so the regression has enough independent inputs."
+            },
+            {
+              "latex": "\\frac{12x_{1}+28}{4}-\\frac{s}{13}~r(x_{1}-8)",
+              "purpose": "Puts the original left and right sides into aligned lists with = replaced by ~ so Desmos fits the unknown constants r and s to make the identity hold at every x in x_1."
+            },
+            {
+              "latex": "r+s",
+              "purpose": "Computes the requested quantity (r + s) from the fitted regression parameters so the student reads the final numeric answer directly."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 406,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "C",
+            "detail": "r+s",
+            "type": "numeric",
+            "relatedRows": [
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "An identity true for all real x with two unknown constants (r,s): match coefficients by testing multiple x-values (identity/parameter regression)."
+        }
+      }
+    },
+    {
+      "id": "006-identity-regression-r-plus-s",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For all real values of x, (12x + 28)/4 - s/13 = r(x - 8), where r and s are positive constants. What is the value of r + s?",
+        "choices": [
+          "390",
+          "403",
+          "406",
+          "416"
+        ],
+        "correctAnswer": "406",
+        "intendedMethod": "identity-regression-sum-readout",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "reports-intermediate-parameter-403"
+        ],
+        "notes": "A known regression trap: r=3, s=403 individually, but the requested value is r+s=406, not the intermediate s=403. This check specifically verifies the returned answer is 406, not 403."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 9817,
+        "attempts": 1,
+        "answer": "B) 403",
+        "trick": "Identity regression",
+        "answerCorrect": false,
+        "intendedOrAcceptable": false,
+        "forbidden": true,
+        "forbiddenReason": "reported the intermediate parameter 403 instead of r+s=406",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[1...5]",
+              "purpose": "Create a small deterministic list of x-values to test the identity; these sample inputs let Desmos fit the unknown constants across multiple x so the identity holds for all x."
+            },
+            {
+              "latex": "\\frac{12x_{1}+28}{4}-\\dfrac{s}{13} \\sim r(x_{1}-8)",
+              "purpose": "Replace 'for all x' by a regression: left side and right side are evaluated at each x_1 and Desmos fits the parameters r and s so both sides match for every sample input; this finds the unique constants satisfying the identity."
+            },
+            {
+              "latex": "r+s",
+              "purpose": "Compute the requested combination of the fitted parameters; Desmos evaluates r and s from the previous regression and outputs their sum."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 403,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": "B",
+            "detail": "r+s",
+            "type": "numeric",
+            "relatedRows": [
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "An identity true for all real x with two unknown constants (r,s); matches the 'identity regression' pattern: sample several x-values and fit both sides simultaneously."
+        }
+      }
+    },
+    {
+      "id": "007-infinitely-many-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "In the system of equations below, a and c are constants.\n(1/3)x + ay = b\n2x + cy = 5d\nIf the system has infinitely many solutions, what is the value of b/d?",
+        "choices": null,
+        "correctAnswer": "5/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "any-regression"
+        ],
+        "notes": "Infinitely-many-solutions means the constants scale by the same factor as the leading coefficients: 2/(1/3)=6, so 5d=6b, giving b/d=5/6. Two arithmetic rows suffice; there is no data to fit, so any regression is unnecessary machinery."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 33945,
+        "attempts": 2,
+        "answer": "5/6",
+        "trick": "Coefficient ratio",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used a regression where arithmetic (or a written ratio) suffices",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "k=2/(1/3)",
+              "purpose": "Compute the scalar k that multiplies the x-coefficient (1/3) to equal 2; k = 2 divided by (1/3)."
+            },
+            {
+              "latex": "r=5/k",
+              "purpose": "From k*b=5d we get b/d = 5/k, so compute that numeric ratio as r; this directly yields b/d."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 0.8333333333333334,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "b/d (numeric value of r from row 2)",
+            "type": "numeric",
+            "relatedRows": [
+              1
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Two linear equations in x and y with unknown constant coefficients; infinitely many solutions occur when the two equations are proportional (one is a constant multiple of the other) — matches the proportional-coefficients/shared-line and co"
+        }
+      }
+    },
+    {
+      "id": "007-infinitely-many-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "In the system of equations below, a and c are constants.\n(1/3)x + ay = b\n2x + cy = 5d\nIf the system has infinitely many solutions, what is the value of b/d?",
+        "choices": null,
+        "correctAnswer": "5/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "any-regression"
+        ],
+        "notes": "Infinitely-many-solutions means the constants scale by the same factor as the leading coefficients: 2/(1/3)=6, so 5d=6b, giving b/d=5/6. Two arithmetic rows suffice; there is no data to fit, so any regression is unnecessary machinery."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": false,
+        "ms": 34378,
+        "attempts": 2,
+        "error": "The selected candidate failed the calculator and explanation checks: Line 3 is an underdetermined regression: 3 free parameters (a, c, k) but only 2 data constraints. Add another data point/equation or reduce the free parameters so the fit is unique."
+      }
+    },
+    {
+      "id": "007-infinitely-many-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "In the system of equations below, a and c are constants.\n(1/3)x + ay = b\n2x + cy = 5d\nIf the system has infinitely many solutions, what is the value of b/d?",
+        "choices": null,
+        "correctAnswer": "5/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "any-regression"
+        ],
+        "notes": "Infinitely-many-solutions means the constants scale by the same factor as the leading coefficients: 2/(1/3)=6, so 5d=6b, giving b/d=5/6. Two arithmetic rows suffice; there is no data to fit, so any regression is unnecessary machinery."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 12981,
+        "attempts": 1,
+        "answer": "5/6",
+        "trick": "Proportional-lines",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used a regression where arithmetic (or a written ratio) suffices",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "b/d = 5/6 (written result)",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Two linear equations in x and y; infinitely many solutions means the two linear equations describe the exact same line (all coefficients proportional). Library patterns: proportional-lines / parallel-overlap (use coefficient proportionality"
+        }
+      }
+    },
+    {
+      "id": "007-infinitely-many-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "In the system of equations below, a and c are constants.\n(1/3)x + ay = b\n2x + cy = 5d\nIf the system has infinitely many solutions, what is the value of b/d?",
+        "choices": null,
+        "correctAnswer": "5/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "any-regression"
+        ],
+        "notes": "Infinitely-many-solutions means the constants scale by the same factor as the leading coefficients: 2/(1/3)=6, so 5d=6b, giving b/d=5/6. Two arithmetic rows suffice; there is no data to fit, so any regression is unnecessary machinery."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 29653,
+        "attempts": 2,
+        "answer": "5/6",
+        "trick": "Proportionality scaling",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used a regression where arithmetic (or a written ratio) suffices",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "b/d",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "algebra",
+          "structure": "Two linear equations in x and y with constants; infinitely many solutions means the two equations are proportional (one is a constant multiple of the other); matches proportional-lines / identity patterns."
+        }
+      }
+    },
+    {
+      "id": "007-infinitely-many-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "In the system of equations below, a and c are constants.\n(1/3)x + ay = b\n2x + cy = 5d\nIf the system has infinitely many solutions, what is the value of b/d?",
+        "choices": null,
+        "correctAnswer": "5/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "any-regression"
+        ],
+        "notes": "Infinitely-many-solutions means the constants scale by the same factor as the leading coefficients: 2/(1/3)=6, so 5d=6b, giving b/d=5/6. Two arithmetic rows suffice; there is no data to fit, so any regression is unnecessary machinery."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 11197,
+        "attempts": 1,
+        "answer": "5/6",
+        "trick": "Proportional coefficients",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used a regression where arithmetic (or a written ratio) suffices",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "b/d = 5/6",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "algebra",
+          "structure": "Two linear equations in x and y with constants; the system has infinitely many solutions so the two equations are proportional (same line) — a proportionality/shared-multiple pattern."
+        }
+      }
+    },
+    {
+      "id": "008-restricted-domain-minimum",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For 2 <= x <= 8, the function f is defined by f(x) = (x - 1)^2 + 4. What is the minimum value of f on this interval?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "restricted-graph-minimum",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "integer-sampling-continuous-domain"
+        ],
+        "notes": "The vertex (x=1) lies outside the interval, so f is increasing throughout [2,8] and the minimum is at the left endpoint, f(2)=5. Graph f with the domain restriction {2<=x<=8} and read the minimum directly; do not sample only integer x-values, since the domain is continuous."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 10441,
+        "attempts": 1,
+        "answer": "5",
+        "trick": "Function evaluation",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "discretely sampled the continuous domain instead of graphing it restricted",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "f(x)=(x-1)^2+4",
+              "purpose": "Define the function exactly as given so Desmos can evaluate it."
+            },
+            {
+              "latex": "f(2)",
+              "purpose": "Evaluate the function at the left endpoint x=2; Desmos returns the exact minimum value on [2,8]."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 5,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "minimum value f(2)",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "a parabola (quadratic) on a closed interval: look for the minimum on [2,8]; library patterns: restricted-domain vertex, evaluate endpoints, function evaluation."
+        }
+      }
+    },
+    {
+      "id": "008-restricted-domain-minimum",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For 2 <= x <= 8, the function f is defined by f(x) = (x - 1)^2 + 4. What is the minimum value of f on this interval?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "restricted-graph-minimum",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "integer-sampling-continuous-domain"
+        ],
+        "notes": "The vertex (x=1) lies outside the interval, so f is increasing throughout [2,8] and the minimum is at the left endpoint, f(2)=5. Graph f with the domain restriction {2<=x<=8} and read the minimum directly; do not sample only integer x-values, since the domain is continuous."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 9541,
+        "attempts": 1,
+        "answer": "5",
+        "trick": "Function-evaluation list and min",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "discretely sampled the continuous domain instead of graphing it restricted",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "f(x)=(x-1)^2+4",
+              "purpose": "Define the function exactly as given so Desmos can evaluate it at any x."
+            },
+            {
+              "latex": "X=[2,8]",
+              "purpose": "List the two endpoints of the interval; Desmos will evaluate f at each list entry."
+            },
+            {
+              "latex": "\\operatorname{min}(f(X))",
+              "purpose": "Compute the smaller of the two values f(2) and f(8); this row displays the requested minimum value numerically."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 5,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "minimum value of f on [2,8] = min(f(2),f(8))",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Function on a closed interval asking for the minimum; matches \"restricted-domain vertex / evaluate endpoints\" patterns (restricted-domain vertex; evaluate f at endpoints or click restricted graph)."
+        }
+      }
+    },
+    {
+      "id": "008-restricted-domain-minimum",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For 2 <= x <= 8, the function f is defined by f(x) = (x - 1)^2 + 4. What is the minimum value of f on this interval?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "restricted-graph-minimum",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "integer-sampling-continuous-domain"
+        ],
+        "notes": "The vertex (x=1) lies outside the interval, so f is increasing throughout [2,8] and the minimum is at the left endpoint, f(2)=5. Graph f with the domain restriction {2<=x<=8} and read the minimum directly; do not sample only integer x-values, since the domain is continuous."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 8628,
+        "attempts": 1,
+        "answer": "5",
+        "trick": "Restricted-domain vertex",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "discretely sampled the continuous domain instead of graphing it restricted",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=(x-1)^2+4\\left\\{2\\le x\\le 8\\right\\}",
+              "purpose": "Graphs f(x) exactly on the closed interval [2,8] so Desmos displays only the relevant piece and lets you click its lowest point (the minimum)."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 5,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "minimum point y-coordinate (minimum of f on [2,8])",
+            "type": "vertex",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A single quadratic on a closed interval; look for a minimum on [2,8] (vertex at x=1 outside interval) — library patterns: restricted-domain extremum, endpoint comparison, function evaluation."
+        }
+      }
+    },
+    {
+      "id": "008-restricted-domain-minimum",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For 2 <= x <= 8, the function f is defined by f(x) = (x - 1)^2 + 4. What is the minimum value of f on this interval?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "restricted-graph-minimum",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "integer-sampling-continuous-domain"
+        ],
+        "notes": "The vertex (x=1) lies outside the interval, so f is increasing throughout [2,8] and the minimum is at the left endpoint, f(2)=5. Graph f with the domain restriction {2<=x<=8} and read the minimum directly; do not sample only integer x-values, since the domain is continuous."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 10962,
+        "attempts": 1,
+        "answer": "5",
+        "trick": "Restricted-domain vertex",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "discretely sampled the continuous domain instead of graphing it restricted",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=(x-1)^2+4\\left\\{2\\le x\\le8\\right\\}",
+              "purpose": "Graphs f(x) exactly as given but only on the closed interval 2≤x≤8 so Desmos shows the relevant piece; the lowest visible point is the minimum on the interval."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 5,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "minimum value of f on [2,8]",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A parabola (quadratic) restricted to a closed interval [2,8]; matches \"restricted-domain extremum\" and \"graph and click the minimum\" patterns."
+        }
+      }
+    },
+    {
+      "id": "008-restricted-domain-minimum",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "For 2 <= x <= 8, the function f is defined by f(x) = (x - 1)^2 + 4. What is the minimum value of f on this interval?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "restricted-graph-minimum",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "integer-sampling-continuous-domain"
+        ],
+        "notes": "The vertex (x=1) lies outside the interval, so f is increasing throughout [2,8] and the minimum is at the left endpoint, f(2)=5. Graph f with the domain restriction {2<=x<=8} and read the minimum directly; do not sample only integer x-values, since the domain is continuous."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 11607,
+        "attempts": 1,
+        "answer": "5",
+        "trick": "Restricted-domain vertex",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "discretely sampled the continuous domain instead of graphing it restricted",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=(x-1)^2+4\\left\\{2\\le x\\le 8\\right\\}",
+              "purpose": "Graphs the given quadratic restricted to the interval 2<=x<=8 so Desmos displays only the relevant portion and its minimum point is clickable."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 5,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "minimum value of the restricted graph y=(x-1)^2+4 on 2<=x<=8"
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A single quadratic on a restricted interval [2,8]; look for the minimum of a parabola on a closed interval (vertex vs endpoints). Matches: restricted-domain extremum, evaluate endpoints or click vertex/endpoint on a restricted graph."
+        }
+      }
+    },
+    {
+      "id": "009-integer-list-coefficient-read",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) in the xy-plane has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?",
+        "choices": [
+          "-11",
+          "-12",
+          "-13",
+          "-15"
+        ],
+        "correctAnswer": "-15",
+        "intendedMethod": "integer-list-coefficient-read",
+        "acceptableMethods": [
+          "derivative-coefficient-read",
+          "evaluate-at-1-minus-0"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "f(x)=a(x+2)(x-8), so a+b=-5a. With a an integer >= 2 (an integer list a=[2...10]), only -15 (a=3) is achievable among the choices. This is the exact reported variance bug: a run that used an inequality-restricted underdetermined regression here would land on a wrong, non-integer a."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 12692,
+        "attempts": 1,
+        "answer": "D) -15",
+        "trick": "Answer-choice testing",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression on the integer-constrained parameter a",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "A=[-11,-12,-13,-15]",
+              "purpose": "Enter the four answer choices as a list in the given order so we can test them all at once."
+            },
+            {
+              "latex": "C=-A/5",
+              "purpose": "Compute -choice divided by 5 for every choice; since a+b = -5a, (-choice)/5 should equal a when the choice is valid. Desmos returns [11/5,12/5,13/5,3], and an integer >1 identifies the valid choice."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": -15,
+            "listIndex": 4,
+            "answerFrom": "value",
+            "choiceLabel": "D",
+            "detail": "a+b"
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Quadratic with known roots (x = -2 and x = 8); this means f(x)=a(x+2)(x-8) with integer a>1 — look for a+b from that family; matches \"factor → shared-zero\" and \"answer-choice list test\" patterns."
+        }
+      }
+    },
+    {
+      "id": "009-integer-list-coefficient-read",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) in the xy-plane has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?",
+        "choices": [
+          "-11",
+          "-12",
+          "-13",
+          "-15"
+        ],
+        "correctAnswer": "-15",
+        "intendedMethod": "integer-list-coefficient-read",
+        "acceptableMethods": [
+          "derivative-coefficient-read",
+          "evaluate-at-1-minus-0"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "f(x)=a(x+2)(x-8), so a+b=-5a. With a an integer >= 2 (an integer list a=[2...10]), only -15 (a=3) is achievable among the choices. This is the exact reported variance bug: a run that used an inequality-restricted underdetermined regression here would land on a wrong, non-integer a."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": false,
+        "ms": 32844,
+        "attempts": 2,
+        "error": "The selected candidate failed the calculator and explanation checks: A written solution with 3 points of manual math cannot beat a calculator method in desmos_first mode."
+      }
+    },
+    {
+      "id": "009-integer-list-coefficient-read",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) in the xy-plane has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?",
+        "choices": [
+          "-11",
+          "-12",
+          "-13",
+          "-15"
+        ],
+        "correctAnswer": "-15",
+        "intendedMethod": "integer-list-coefficient-read",
+        "acceptableMethods": [
+          "derivative-coefficient-read",
+          "evaluate-at-1-minus-0"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "f(x)=a(x+2)(x-8), so a+b=-5a. With a an integer >= 2 (an integer list a=[2...10]), only -15 (a=3) is achievable among the choices. This is the exact reported variance bug: a run that used an inequality-restricted underdetermined regression here would land on a wrong, non-integer a."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 15455,
+        "attempts": 1,
+        "answer": "D) -15",
+        "trick": "Integer list filter / evaluate expression list",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression on the integer-constrained parameter a",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "A=[2...10]",
+              "purpose": "Define the integer candidate values for a (a>1), a reproducible small search range that includes the correct a."
+            },
+            {
+              "latex": "S=-5A",
+              "purpose": "Compute a+b for each candidate a using the relation a+b = -5a that follows from f(x)=a(x+2)(x-8); this produces the list of possible a+b values corresponding to A."
+            },
+            {
+              "latex": "C=[-11,-12,-13,-15]",
+              "purpose": "Enter the answer choices in the given order so the student can compare S to the choices."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": -15,
+            "listIndex": 2,
+            "answerFrom": "value",
+            "choiceLabel": "D",
+            "detail": "a+b list entry"
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "quadratic with known roots (factorable): root information gives f(x)=a(x+2)(x-8) with unknown integer a>1; matches 'factor → shared zero' and small integer-list testing patterns."
+        }
+      }
+    },
+    {
+      "id": "009-integer-list-coefficient-read",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) in the xy-plane has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?",
+        "choices": [
+          "-11",
+          "-12",
+          "-13",
+          "-15"
+        ],
+        "correctAnswer": "-15",
+        "intendedMethod": "integer-list-coefficient-read",
+        "acceptableMethods": [
+          "derivative-coefficient-read",
+          "evaluate-at-1-minus-0"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "f(x)=a(x+2)(x-8), so a+b=-5a. With a an integer >= 2 (an integer list a=[2...10]), only -15 (a=3) is achievable among the choices. This is the exact reported variance bug: a run that used an inequality-restricted underdetermined regression here would land on a wrong, non-integer a."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 11364,
+        "attempts": 1,
+        "answer": "D) -15",
+        "trick": "Answer-choice list test",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression on the integer-constrained parameter a",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "A=[-11,-12,-13,-15]",
+              "purpose": "Enter the four answer choices as a list in the given order so Desmos can evaluate them together; this preserves the choice labeling A–D as list positions."
+            },
+            {
+              "latex": "(-A)/5",
+              "purpose": "Compute a = - (choice)/5 for every listed choice, since a+b=-5a implies a = - (choice)/5; Desmos returns a list of four values so we can see which choice yields an integer a>1."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": -15,
+            "listIndex": 4,
+            "answerFrom": "value",
+            "choiceLabel": "D",
+            "detail": "the fourth list entry equals -15, which corresponds to a = 3 from row 2, an integer >1, so a+b=-15 is possible",
+            "type": "list_entry",
+            "relatedRows": [
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Quadratic with known roots => f(x)=a(x+2)(x-8); unknown integer a>1; compare a+b across choices (factorization/parameter relation). Library patterns: factor/shared-zero and strategic-value/list testing (pack condition into a small list and算"
+        }
+      }
+    },
+    {
+      "id": "009-integer-list-coefficient-read",
+      "problem": {
+        "domain": "Advanced Math",
+        "problem": "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) in the xy-plane has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?",
+        "choices": [
+          "-11",
+          "-12",
+          "-13",
+          "-15"
+        ],
+        "correctAnswer": "-15",
+        "intendedMethod": "integer-list-coefficient-read",
+        "acceptableMethods": [
+          "derivative-coefficient-read",
+          "evaluate-at-1-minus-0"
+        ],
+        "forbiddenMethods": [
+          "underdetermined-regression"
+        ],
+        "notes": "f(x)=a(x+2)(x-8), so a+b=-5a. With a an integer >= 2 (an integer list a=[2...10]), only -15 (a=3) is achievable among the choices. This is the exact reported variance bug: a run that used an inequality-restricted underdetermined regression here would land on a wrong, non-integer a."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 16472,
+        "attempts": 1,
+        "answer": "D) -15",
+        "trick": "Answer-choice testing with integer parameter list",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "underdetermined regression on the integer-constrained parameter a",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "k=[2...10]",
+              "purpose": "Defines a reproducible list of integer candidates for the leading coefficient a (a>1). Use a small bounded range enough to include the a that matches the answer choices."
+            },
+            {
+              "latex": "S=-5k",
+              "purpose": "Computes a+b = -5a for every candidate a in the list (from the factor form, a+b=-5a), producing a list of possible a+b values to compare with the answer choices."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": -15,
+            "listIndex": 2,
+            "answerFrom": "value",
+            "choiceLabel": "D",
+            "detail": "list entry -5k at k=3"
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "a quadratic with known x-intercepts (shared zeros) → factor form f(x)=k(x+2)(x-8) with integer leading coefficient; matches \"Factor → shared zero\" and \"answer-choice list test\" patterns."
+        }
+      }
+    },
+    {
+      "id": "010-infinite-solutions-gk-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+        "choices": null,
+        "correctAnswer": "1/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [],
+        "notes": "All three ratios (x-coefficient, y-coefficient, constant) must be equal: g/8 = -3/-k = 15/60 = 1/4, giving g=2, k=12, g/k=1/6. A couple of arithmetic rows suffice."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 16675,
+        "attempts": 1,
+        "answer": "1/6",
+        "trick": "Proportional-coefficients",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "written: simplified ratio g/k = 1/6",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "algebra",
+          "structure": "Two linear equations in x and y with unknown constant coefficients; asked for the ratio of corresponding coefficients given the system has infinitely many solutions (coincident lines) — matches the library pattern: proportional-coefficients"
+        }
+      }
+    },
+    {
+      "id": "010-infinite-solutions-gk-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+        "choices": null,
+        "correctAnswer": "1/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [],
+        "notes": "All three ratios (x-coefficient, y-coefficient, constant) must be equal: g/8 = -3/-k = 15/60 = 1/4, giving g=2, k=12, g/k=1/6. A couple of arithmetic rows suffice."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 26016,
+        "attempts": 2,
+        "answer": "1/6",
+        "trick": "Proportional-coefficients (shared-line)",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "g/k = 1/6",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Two linear equations asked for infinitely many solutions — they must represent the same line, so corresponding coefficients are proportional (shared-line/proportional-coefficients pattern)."
+        }
+      }
+    },
+    {
+      "id": "010-infinite-solutions-gk-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+        "choices": null,
+        "correctAnswer": "1/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [],
+        "notes": "All three ratios (x-coefficient, y-coefficient, constant) must be equal: g/8 = -3/-k = 15/60 = 1/4, giving g=2, k=12, g/k=1/6. A couple of arithmetic rows suffice."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 15136,
+        "attempts": 1,
+        "answer": "1/6",
+        "trick": "Packed-conditions regression (equate y from both lines at sample x-values)",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[0,1]",
+              "purpose": "Provide two distinct x-values so the regression has two independent conditions the same-line requirement must satisfy; these are deterministic sample inputs reproducible by the student."
+            },
+            {
+              "latex": "\\frac{g x_{1}-15}{3} \\sim \\frac{8 x_{1}-60}{k}",
+              "purpose": "For each x in x_1, the two equations must give the same y when the lines coincide; replacing equals with ~ fits the unknown parameters g and k to satisfy both sample conditions simultaneously."
+            },
+            {
+              "latex": "\\dfrac{g}{k}",
+              "purpose": "Compute the requested ratio from the fitted parameters g and k returned by the regression; this numeric row is the final answer to read."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 3,
+            "value": 0.16666666666666666,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "g/k",
+            "type": "numeric",
+            "relatedRows": [
+              1,
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Two linear equations in x and y with unknown coefficients and the statement 'infinitely many solutions' — a proportional/coincident-lines situation (use regression or proportionality)."
+        }
+      }
+    },
+    {
+      "id": "010-infinite-solutions-gk-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+        "choices": null,
+        "correctAnswer": "1/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [],
+        "notes": "All three ratios (x-coefficient, y-coefficient, constant) must be equal: g/8 = -3/-k = 15/60 = 1/4, giving g=2, k=12, g/k=1/6. A couple of arithmetic rows suffice."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 11988,
+        "attempts": 1,
+        "answer": "1/6",
+        "trick": "Coefficient-proportion trick",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "g/k as computed from proportionality of coefficients",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Two linear equations in x and y with unknown multiplicative coefficients; the system has infinitely many solutions so the two lines are the same for all (x,y) (coefficient ratios equal). Matches: proportional-coefficients / parallel-overlap"
+        }
+      }
+    },
+    {
+      "id": "010-infinite-solutions-gk-ratio",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+        "choices": null,
+        "correctAnswer": "1/6",
+        "intendedMethod": "coefficient-ratio-arithmetic",
+        "acceptableMethods": [],
+        "forbiddenMethods": [],
+        "notes": "All three ratios (x-coefficient, y-coefficient, constant) must be equal: g/8 = -3/-k = 15/60 = 1/4, giving g=2, k=12, g/k=1/6. A couple of arithmetic rows suffice."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 11904,
+        "attempts": 1,
+        "answer": "1/6",
+        "trick": "Coefficient-proportionality",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "lines coincident → coefficients proportional; g/k = 1/6",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "algebra",
+          "structure": "Two linear equations in x and y with unknown coefficients; the condition \"infinitely many solutions\" means the two lines are the same (coefficients proportional). Library patterns: parallel/overlap check, proportional-coefficient (shared-r)"
+        }
+      }
+    },
+    {
+      "id": "011-no-solution-slider-both-graphed",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "6 + 7r = pw and 7r - 5w = 5w + 11. In this system of equations, p is a constant. If the system has no solution, what is the value of p?",
+        "choices": null,
+        "correctAnswer": "10",
+        "intendedMethod": "slider-until-parallel-both-graphed",
+        "acceptableMethods": [
+          "derivative-regression-with-graphed-check"
+        ],
+        "forbiddenMethods": [
+          "slope-match-only"
+        ],
+        "notes": "Rewrite as w=(6+7r)/p and w=(7r-11)/10. A method that only matches slopes (derivative regression alone) checks a necessary but not sufficient condition, since matching slopes is equally satisfied by two coincident lines (infinitely many solutions). Both original equations must be graphed at the fitted p to confirm the lines are parallel and distinct, not coincident."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": false,
+        "ms": 29724,
+        "attempts": 2,
+        "error": "The selected candidate failed the calculator and explanation checks: A written solution with 5 points of manual math cannot beat a calculator method in desmos_first mode."
+      }
+    },
+    {
+      "id": "011-no-solution-slider-both-graphed",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "6 + 7r = pw and 7r - 5w = 5w + 11. In this system of equations, p is a constant. If the system has no solution, what is the value of p?",
+        "choices": null,
+        "correctAnswer": "10",
+        "intendedMethod": "slider-until-parallel-both-graphed",
+        "acceptableMethods": [
+          "derivative-regression-with-graphed-check"
+        ],
+        "forbiddenMethods": [
+          "slope-match-only"
+        ],
+        "notes": "Rewrite as w=(6+7r)/p and w=(7r-11)/10. A method that only matches slopes (derivative regression alone) checks a necessary but not sufficient condition, since matching slopes is equally satisfied by two coincident lines (infinitely many solutions). Both original equations must be graphed at the fitted p to confirm the lines are parallel and distinct, not coincident."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 23810,
+        "attempts": 2,
+        "answer": "10",
+        "trick": "Elimination for inconsistency",
+        "answerCorrect": true,
+        "intendedOrAcceptable": false,
+        "forbidden": false,
+        "forbiddenReason": "matched slopes only, without graphing both original equations to rule out the coincident case",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "The value of p that makes the system inconsistent (no solution) is 10.",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Two linear equations in r and w with a parameter p; inconsistency occurs when eliminating r produces 0*w = nonzero, so this matches 'linear system with a parameter' patterns (elimination, bracket regression, or graph-parallel)."
+        }
+      }
+    },
+    {
+      "id": "011-no-solution-slider-both-graphed",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "6 + 7r = pw and 7r - 5w = 5w + 11. In this system of equations, p is a constant. If the system has no solution, what is the value of p?",
+        "choices": null,
+        "correctAnswer": "10",
+        "intendedMethod": "slider-until-parallel-both-graphed",
+        "acceptableMethods": [
+          "derivative-regression-with-graphed-check"
+        ],
+        "forbiddenMethods": [
+          "slope-match-only"
+        ],
+        "notes": "Rewrite as w=(6+7r)/p and w=(7r-11)/10. A method that only matches slopes (derivative regression alone) checks a necessary but not sufficient condition, since matching slopes is equally satisfied by two coincident lines (infinitely many solutions). Both original equations must be graphed at the fitted p to confirm the lines are parallel and distinct, not coincident."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 13926,
+        "attempts": 1,
+        "answer": "10",
+        "trick": "Compare coefficients for parallel lines",
+        "answerCorrect": true,
+        "intendedOrAcceptable": false,
+        "forbidden": false,
+        "forbiddenReason": "matched slopes only, without graphing both original equations to rule out the coincident case",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "p value that makes the two linear equations parallel but distinct",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Two linear equations in r and w (a 2x2 linear system) asking which parameter p makes the two lines parallel but distinct; matches 'parallel/no-solution' pattern and can use slope comparison, slider/graph, or simple coefficient comparison."
+        }
+      }
+    },
+    {
+      "id": "011-no-solution-slider-both-graphed",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "6 + 7r = pw and 7r - 5w = 5w + 11. In this system of equations, p is a constant. If the system has no solution, what is the value of p?",
+        "choices": null,
+        "correctAnswer": "10",
+        "intendedMethod": "slider-until-parallel-both-graphed",
+        "acceptableMethods": [
+          "derivative-regression-with-graphed-check"
+        ],
+        "forbiddenMethods": [
+          "slope-match-only"
+        ],
+        "notes": "Rewrite as w=(6+7r)/p and w=(7r-11)/10. A method that only matches slopes (derivative regression alone) checks a necessary but not sufficient condition, since matching slopes is equally satisfied by two coincident lines (infinitely many solutions). Both original equations must be graphed at the fitted p to confirm the lines are parallel and distinct, not coincident."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 34979,
+        "attempts": 2,
+        "answer": "10",
+        "trick": "Shared-slope slider / parallel-lines",
+        "answerCorrect": true,
+        "intendedOrAcceptable": false,
+        "forbidden": false,
+        "forbiddenReason": "matched slopes only, without graphing both original equations to rule out the coincident case",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "p=0",
+              "purpose": "Create p as an integer slider starting at 0 so the student can change p; slider bounds allow integer steps and include the correct value.",
+              "slider": {
+                "min": -20,
+                "max": 20,
+                "step": 1
+              }
+            },
+            {
+              "latex": "R(w)=(\\frac{p}{7})w-\\frac{6}{7}",
+              "purpose": "Rewrites 6+7r=pw as r = (p/7)w - 6/7 and defines it as a function R(w) so Desmos graphs the first line for the current slider value of p."
+            },
+            {
+              "latex": "S(w)=(\\frac{10}{7})w+\\frac{11}{7}",
+              "purpose": "Rewrites 7r-5w=5w+11 as r = (10/7)w + 11/7 and defines it as S(w) so Desmos graphs the second line to compare slopes and intercepts."
+            }
+          ],
+          "parameters": [
+            {
+              "name": "p",
+              "integer": true,
+              "min": -20,
+              "max": 20
+            }
+          ],
+          "result": {
+            "row": 1,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "Set p so R(w) and S(w) have equal slopes but different intercepts; that occurs at p = 10, so the system has no solution.",
+            "type": "slider_condition",
+            "relatedRows": [
+              2,
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": "visual-parallel-vs-overlap",
+          "answerState": {
+            "param": "p",
+            "value": 10
+          },
+          "method": "desmos",
+          "structure": "Two linear equations in r and w with an unknown parameter p; this is a parallel-lines/no-solution parameter problem (library patterns: slider/graphical-condition, derivative_regression, bracket regression)."
+        }
+      }
+    },
+    {
+      "id": "011-no-solution-slider-both-graphed",
+      "problem": {
+        "domain": "Algebra",
+        "problem": "6 + 7r = pw and 7r - 5w = 5w + 11. In this system of equations, p is a constant. If the system has no solution, what is the value of p?",
+        "choices": null,
+        "correctAnswer": "10",
+        "intendedMethod": "slider-until-parallel-both-graphed",
+        "acceptableMethods": [
+          "derivative-regression-with-graphed-check"
+        ],
+        "forbiddenMethods": [
+          "slope-match-only"
+        ],
+        "notes": "Rewrite as w=(6+7r)/p and w=(7r-11)/10. A method that only matches slopes (derivative regression alone) checks a necessary but not sufficient condition, since matching slopes is equally satisfied by two coincident lines (infinitely many solutions). Both original equations must be graphed at the fitted p to confirm the lines are parallel and distinct, not coincident."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 15242,
+        "attempts": 1,
+        "answer": "10",
+        "trick": "Shared-slope slider",
+        "answerCorrect": true,
+        "intendedOrAcceptable": false,
+        "forbidden": false,
+        "forbiddenReason": "matched slopes only, without graphing both original equations to rule out the coincident case",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "p=0",
+              "purpose": "Define p as a slider starting at 0 so you can change its value; give the slider integer bounds wide enough to include the answer (set bounds min -20, max 20, step 1 in the slider control).",
+              "slider": {
+                "min": -20,
+                "max": 20,
+                "step": 1
+              }
+            },
+            {
+              "latex": "6+7x=p y",
+              "purpose": "Graph the first given equation with r->x and w->y exactly as written so Desmos draws that family of lines for the current p; you do not algebraically isolate y."
+            },
+            {
+              "latex": "7x-10y=11",
+              "purpose": "Graph the second linear equation (from 7r-5w=5w+11 simplified to 7r-10w=11) so Desmos draws its fixed line for comparison."
+            }
+          ],
+          "parameters": [
+            {
+              "name": "p",
+              "integer": true,
+              "min": -20,
+              "max": 20
+            }
+          ],
+          "result": {
+            "row": 1,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "Slider p set to 10 makes the two graphed lines parallel but distinct (no intersections).",
+            "type": "slider_condition",
+            "relatedRows": [
+              2,
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": "visual-parallel-vs-overlap",
+          "answerState": {
+            "param": "p",
+            "value": 10
+          },
+          "method": "desmos",
+          "structure": "Two linear equations in r and w; unknown parameter p appears as a coefficient multiplying w in the first equation — matches \"slider/graph family for a parameter\" and \"parallel/no-solution via equal slopes\" patterns."
+        }
+      }
+    },
+    {
+      "id": "012-circle-radius",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "A circle in the xy-plane is defined by the equation x^2 + y^2 - 6x + 4y - 12 = 0. What is the radius of the circle?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "implicit-circle-graph-measure",
+        "acceptableMethods": [
+          "circle-regression-radius-read"
+        ],
+        "forbiddenMethods": [
+          "hand-completed-square"
+        ],
+        "notes": "Graph the equation exactly as given (Desmos plots implicit relations) and read the radius visually, or fit r via a general circle regression, rather than manually completing the square to (x-3)^2+(y+2)^2=25."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 39894,
+        "attempts": 2,
+        "answer": "5",
+        "trick": "Expanded-circle regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "hand-completed the square instead of graphing/fitting the original equation",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[0,1,0,2,-1,3]",
+              "purpose": "Define a deterministic list of x-coordinates for independent sample pairs used to make the two sides comparable; these are arbitrary reproducible inputs that avoid degenerate fitting."
+            },
+            {
+              "latex": "y_{1}=[0,0,1,2,3,-1]",
+              "purpose": "Define the matching list of y-coordinates so each pair (x_1[i],y_1[i]) supplies the same input to both sides of the identity; use at least three independent pairs to identify h,k,q."
+            },
+            {
+              "latex": "x_{1}^2+y_{1}^2-6x_{1}+4y_{1}-12 \\sim (x_{1}-h)^2+(y_{1}-k)^2-q",
+              "purpose": "Ask Desmos to fit h, k, and q so the expanded form equals the center-radius form at every sample pair; the regression returns numeric h, k, and q (here h=3, k=-2, q=25)."
+            },
+            {
+              "latex": "\\sqrt{q}",
+              "purpose": "Compute the radius as the positive square root of the fitted q; Desmos evaluates this to 5, which is the requested radius."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 4,
+            "value": 5,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "radius"
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "An expanded-circle equation with linear x and y terms; matches the expanded-circle regression and completing-the-square patterns."
+        }
+      }
+    },
+    {
+      "id": "012-circle-radius",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "A circle in the xy-plane is defined by the equation x^2 + y^2 - 6x + 4y - 12 = 0. What is the radius of the circle?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "implicit-circle-graph-measure",
+        "acceptableMethods": [
+          "circle-regression-radius-read"
+        ],
+        "forbiddenMethods": [
+          "hand-completed-square"
+        ],
+        "notes": "Graph the equation exactly as given (Desmos plots implicit relations) and read the radius visually, or fit r via a general circle regression, rather than manually completing the square to (x-3)^2+(y+2)^2=25."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 23641,
+        "attempts": 2,
+        "answer": "5",
+        "trick": "Complete-the-square",
+        "answerCorrect": true,
+        "intendedOrAcceptable": false,
+        "forbidden": false,
+        "forbiddenReason": "hand-completed the square instead of graphing/fitting the original equation",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "radius",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "algebra",
+          "structure": "Expanded-circle: an expanded circle equation x^2+y^2+Dx+Ey+F=0; matches completing-the-square or expanded-circle regression patterns."
+        }
+      }
+    },
+    {
+      "id": "012-circle-radius",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "A circle in the xy-plane is defined by the equation x^2 + y^2 - 6x + 4y - 12 = 0. What is the radius of the circle?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "implicit-circle-graph-measure",
+        "acceptableMethods": [
+          "circle-regression-radius-read"
+        ],
+        "forbiddenMethods": [
+          "hand-completed-square"
+        ],
+        "notes": "Graph the equation exactly as given (Desmos plots implicit relations) and read the radius visually, or fit r via a general circle regression, rather than manually completing the square to (x-3)^2+(y+2)^2=25."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": false,
+        "ms": 30339,
+        "attempts": 2,
+        "error": "The selected candidate failed the calculator and explanation checks: A written solution with 3 points of manual math cannot beat a calculator method in desmos_first mode."
+      }
+    },
+    {
+      "id": "012-circle-radius",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "A circle in the xy-plane is defined by the equation x^2 + y^2 - 6x + 4y - 12 = 0. What is the radius of the circle?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "implicit-circle-graph-measure",
+        "acceptableMethods": [
+          "circle-regression-radius-read"
+        ],
+        "forbiddenMethods": [
+          "hand-completed-square"
+        ],
+        "notes": "Graph the equation exactly as given (Desmos plots implicit relations) and read the radius visually, or fit r via a general circle regression, rather than manually completing the square to (x-3)^2+(y+2)^2=25."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 24025,
+        "attempts": 2,
+        "answer": "5",
+        "trick": "Complete-the-square center/radius",
+        "answerCorrect": true,
+        "intendedOrAcceptable": false,
+        "forbidden": false,
+        "forbiddenReason": "hand-completed the square instead of graphing/fitting the original equation",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "radius",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "algebra",
+          "structure": "expanded circle equation x^2+y^2+Dx+Ey+F=0; recognize as an expanded circle (complete-the-square / expanded-circle pattern)."
+        }
+      }
+    },
+    {
+      "id": "012-circle-radius",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "A circle in the xy-plane is defined by the equation x^2 + y^2 - 6x + 4y - 12 = 0. What is the radius of the circle?",
+        "choices": null,
+        "correctAnswer": "5",
+        "intendedMethod": "implicit-circle-graph-measure",
+        "acceptableMethods": [
+          "circle-regression-radius-read"
+        ],
+        "forbiddenMethods": [
+          "hand-completed-square"
+        ],
+        "notes": "Graph the equation exactly as given (Desmos plots implicit relations) and read the radius visually, or fit r via a general circle regression, rather than manually completing the square to (x-3)^2+(y+2)^2=25."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 47064,
+        "attempts": 2,
+        "answer": "5",
+        "trick": "Expanded-circle regression",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "hand-completed the square instead of graphing/fitting the original equation",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "x_{1}=[0,1,2]",
+              "purpose": "Define three distinct x-coordinates to use as deterministic sample inputs for the regression; any small noncollinear x-values work and are reproducible."
+            },
+            {
+              "latex": "y_{1}=[0,0,1]",
+              "purpose": "Define the matching y-coordinates for the three sample input pairs (0,0),(1,0),(2,1); these paired lists supply three independent (x,y) inputs for fitting h,k,q."
+            },
+            {
+              "latex": "x_{1}^2+y_{1}^2-6x_{1}+4y_{1}-12\\sim(x_{1}-h)^2+(y_{1}-k)^2-q",
+              "purpose": "Ask Desmos to fit parameters h, k, and q so that the expanded left side equals the center-radius form at each sample pair; q will be the fitted value of r^2."
+            },
+            {
+              "latex": "\\sqrt{q}",
+              "purpose": "Compute the radius as the positive square root of the fitted q (r^2). This row directly displays the numeric radius to read."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 4,
+            "value": 5,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "radius",
+            "type": "numeric",
+            "relatedRows": [
+              3
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "One expanded-circle equation; unknown center and radius (expanded circle). Matches the \"expanded-circle regression\" and \"complete-the-square\" patterns."
+        }
+      }
+    },
+    {
+      "id": "013-trig-intersection",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "For 0 <= x <= 90, where x is measured in degrees, sin(x) = cos(2x). What is the value of x?",
+        "choices": null,
+        "correctAnswer": "30",
+        "intendedMethod": "graph-both-sides-intersection",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "double-angle-identity-by-hand"
+        ],
+        "notes": "Graph y=sin(x) and y=cos(2x) in degree mode over the given interval and click the intersection; no need to derive or apply the double-angle identity by hand."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 9926,
+        "attempts": 1,
+        "answer": "30",
+        "trick": "Graph intersection",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved the double-angle identity by hand instead of graphing",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=\\sin(x)\\left\\{0\\le x\\le90\\right\\}",
+              "purpose": "Graph sin(x) only on the interval 0≤x≤90 so Desmos shows the relevant piece to inspect for intersections; this row is one of the two curves whose intersection solves sin(x)=cos(2x)."
+            },
+            {
+              "latex": "y=\\cos(2x)\\left\\{0\\le x\\le90\\right\\}",
+              "purpose": "Graph cos(2x) on the same restricted domain so the intersection(s) with sin(x) appear on the same plot; this row is the second curve to click for the solution."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 30,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "x-coordinate of the intersection of row 1 with row 2",
+            "type": "intersection",
+            "relatedRows": [
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Trig equation on a bounded domain: one-variable equation sin(x)=cos(2x) for 0<=x<=90 degrees; matches library patterns: graph intersection, x-intercept of difference, or algebraic identity/regression (identity to solve for sin)."
+        }
+      }
+    },
+    {
+      "id": "013-trig-intersection",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "For 0 <= x <= 90, where x is measured in degrees, sin(x) = cos(2x). What is the value of x?",
+        "choices": null,
+        "correctAnswer": "30",
+        "intendedMethod": "graph-both-sides-intersection",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "double-angle-identity-by-hand"
+        ],
+        "notes": "Graph y=sin(x) and y=cos(2x) in degree mode over the given interval and click the intersection; no need to derive or apply the double-angle identity by hand."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 10748,
+        "attempts": 1,
+        "answer": "30",
+        "trick": "Graph two functions and click the intersection",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved the double-angle identity by hand instead of graphing",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=\\sin(x)",
+              "purpose": "Row 1: plot the left side of the equation, sin(x), so Desmos displays that curve for comparison."
+            },
+            {
+              "latex": "y=\\cos(2x)",
+              "purpose": "Row 2: plot the right side of the equation, cos(2x), so Desmos shows where the two curves meet within the domain."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 30,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "x-coordinate of the intersection of rows 1 and 2",
+            "type": "intersection",
+            "relatedRows": [
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Equation equating two trigonometric expressions on a bounded domain; matches: graph intersection, x-intercept of a difference, or small symbolic identity (sin vs cos double-angle)."
+        }
+      }
+    },
+    {
+      "id": "013-trig-intersection",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "For 0 <= x <= 90, where x is measured in degrees, sin(x) = cos(2x). What is the value of x?",
+        "choices": null,
+        "correctAnswer": "30",
+        "intendedMethod": "graph-both-sides-intersection",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "double-angle-identity-by-hand"
+        ],
+        "notes": "Graph y=sin(x) and y=cos(2x) in degree mode over the given interval and click the intersection; no need to derive or apply the double-angle identity by hand."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 8766,
+        "attempts": 1,
+        "answer": "30",
+        "trick": "Solve by x-intercept of difference",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved the double-angle identity by hand instead of graphing",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=\\sin(x)-\\cos(2x)\\left\\{0\\le x\\le90\\right\\}",
+              "purpose": "Plots the difference of the two given sides on the specified degree interval so x-intercepts satisfy sin(x)=cos(2x)."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 30,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "x-value of the x-intercept of y=sin(x)-cos(2x) on 0<=x<=90",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "One trigonometric equation on a bounded degree interval: solve sin(x)=cos(2x) for x in [0,90]; matches \"graph both sides / x-intercept of difference\" and \"solve by subtracting and reading x-intercept\" patterns."
+        }
+      }
+    },
+    {
+      "id": "013-trig-intersection",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "For 0 <= x <= 90, where x is measured in degrees, sin(x) = cos(2x). What is the value of x?",
+        "choices": null,
+        "correctAnswer": "30",
+        "intendedMethod": "graph-both-sides-intersection",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "double-angle-identity-by-hand"
+        ],
+        "notes": "Graph y=sin(x) and y=cos(2x) in degree mode over the given interval and click the intersection; no need to derive or apply the double-angle identity by hand."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 10597,
+        "attempts": 1,
+        "answer": "30",
+        "trick": "Solve by zero-of-difference",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved the double-angle identity by hand instead of graphing",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=\\sin(x)-\\cos(2x)\\left\\{0\\le x\\le90\\right\\}",
+              "purpose": "Graphs the difference of the two sides and restricts the graph to the given domain so solutions appear as x-intercepts. Using the difference makes each solution a visible x-intercept to click."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 30,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "x-coordinate of the x-intercept where sin(x)=cos(2x) on the restricted domain",
+            "type": "x_intercept",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Equation equating two trig expressions on a bounded domain — treat as intersection/zero-of-difference: sin(x) and cos(2x) meet on [0,90]; matching library patterns: graph intersection or x-intercept of difference."
+        }
+      }
+    },
+    {
+      "id": "013-trig-intersection",
+      "problem": {
+        "domain": "Geometry and Trigonometry",
+        "problem": "For 0 <= x <= 90, where x is measured in degrees, sin(x) = cos(2x). What is the value of x?",
+        "choices": null,
+        "correctAnswer": "30",
+        "intendedMethod": "graph-both-sides-intersection",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "double-angle-identity-by-hand"
+        ],
+        "notes": "Graph y=sin(x) and y=cos(2x) in degree mode over the given interval and click the intersection; no need to derive or apply the double-angle identity by hand."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 10267,
+        "attempts": 1,
+        "answer": "30",
+        "trick": "Graph two functions and click their intersections",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "solved the double-angle identity by hand instead of graphing",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "y=\\sin(x)",
+              "purpose": "Row 1: plot the left side sin(x) so Desmos can display its graph for comparison."
+            },
+            {
+              "latex": "y=\\cos(2x)\\left\\{0\\le x\\le90\\right\\}",
+              "purpose": "Row 2: plot the right side cos(2x) but restrict x to the given domain so only intersections with 0≤x≤90 appear."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 30,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "x-coordinate of the intersection of row 1 and row 2 (degrees)",
+            "type": "intersection",
+            "relatedRows": [
+              2
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Trigonometric equation on a bounded domain: solve sin(x)=cos(2x) for x in [0,90] degrees; matches graph-intersection and equation-zero patterns (intersection trick, x-intercept trick, or small algebraic identity)."
+        }
+      }
+    },
+    {
+      "id": "014-stdev-list",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A data set consists of the values 12, 15, 18, 22, 25, and 30. What is the population standard deviation of this data set, rounded to the nearest hundredth?",
+        "choices": null,
+        "correctAnswer": "6.07",
+        "intendedMethod": "list-stdev-read",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "manual-stdev-formula"
+        ],
+        "notes": "Enter the values as a list and read stdevp(L) directly; no manual variance/mean-deviation arithmetic needed."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 9682,
+        "attempts": 1,
+        "answer": "6.07",
+        "trick": "Population stdev built-in",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "computed the standard deviation by hand instead of a list stdev call",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "L=[12,15,18,22,25,30]",
+              "purpose": "Define the data set as a list so Desmos can compute statistics on it."
+            },
+            {
+              "latex": "\\operatorname{round}(\\operatorname{stdevp}(L),2)",
+              "purpose": "Compute the population standard deviation of L and round it to two decimal places so the answer matches the requested nearest hundredth."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 6.07,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "population standard deviation (rounded to nearest hundredth)",
+            "type": "numeric",
+            "relatedRows": [
+              1
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "one numerical-data list; asks for population standard deviation (use statistics built-in); library patterns: statistics functions (stdevp), direct evaluation of list statistics"
+        }
+      }
+    },
+    {
+      "id": "014-stdev-list",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A data set consists of the values 12, 15, 18, 22, 25, and 30. What is the population standard deviation of this data set, rounded to the nearest hundredth?",
+        "choices": null,
+        "correctAnswer": "6.07",
+        "intendedMethod": "list-stdev-read",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "manual-stdev-formula"
+        ],
+        "notes": "Enter the values as a list and read stdevp(L) directly; no manual variance/mean-deviation arithmetic needed."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 13260,
+        "attempts": 1,
+        "answer": "6.07",
+        "trick": "Use stdevp on the list",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "computed the standard deviation by hand instead of a list stdev call",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "L=[12,15,18,22,25,30]",
+              "purpose": "Define the six data values as a list so Desmos can evaluate statistics on them."
+            },
+            {
+              "latex": "\\operatorname{stdevp}(L)",
+              "purpose": "Compute the population standard deviation of the list L; Desmos outputs the numeric standard deviation."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 6.07,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "population standard deviation of the list L",
+            "type": "numeric",
+            "relatedRows": [
+              1
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A small numeric data set asking for the population standard deviation; this matches the statistics built-in or direct list-evaluation patterns (use stdevp or compute sqrt of mean squared deviations)."
+        }
+      }
+    },
+    {
+      "id": "014-stdev-list",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A data set consists of the values 12, 15, 18, 22, 25, and 30. What is the population standard deviation of this data set, rounded to the nearest hundredth?",
+        "choices": null,
+        "correctAnswer": "6.07",
+        "intendedMethod": "list-stdev-read",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "manual-stdev-formula"
+        ],
+        "notes": "Enter the values as a list and read stdevp(L) directly; no manual variance/mean-deviation arithmetic needed."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 12107,
+        "attempts": 1,
+        "answer": "6.07",
+        "trick": "Population stdev function",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "computed the standard deviation by hand instead of a list stdev call",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "L=[12,15,18,22,25,30]",
+              "purpose": "Define the data set as a list named L so Desmos can evaluate statistics on it; this is exactly the given numbers in the problem."
+            },
+            {
+              "latex": "\\displaystyle \\frac{\\operatorname{round}\\big(\\operatorname{stdevp}(L)100\\big)}{100}",
+              "purpose": "Compute the population standard deviation of L with stdevp(L), multiply by 100, round to the nearest integer, then divide by 100 to get the value rounded to the nearest hundredth; this produces the requested rounded numeric answer."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 6.07,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "population standard deviation rounded to nearest hundredth",
+            "type": "numeric",
+            "relatedRows": [
+              1
+            ]
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A small numeric data set asking for the population standard deviation; matches the statistic built-in trick (use population stdev on a list)."
+        }
+      }
+    },
+    {
+      "id": "014-stdev-list",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A data set consists of the values 12, 15, 18, 22, 25, and 30. What is the population standard deviation of this data set, rounded to the nearest hundredth?",
+        "choices": null,
+        "correctAnswer": "6.07",
+        "intendedMethod": "list-stdev-read",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "manual-stdev-formula"
+        ],
+        "notes": "Enter the values as a list and read stdevp(L) directly; no manual variance/mean-deviation arithmetic needed."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 11908,
+        "attempts": 1,
+        "answer": "6.07",
+        "trick": "stdevp(list)",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "computed the standard deviation by hand instead of a list stdev call",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "L=[12,15,18,22,25,30]",
+              "purpose": "Defines the data set as a list so Desmos can apply statistical functions to all values at once."
+            },
+            {
+              "latex": "\\operatorname{stdevp}(L)",
+              "purpose": "Computes the population standard deviation of the list L directly; Desmos returns the numerical standard deviation to be read and rounded."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 6.07,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "population standard deviation of L",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A small numeric data set; compute its population standard deviation — fits the 'use statistical built-ins on a list' pattern."
+        }
+      }
+    },
+    {
+      "id": "014-stdev-list",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A data set consists of the values 12, 15, 18, 22, 25, and 30. What is the population standard deviation of this data set, rounded to the nearest hundredth?",
+        "choices": null,
+        "correctAnswer": "6.07",
+        "intendedMethod": "list-stdev-read",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "manual-stdev-formula"
+        ],
+        "notes": "Enter the values as a list and read stdevp(L) directly; no manual variance/mean-deviation arithmetic needed."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 10684,
+        "attempts": 1,
+        "answer": "6.07",
+        "trick": "Population stdev built-in",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "computed the standard deviation by hand instead of a list stdev call",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "L=[12,15,18,22,25,30]",
+              "purpose": "Define the data set as a list named L so Desmos can operate on all values at once."
+            },
+            {
+              "latex": "\\operatorname{stdevp}(L)",
+              "purpose": "Compute the population standard deviation of the list L; Desmos displays the numeric result which is the requested value."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 2,
+            "value": 6.07,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "population standard deviation"
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "A small explicit numeric data set; compute the population standard deviation (use population stdev function or compute sqrt of mean squared deviations). Matches: direct stdevp(L), variance formula via sums, explicit mean then sqrt of avg-sq"
+        }
+      }
+    },
+    {
+      "id": "015-two-way-table-probability",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A survey of 200 students found that 120 prefer math class. Of the students who prefer math, 45 are freshmen, and 80 of the 200 students surveyed are freshmen. What is the probability that a randomly selected student who is NOT a freshman prefers math class?",
+        "choices": null,
+        "correctAnswer": "5/8",
+        "intendedMethod": "direct-arithmetic-ratio",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "unnecessary-list-or-regression"
+        ],
+        "notes": "Non-freshmen = 200-80=120; of those, prefer-math = 120-45=75; probability = 75/120 = 5/8. Two or three arithmetic rows suffice; no list/regression setup is needed for a single ratio."
+      },
+      "runIndex": 0,
+      "result": {
+        "ok": true,
+        "ms": 9479,
+        "attempts": 1,
+        "answer": "5/8 (0.625)",
+        "trick": "Direct fraction evaluation",
+        "answerCorrect": false,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used an unnecessary list/regression for a single ratio",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "(120-45)/(200-80)",
+              "purpose": "Compute non-freshman prefer-math count (120-45) divided by non-freshman total (200-80); Desmos evaluates the probability."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 0.625,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "probability that a non-freshman prefers math"
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Compute a conditional probability from subgroup counts: preferrers split by class year (given preferring-math count and preferring-math freshmen), match library patterns \"direct evaluation of counts\" and \"fraction/ratio evaluation\"."
+        }
+      }
+    },
+    {
+      "id": "015-two-way-table-probability",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A survey of 200 students found that 120 prefer math class. Of the students who prefer math, 45 are freshmen, and 80 of the 200 students surveyed are freshmen. What is the probability that a randomly selected student who is NOT a freshman prefers math class?",
+        "choices": null,
+        "correctAnswer": "5/8",
+        "intendedMethod": "direct-arithmetic-ratio",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "unnecessary-list-or-regression"
+        ],
+        "notes": "Non-freshmen = 200-80=120; of those, prefer-math = 120-45=75; probability = 75/120 = 5/8. Two or three arithmetic rows suffice; no list/regression setup is needed for a single ratio."
+      },
+      "runIndex": 1,
+      "result": {
+        "ok": true,
+        "ms": 9481,
+        "attempts": 1,
+        "answer": "5/8",
+        "trick": "Conditional-count subtraction and division",
+        "answerCorrect": true,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used an unnecessary list/regression for a single ratio",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "Probability that a randomly selected nonfreshman prefers math = 5/8 (0.625).",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Conditional probability from counts: total students, totals by preference and class-year give counts for intersection and complements; pattern: compute counts for nonfreshmen and nonfreshman preferrers and form a ratio (count condition → a>"
+        }
+      }
+    },
+    {
+      "id": "015-two-way-table-probability",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A survey of 200 students found that 120 prefer math class. Of the students who prefer math, 45 are freshmen, and 80 of the 200 students surveyed are freshmen. What is the probability that a randomly selected student who is NOT a freshman prefers math class?",
+        "choices": null,
+        "correctAnswer": "5/8",
+        "intendedMethod": "direct-arithmetic-ratio",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "unnecessary-list-or-regression"
+        ],
+        "notes": "Non-freshmen = 200-80=120; of those, prefer-math = 120-45=75; probability = 75/120 = 5/8. Two or three arithmetic rows suffice; no list/regression setup is needed for a single ratio."
+      },
+      "runIndex": 2,
+      "result": {
+        "ok": true,
+        "ms": 19024,
+        "attempts": 2,
+        "answer": "5/8 (0.625)",
+        "trick": "Direct count subtraction and ratio",
+        "answerCorrect": false,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used an unnecessary list/regression for a single ratio",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [],
+          "parameters": [],
+          "result": {
+            "row": null,
+            "value": null,
+            "listIndex": null,
+            "answerFrom": "reasoning",
+            "choiceLabel": null,
+            "detail": "probability that a non-freshman prefers math class",
+            "type": "written",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "mental_math",
+          "structure": "Counts for two categories (preference and class year); convert givens to counts for freshmen vs non-freshmen and preferred vs not preferred; matches 'conditional probability from counts' pattern."
+        }
+      }
+    },
+    {
+      "id": "015-two-way-table-probability",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A survey of 200 students found that 120 prefer math class. Of the students who prefer math, 45 are freshmen, and 80 of the 200 students surveyed are freshmen. What is the probability that a randomly selected student who is NOT a freshman prefers math class?",
+        "choices": null,
+        "correctAnswer": "5/8",
+        "intendedMethod": "direct-arithmetic-ratio",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "unnecessary-list-or-regression"
+        ],
+        "notes": "Non-freshmen = 200-80=120; of those, prefer-math = 120-45=75; probability = 75/120 = 5/8. Two or three arithmetic rows suffice; no list/regression setup is needed for a single ratio."
+      },
+      "runIndex": 3,
+      "result": {
+        "ok": true,
+        "ms": 12029,
+        "attempts": 1,
+        "answer": "5/8 or 0.625",
+        "trick": "Direct evaluation",
+        "answerCorrect": false,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used an unnecessary list/regression for a single ratio",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "(120-45)/(200-80)",
+              "purpose": "Compute non-freshmen who prefer math (120-45) divided by total non-freshmen (200-80); Desmos evaluates the probability directly."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 0.625,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "the probability that a randomly selected non-freshman prefers math",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Conditional probability from counts: convert givens to counts for non-freshmen and non-freshmen who prefer math, then compute (non-freshmen who prefer math)/(non-freshmen). Matches list/evaluation or direct numeric evaluation patterns."
+        }
+      }
+    },
+    {
+      "id": "015-two-way-table-probability",
+      "problem": {
+        "domain": "Problem-Solving and Data Analysis",
+        "problem": "A survey of 200 students found that 120 prefer math class. Of the students who prefer math, 45 are freshmen, and 80 of the 200 students surveyed are freshmen. What is the probability that a randomly selected student who is NOT a freshman prefers math class?",
+        "choices": null,
+        "correctAnswer": "5/8",
+        "intendedMethod": "direct-arithmetic-ratio",
+        "acceptableMethods": [],
+        "forbiddenMethods": [
+          "unnecessary-list-or-regression"
+        ],
+        "notes": "Non-freshmen = 200-80=120; of those, prefer-math = 120-45=75; probability = 75/120 = 5/8. Two or three arithmetic rows suffice; no list/regression setup is needed for a single ratio."
+      },
+      "runIndex": 4,
+      "result": {
+        "ok": true,
+        "ms": 10193,
+        "attempts": 1,
+        "answer": "5/8 (0.625)",
+        "trick": "Direct evaluation of the conditional fraction",
+        "answerCorrect": false,
+        "intendedOrAcceptable": true,
+        "forbidden": false,
+        "forbiddenReason": "used an unnecessary list/regression for a single ratio",
+        "failedToInsert": false,
+        "solution": {
+          "expressions": [
+            {
+              "latex": "(120-45)/(200-80)",
+              "purpose": "Compute non-freshmen who prefer math (120-45) divided by total non-freshmen (200-80); Desmos evaluates this fraction numerically."
+            }
+          ],
+          "parameters": [],
+          "result": {
+            "row": 1,
+            "value": 0.625,
+            "listIndex": null,
+            "answerFrom": "value",
+            "choiceLabel": null,
+            "detail": "probability that a non-freshman prefers math class",
+            "type": "numeric",
+            "relatedRows": []
+          },
+          "conditionType": null,
+          "distinguishes": null,
+          "answerState": null,
+          "method": "desmos",
+          "structure": "Counts in a 2x2 contingency (prefer math vs not) with a subgroup (freshman vs not); match counts to conditions and compute conditional probability P(prefers math | not freshman)."
+        }
+      }
+    }
+  ]
+}

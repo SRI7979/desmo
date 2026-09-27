@@ -1,0 +1,10 @@
+{
+  "domain": "Algebra",
+  "problem": "In the system of equations below, a and c are constants.\n(1/3)x + ay = b\n2x + cy = 5d\nIf the system has infinitely many solutions, what is the value of b/d?",
+  "choices": null,
+  "correctAnswer": "5/6",
+  "intendedMethod": "coefficient-ratio-arithmetic",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["any-regression"],
+  "notes": "Infinitely-many-solutions means the constants scale by the same factor as the leading coefficients: 2/(1/3)=6, so 5d=6b, giving b/d=5/6. Two arithmetic rows suffice; there is no data to fit, so any regression is unnecessary machinery."
+}

@@ -1,0 +1,10 @@
+{
+  "domain": "Geometry and Trigonometry",
+  "problem": "For 0 <= x <= 90, where x is measured in degrees, sin(x) = cos(2x). What is the value of x?",
+  "choices": null,
+  "correctAnswer": "30",
+  "intendedMethod": "graph-both-sides-intersection",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["double-angle-identity-by-hand"],
+  "notes": "Graph y=sin(x) and y=cos(2x) in degree mode over the given interval and click the intersection; no need to derive or apply the double-angle identity by hand."
+}

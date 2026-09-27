@@ -1,0 +1,10 @@
+{
+  "domain": "Problem-Solving and Data Analysis",
+  "problem": "A survey of 200 students found that 120 prefer math class. Of the students who prefer math, 45 are freshmen, and 80 of the 200 students surveyed are freshmen. What is the probability that a randomly selected student who is NOT a freshman prefers math class?",
+  "choices": null,
+  "correctAnswer": "5/8",
+  "intendedMethod": "direct-arithmetic-ratio",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["unnecessary-list-or-regression"],
+  "notes": "Non-freshmen = 200-80=120; of those, prefer-math = 120-45=75; probability = 75/120 = 5/8. Two or three arithmetic rows suffice; no list/regression setup is needed for a single ratio."
+}

@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "For 2 <= x <= 8, the function f is defined by f(x) = (x - 1)^2 + 4. What is the minimum value of f on this interval?",
+  "choices": null,
+  "correctAnswer": "5",
+  "intendedMethod": "restricted-graph-minimum",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["integer-sampling-continuous-domain"],
+  "notes": "The vertex (x=1) lies outside the interval, so f is increasing throughout [2,8] and the minimum is at the left endpoint, f(2)=5. Graph f with the domain restriction {2<=x<=8} and read the minimum directly; do not sample only integer x-values, since the domain is continuous."
+}

@@ -1,0 +1,13 @@
+.math {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.12em 0.04em;
+  margin: -0.12em -0.04em;
+  vertical-align: middle;
+  scrollbar-width: thin;
+  scrollbar-color: #b6cad5 transparent;
+}
+
+.math :global(.katex) { font-size: 1.1em; }

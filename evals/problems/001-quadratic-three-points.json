@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "A quadratic function is defined by f(x) = ax^2 + bx + c. The graph of y = f(x) in the xy-plane passes through the points (1, 7), (2, 15), and (4, 43). What is the value of b?",
+  "choices": null,
+  "correctAnswer": "2",
+  "intendedMethod": "three-point-quadratic-regression",
+  "acceptableMethods": ["bracket-regression-three-points"],
+  "forbiddenMethods": ["underdetermined-regression"],
+  "notes": "3 points exactly determine a 3-parameter quadratic (a,b,c). y_1~ax_1^2+bx_1+c with x_1 length 3 is exactly determined."
+}

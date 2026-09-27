@@ -1,0 +1,10 @@
+{
+  "domain": "Algebra",
+  "problem": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+  "choices": null,
+  "correctAnswer": "1/6",
+  "intendedMethod": "coefficient-ratio-arithmetic",
+  "acceptableMethods": [],
+  "forbiddenMethods": [],
+  "notes": "All three ratios (x-coefficient, y-coefficient, constant) must be equal: g/8 = -3/-k = 15/60 = 1/4, giving g=2, k=12, g/k=1/6. A couple of arithmetic rows suffice."
+}

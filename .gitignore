@@ -16,3 +16,4 @@ next-env.d.ts
 *.log
 .vercel/
 .playwright-mcp/
+.desmo-debug/

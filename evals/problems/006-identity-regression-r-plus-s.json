@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "For all real values of x, (12x + 28)/4 - s/13 = r(x - 8), where r and s are positive constants. What is the value of r + s?",
+  "choices": ["390", "403", "406", "416"],
+  "correctAnswer": "406",
+  "intendedMethod": "identity-regression-sum-readout",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["reports-intermediate-parameter-403"],
+  "notes": "A known regression trap: r=3, s=403 individually, but the requested value is r+s=406, not the intermediate s=403. This check specifically verifies the returned answer is 406, not 403."
+}

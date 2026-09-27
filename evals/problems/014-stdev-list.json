@@ -1,0 +1,10 @@
+{
+  "domain": "Problem-Solving and Data Analysis",
+  "problem": "A data set consists of the values 12, 15, 18, 22, 25, and 30. What is the population standard deviation of this data set, rounded to the nearest hundredth?",
+  "choices": null,
+  "correctAnswer": "6.07",
+  "intendedMethod": "list-stdev-read",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["manual-stdev-formula"],
+  "notes": "Enter the values as a list and read stdevp(L) directly; no manual variance/mean-deviation arithmetic needed."
+}

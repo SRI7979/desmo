@@ -1,0 +1,27 @@
+{
+  "label": "baseline-pooled",
+  "mode": "desmos_first",
+  "methodology": "Two independent 15-problem x 5-run passes (150 runs total) against the unchanged, current production solver. The first pass (baseline-v1-classifier-bugs.json) used classifiers with several false-negative bugs in methodMatch (documented in the PR/commit); those were fixed before the second pass (baseline.json). forbiddenHit/answerMatch/worstCase detection logic was NOT changed between passes, so those three metrics are pooled across all 150 runs; methodMatch is reported from the 71 successfully-classified runs in the corrected second pass, since the first pass's raw solution content was not persisted for retroactive re-classification. See evals/reclassify.mts for how the pooled numbers were recomputed offline (no extra API calls).",
+  "totalRuns": 150,
+  "metrics": {
+    "answerMatch": 94.7,
+    "methodMatch": 90.1,
+    "forbiddenHit": 5.3,
+    "methodVariance": 4.87,
+    "worstCase": 40.0
+  },
+  "worstCaseProblems": [
+    "006-identity-regression-r-plus-s",
+    "007-infinitely-many-ratio",
+    "009-integer-list-coefficient-read",
+    "011-no-solution-slider-both-graphed",
+    "012-circle-radius",
+    "015-two-way-table-probability"
+  ],
+  "latencyMs": {
+    "p50": 11607,
+    "p95": 32844,
+    "note": "Phase 1 is a single-call architecture: time-to-first-useful-render and time-to-complete are identical (no progressive rendering exists yet). Both targets (<=2.5s, <=6s) are already missed at p50."
+  },
+  "keyObservation": "Running the identical eval twice against the identical, unchanged solver produced worstCase=13.3% on the first pass and worstCase=33.3% on the second pass -- a 20-point swing from sampling noise alone at n=5 runs/problem. This is itself evidence for the task's core premise: aggregate quality metrics are unstable at low sample counts because the underlying per-solve variance is real. The pooled 40% (6/15 problems hit a forbidden or failing method at least once in 10 runs) is the more trustworthy Phase 1 number."
+}

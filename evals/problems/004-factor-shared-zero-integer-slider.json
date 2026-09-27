@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+  "choices": null,
+  "correctAnswer": "3",
+  "intendedMethod": "integer-slider-shared-zero",
+  "acceptableMethods": ["integer-list-shared-zero"],
+  "forbiddenMethods": ["derived-factor-formula"],
+  "notes": "Graph the polynomial with an integer slider/list on b and find where x=-2b is a zero (12b^2-36b=0, b=3); never derive b by polynomial division or factoring by hand."
+}

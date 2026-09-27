@@ -1,0 +1,15 @@
+{
+  "domain": "Problem-Solving and Data Analysis",
+  "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
+  "choices": [
+    "n + (2n + 18) = 162",
+    "2n + 18 = 162",
+    "n(2n + 18) = 162",
+    "n - (2n + 18) = 162"
+  ],
+  "correctAnswer": "n + (2n + 18) = 162",
+  "intendedMethod": "conceptual-translation",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["solving-for-n"],
+  "notes": "The task is choosing the correct model, not solving it. Solving for n afterward is unnecessary work and should not be scored favorably."
+}

@@ -1,0 +1,24 @@
+import Link from "next/link";
+import styles from "./desmo-logo.module.css";
+
+export default function DesmoLogo({ centered = false }: { centered?: boolean }) {
+  return (
+    <Link
+      href="/"
+      className={`${styles.logo}${centered ? ` ${styles.centered}` : ""}`}
+      aria-label="Desmo home"
+    >
+      <span className={styles.mark} aria-hidden="true">
+        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" focusable="false">
+          <path
+            d="M3 17c5 0 4-10 9-10s4 10 9 10M3 12h18"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+          />
+        </svg>
+      </span>
+      <span className={styles.wordmark}>Desmo</span>
+    </Link>
+  );
+}

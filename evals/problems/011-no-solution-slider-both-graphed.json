@@ -1,0 +1,10 @@
+{
+  "domain": "Algebra",
+  "problem": "6 + 7r = pw and 7r - 5w = 5w + 11. In this system of equations, p is a constant. If the system has no solution, what is the value of p?",
+  "choices": null,
+  "correctAnswer": "10",
+  "intendedMethod": "slider-until-parallel-both-graphed",
+  "acceptableMethods": ["derivative-regression-with-graphed-check"],
+  "forbiddenMethods": ["slope-match-only"],
+  "notes": "Rewrite as w=(6+7r)/p and w=(7r-11)/10. A method that only matches slopes (derivative regression alone) checks a necessary but not sufficient condition, since matching slopes is equally satisfied by two coincident lines (infinitely many solutions). Both original equations must be graphed at the fitted p to confirm the lines are parallel and distinct, not coincident."
+}

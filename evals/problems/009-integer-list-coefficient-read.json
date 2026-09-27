@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) in the xy-plane has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?",
+  "choices": ["-11", "-12", "-13", "-15"],
+  "correctAnswer": "-15",
+  "intendedMethod": "integer-list-coefficient-read",
+  "acceptableMethods": ["derivative-coefficient-read", "evaluate-at-1-minus-0"],
+  "forbiddenMethods": ["underdetermined-regression"],
+  "notes": "f(x)=a(x+2)(x-8), so a+b=-5a. With a an integer >= 2 (an integer list a=[2...10]), only -15 (a=3) is achievable among the choices. This is the exact reported variance bug: a run that used an inequality-restricted underdetermined regression here would land on a wrong, non-integer a."
+}

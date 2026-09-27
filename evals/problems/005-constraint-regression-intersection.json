@@ -1,0 +1,10 @@
+{
+  "domain": "Algebra",
+  "problem": "-x - wy = -337 and 2x - wy = 47. The graphs of these two equations intersect at the point (q, 19). What is the value of w?",
+  "choices": null,
+  "correctAnswer": "11",
+  "intendedMethod": "bracket-constraint-regression",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["graphing-non-coordinate-unknowns"],
+  "notes": "Substitute y=19 and fit q,w via [-q-19w,2q-19w]~[-337,47]; never graph q or w as if they were plotting axes (Desmos only has x,y coordinates)."
+}
