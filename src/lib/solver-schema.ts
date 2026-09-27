@@ -8,21 +8,6 @@ export const ACCEPTED_IMAGE_TYPES = [
 ] as const;
 export const MAX_EXPRESSIONS = 16;
 
-/**
- * How aggressively Desmos replaces manual math (see PHILOSOPHY.md).
- * weaponized: replace as much math as reasonably possible; reusable tricks first.
- * desmos_first: strongly prefer Desmos; basic math when it clearly simplifies.
- * fastest: assume strong math skills; pick the fastest reliable method.
- */
-export const SOLVE_MODES = ["weaponized", "desmos_first", "fastest"] as const;
-export type SolveMode = (typeof SOLVE_MODES)[number];
-export const DEFAULT_SOLVE_MODE: SolveMode = "desmos_first";
-export const SOLVE_MODE_LABELS: Record<SolveMode, string> = {
-  weaponized: "Weaponized Desmos",
-  desmos_first: "Desmos First",
-  fastest: "Fastest SAT Method",
-};
-
 /** Answer choices transcribed from the question, in their original order. */
 export const answerChoiceSchema = z.object({
   label: z.string().min(1).max(4),
@@ -44,7 +29,7 @@ const legacyResultSchema = z.object({
 }).strict();
 
 export const RESULT_TYPES = ["numeric", "list_entry", "intersection", "x_intercept", "y_intercept", "vertex", "graph_overlap", "slider_condition", "visual_choice", "written"] as const;
-const typedResultSchema = legacyResultSchema.extend({
+export const typedResultSchema = legacyResultSchema.extend({
   type: z.enum(RESULT_TYPES),
   // Written results have no calculator row. Graphical results identify their
   // graph row(s), not an invented numeric evaluation row.
@@ -102,6 +87,19 @@ export const DISTINGUISH_METHODS = [
 ] as const;
 export type DistinguishMethod = (typeof DISTINGUISH_METHODS)[number];
 
+// A definition row such as b=1 becomes a slider the student drags; bounds keep
+// the search reasonable (step 1 for integer parameters).
+export const sliderSchema = z.object({ min: z.number(), max: z.number(), step: z.number() });
+
+export const graphBoundsSchema = z.object({
+  left: z.number(),
+  right: z.number(),
+  bottom: z.number(),
+  top: z.number(),
+});
+
+export const SOLUTION_METHODS = ["desmos", "mental_math", "plug_in_answers", "shortcut", "algebra"] as const;
+
 // `choices` and `result` default to null so solutions saved before they
 // existed still load; OpenAI's strict schema still lists both as required.
 export const solutionSchema = z.object({
@@ -113,13 +111,7 @@ export const solutionSchema = z.object({
   structure: z.string().max(240).nullable().default(null),
   trick: z.string().max(80).nullable().default(null),
   answer: z.string().max(500),
-  method: z.enum([
-    "desmos",
-    "mental_math",
-    "plug_in_answers",
-    "shortcut",
-    "algebra",
-  ]),
+  method: z.enum(SOLUTION_METHODS),
   why: z.string().max(1200),
   steps: z.array(z.string().max(800)).max(5),
   readAnswer: z.string().max(1000).nullable(),
@@ -128,12 +120,7 @@ export const solutionSchema = z.object({
       z.object({
         latex: z.string().min(1).max(1000),
         purpose: z.string().max(600),
-        // A definition row such as b=1 becomes a slider the student drags;
-        // bounds keep the search reasonable (step 1 for integer parameters).
-        slider: z
-          .object({ min: z.number(), max: z.number(), step: z.number() })
-          .nullable()
-          .default(null),
+        slider: sliderSchema.nullable().default(null),
       }),
     )
     .max(MAX_EXPRESSIONS),
@@ -142,14 +129,7 @@ export const solutionSchema = z.object({
   parameters: z.array(parameterSchema).max(6).default([]),
   conditionType: z.enum(CONDITION_TYPES).nullable().default(null),
   distinguishes: z.enum(DISTINGUISH_METHODS).nullable().default(null),
-  graphBounds: z
-    .object({
-      left: z.number(),
-      right: z.number(),
-      bottom: z.number(),
-      top: z.number(),
-    })
-    .nullable(),
+  graphBounds: graphBoundsSchema.nullable(),
   clarification: z.string().max(1000).nullable(),
 });
 
@@ -167,3 +147,6 @@ export type Solution = Omit<ParsedSolution, "expressions"> & {
 export type AnswerChoice = z.infer<typeof answerChoiceSchema>;
 export type SolutionResult = z.infer<typeof resultSchema>;
 export type AnswerState = NonNullable<z.infer<typeof answerStateSchema>>;
+export type TypedResult = z.infer<typeof typedResultSchema>;
+export type GraphBounds = z.infer<typeof graphBoundsSchema>;
+export type SolutionMethod = (typeof SOLUTION_METHODS)[number];

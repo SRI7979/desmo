@@ -3,6 +3,8 @@ import path from "node:path";
 
 import { z } from "zod";
 
+import { TECHNIQUE_IDS } from "./technique-vocabulary";
+
 export const trainingExampleSchema = z
   .object({
     id: z.string().trim().min(1),
@@ -10,8 +12,8 @@ export const trainingExampleSchema = z
     answer_choices: z.record(z.string(), z.string().trim().min(1)),
     correct_answer: z.string().trim().min(1),
     strategy_name: z.string().trim().min(1),
-    // The short pattern name the student learns ("Shared-zero slider").
-    trick: z.string().trim().min(1).max(80),
+    // The vocabulary technique this example teaches; free-form names are rejected.
+    techniqueId: z.enum(TECHNIQUE_IDS),
     trigger_pattern: z.string().trim().min(1),
     desmos_steps: z.array(z.string().trim().min(1)).min(1),
     why_preferred: z.string().trim().min(1),

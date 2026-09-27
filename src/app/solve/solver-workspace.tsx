@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { CalculatorVerificationProvider } from "@/components/calculator-verification";
 import DesmosCalculator from "@/components/desmos-calculator";
 import DesmoLogo from "@/components/desmo-logo";
@@ -10,52 +10,13 @@ import SolutionExplanation from "@/components/solution-explanation";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import {
   ACCEPTED_IMAGE_TYPES,
-  DEFAULT_SOLVE_MODE,
   MAX_IMAGE_BYTES,
-  SOLVE_MODE_LABELS,
-  SOLVE_MODES,
   solutionSchema,
   type Solution,
-  type SolveMode,
 } from "@/lib/solver-schema";
 import styles from "./page.module.css";
 
 const NO_EXPRESSIONS: Solution["expressions"] = [];
-const MODE_HINTS: Record<SolveMode, string> = {
-  weaponized: "Replace as much math as possible with reusable Desmos tricks.",
-  desmos_first: "Strongly prefer Desmos; basic math only when it clearly simplifies.",
-  fastest: "Assume strong math skills; pick the fastest reliable method.",
-};
-const MODE_STORAGE_KEY = "desmo.solveMode";
-
-// The chosen mode is a per-browser convenience; the server default applies
-// until the browser reports a saved choice, so hydration never mismatches.
-const modeListeners = new Set<() => void>();
-function readStoredMode(): SolveMode {
-  try {
-    const saved = window.localStorage.getItem(MODE_STORAGE_KEY);
-    return SOLVE_MODES.find((item) => item === saved) ?? DEFAULT_SOLVE_MODE;
-  } catch {
-    return DEFAULT_SOLVE_MODE;
-  }
-}
-function subscribeToMode(listener: () => void) {
-  modeListeners.add(listener);
-  window.addEventListener("storage", listener);
-  return () => {
-    modeListeners.delete(listener);
-    window.removeEventListener("storage", listener);
-  };
-}
-function storeMode(next: SolveMode) {
-  try {
-    window.localStorage.setItem(MODE_STORAGE_KEY, next);
-  } catch {
-    // Storage may be unavailable; the selection still applies to this page.
-  }
-  modeListeners.forEach((listener) => listener());
-}
-
 function ArrowIcon() {
   return (
     <svg
@@ -79,9 +40,6 @@ function ArrowIcon() {
 export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode }) {
   const [image, setImage] = useState<{ file: File; url: string } | null>(null);
   const [solution, setSolution] = useState<Solution | null>(null);
-  const storedMode = useSyncExternalStore(subscribeToMode, readStoredMode, () => DEFAULT_SOLVE_MODE);
-  const [sessionMode, setSessionMode] = useState<SolveMode | null>(null);
-  const mode = sessionMode ?? storedMode;
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [sampleLoading, setSampleLoading] = useState(false);
@@ -103,11 +61,6 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
     [image],
   );
   useEffect(() => () => request.current?.abort(), []);
-
-  function chooseMode(next: SolveMode) {
-    setSessionMode(next);
-    storeMode(next);
-  }
 
   useEffect(() => {
     if (cooldownUntil === null) return;
@@ -196,7 +149,6 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
     try {
       const form = new FormData();
       form.append("image", image.file);
-      form.append("mode", mode);
       const response = await fetch("/api/solve", {
         method: "POST",
         body: form,
@@ -398,28 +350,6 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                 )}
               </div>
             )}
-            <fieldset className={styles.modes} disabled={busy}>
-              <legend className={styles.modesLegend}>Mode</legend>
-              <div className={styles.modeOptions} role="radiogroup" aria-label="Solving mode">
-                {SOLVE_MODES.map((item) => (
-                  <label
-                    key={item}
-                    className={`${styles.modeOption} ${mode === item ? styles.modeSelected : ""}`}
-                    title={MODE_HINTS[item]}
-                  >
-                    <input
-                      type="radio"
-                      name="mode"
-                      value={item}
-                      checked={mode === item}
-                      onChange={() => chooseMode(item)}
-                    />
-                    {SOLVE_MODE_LABELS[item]}
-                  </label>
-                ))}
-              </div>
-              <p className={styles.modeHint}>{MODE_HINTS[mode]}</p>
-            </fieldset>
             <p className={styles.privacyNote}>
               Images are sent to OpenAI. Results are saved to your private history.
             </p>

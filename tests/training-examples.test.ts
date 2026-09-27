@@ -18,7 +18,7 @@ const example: TrainingExample = {
   answer_choices: { A: "4", B: "5" },
   correct_answer: "B",
   strategy_name: "Direct evaluation",
-  trick: "Evaluate the expression",
+  techniqueId: "function-evaluation",
   trigger_pattern: "A value is supplied and an expression must be evaluated.",
   desmos_steps: ["x_1=[3]", "x_1+2", "Read 5"],
   why_preferred: "Desmos evaluates the original expression directly.",
@@ -45,6 +45,18 @@ test("loads batch 001 as reviewed method-selection examples", async () => {
   assert.doesNotMatch(loaded.prompt, /a_\{1\}=\[7,3\]/, "coefficient-list bookkeeping is no longer taught");
   assert.doesNotMatch(loaded.prompt, /a_\{1\}=\[7,3\]/);
   assert.doesNotMatch(loaded.prompt, /\bx_1\b/);
+  assert.doesNotMatch(loaded.prompt, /"trick"/, "free-form trick names are replaced by vocabulary technique ids");
+  assert.match(loaded.prompt, /"techniqueId": "bracket-regression"/);
+});
+
+test("a training example with a free-form technique name fails the batch schema", async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), "desmo-training-"));
+  try {
+    await writeFile(path.join(directory, "batch.json"), JSON.stringify([{ ...example, techniqueId: "My clever trick" }]));
+    await assert.rejects(loadTrainingExamples(directory), TrainingBatchError);
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
 });
 
 test("sorts batches and excludes examples waiting for review", async () => {

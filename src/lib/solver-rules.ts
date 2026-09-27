@@ -8,7 +8,8 @@ function escapeRegExp(text: string): string {
 const REGRESSION_OP = /\\sim(?![A-Za-z])|~/;
 
 function mentionsIdentifier(text: string, name: string): boolean {
-  return new RegExp(`(?<![A-Za-z\\\\])${escapeRegExp(name)}(?![A-Za-z0-9{])`).test(text);
+  // a_{1} is a different identifier from a.
+  return new RegExp(`(?<![A-Za-z\\\\])${escapeRegExp(name)}(?![A-Za-z0-9{_])`).test(text);
 }
 
 /** The `{condition}` (or `\left\{condition\right\}`) restriction at the end of a row, if any. */
@@ -27,6 +28,8 @@ function trailingRestriction(latex: string): string | null {
  * be introduced as an integer list or an integer-step slider (PHILOSOPHY.md
  * task spec, "three solver validation rules").
  */
+
+const TRAILING_RESTRICTION_TEXT = /\\left\\?\{[^{}]*\\right\\?\}\s*$|\{[^{}]*\}\s*$/;
 
 const INEQUALITY_ONLY =
   /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*(?:>=|<=|>|<|\\ge|\\le)\s*-?\d+(?:\.\d+)?\s*$/;
@@ -62,7 +65,12 @@ export function findIntegerParameterViolations(
         encoded = true;
         return;
       }
-      if (REGRESSION_OP.test(latex)) {
+      // A regression that fits the parameter introduces it as a continuous
+      // unknown: with only an inequality restriction, or with none at all,
+      // nothing makes Desmos return a whole number.
+      if (REGRESSION_OP.test(latex) && mentionsIdentifier(latex.replace(TRAILING_RESTRICTION_TEXT, ""), param.name)) {
+        offendingRow ??= index + 1;
+      } else if (REGRESSION_OP.test(latex)) {
         const restriction = trailingRestriction(latex);
         if (restriction && mentionsIdentifier(restriction, param.name) && INEQUALITY_ONLY.test(restriction)) {
           offendingRow ??= index + 1;
@@ -210,12 +218,13 @@ export function findRegressionDeterminacyViolations(
  */
 
 function isGraphableEquation(latex: string): boolean {
-  const bare = latex.replace(/\\(?:left|right)/g, "");
-  // \b treats a digit and a following letter as one word ("7x" has no
-  // boundary before x), so a coefficient like 7x would otherwise be missed.
-  const hasX = /(?<![A-Za-z])x(?![A-Za-z0-9])/.test(bare);
-  const hasY = /(?<![A-Za-z])y(?![A-Za-z0-9])/.test(bare);
-  return hasX && hasY && !REGRESSION_OP.test(bare);
+  // Once TeX commands (\max) and subscripted list names (x_{1}) are removed,
+  // every remaining x or y is a coordinate, including a juxtaposed one such
+  // as the y in "7x=py" or the x in "7x".
+  const bare = latex
+    .replace(/\\[A-Za-z]+/g, " ")
+    .replace(/[xy]_(?:\{[^{}]*\}|[A-Za-z0-9])/g, " ");
+  return /x/.test(bare) && /y/.test(bare) && !REGRESSION_OP.test(latex);
 }
 
 export function checkConditionCompleteness(input: {
@@ -226,7 +235,6 @@ export function checkConditionCompleteness(input: {
   expressions: ReadonlyArray<{ latex: string }>;
 }): { distinguishes: DistinguishMethod } | { error: string } | null {
   if (input.conditionType === null) return null;
-  if (input.distinguishes !== null) return { distinguishes: input.distinguishes };
 
   const result = input.result;
   const graphRows =
@@ -240,6 +248,12 @@ export function checkConditionCompleteness(input: {
     distinctGraphRows.every((row) => isGraphableEquation(input.expressions[row - 1]?.latex ?? ""));
 
   if (bothEquationsGraphed) return { distinguishes: "visual-parallel-vs-overlap" };
+  // A declared distinction is verified, not trusted. A visual claim needs the
+  // graph evidence above. A constant-ratio claim is credible for a paper method
+  // (its written steps compare the constants) or calculator rows that compute
+  // ratios, but never for a derivative match, which compares slopes only.
+  const slopeMatchOnly = input.expressions.some((expression) => /'/.test(expression.latex) && REGRESSION_OP.test(expression.latex));
+  if (input.distinguishes === "constant-ratio-checked" && !slopeMatchOnly) return { distinguishes: "constant-ratio-checked" };
 
   const conditionLabel = input.conditionType === "no-solution" ? "no solution" : "infinitely many solutions";
   return {

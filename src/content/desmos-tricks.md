@@ -41,20 +41,17 @@ variables, unnecessary lists, duplicated rows, overcomplicated regressions,
 numeric checks of what the graph already shows, and rows added only for
 automation. Advanced tricks earn their place only when they materially simplify.
 
-Generate 3–6 distinct candidate methods and score every candidate before
-selection. Follow the active mode's priority in order, not as a weighted
-average. Desmos First (default): correctness > simplicity/reproducibility >
-least total student effort > reusable before answer-choice-only > least
-manual math/algebra/calculation > fewest rows, typing, and clicks > useful
-Desmos outsourcing > reliability. Weaponized Desmos moves reusability ahead
-of effort and allows a written plan only with no manual math at all. Fastest
-SAT Method ranks effort and rows first and allows written plans freely. In
-every mode a written plan is blocked only while a calculator plan of
-simplicity 3 or more exists; if every Desmos route is convoluted, one basic
-step is acceptable. Before choosing, ask "what is the shortest,
+List the 2–4 genuinely distinct techniques that solve the problem, each named
+by the [technique: id | name] tag of the strategy that teaches it, and report
+each one's cost components honestly. The server scores them; the lowest total
+cost is the default, and the student may switch to any other listed technique.
+Always include the lowest simplicity-ladder rung that works, and a paper
+technique when one genuinely exists. Never pad the list with a technique that
+does not solve the problem: two real techniques beat four with filler. Before
+choosing, ask "what is the shortest,
 clearest Desmos workflow a student could realistically reproduce?", never "how
 can Desmos perform every individual mathematical step?". An invalid or
-unjustified method cannot win on any other score.
+unjustified method is never listed.
 
 PREFERENCE EXAMPLES (the simplest valid applicable method wins):
 - Factor problem, b a positive integer: a one-row derived formula such as
@@ -127,11 +124,12 @@ unmistakable graph condition. Do not rely on eyeballing an approximate position
 when precision matters; when two choices are close, add a numeric row that
 distinguishes them.
 
-Keep one canonical selected strategy. Its ordered calculator entries, their
-purposes, and the final answer instruction must describe exactly the same
-method. The routing policy at the end applies across all 75 strategies.
+Each listed technique is one canonical method: its ordered calculator
+entries, their purposes, and the final answer instruction describe exactly
+that method. The routing policy at the end applies across all 75 strategies.
 
 1. Graph two equations and click the intersection
+[technique: graph-both-sides | Graph both sides]
 
 Use when: Two equations/functions are given and the question asks where they intersect, what x/y satisfies both, or for a solution to a system.
 
@@ -147,6 +145,7 @@ Do NOT: Set them equal and solve manually when the two graph entries suffice.
 Desmos automatically displays important points such as intersections.
 
 2. Graph equations without isolating y
+[technique: graph-raw | Graph as written]
 
 This is huge.
 
@@ -162,6 +161,7 @@ Use when: Equation contains both x and y.
 Rule: Never waste time converting to y= unless it somehow makes the problem easier.
 
 3. Solve an equation by graphing both sides
+[technique: graph-both-sides | Graph both sides]
 
 For:
 
@@ -183,6 +183,7 @@ exponentials
 rational expressions
 complicated expressions
 4. Solve by finding the x-intercept
+[technique: intercept-read | Read the intercepts]
 
 Alternative to #3.
 
@@ -204,6 +205,7 @@ the candidate even when the simplified result is typed into Desmos.
 
 SYSTEMS
 5. Linear system → graph both equations
+[technique: graph-both-sides | Graph both sides]
 
 Example:
 
@@ -217,6 +219,7 @@ Click intersection.
 Usually faster than substitution/elimination.
 
 6. Linear + quadratic system
+[technique: graph-both-sides | Graph both sides]
 
 Example:
 
@@ -234,6 +237,7 @@ larger x-coordinate
 smaller y-coordinate
 sum of intersection coordinates
 7. Circle + line intersection
+[technique: graph-both-sides | Graph both sides]
 
 Example:
 
@@ -247,6 +251,7 @@ Click intersections.
 Don't expand the circle.
 
 8. Number of solutions = number of intersections
+[technique: count-intersections | Count the intersections]
 
 Questions asking:
 
@@ -265,6 +270,7 @@ circle + line
 absolute value + line
 QUADRATICS
 9. Find quadratic roots instantly
+[technique: intercept-read | Read the intercepts]
 
 If a quadratic function is given, enter it exactly:
 
@@ -282,6 +288,7 @@ factors
 positive/negative root
 difference between roots
 10. Find quadratic vertex instantly
+[technique: vertex-read | Click the vertex]
 
 Enter parabola.
 
@@ -304,6 +311,7 @@ Click vertex.
 No completing the square.
 
 11. Axis of symmetry from vertex
+[technique: vertex-read | Click the vertex]
 
 If vertex is:
 
@@ -318,6 +326,7 @@ is the axis.
 Do not calculate -b/(2a) if the graph is already there.
 
 12. Maximum/minimum from graph, including bounded domains
+[technique: restricted-extremum | Restricted-domain max/min]
 
 Questions like:
 
@@ -341,6 +350,7 @@ then compare it with the constants visible in each choice. This replaces vertex
 formulas, growth/decay reasoning, and endpoint arithmetic by hand.
 
 13. Determine number of real roots visually
+[technique: count-intersections | Count the intersections]
 
 Graph:
 
@@ -358,6 +368,7 @@ This is where your tool can become much better than normal ChatGPT.
 Desmos custom regressions use ~ instead of = and can estimate unknown parameters. Desmos officially supports custom regression models and stores the resulting parameter values for later calculations.
 
 14. Linear regression from data
+[technique: linear-regression | Linear regression]
 
 Enter the supplied coordinates as paired lists:
 
@@ -380,6 +391,7 @@ slope
 intercept
 prediction
 15. Quadratic regression from three points
+[technique: three-point-regression | Three-point regression]
 
 Put the three coordinates in paired x_{1} and y_{1} lists.
 
@@ -398,6 +410,7 @@ No system solving.
 Desmos supports quadratic custom regression exactly this way.
 
 16. Exponential regression
+[technique: exponential-regression | Exponential regression]
 
 Paired coordinate lists → then:
 
@@ -422,6 +435,7 @@ y_{1}~a(1-p/100)^{x_{1}}
 for p percent decay. Read p under Regression Parameters. Use the a(b)^{x_{1}}
 form when the growth or decay factor b itself is requested.
 17. Unknown parameter regression
+[technique: parameter-regression | Parameter regression]
 
 Extremely useful.
 
@@ -447,6 +461,7 @@ enter the condition with ~; Desmos fits the constant. Several such facts pack
 into one regression (see 73).
 
 18. Solve multiple unknown coefficients using regression
+[technique: three-point-regression | Three-point regression]
 
 Given three points and:
 
@@ -464,6 +479,7 @@ f at another input). Evaluate follow-ups with the fitted parameters in later
 rows; never rebuild the coefficient system by hand.
 
 19. Regression on transformed equations
+[technique: parameter-regression | Parameter regression]
 
 You don't have to regress only basic equations.
 
@@ -492,6 +508,7 @@ table. Use them for points, function evaluation, comparisons, and regressions so
 the app can load every required row automatically.
 
 20. Test answer choices all at once with a list
+[technique: answer-choice-list | Answer-choice list test]
 
 Suppose choices are:
 
@@ -520,6 +537,7 @@ satisfies a condition
 Desmos lists can be used anywhere you'd normally use a single number.
 
 21. Plug all answer choices into an equation
+[technique: answer-choice-list | Answer-choice list test]
 
 Instead of individually trying four values:
 
@@ -538,6 +556,7 @@ Compare outputs.
 This is great for multiple-choice questions.
 
 22. Generate integer lists
+[technique: integer-list-filter | Integer list filter]
 [1...20]
 
 generates:
@@ -555,6 +574,7 @@ Desmos officially supports this list syntax.
 Useful for testing possible integer values quickly.
 
 23. Function list instead of repeated substitution
+[technique: list-evaluation | Evaluate over a list]
 
 Define:
 
@@ -574,6 +594,7 @@ Useful when comparing many values.
 
 FUNCTIONS
 24. Define the function once
+[technique: function-evaluation | Function evaluation]
 
 Instead of repeatedly typing:
 
@@ -590,6 +611,7 @@ f(7)
 This becomes especially useful when the question asks multiple things about one function.
 
 25. Function composition
+[technique: function-evaluation | Function evaluation]
 
 If:
 
@@ -603,6 +625,7 @@ f(g(3))
 Let the function composition calculate the intermediate values.
 
 26. Compare two functions
+[technique: graph-both-sides | Graph both sides]
 
 Enter:
 
@@ -623,6 +646,7 @@ When is f(x)>g(x)?
 
 INEQUALITIES
 27. Graph inequalities directly
+[technique: graph-inequality | Graph the inequality]
 
 Enter:
 
@@ -635,6 +659,7 @@ x+y≤10
 Desmos shades the valid region.
 
 28. Systems of inequalities
+[technique: graph-inequality | Graph the inequality]
 
 Enter each inequality separately.
 
@@ -643,6 +668,7 @@ The overlapping shaded region = solution region.
 Useful for questions asking which point satisfies all constraints.
 
 29. Test a point visually
+[technique: graph-inequality | Graph the inequality]
 
 If answer choices are coordinate points and question asks which belongs to solution region:
 
@@ -652,6 +678,7 @@ Look at which point lies in the overlap.
 
 LINES / SLOPE
 30. Find slope from two points directly
+[technique: linear-regression | Linear regression]
 
 Let regression calculate it from the two supplied points:
 
@@ -666,6 +693,7 @@ Read m under Regression Parameters. This is preferred to recalling and typing:
 The slope quotient is an acceptable candidate only when the formula is supplied
 or the student is explicitly being tested on it and it requires no extra algebra.
 31. Graph a line from standard form
+[technique: graph-raw | Graph as written]
 
 Don't convert:
 
@@ -676,6 +704,7 @@ Just type it.
 Then click intercepts if needed.
 
 32. Find x- and y-intercepts visually
+[technique: intercept-read | Read the intercepts]
 
 Graph:
 
@@ -689,6 +718,7 @@ y-axis crossing
 No substitution required.
 
 33. Parallel line
+[technique: derivative-regression | Derivative regression]
 
 When a line f is supplied and the requested parallel line g must pass through
 (p,q), let Desmos fit both coefficients of g:
@@ -703,6 +733,7 @@ If f came from an earlier regression, freeze its displayed numeric equation
 before this fit. Use implicit graphing or answer-choice testing for vertical lines.
 
 34. Perpendicular line
+[technique: derivative-regression | Derivative regression]
 
 For a requested perpendicular line g through (p,q), fit the perpendicular-slope
 condition and the point together:
@@ -717,6 +748,7 @@ cases with implicit graphing or test the answer choices directly.
 
 CIRCLES
 35. Graph a circle directly
+[technique: graph-raw | Graph as written]
 (x-h)^2+(y-k)^2=r^2
 
 Instantly reveals:
@@ -724,6 +756,7 @@ Instantly reveals:
 center (h,k)
 radius r
 36. Expanded circle equation → graph instead of completing square
+[technique: expanded-circle | Expanded-circle regression]
 
 Given:
 
@@ -766,6 +799,7 @@ calculator plan; completing the square and solving for n by hand is a written
 plan with hidden algebra and must not win.
 
 37. Circle-line intersections
+[technique: graph-both-sides | Graph both sides]
 
 Graph both.
 
@@ -775,6 +809,7 @@ Useful for coordinate geometry.
 
 ABSOLUTE VALUE
 38. Absolute-value equations
+[technique: graph-both-sides | Graph both sides]
 
 Given:
 
@@ -791,6 +826,7 @@ Use these entries even for a simple equation; the intersections show both
 solutions without splitting the absolute value into manual cases.
 
 39. Absolute-value transformations
+[technique: vertex-read | Click the vertex]
 
 Graph:
 
@@ -804,6 +840,7 @@ Useful when identifying transformations or parameters.
 
 EXPONENTIALS
 40. Graph two exponential expressions
+[technique: graph-both-sides | Graph both sides]
 
 Question:
 
@@ -819,6 +856,7 @@ Click intersection.
 No logarithms required.
 
 41. Exponential model from two/more points
+[technique: exponential-regression | Exponential regression]
 
 Paired x_{1} and y_{1} lists +:
 
@@ -830,6 +868,7 @@ Very useful for growth/decay SAT problems.
 
 PERCENT / WORD PROBLEMS
 42. Turn the story directly into equations
+[technique: story-system | Story to equations]
 
 Example:
 
@@ -862,6 +901,7 @@ n+(2n+18)=162
 Choose that equation. Solving for n would not help identify the representation.
 
 43. Mixture problems
+[technique: story-system | Story to equations]
 
 Example:
 
@@ -873,6 +913,7 @@ Graph.
 Intersection.
 
 44. Work/rate equations
+[technique: graph-both-sides | Graph both sides]
 
 Once translated, graph the relation instead of hand-solving complicated fractions.
 
@@ -888,6 +929,7 @@ calculator rows is only a final tie-breaker.
 
 STATISTICS
 45. Mean
+[technique: statistics-builtin | Statistics built-in]
 
 For values:
 
@@ -897,12 +939,15 @@ use:
 
 \operatorname{mean}(L)
 46. Median
+[technique: statistics-builtin | Statistics built-in]
 \operatorname{median}(L)
 47. Standard deviation
+[technique: statistics-builtin | Statistics built-in]
 
 Desmos has statistical functions, so use them when a problem directly requires numerical comparison rather than manually calculating deviation.
 
 48. Weighted mean
+[technique: statistics-builtin | Statistics built-in]
 
 For integer group frequencies, let Desmos rebuild the data:
 
@@ -916,6 +961,7 @@ expanded numerator.
 
 GEOMETRY
 49. Distance formula directly
+[technique: distance-builtin | distance() built-in]
 
 Given points:
 
@@ -930,10 +976,12 @@ formula. Preserve an exact radical in the final answer when required; do not
 claim its rounded decimal is exact.
 
 50. Midpoint directly
+[technique: midpoint-builtin | midpoint() built-in]
 \operatorname{midpoint}((x_{1},y_{1}),(x_{2},y_{2}))
 
 Prefer the built-in to recalling two coordinate-average formulas.
 51. Pythagorean theorem
+[technique: reference-formula | Reference-sheet formula]
 
 Enter:
 
@@ -945,6 +993,7 @@ The theorem is printed on the SAT reference sheet, so direct substitution into
 Desmos is low-knowledge and fully acceptable.
 
 52. Area/volume direct substitution
+[technique: reference-formula | Reference-sheet formula]
 
 If the question or SAT reference sheet provides the formula, enter it with the
 given values. Reference-sheet examples include:
@@ -960,6 +1009,7 @@ distance, graphing, regression, or direct geometric construction in Desmos.
 
 TRIG
 53. Direct trig evaluation
+[technique: trig-evaluation | Direct trig evaluation]
 
 For:
 
@@ -974,6 +1024,7 @@ switch the calculator setting and say so.
 Critical: Don't mix radians and degrees.
 
 54. Inverse trig to find an angle
+[technique: inverse-trig | Inverse trig]
 
 If:
 
@@ -986,6 +1037,7 @@ use:
 The displayed angle is in degrees by default.
 
 55. Right-triangle trig
+[technique: right-triangle-trig | SOHCAHTOA]
 
 Instead of doing several manual steps:
 
@@ -1002,6 +1054,7 @@ ANSWER-CHOICE ABUSE
 These are important because SAT Math is often multiple choice.
 
 56. Plug answer choices into original equation
+[technique: answer-choice-list | Answer-choice list test]
 
 If solving conventionally looks ugly, backsolve.
 
@@ -1014,6 +1067,7 @@ evaluate original expression using A.
 Whichever satisfies the condition wins.
 
 57. Graph answer-choice constants, sliders, and graphical conditions
+[technique: slider-condition | Slider until it fits]
 
 Suppose question asks which could be k.
 
@@ -1058,6 +1112,7 @@ to show WHY a fitted value works. Never present the slider's starting value as
 the answer, and never define the slider at the answer itself.
 
 58. Use the answer choices to narrow graph window
+[technique: choice-window | Zoom to the choices]
 
 If choices are around:
 
@@ -1071,6 +1126,7 @@ This saves time finding the right point.
 
 SPECIAL HIGH-VALUE SAT TRICKS
 59. Identity/coefficient questions → direct regression or strategic values
+[technique: identity-regression | Identity regression]
 
 High-priority trigger: A polynomial equation has unknown constants and is true
 for all x, is an identity, or is stated to have infinitely many solutions.
@@ -1138,6 +1194,7 @@ This shortcut can be useful for a direct observation. For a multi-unknown
 identity, prefer the two-row regression setup to a manual derivation.
 
 60. Equivalent-form / identity regression between two forms
+[technique: identity-regression | Identity regression]
 
 Trigger: a function is given in one form and the question asks about a
 constant or coefficient in an equivalent form: vertex form a(x-h)^2+k versus
@@ -1162,6 +1219,7 @@ constraints or the answer choices rather than pretending the fit chose it.
 (Three supplied points and an unknown quadratic remain strategy 18.)
 
 61. Model parameters → regression instead of systems
+[technique: parameter-regression | Parameter regression]
 
 If the SAT gives several input/output values and asks for constants inside a model:
 
@@ -1176,6 +1234,7 @@ requiring the student to construct and solve a system. Prefer that reduction in
 human algebra even when a manually derived formula would use fewer entries.
 
 Several equations with unknown constants → direct bracket regression
+[technique: bracket-regression | Bracket regression]
 
 High-priority trigger: two or more equations contain unknown coefficients or
 constants, one or more coordinates or values are supplied, and the question
@@ -1208,6 +1267,7 @@ parameter itself is not identifiable from the givens, say so and use the
 question's constraints or answer choices rather than the first branch.
 
 Derivative regression for unknown parameters in parallel lines
+[technique: derivative-regression | Derivative regression]
 
 Use when one nonvertical line is given by readable points, another contains an
 unknown coefficient, and the question requires parallel lines or no solutions.
@@ -1255,6 +1315,7 @@ unknown parameters before their source fit is not. Preserve sufficient exact
 precision when freezing coefficients; do not silently use rounded display
 values that would change the answer. This example's -1.5 and -9 are exact.
 
+[technique: slider-parallel | Slider until parallel]
 The solver may prepare g's function form; explain it as the given line written
 for Desmos, not as another student algebra task. Do not replace this approach
 with manual slope calculation, s=-48m, and a hand-derived coincidence constant;
@@ -1278,6 +1339,7 @@ choices are close together. Use a scalar input such as 0 for list-valued g;
 do not accidentally zip lists of different lengths or create nested lists.
 
 62. Complicated equation but simple graphical target
+[technique: graph-raw | Graph as written]
 
 If question asks:
 
@@ -1298,6 +1360,7 @@ rational expressions
 The uglier the algebra, the more likely graphing wins.
 
 63. “Which equation could represent this graph?”
+[technique: graph-each-choice | Graph each choice]
 
 Graph answer choices.
 
@@ -1310,12 +1373,14 @@ opening direction
 asymptotes
 roots
 64. “Which graph represents this equation?”
+[technique: graph-each-choice | Graph each choice]
 
 Graph equation once and compare.
 
 Use the plotted shape and key features to compare the supplied graph choices.
 
 65. Integer brute force with list filtering
+[technique: integer-list-filter | Integer list filter]
 
 Use when:
 
@@ -1341,6 +1406,7 @@ such as the factor pairs of a constant term. Never use an arbitrary range like
 choose another method (regression, shared zero, answer-choice testing).
 
 66. Frequency tables with repeat()
+[technique: frequency-repeat | repeat() for frequencies]
 
 Given:
 
@@ -1367,6 +1433,7 @@ The embedded calculator enables repeat(), which is disabled by default in the
 general v1.11 API unless the host opts into it.
 
 67. Minimum/maximum whole groups with ceil/floor
+[technique: ceil-floor | ceil/floor for whole groups]
 
 Trigger phrases:
 
@@ -1385,6 +1452,7 @@ Use ceil when a partial final group still requires another whole container,
 vehicle, package, or trip. Use floor when only complete groups count.
 
 68. Coordinate polygon area
+[technique: polygon-area | polygon() area]
 
 \operatorname{polygon}((1,2),(7,2),(4,8))
 
@@ -1400,6 +1468,7 @@ Enter the vertices in boundary order so the polygon is traced correctly, then
 read the area Desmos displays for the polygon.
 
 69. Number-theory built-ins
+[technique: number-theory-builtin | mod/gcd/lcm built-ins]
 
 Use:
 
@@ -1421,6 +1490,7 @@ Enter the problem's given values directly and explain which displayed result
 answers the question.
 
 70. Repeated sums/products
+[technique: sum-product | Sum/product notation]
 
 Use Desmos sum or product notation when a question contains a long sequence
 whose terms follow a simple rule.
@@ -1430,6 +1500,7 @@ series formula when Desmos can directly evaluate the terms. Define any sequence
 rule and bounds explicitly, and check whether the endpoints are included.
 
 71. Derivative as automatic slope finder
+[technique: derivative-slope | Derivative slope finder]
 
 Given:
 
@@ -1451,6 +1522,7 @@ Do not require the student to differentiate manually. Apply any domain or
 interval restriction from the question, and include all valid tangent points.
 
 72. Factorization by identity regression
+[technique: identity-regression | Identity regression]
 
 Trigger: a polynomial is known to factor into parameterized factors, or the
 question asks for a coefficient given a factored form: "can be written as
@@ -1481,6 +1553,7 @@ the least, the greatest). Never assume the first regression branch is the
 required one.
 
 73. Pack several conditions into one regression
+[technique: bracket-regression | Bracket regression]
 
 Trigger: several independent facts about one function with unknown constants:
 roots, points, intercepts, a hole or vertical asymptote, equal outputs, a known
@@ -1502,6 +1575,7 @@ constraints, not from whichever branch Desmos returned. Both sides of the
 regression are lists of the same length; keep the condition order aligned.
 
 74. Strategic-value testing for symbolic multiple choice
+[technique: strategic-value-test | Strategic-value testing]
 
 Trigger: the requested answer is an expression in a parameter (in terms of b,
 in terms of k), the relationship is supposed to hold generally, and there are
@@ -1523,6 +1597,7 @@ multiple-choice elimination and must be explained that way, never as a proof
 of a general identity. Consider it before any niche symbolic formula.
 
 75. Factor → shared zero
+[technique: shared-zero | Shared zero]
 
 High-priority trigger: "x+kb is a factor of", "which expression has a factor
 of", "(x-a) is a factor", "divisible by". Avoid polynomial or synthetic
@@ -1576,9 +1651,9 @@ where possible: 3x rather than x*3, 2(x+1) rather than (x+1)*2.
 
 DESMOS-FIRST ROUTING
 
-For each readable SAT Math question, consider 3–6 distinct candidate approaches
-before choosing. Explicitly reject inapplicable approaches rather than inventing
-data or a fake executable plan to fill the set. Start by looking for:
+For each readable SAT Math question, consider every applicable approach below
+and list the 2–4 distinct techniques that genuinely solve it. Leave out
+inapplicable approaches rather than inventing data or a fake executable plan. Start by looking for:
 
 1. Condition translation: convert every given fact (root, point, intercept,
    hole, factor, equivalent form, several equations, bounded domain) into a
@@ -1600,14 +1675,10 @@ Do not ask only "how can Desmos calculate the answer?" Ask "how can Desmos make
 the answer easiest for the student to obtain: by calculation, graph, slider, or
 visual condition?"
 
-Each eligible candidate must have a complete valid plan, not a renamed duplicate.
-Rejected approaches use correctness below 5 and state the specific reason in
-validityNote. They remain concise scorecards and cannot be selected. Score
-correctness, manual_math_knowledge, manual_algebra, manual_calculation,
-desmos_outsourcing, reliability, and steps/time on the required 0–5 scales.
-Correctness must be 5 to be eligible. Then compare candidates in this order:
-lowest manual_math_knowledge; lowest manual_algebra + manual_calculation;
-highest useful desmos_outsourcing; highest reliability; lowest steps/time.
+Each listed technique must have a complete valid plan, not a renamed duplicate
+of another listed technique. Report its cost components honestly (derivation
+steps, one-off facts, primitives, setup constructions, manual iterations); the
+server computes the total, and hand derivation and one-off facts cost the most.
 Do not trade a lower-priority benefit for greater human mathematical effort.
 
 Count prerequisites honestly. Remembering a slope formula, converting standard
@@ -1645,9 +1716,9 @@ such as NOT or EXCEPT. Do not show the internal verification as another strategy
 
 WRITTEN FALLBACKS
 
-Use conventional algebra only if it genuinely requires less human reasoning
-than the best applicable Desmos method. Consider every relevant calculator
-category above first and apply the same score priorities. An easy problem, an
+List a paper technique as an alternative whenever one genuinely solves the
+problem; it becomes the default only when its total cost is genuinely lowest.
+Consider every relevant calculator category above first. An easy problem, an
 exact answer, a familiar formula, or fewer written steps does not by itself
 justify a fallback. A necessary conceptual instruction can accompany useful
 calculator rows without replacing the selected calculator method.
@@ -1671,10 +1742,9 @@ Missing or unreadable data requires clarification, never a guessed fallback.
 
 OUTPUT CONTRACT
 
-Every solution with calculator entries uses method desmos. Each row's purpose
-explains that exact row, and the final instruction tells the student which output
-to read and how it answers this question. Candidate evaluation is for selection;
-the student sees only the single canonical winning plan. Derive its explanation
-from its ordered entries, never from a separate algebra solution. Do not include
-a competing walkthrough or optional alternative. Only a justified written
-fallback leaves the calculator empty.
+Each listed technique is a separate, complete method; never mix two techniques
+inside one plan. Each row's purpose explains that exact row, and the final
+instruction tells the student which output to read and how it answers this
+question. Derive each explanation from its technique's ordered entries, never
+from a separate algebra solution. Only a written technique leaves the calculator
+empty.

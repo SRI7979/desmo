@@ -41,7 +41,8 @@ This is the required internal order, not just a style preference:
 5. **Verify with symbolic/traditional math internally.** This check exists to
    confirm correctness; it must never leak into or dictate the student-facing
    method.
-6. **Show only the Desmos-first solution.**
+6. **Default to the least-effort Desmos-first solution**, offering each other
+   genuine technique as a labeled alternative.
 
 **Anti-pattern, explicitly forbidden:** solving the problem traditionally
 first and then reverse-engineering a Desmos-looking solution around that
@@ -104,42 +105,50 @@ The only constraint: don't build an absurd brute-force setup when one very
 basic step would make the method dramatically cleaner. Brute force is a tool
 to reach for, not a method of last resort to apologize for.
 
-## User modes
+## Method choice
 
-Desmo offers three modes over the same strategy library (selectable on the
-solver page; the server ranks candidates differently per mode):
+For each problem Desmo lists the genuinely distinct techniques that solve it
+(two to four when that many exist; one when only one does, never padded), each
+named from a fixed vocabulary so the same technique always carries the same
+name, and each labeled with its math load and a one-line shape ("3 rows ·
+slider · no algebra"). The student may switch to any listed technique; a paper
+technique is listed whenever one genuinely exists, so a student who prefers
+algebra has an option.
 
-- **Weaponized Desmos** — replace as much math as reasonably possible with
-  Desmos; strongly prioritize reusable Desmos generalizations even when a
-  quick manual step would technically be shorter.
-- **Desmos First** — strongly prefer Desmos, but allow basic math when it
-  clearly and simply simplifies the solution.
-- **Fastest SAT Method** — assume stronger existing math knowledge and simply
-  choose the fastest reliable method, whether that's Desmos, algebra,
-  answer-choice testing, or a hybrid.
-
-**The default is Desmos First; the philosophy leans toward Weaponized Desmos /
-Desmos First.** Implementation: `SOLVE_MODES` in `src/lib/solver-schema.ts`,
-per-mode priorities and the written-plan gate in `src/lib/strategy-selection.ts`,
-per-mode policy text in `buildUserPrompt` (`src/lib/solver-instructions.ts`).
+**The default is the cheapest total cost**, and the cost function is what keeps
+the default Desmos-first: every hand derivation step costs 3, every memorized
+one-off fact costs 4, while calculator rows cost 1 and whitelisted Desmos
+primitives (graphing, sliders, lists, regression, restrictions, derivatives,
+statistics) cost nothing. Implementation: the vocabulary in
+`src/lib/technique-vocabulary.ts`, the weights and labels in
+`src/lib/method-scoring.ts`, selection in `src/lib/strategy-selection.ts`.
 
 ## How the product enforces this
 
 - The model must emit `structure` (what it recognized) before any candidate;
-  the output schema orders it first. Every candidate names its `trick` and
-  declares `reusable` (works without the answer choices).
-- The student sees the recognized structure and the trick name on every
+  the output schema orders it first. Every candidate names a `techniqueId`
+  from the vocabulary; a free-form name fails validation, and every library
+  strategy carries its id, so a technique is named the same way everywhere.
+- The student sees the recognized structure and the technique name on every
   solution and in history, so pattern recognition is what gets practiced.
-- Ranking is per mode (`STRATEGY_PRIORITIES`); reusability breaks simplicity
-  ties in Desmos First and outranks effort in Weaponized Desmos.
-- A written plan is blocked only while a calculator plan of simplicity 3+
-  exists; if every Desmos route is convoluted, one basic step is allowed.
+- The model reports only judgment (derivation steps, one-off facts); the
+  server counts rows, applies definitional floors (a paper technique's own
+  steps), computes totals, and derives math level, shape, and badges. The
+  model's preferred technique is logged, never obeyed.
+- Hard rejections run before any scoring: hidden derivation, rows that cannot
+  be inserted, underdetermined regressions, integer parameters not encoded as
+  integers, incomplete no-solution / infinitely-many checks (verified, not
+  taken on the model's word), sampling a continuous domain, and solving a
+  "which equation represents" question instead of translating it.
+- The same problem always returns the same methods, order, and default: the
+  result is cached by the normalized problem text and the prompt
+  configuration version, so any prompt or library improvement regenerates.
 - Reverse-engineered plans are detected structurally, not just discouraged:
   a row using numbers the question never states (`41` from completing the
   square off-screen) or a value defined by a formula in a fitted parameter
   (`a=6/m`) is rejected as hidden derivation, with the runner-up Desmos
-  candidate named. The model then gets up to two guided retries in which the
-  rejected rows are banned and it must switch methods.
+  candidate named. The model then gets one guided retry with the exact
+  rejection reason.
 
 ## The review standard
 

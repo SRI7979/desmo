@@ -13,7 +13,7 @@
     ],
     "why_preferred": "Desmos solves both unknown constants automatically. No coefficient matching, distributing, or manual algebra is needed.",
     "needs_review": false,
-    "trick": "Identity regression"
+    "techniqueId": "identity-regression"
   },
   {
     "id": "002",
@@ -35,7 +35,7 @@
     ],
     "why_preferred": "Desmos finds the hourly removal rate first, then directly solves for the requested time with almost no manual arithmetic or algebra.",
     "needs_review": false,
-    "trick": "Two-step parameter regression"
+    "techniqueId": "parameter-regression"
   },
   {
     "id": "003",
@@ -58,7 +58,7 @@
     ],
     "why_preferred": "The requested answer is the model itself. Graphing or solving would happen only after the semantic translation is already complete, so it provides no useful Desmos outsourcing. The 10, 9, and 7 are pan sizes, not quantities to multiply by.",
     "needs_review": false,
-    "trick": "Translate the words (no calculator)"
+    "techniqueId": "translate-the-words"
   },
   {
     "id": "004",
@@ -81,7 +81,7 @@
     ],
     "why_preferred": "It directly asks Desmos to find when the two linear expressions have the same slope, which is exactly when they stop having one unique intersection. It does not rely on answer choices and also works for student-produced-response versions.",
     "needs_review": false,
-    "trick": "Derivative regression for equal slopes"
+    "techniqueId": "derivative-regression"
   },
   {
     "id": "005",
@@ -104,7 +104,7 @@
     ],
     "why_preferred": "The main task is identifying the correct units and equation, not solving anything. Desmos adds no value.",
     "needs_review": false,
-    "trick": "Translate the units (no calculator)"
+    "techniqueId": "direct-arithmetic"
   },
   {
     "id": "006",
@@ -127,7 +127,7 @@
     ],
     "why_preferred": "No distributing, combining like terms, or symbolic checking is needed. Desmos visually determines the number of solutions by showing how the two sides intersect.",
     "needs_review": false,
-    "trick": "Graph both sides, count intersections"
+    "techniqueId": "count-intersections"
   },
   {
     "id": "007",
@@ -145,7 +145,7 @@
     ],
     "why_preferred": "For a linear equation to have no solution, the two sides must graph as parallel lines: same slope, different intercepts. Derivative regression lets Desmos solve directly for the parameter with basically no algebra.",
     "needs_review": false,
-    "trick": "Derivative regression for equal slopes"
+    "techniqueId": "derivative-regression"
   },
   {
     "id": "008",
@@ -160,7 +160,7 @@
     ],
     "why_preferred": "Copy the equations with the supplied y=19 and replace the equals signs by one bracket regression. This does the same fitting work as coefficient lists with less setup and bookkeeping; q and w are fitted parameters, not graph coordinates.",
     "needs_review": false,
-    "trick": "Bracket regression"
+    "techniqueId": "bracket-regression"
   },
   {
     "id": "009",
@@ -177,7 +177,7 @@
     ],
     "why_preferred": "Two entries copy the original equations and the given coordinate. Bracket regression finds r directly, without extraction of coefficients, three helper lists, elimination, or manual calculation. Extra coefficient lists do not perform additional useful Desmos work. Internally, the two independent linear conditions in r and sy establish that r=3 is unique; the arbitrary s and y_1 fit must not be called unique.",
     "needs_review": false,
-    "trick": "Bracket regression"
+    "techniqueId": "bracket-regression"
   },
   {
     "id": "010",
@@ -202,7 +202,7 @@
     ],
     "why_preferred": "No expansion or coefficient matching by hand. The regression shows the structure, and the positive-integer constraint turns the remaining freedom into a short justified list rather than an arbitrary brute-force range.",
     "needs_review": false,
-    "trick": "Factorization identity regression"
+    "techniqueId": "identity-regression"
   },
   {
     "id": "011",
@@ -219,7 +219,7 @@
     ],
     "why_preferred": "Three facts become three conditions solved at once. The student never factors (x-5)(x-6), expands, or reasons about the denominator by hand; the requested combination is read from its own row.",
     "needs_review": false,
-    "trick": "Packed-conditions regression"
+    "techniqueId": "bracket-regression"
   },
   {
     "id": "012",
@@ -242,7 +242,7 @@
     ],
     "why_preferred": "Replaces recalling and manipulating the percent-growth formula with one numeric evaluation. The chosen b=1.5 satisfies b>1, and the four choices separate cleanly at that value.",
     "needs_review": false,
-    "trick": "Strategic-value choice test"
+    "techniqueId": "strategic-value-test"
   },
   {
     "id": "013",
@@ -260,7 +260,7 @@
     ],
     "why_preferred": "Three rows typed exactly as given, no polynomial division, no substitution, no derived formula for b. The shared intercept is visible, and the integer slider makes the search reproducible.",
     "needs_review": false,
-    "trick": "Shared-zero slider"
+    "techniqueId": "shared-zero"
   },
   {
     "id": "014",
@@ -278,6 +278,6 @@
     ],
     "why_preferred": "The condition is visual and the parameter range is small, so the student never reasons about the vertex (3, k) algebraically. The slider starts at 0, not at the answer, and the read instruction names the condition to watch for.",
     "needs_review": false,
-    "trick": "Slider until the graphs touch"
+    "techniqueId": "slider-condition"
   }
 ]
