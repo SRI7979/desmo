@@ -17,6 +17,7 @@ import {
   mockModel,
   paperCandidate,
   providerBody,
+  hang,
   TANGENT_QUESTION,
   tangentCandidates,
   tangentExplanations,
@@ -40,6 +41,7 @@ const dependencies: SolveDependencies = {
   getCache: () => cache,
   getUsage: () => usage,
   limits: () => ({ freeSolvesPerDay: 1000, dailySpendCeilingUsd: 1000 }),
+  maxDurationSeconds: 180,
 };
 const POST = createSolveHandler(dependencies);
 const SWITCH = createMethodHandler(dependencies);
@@ -666,16 +668,60 @@ test("development rejection exposes the exact stage and stores the raw response 
   }
 });
 
-test("a stalled candidates call is abandoned and retried instead of failing the solve", async () => {
-  let calls = 0;
-  mock.method(Responses.prototype, "create", async function (this: unknown, body: { text: { format: { name: string } } }) {
-    if (body.text.format.name === "desmo_candidates" && ++calls === 1) throw new OpenAI.APIConnectionTimeoutError();
-    return providerBody(body.text.format.name === "desmo_explanation" ? explanation() : candidatesResponse());
-  });
-  const response = await POST(upload());
-  assert.equal(response.status, 200);
-  assert.equal((await response.json()).solution.answer, "3");
-  assert.equal(calls, 2);
+test("regression test 4: a candidates call past CANDIDATES_TIMEOUT_MS is aborted once, fails honestly, and its cost is still recorded", async () => {
+  process.env.CANDIDATES_TIMEOUT_MS = "80";
+  try {
+    const { requests } = mockModel({ candidates: (_body: unknown, _call: number, signal?: AbortSignal) => hang(signal) });
+    const variants: Record<string, string>[] = [{}, { Accept: "application/x-ndjson" }];
+    for (const headers of variants) {
+      const started = performance.now();
+      const response = await POST(upload(png, "image/png", headers));
+      assert.ok(performance.now() - started < 2_000, "no hanging request");
+      assert.equal(response.status, 504);
+      const body = await response.json();
+      assert.equal(body.kind, "timeout");
+      assert.match(body.error, /took too long.*stopped/);
+    }
+    assert.equal(requests.candidates.length, 2, "one attempt per solve: a timeout is never retried");
+    const timedOut = usage.records.filter((record) => record.status === "timeout");
+    assert.equal(timedOut.length, 2);
+    assert.equal(timedOut[0].estimated, true, "OpenAI may have billed it; usage never arrives, so it is estimated high");
+    assert.ok(timedOut[0].costUsd > 0.02);
+  } finally {
+    delete process.env.CANDIDATES_TIMEOUT_MS;
+  }
+});
+
+test("regression test 4: an explanation past EXPLANATION_TIMEOUT_MS ends in a retryable failure, never a spinner", async () => {
+  const { requests } = tangentModel();
+  const solved = await (await POST(upload())).json();
+  process.env.EXPLANATION_TIMEOUT_MS = "80";
+  try {
+    mock.restoreAll();
+    mockModel({ candidates: candidatesResponse(), explanation: (_body: unknown, _call: number, signal?: AbortSignal) => hang(signal) });
+    const started = performance.now();
+    const stream = await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+    assert.ok(performance.now() - started < 2_000);
+    assert.equal(stream[0].type, "methods", "rows and answer arrive first");
+    assert.equal(stream.at(-1).explanation, "fallback");
+    assert.equal(explanationFromEvents(stream), null, "the client shows its retry");
+    assert.ok(requests.explanation.length >= 1);
+  } finally {
+    delete process.env.EXPLANATION_TIMEOUT_MS;
+  }
+});
+
+test("no model call can outlive the route's execution limit: too little time left means no paid request at all", async () => {
+  const saved = dependencies.maxDurationSeconds;
+  dependencies.maxDurationSeconds = 5.5; // a 500 ms deadline, under the 1 s minimum for a call
+  try {
+    const { requests } = mockModel({ candidates: candidatesResponse() });
+    const response = await POST(upload());
+    assert.equal(response.status, 504);
+    assert.equal(requests.candidates.length, 0);
+  } finally {
+    dependencies.maxDurationSeconds = saved;
+  }
 });
 
 test("regression test 3: every method errors in Desmos → one retry of call 1 with the Desmos errors attached; if its methods error too, an honest failure with no rows", async () => {

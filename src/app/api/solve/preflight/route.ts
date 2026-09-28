@@ -6,8 +6,8 @@ import { createSupabaseUsageStore } from "@/lib/spend";
 import { createPreflightHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
-// The one Desmos retry is a full candidates call (a guided retry runs at
-// medium reasoning effort and has taken up to about 50 s).
+// The one Desmos retry is a full candidates call at medium reasoning effort,
+// bounded by CANDIDATES_TIMEOUT_MS and by this limit minus 5 s.
 export const maxDuration = 120;
 
 export const POST = createPreflightHandler({
@@ -17,4 +17,5 @@ export const POST = createPreflightHandler({
   },
   getCache: () => routeSolveCache(createAdminClient()),
   getUsage: () => createSupabaseUsageStore(createAdminClient()),
+  maxDurationSeconds: maxDuration,
 });

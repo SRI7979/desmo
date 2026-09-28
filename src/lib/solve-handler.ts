@@ -10,6 +10,7 @@ import {
   HONEST_FAILURE,
   loadSolveContext,
   methodSummaries,
+  ModelTimeoutError,
   PreflightFailedError,
   RefusalError,
   resolveEntry,
@@ -43,9 +44,18 @@ export type SolveDependencies = {
   getUsage: () => UsageStore;
   /** Defaults to FREE_SOLVES_PER_DAY and DAILY_SPEND_CEILING_USD, read per request. */
   limits?: () => Limits;
+  /** The route's maxDuration: every model call must finish inside it. */
+  maxDurationSeconds: number;
 };
 
-export type MethodDependencies = Pick<SolveDependencies, "getCurrentUser" | "getCache" | "getUsage" | "limits">;
+export type MethodDependencies = Pick<SolveDependencies, "getCurrentUser" | "getCache" | "getUsage" | "limits" | "maxDurationSeconds">;
+
+/** Room left after the last model call for cache writes, saving history, and the response. */
+const DEADLINE_MARGIN_MS = 5_000;
+
+function deadlineFor(dependencies: MethodDependencies, startedAt: number): number {
+  return startedAt + dependencies.maxDurationSeconds * 1000 - DEADLINE_MARGIN_MS;
+}
 
 /** A meter for one request: usage recorded under this user and request id. */
 function meterFor(dependencies: MethodDependencies, userId: string, solveId: string) {
@@ -220,7 +230,12 @@ function errorFor(error: unknown, diagnosticId: string): Response {
   if (error instanceof TrainingBatchError) {
     return errorResponse("The strategy training data is invalid. Check the JSON batches and try again.", 500);
   }
-  if (error instanceof OpenAI.APIConnectionTimeoutError) return errorResponse("The AI took too long to respond. Please try again.", 504);
+  if (error instanceof ModelTimeoutError || error instanceof OpenAI.APIConnectionTimeoutError) {
+    return Response.json(
+      { kind: "timeout", error: "The AI took too long to respond, so this solve was stopped. Please try again." },
+      { status: 504, headers: { "Cache-Control": "no-store" } },
+    );
+  }
   if (error instanceof OpenAI.APIUserAbortError) {
     return errorResponse("The solve was canceled. Upload the screenshot again to retry.", 408);
   }
@@ -257,6 +272,15 @@ function methodsPayload(resolved: ReadyEntry, cached: boolean, selectedMethodId 
   };
 }
 
+/**
+ * maxRetries 0: the SDK would otherwise retry 429s and 5xx on its own, and a
+ * retried rate limit only deepens it. Each call's own AbortController (see
+ * callModel) enforces the real timeouts; the client timeout is a backstop.
+ */
+function openAIClient() {
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 150_000, maxRetries: 0 });
+}
+
 function pipelineFor(
   cache: SolveCache,
   tier: ServiceTierState,
@@ -264,16 +288,9 @@ function pipelineFor(
   signal: AbortSignal,
   context: PipelineDeps["context"],
   meter: PipelineDeps["meter"],
+  deadline: number,
 ): PipelineDeps {
-  return {
-    client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 150_000, maxRetries: 0 }),
-    cache,
-    context,
-    tier,
-    diagnosticId,
-    signal,
-    meter,
-  };
+  return { client: openAIClient(), cache, context, tier, diagnosticId, signal, meter, deadline };
 }
 
 function serverTiming(result: SolveResult, startedAt: number): string {
@@ -295,6 +312,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
   const tier: ServiceTierState = { priorityUnavailable: false };
   return async function POST(request: Request) {
     const startedAt = performance.now();
+    const requestStarted = Date.now();
     const diagnosticId = randomUUID();
     try {
       if (crossSite(request)) return errorResponse("Send uploads from the Desmo website.", 403);
@@ -327,15 +345,15 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       }
       await validateImage(bytes, image.type);
 
-      const pipeline: PipelineDeps = {
-        client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 150_000, maxRetries: 0 }),
-        cache: dependencies.getCache(),
-        context: await loadSolveContext(),
+      const pipeline = pipelineFor(
+        dependencies.getCache(),
         tier,
         diagnosticId,
-        signal: request.signal,
-        meter: meterFor(dependencies, user.id, diagnosticId),
-      };
+        request.signal,
+        await loadSolveContext(),
+        meterFor(dependencies, user.id, diagnosticId),
+        deadlineFor(dependencies, requestStarted),
+      );
       const input = { kind: "image" as const, bytes, mime: image.type };
       const userId = user.id;
 
@@ -430,6 +448,7 @@ const methodRequestSchema = z.object({ cacheKey: z.string().min(1).max(200), met
 export function createMethodHandler(dependencies: MethodDependencies) {
   const tier: ServiceTierState = { priorityUnavailable: false };
   return async function POST(request: Request) {
+    const requestStarted = Date.now();
     const diagnosticId = randomUUID();
     try {
       if (crossSite(request)) return errorResponse("Send requests from the Desmo website.", 403);
@@ -454,7 +473,7 @@ export function createMethodHandler(dependencies: MethodDependencies) {
       if (!process.env.OPENAI_API_KEY?.trim()) return missingKey();
       // Switching methods on a problem already solved is never limited:
       // at most one explanation per method, cached, and still recorded.
-      const pipeline = pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext(), meterFor(dependencies, user.id, diagnosticId));
+      const pipeline = pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext(), meterFor(dependencies, user.id, diagnosticId), deadlineFor(dependencies, requestStarted));
       const payload = methodsPayload(resolved, true, method.id);
       const summary = { ...payload, method: payload.methods.find((item) => item.id === method.id) };
       if (!wantsStream(request)) {
@@ -511,6 +530,7 @@ const preflightRequestSchema = z
 export function createPreflightHandler(dependencies: MethodDependencies) {
   const tier: ServiceTierState = { priorityUnavailable: false };
   return async function POST(request: Request) {
+    const requestStarted = Date.now();
     const diagnosticId = randomUUID();
     try {
       if (crossSite(request)) return errorResponse("Send requests from the Desmo website.", 403);
@@ -539,7 +559,10 @@ export function createPreflightHandler(dependencies: MethodDependencies) {
       if (current.status === "needs-retry" && !process.env.OPENAI_API_KEY?.trim()) return missingKey();
       const resolved =
         current.status === "needs-retry"
-          ? await resolveOrRetry(pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext(), meterFor(dependencies, user.id, diagnosticId)), entry)
+          ? await resolveOrRetry(
+              pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext(), meterFor(dependencies, user.id, diagnosticId), deadlineFor(dependencies, requestStarted)),
+              entry,
+            )
           : current;
       if (resolved.status !== "ready") throw new PreflightFailedError();
       return Response.json(

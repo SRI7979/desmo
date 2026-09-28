@@ -8,6 +8,10 @@ import { createSupabaseUsageStore } from "@/lib/spend";
 import { createSolveHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
+// Worst case at the default timeouts: a candidates call and its one guided
+// retry (2 x 20 s) plus the explanation and its retry (2 x 30 s), about 100 s.
+// Every call also stops at this limit minus 5 s (see deadlineFor), whatever
+// the env timeouts are. Vercel allows up to 300 s on Hobby, 800 s on Pro.
 export const maxDuration = 180;
 
 export const POST = createSolveHandler({
@@ -19,4 +23,5 @@ export const POST = createSolveHandler({
   saveProblem,
   getCache: () => routeSolveCache(createAdminClient()),
   getUsage: () => createSupabaseUsageStore(createAdminClient()),
+  maxDurationSeconds: maxDuration,
 });

@@ -112,7 +112,16 @@ export function providerBody(value: unknown, status = "completed", extra: Record
   };
 }
 
-type Reply = unknown | ((body: Record<string, unknown>, call: number) => unknown);
+type Reply = unknown | ((body: Record<string, unknown>, call: number, signal?: AbortSignal) => unknown);
+
+/** A provider that never answers: the request settles only when it is aborted. */
+export function hang(signal?: AbortSignal): Promise<never> {
+  return new Promise((_, reject) => {
+    const abort = () => reject(signal?.reason ?? new DOMException("The operation was aborted.", "AbortError"));
+    if (signal?.aborted) abort();
+    else signal?.addEventListener("abort", abort, { once: true });
+  });
+}
 
 /**
  * Answers the candidates call and the explanation call separately, keyed by
@@ -131,7 +140,9 @@ export function mockModel(replies: {
     const kind = name === "desmo_explanation" ? "explanation" : "candidates";
     requests[kind].push(body);
     const reply = kind === "explanation" ? (replies.explanation ?? explanation()) : replies.candidates;
-    const value = typeof reply === "function" ? (reply as (b: Record<string, unknown>, n: number) => unknown)(body, requests[kind].length) : reply;
+    const value = await (typeof reply === "function"
+      ? (reply as (b: Record<string, unknown>, n: number, signal?: AbortSignal) => unknown)(body, requests[kind].length, options?.signal ?? undefined)
+      : reply);
     if (value instanceof Response) return value;
     return Response.json(providerBody(value, "completed", replies.extra?.[kind] ?? {}));
   });

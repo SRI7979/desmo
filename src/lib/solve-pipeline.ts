@@ -47,21 +47,41 @@ import {
   type CandidatesResponse,
   type Method,
 } from "./strategy-selection";
-import { NO_USAGE } from "./model-pricing";
+import { NO_USAGE, timeoutEstimate } from "./model-pricing";
 import type { Meter, ModelCall } from "./spend";
 import { TECHNIQUES } from "./technique-vocabulary";
 import { loadTrainingExamples } from "./training-examples";
 
 /** One guided correction per call, shared by both calls. */
 export const MAX_ATTEMPTS = 2;
-/** Past this, the rows are shown with a generated summary instead of waiting. */
-export const EXPLANATION_TIMEOUT_MS = 30_000;
+
+export type ModelTimeouts = { candidatesMs: number; explanationMs: number };
+
 /**
- * Healthy candidate calls take 8–15 s (a guided retry at medium effort up to
- * about 50 s); a provider stall was observed to hang for 170 s+. A stalled
- * attempt is abandoned and counts as the one retry instead of failing.
+ * How long one OpenAI call may run before it is aborted: CANDIDATES_TIMEOUT_MS
+ * (default 20 s; the Desmos retry uses it too) and EXPLANATION_TIMEOUT_MS
+ * (default 30 s). Read per call. Measured candidate calls: typically 8–15 s,
+ * but real image solves and guided retries have run 20–34 s, so a 20 s
+ * default fails some of them: raise it rather than let calls hang.
  */
-export const CANDIDATE_TIMEOUT_MS = 60_000;
+export function modelTimeouts(env: Record<string, string | undefined> = process.env): ModelTimeouts {
+  const read = (value: string | undefined, fallback: number) => {
+    const parsed = Number(value?.trim());
+    return value?.trim() && Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
+  };
+  return { candidatesMs: read(env.CANDIDATES_TIMEOUT_MS, 20_000), explanationMs: read(env.EXPLANATION_TIMEOUT_MS, 30_000) };
+}
+
+/** A call is not started with less time than this left before the request's deadline. */
+const MIN_CALL_MS = 1_000;
+
+/** An OpenAI call ran past its timeout (or the request's deadline) and was aborted. */
+export class ModelTimeoutError extends Error {
+  constructor(readonly call: ModelCall, readonly timeoutMs: number) {
+    super(`The ${call} call was aborted after ${timeoutMs} ms.`);
+    this.name = "ModelTimeoutError";
+  }
+}
 export const CANDIDATE_CACHE_KEY = "desmo-candidates-v1";
 export const EXPLANATION_CACHE_KEY = "desmo-explanation-v1";
 
@@ -145,6 +165,12 @@ export type PipelineDeps = {
   signal?: AbortSignal;
   /** Records every call's usage and enforces the spend limits; absent in evals and scripts. */
   meter?: Meter;
+  /**
+   * Epoch ms by which every model call must have finished: the route's
+   * execution limit minus a margin. No call's timeout may run past it, so
+   * the host never kills the function mid-call, whatever the env timeouts.
+   */
+  deadline?: number;
 };
 
 export type CallCounts = { candidates: number; explanation: number };
@@ -231,7 +257,7 @@ export async function retryAfterDesmosErrors(
   // Extra model work on an existing problem: only the global ceiling applies.
   await deps.meter?.authorizeRetry();
   deps.meter?.setCacheKey(entry.cacheKey);
-  const response = await callModel(deps, candidateRequest(deps, input, desmosRejection(entry, verdicts)), "desmos_retry", CANDIDATE_TIMEOUT_MS);
+  const response = await callModel(deps, candidateRequest(deps, input, desmosRejection(entry, verdicts)), "desmos_retry");
   calls.candidates += 1;
   const base = {
     version: CACHE_ENTRY_VERSION,
@@ -301,20 +327,33 @@ function isGpt5(model: string) {
   return model.startsWith("gpt-5");
 }
 
+/**
+ * One OpenAI call, aborted by its own AbortController at the configured
+ * timeout or the request's deadline, whichever comes first (and by the
+ * client disconnecting). Never retried here: the SDK's retries are off, so a
+ * 429 or a timeout is reported once, honestly, instead of being amplified.
+ */
 async function callModel(
   deps: PipelineDeps,
   body: Record<string, unknown>,
   call: ModelCall,
-  timeout?: number,
 ): Promise<OpenAI.Responses.Response> {
-  const send = (tier: (typeof serviceTiers)[number]) =>
-    deps.client.responses.create(
-      { ...(body as unknown as OpenAI.Responses.ResponseCreateParamsNonStreaming), ...(tier === "priority" ? { service_tier: "priority" as const } : {}) },
-      { signal: deps.signal, ...(timeout ? { timeout } : {}) },
-    );
-  let tier = configuredServiceTier(deps.tier);
-  const started = performance.now();
+  const configured = call === "explanation" ? modelTimeouts().explanationMs : modelTimeouts().candidatesMs;
+  const remaining = deps.deadline ? deps.deadline - Date.now() : Infinity;
+  // Not enough time left before the deadline to be worth a paid request: fail now, before sending.
+  if (remaining < MIN_CALL_MS) throw new ModelTimeoutError(call, Math.max(0, Math.round(remaining)));
+  const timeoutMs = Math.min(configured, remaining);
   const model = String(body.model);
+  let tier = configuredServiceTier(deps.tier);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const signal = deps.signal ? AbortSignal.any([deps.signal, controller.signal]) : controller.signal;
+  const send = (serviceTier: (typeof serviceTiers)[number]) =>
+    deps.client.responses.create(
+      { ...(body as unknown as OpenAI.Responses.ResponseCreateParamsNonStreaming), ...(serviceTier === "priority" ? { service_tier: "priority" as const } : {}) },
+      { signal },
+    );
+  const started = performance.now();
   let response: OpenAI.Responses.Response;
   try {
     try {
@@ -326,10 +365,19 @@ async function callModel(
       response = await send(tier);
     }
   } catch (error) {
+    if (controller.signal.aborted && !deps.signal?.aborted) {
+      // OpenAI may still have finished (and billed) the call; its usage never
+      // arrives, so it is recorded at a deliberately high estimate.
+      const maxOutput = typeof body.max_output_tokens === "number" ? body.max_output_tokens : 8_000;
+      await deps.meter?.record(call, { status: "timeout", model, serviceTier: tier, usage: timeoutEstimate(call, maxOutput), estimated: true });
+      throw new ModelTimeoutError(call, Math.round(timeoutMs));
+    }
     // A rejected or failed request is not billed; it is still recorded, so
     // failures show up next to what the successful calls cost.
     await deps.meter?.record(call, { status: "failed", model, serviceTier: tier, usage: NO_USAGE, estimated: false });
     throw error;
+  } finally {
+    clearTimeout(timer);
   }
   // The tier OpenAI reports actually applied is what it bills.
   await deps.meter?.record(call, { status: "completed", model: response.model || model, serviceTier: response.service_tier ?? tier, usage: response.usage });
@@ -471,7 +519,7 @@ export async function explainMethod(
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     let response: OpenAI.Responses.Response;
     try {
-      response = await callModel(deps, explanationRequest(deps, entry, method, rejection), "explanation", EXPLANATION_TIMEOUT_MS);
+      response = await callModel(deps, explanationRequest(deps, entry, method, rejection), "explanation");
       calls.explanation += 1;
     } catch (error) {
       if (deps.signal?.aborted) throw error;
@@ -522,18 +570,12 @@ export async function solveProblem(
   if (!entry) {
     let rejection: Rejection | undefined;
     for (let attempt = 1; !entry; attempt += 1) {
-      let response: OpenAI.Responses.Response;
-      try {
-        // A new problem: checked against the daily cap and the spend ceiling
-        // once, before its first model call. A cached input never gets here.
-        if (attempt === 1) await deps.meter?.authorizeSolve();
-        response = await callModel(deps, candidateRequest(deps, input, rejection), "candidates", CANDIDATE_TIMEOUT_MS);
-      } catch (error) {
-        const stalled = error instanceof OpenAI.APIConnectionTimeoutError;
-        if (!stalled || attempt >= MAX_ATTEMPTS || deps.signal?.aborted) throw error;
-        calls.candidates += 1;
-        continue;
-      }
+      // A new problem: checked against the daily cap and the spend ceiling
+      // once, before its first model call. A cached input never gets here.
+      if (attempt === 1) await deps.meter?.authorizeSolve();
+      // A timeout is an honest failure, not a retry: retrying would double
+      // both the wait and the spend on a call that already ran long.
+      const response = await callModel(deps, candidateRequest(deps, input, rejection), "candidates");
       calls.candidates += 1;
       try {
         const { parsed, repairs: metadataRepairs } = validateCandidatesResponse(response);

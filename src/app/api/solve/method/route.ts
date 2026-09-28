@@ -6,6 +6,8 @@ import { createSupabaseUsageStore } from "@/lib/spend";
 import { createMethodHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
+// One explanation and its retry (2 x 30 s at the default) is cut off at this
+// limit minus 5 s, so the second attempt gets whatever time remains.
 export const maxDuration = 60;
 
 export const POST = createMethodHandler({
@@ -15,4 +17,5 @@ export const POST = createMethodHandler({
   },
   getCache: () => routeSolveCache(createAdminClient()),
   getUsage: () => createSupabaseUsageStore(createAdminClient()),
+  maxDurationSeconds: maxDuration,
 });
