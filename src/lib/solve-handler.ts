@@ -2,7 +2,7 @@ import OpenAI from "openai";
 import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
-import { ACCEPTED_IMAGE_TYPES, MAX_IMAGE_BYTES, type Solution } from "@/lib/solver-schema";
+import { ACCEPTED_IMAGE_TYPES, type Solution } from "@/lib/solver-schema";
 import { eligibleMethods, preflightRecordSchema, type SolveCache } from "@/lib/solve-cache";
 import { SolveValidationError } from "@/lib/solve-output";
 import {
@@ -33,7 +33,14 @@ import {
 } from "@/lib/spend";
 import { MAX_CANDIDATES } from "@/lib/strategy-selection";
 import { TrainingBatchError } from "@/lib/training-examples";
-import { validateImage, InvalidImageError } from "@/lib/upload-validation";
+import {
+  InvalidImageError,
+  maxImageBytes,
+  prepareModelImage,
+  tooLargeMessage,
+  unsupportedTypeMessage,
+  validateImage,
+} from "@/lib/upload-validation";
 
 export type SolveDependencies = {
   getCurrentUser: () => Promise<{ id: string } | null>;
@@ -78,7 +85,7 @@ function describeReset(resetsAt: string | null): string {
 }
 
 // Leave room for multipart headers while bounding uploads, including chunked ones.
-const MAX_REQUEST_BYTES = MAX_IMAGE_BYTES + 64 * 1024;
+const MULTIPART_OVERHEAD_BYTES = 64 * 1024;
 const NDJSON = "application/x-ndjson";
 
 class UploadError extends Error {
@@ -104,14 +111,21 @@ function wantsStream(request: Request): boolean {
   return (request.headers.get("accept") ?? "").includes(NDJSON);
 }
 
+/**
+ * Reads the one uploaded image, refusing an oversized or wrongly typed file
+ * from its headers and size alone: nothing is decoded, reserved, or sent to
+ * OpenAI for a file that fails here.
+ */
 async function readUpload(request: Request): Promise<File> {
+  const limit = maxImageBytes();
+  const maxRequestBytes = limit + MULTIPART_OVERHEAD_BYTES;
   const contentType = request.headers.get("content-type") ?? "";
   if (!contentType.toLowerCase().startsWith("multipart/form-data;")) {
     throw new UploadError("Upload a screenshot as PNG, JPG, or WebP.", 400);
   }
   const contentLength = Number(request.headers.get("content-length"));
-  if (contentLength > MAX_REQUEST_BYTES) {
-    throw new UploadError("That screenshot is too large. Use an image under 8 MB.", 413);
+  if (contentLength > maxRequestBytes) {
+    throw new UploadError(tooLargeMessage(contentLength - MULTIPART_OVERHEAD_BYTES, limit), 413);
   }
   if (!request.body) throw new UploadError("Choose a screenshot first.", 400);
 
@@ -123,9 +137,9 @@ async function readUpload(request: Request): Promise<File> {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.byteLength;
-      if (size > MAX_REQUEST_BYTES) {
+      if (size > maxRequestBytes) {
         await reader.cancel();
-        throw new UploadError("That screenshot is too large. Use an image under 8 MB.", 413);
+        throw new UploadError(tooLargeMessage(null, limit), 413);
       }
       chunks.push(value);
     }
@@ -150,11 +164,11 @@ async function readUpload(request: Request): Promise<File> {
   }
   const image = images[0];
   if (image.size === 0) throw new UploadError("That image is empty. Choose another screenshot.", 400);
-  if (image.size > MAX_IMAGE_BYTES) {
-    throw new UploadError("That screenshot is too large. Use an image under 8 MB.", 413);
+  if (image.size > limit) {
+    throw new UploadError(tooLargeMessage(image.size, limit), 413);
   }
   if (!ACCEPTED_IMAGE_TYPES.some((type) => type === image.type)) {
-    throw new UploadError("Use a PNG, JPG, or WebP screenshot.", 415);
+    throw new UploadError(unsupportedTypeMessage(image.type), 415);
   }
   return image;
 }
@@ -328,6 +342,9 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       if (!matchesImageSignature(bytes, image.type)) {
         return errorResponse("This file is not a valid PNG, JPG, or WebP image. Export the screenshot again.", 415);
       }
+      // Fully decode before anything else is spent on it: a damaged or
+      // oversized image costs neither a rate-limit slot nor an OpenAI call.
+      await validateImage(bytes, image.type);
       if (!process.env.OPENAI_API_KEY?.trim()) return missingKey();
       if (request.signal.aborted) return errorResponse("The solve was canceled.", 408);
       let reservation: { allowed: boolean; retryAfter: number };
@@ -343,7 +360,8 @@ export function createSolveHandler(dependencies: SolveDependencies) {
           { status: 429, headers: { "Cache-Control": "no-store", "Retry-After": String(retryAfter) } },
         );
       }
-      await validateImage(bytes, image.type);
+      // What OpenAI sees: at most 1600 px on the long edge. History keeps the original.
+      const modelImage = await prepareModelImage(bytes, image.type);
 
       const pipeline = pipelineFor(
         dependencies.getCache(),
@@ -354,7 +372,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
         meterFor(dependencies, user.id, diagnosticId),
         deadlineFor(dependencies, requestStarted),
       );
-      const input = { kind: "image" as const, bytes, mime: image.type };
+      const input = { kind: "image" as const, bytes, mime: image.type, modelBytes: modelImage.bytes };
       const userId = user.id;
 
       // History keeps the method the student actually sees. The browser runs

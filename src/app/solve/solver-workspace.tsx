@@ -444,7 +444,10 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
         throw new Error(
           typeof data?.error === "string"
             ? data.error
-            : "The solver could not finish. Please try again.",
+            : response.status === 413
+              // The host refused the upload before the app saw it (on Vercel, over 4.5 MB).
+              ? "That screenshot is too large to upload. Crop it to the question or export a smaller image."
+              : "The solver could not finish. Please try again.",
         );
       }
       if (!response.body) throw new Error("The solver returned an empty response. Please try again.");

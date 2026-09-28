@@ -35,7 +35,7 @@ test("rejects empty and oversized files before image decoding", async () => {
 
 test("does not trust the uploaded MIME type or a plausible file signature", async () => {
   await assert.rejects(validateImage(pixel, "image/jpeg"), invalid(400, /match/));
-  await assert.rejects(validateImage(pixel, "image/gif"), invalid(400, /PNG, JPEG, or WebP/));
+  await assert.rejects(validateImage(pixel, "image/gif"), invalid(415, /GIF file \(image\/gif\)\. Upload a PNG, JPG, or WebP/));
   await assert.rejects(
     validateImage(Buffer.from("<svg width='1' height='1'></svg>"), "image/png"),
     invalid(400, /match|could not be read/),

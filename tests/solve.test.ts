@@ -1044,3 +1044,74 @@ test("with the usage tables missing, new solves are refused (fail closed) and ca
   assert.equal((await POST(upload())).status, 200, "the cached solve needs no model call and still works");
   assert.equal(requests.candidates.length, 1);
 });
+
+// ---- image upload limits ----------------------------------------------------
+
+async function screenshotOf(width: number, height: number) {
+  return sharp({ create: { width, height, channels: 3, background: { r: 250, g: 250, b: 250 } } }).png().toBuffer();
+}
+
+/** The image a candidates request actually sent, decoded from its data URL. */
+async function sentImage(body: Record<string, unknown>) {
+  const url = JSON.stringify(body.input).match(/data:image\/png;base64,([A-Za-z0-9+/=]+)/)?.[1];
+  assert.ok(url, "the request carried an image");
+  return sharp(Buffer.from(url, "base64")).metadata();
+}
+
+test("regression test 5: an image over MAX_IMAGE_BYTES is refused by name, before any model call, rate-limit slot, or decode", async () => {
+  process.env.MAX_IMAGE_BYTES = "2048";
+  try {
+    const { fetchMock } = mockModel({ candidates: candidatesResponse() });
+    const reserve = mock.method(dependencies, "reserveSolve");
+    const big = await sharp({ create: { width: 300, height: 300, channels: 3, background: { r: 10, g: 200, b: 90 } } }).png({ compressionLevel: 0 }).toBuffer();
+    assert.ok(big.length > 2048);
+    // As a browser sends it: a multipart body with its Content-Length.
+    const form = new FormData();
+    form.set("image", new File([new Uint8Array(big)], "question.png", { type: "image/png" }));
+    const encoded = new Response(form);
+    const body = Buffer.from(await encoded.arrayBuffer());
+    const response = await POST(
+      new Request("http://localhost/api/solve", {
+        method: "POST",
+        body,
+        headers: { "content-type": encoded.headers.get("content-type")!, "content-length": String(body.length) },
+      }),
+    );
+    assert.equal(response.status, 413);
+    assert.match((await response.json()).error, /That screenshot is \d+ KB, over the 2 KB limit/, "names the size and the limit");
+    assert.equal(fetchMock.mock.callCount(), 0, "zero model calls");
+    assert.equal(reserve.mock.callCount(), 0, "not even a rate-limit slot");
+  } finally {
+    delete process.env.MAX_IMAGE_BYTES;
+  }
+});
+
+test("regression test 6: a disallowed MIME type is refused by name before any model call", async () => {
+  const { fetchMock } = mockModel({ candidates: candidatesResponse() });
+  for (const [type, pattern] of [["image/gif", /GIF file \(image\/gif\)/], ["image/svg+xml", /SVG\+XML file/], ["application/pdf", /PDF file/]] as const) {
+    const response = await POST(upload(png, type));
+    assert.equal(response.status, 415, type);
+    const { error } = await response.json();
+    assert.match(error, pattern);
+    assert.match(error, /Upload a PNG, JPG, or WebP screenshot/);
+  }
+  assert.equal(fetchMock.mock.callCount(), 0, "zero model calls");
+});
+
+test("regression test 7: a 4000 px-wide screenshot is sent to OpenAI at 1600 px; history keeps the original", async () => {
+  const { requests } = mockModel({ candidates: candidatesResponse() });
+  const save = mock.method(dependencies, "saveProblem");
+  const wide = await screenshotOf(4000, 1000);
+  assert.equal((await POST(upload(wide))).status, 200);
+  const sent = await sentImage(requests.candidates[0]);
+  assert.deepEqual([sent.width, sent.height, sent.format], [1600, 400, "png"], "long edge capped at 1600, aspect kept, still lossless");
+  assert.equal(save.mock.calls[0].arguments[0].bytes.length, wide.length, "history saves the upload as received");
+
+  // A screenshot already within the cap is sent exactly as uploaded.
+  const small = await screenshotOf(1200, 700);
+  mock.restoreAll();
+  const second = mockModel({ candidates: candidatesResponse() });
+  await POST(upload(small));
+  const sentSmall = await sentImage(second.requests.candidates[0]);
+  assert.deepEqual([sentSmall.width, sentSmall.height], [1200, 700]);
+});

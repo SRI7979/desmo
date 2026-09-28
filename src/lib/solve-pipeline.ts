@@ -153,7 +153,8 @@ export async function loadSolveContext(): Promise<SolveContext> {
 }
 
 export type SolveInput =
-  | { kind: "image"; bytes: Buffer; mime: string }
+  /** bytes: the upload as received (hashed for the cache); modelBytes: what is sent, when downscaled. */
+  | { kind: "image"; bytes: Buffer; mime: string; modelBytes?: Buffer }
   | { kind: "text"; problem: string; choices: string[] | null };
 
 export type PipelineDeps = {
@@ -428,7 +429,7 @@ function candidateRequest(deps: PipelineDeps, input: SolveInput, rejection?: Rej
         content: [
           { type: "input_text", text: buildCandidatePrompt() },
           input.kind === "image"
-            ? { type: "input_image", image_url: `data:${input.mime};base64,${input.bytes.toString("base64")}`, detail: "high" }
+            ? { type: "input_image", image_url: `data:${input.mime};base64,${(input.modelBytes ?? input.bytes).toString("base64")}`, detail: "high" }
             : { type: "input_text", text: textProblem(input) },
           ...(rejection ? [{ type: "input_text", text: retryPrompt(rejection) }] : []),
         ],
