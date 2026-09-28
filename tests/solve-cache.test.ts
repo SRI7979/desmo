@@ -3,6 +3,7 @@ import { test } from "node:test";
 
 import {
   cacheEntrySchema,
+  preflightRecordSchema,
   cacheKeyFor,
   CACHE_ENTRY_VERSION,
   createMemorySolveCache,
@@ -85,6 +86,7 @@ function entry(cacheKey: string): CacheEntry {
     methods: selection.methods,
     winnerId: selection.winnerId,
     modelPreference: selection.modelPreference,
+    retryOf: null,
     createdAt: "2026-09-27T00:00:00.000Z",
   };
 }
@@ -118,6 +120,20 @@ test("the memory cache is first-writer-wins for entries, explanations, and input
   const stored = await cache.getEntry("key.v1");
   stored!.methods[0].rows[0].latex = "mutated";
   assert.notEqual((await cache.getEntry("key.v1"))!.methods[0].rows[0].latex, "mutated", "callers cannot mutate the cache");
+
+  // Pre-flight verdicts: first writer wins per method, like explanations.
+  const error = { status: "error" as const, errors: [{ row: 1, message: "Cannot store a list of numbers in a list." }] };
+  assert.deepEqual(await cache.putPreflight("key.v1", "intercept-read", error), error);
+  assert.deepEqual(await cache.putPreflight("key.v1", "intercept-read", { status: "clean" }), error, "a later report never overwrites a stored verdict");
+  assert.deepEqual(await cache.getPreflight("key.v1"), { "intercept-read": error });
+  assert.deepEqual(await cache.getPreflight("other.v1"), {});
+});
+
+test("a pre-flight verdict must be a clean result or name the erroring rows", () => {
+  assert.equal(preflightRecordSchema.safeParse({ status: "clean" }).success, true);
+  assert.equal(preflightRecordSchema.safeParse({ status: "error", errors: [] }).success, false, "an error names at least one row");
+  assert.equal(preflightRecordSchema.safeParse({ status: "error", errors: [{ row: 0, message: "x" }] }).success, false);
+  assert.equal(preflightRecordSchema.safeParse({ status: "timeout" }).success, false, "a timeout is not evidence and is never stored");
 });
 
 test("a cache outage degrades to an uncached solve instead of failing it", async () => {
@@ -130,6 +146,8 @@ test("a cache outage degrades to an uncached solve instead of failing it", async
       putEntry: async () => { throw new Error("down"); },
       getExplanation: async () => { throw new Error("down"); },
       putExplanation: async () => { throw new Error("down"); },
+      getPreflight: async () => { throw new Error("relation does not exist"); },
+      putPreflight: async () => { throw new Error("down"); },
     },
     (operation) => failures.push(operation),
   );
@@ -139,5 +157,8 @@ test("a cache outage degrades to an uncached solve instead of failing it", async
   assert.deepEqual(await broken.putEntry(value), value, "a write returns what it was given");
   assert.deepEqual(await broken.putExplanation("key.v1", "intercept-read", explanation()), explanation());
   await broken.rememberInput("hash", "v1", "key.v1");
-  assert.deepEqual(failures, ["lookupInput", "getEntry", "putEntry", "putExplanation", "rememberInput"]);
+  // Without the pre-flight table, verdicts are just not cached: every browser checks for itself.
+  assert.deepEqual(await broken.getPreflight("key.v1"), {});
+  assert.deepEqual(await broken.putPreflight("key.v1", "intercept-read", { status: "clean" }), { status: "clean" });
+  assert.deepEqual(failures, ["lookupInput", "getEntry", "putEntry", "putExplanation", "rememberInput", "getPreflight", "putPreflight"]);
 });

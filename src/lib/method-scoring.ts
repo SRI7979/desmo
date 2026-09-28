@@ -79,8 +79,13 @@ export function mathLevel(score: number): MathLevel {
   return "high";
 }
 
-export const BADGES = ["Recommended", "Least math", "Most Desmos", "Fewest steps"] as const;
+export const BADGES = ["Recommended", "Least math", "Most Desmos", "Fewest steps", "Most algebra"] as const;
 export type Badge = (typeof BADGES)[number];
+
+/** What the student physically does: rows typed, written steps, slider drags or re-edits. */
+export function studentSteps(cost: Pick<Cost, "rows" | "derivationSteps" | "manualIterations">): number {
+  return cost.rows + cost.derivationSteps + cost.manualIterations;
+}
 
 type Row = { latex: string; slider?: unknown };
 
@@ -147,21 +152,62 @@ export function compareMethods(left: Rankable, right: Rankable): number {
   );
 }
 
+type BadgeDimension = {
+  badge: Exclude<Badge, "Recommended">;
+  /** null: the method does not compete on this dimension. */
+  value: (method: Rankable) => number | null;
+  best: "min" | "max";
+};
+
 /**
- * Badges over methods already sorted by compareMethods (winner first). Each
- * badge has exactly one holder: the best-ranked method achieving the minimum.
- * "Fewest steps" is defined as lowest total cost, so it always coincides with
- * "Recommended" (the argmin winner).
+ * In precedence order: a method that leads several dimensions shows only the
+ * first. "Most Desmos" is the highest simplicity-ladder rung among calculator
+ * methods (sliders, lists, regressions, derivatives); "Most algebra" is the
+ * most written steps among methods that have any.
+ */
+const BADGE_DIMENSIONS: readonly BadgeDimension[] = [
+  { badge: "Least math", value: (method) => method.mathScore, best: "min" },
+  { badge: "Most Desmos", value: (method) => (method.cost.rows > 0 ? method.rung : null), best: "max" },
+  { badge: "Fewest steps", value: (method) => studentSteps(method.cost), best: "min" },
+  { badge: "Most algebra", value: (method) => (method.cost.derivationSteps > 0 ? method.cost.derivationSteps : null), best: "max" },
+];
+
+/** The unique best method on one dimension; a tie goes to the lower total, and a tie there to no one. */
+function strictLeader<T extends Rankable>(methods: readonly T[], dimension: BadgeDimension): T | null {
+  const scored = methods.flatMap((method) => {
+    const value = dimension.value(method);
+    return value === null ? [] : [{ method, score: dimension.best === "min" ? value : -value }];
+  });
+  if (scored.length === 0) return null;
+  const best = Math.min(...scored.map((item) => item.score));
+  const leaders = scored.filter((item) => item.score === best).map((item) => item.method);
+  if (leaders.length === 1) return leaders[0];
+  const cheapest = Math.min(...leaders.map((method) => method.total));
+  const cheapestLeaders = leaders.filter((method) => method.total === cheapest);
+  return cheapestLeaders.length === 1 ? cheapestLeaders[0] : null;
+}
+
+/**
+ * Badges over the methods the student can pick, already sorted by
+ * compareMethods (winner first). Badges must discriminate:
+ *   - "Recommended" is the argmin winner's, and only the winner's.
+ *   - Every other badge goes to exactly one method, the strict leader on its
+ *     dimension, or to none on an unbreakable tie.
+ *   - A badge that would land on the winner is suppressed: winning already
+ *     says it, and repeating it is noise.
+ *   - A method that leads several dimensions shows only the first.
+ * So the winner shows exactly one badge, and every other method zero or one.
  */
 export function assignBadges<T extends Rankable>(ranked: readonly T[]): Map<string, Badge[]> {
   const badges = new Map<string, Badge[]>(ranked.map((method) => [method.id, []]));
   if (ranked.length === 0) return badges;
-  const holder = (value: (method: T) => number) =>
-    ranked.reduce((best, method) => (value(method) < value(best) ? method : best), ranked[0]);
-  const award = (method: T, badge: Badge) => badges.get(method.id)!.push(badge);
-  award(ranked[0], "Recommended");
-  award(holder((method) => method.mathScore), "Least math");
-  award(holder((method) => method.cost.derivationSteps), "Most Desmos");
-  award(holder((method) => method.total), "Fewest steps");
+  const winner = ranked[0];
+  badges.get(winner.id)!.push("Recommended");
+  for (const dimension of BADGE_DIMENSIONS) {
+    const leader = strictLeader(ranked, dimension);
+    if (!leader || leader.id === winner.id) continue;
+    const held = badges.get(leader.id)!;
+    if (held.length === 0) held.push(dimension.badge);
+  }
   return badges;
 }

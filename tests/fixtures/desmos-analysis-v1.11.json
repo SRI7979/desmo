@@ -1,0 +1,54 @@
+{
+  "_source": "expressionAnalysis recorded from the real Desmos API v1.11.4 in headless Chrome by scripts/check-desmos-preflight.mts; row n was inserted as id p<n>.",
+  "nestedList": {
+    "rows": [
+      "x_{1} = [1]",
+      "[6x_{1} - k, 6] ~ [3x_{1}^2 + 13x_{1} + 2, 6x_{1} + 13]",
+      "k"
+    ],
+    "analysis": {
+      "p1": {
+        "isGraphable": false,
+        "isError": false,
+        "evaluation": {
+          "type": "ListOfNumber",
+          "value": [
+            1
+          ]
+        },
+        "evaluationDisplayed": false
+      },
+      "p2": {
+        "isGraphable": false,
+        "isError": true,
+        "errorMessage": "Cannot store a list of numbers in a list."
+      },
+      "p3": {
+        "isGraphable": false,
+        "isError": true,
+        "errorMessage": "Try adding 'y=' to the beginning of this equation."
+      }
+    }
+  },
+  "corrected": {
+    "rows": [
+      "[6a - k, 6] ~ [3a^2 + 13a + 2, 6a + 13]",
+      "k"
+    ],
+    "analysis": {
+      "p1": {
+        "isGraphable": false,
+        "isError": false
+      },
+      "p2": {
+        "isGraphable": false,
+        "isError": false,
+        "evaluation": {
+          "type": "Number",
+          "value": 2.083333333333334
+        },
+        "evaluationDisplayed": true
+      }
+    }
+  }
+}

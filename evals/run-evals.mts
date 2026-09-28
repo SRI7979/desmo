@@ -51,6 +51,9 @@ type RunResult = {
   trick?: string | null;
   techniqueId?: string;
   methodCount?: number;
+  techniques?: string[];
+  /** Every listed method's rows as the calculator would receive them, for the Desmos pre-flight audit. */
+  methods?: { techniqueId: string; rows: { latex: string; slider: { min: number; max: number; step: number } | null }[]; answerState: unknown; badges: string[]; shape: string }[];
   rejected?: { technique: string; rule: string }[];
   explanation?: string;
   answerCorrect?: boolean;
@@ -122,6 +125,14 @@ async function runOnce(client: OpenAI, context: SolveContext, id: string, proble
       trick: solution.trick,
       techniqueId: result.method.techniqueId,
       methodCount: eligibleMethods(result.entry).length,
+      techniques: eligibleMethods(result.entry).map((method) => method.techniqueId),
+      methods: result.resolved.methods.map((method) => ({
+        techniqueId: method.techniqueId,
+        rows: method.rows,
+        answerState: method.answerState,
+        badges: method.badges,
+        shape: method.shape,
+      })),
       rejected: result.entry.methods
         .filter((method) => method.rejected)
         .map((method) => ({ technique: method.techniqueId, rule: method.rejected!.rule })),

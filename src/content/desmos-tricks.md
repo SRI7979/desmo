@@ -126,7 +126,7 @@ distinguishes them.
 
 Each listed technique is one canonical method: its ordered calculator
 entries, their purposes, and the final answer instruction describe exactly
-that method. The routing policy at the end applies across all 75 strategies.
+that method. The routing policy at the end applies across all 76 strategies.
 
 1. Graph two equations and click the intersection
 [technique: graph-both-sides | Graph both sides]
@@ -1624,6 +1624,21 @@ the factor. Generalize to any linear factor px+q with zero x=-q/p. Prefer
 regression, answer-choice testing, or a justified candidate list; never an
 arbitrary brute-force range.
 
+76. Exactly one intersection → vertex of the difference
+[technique: vertex-of-difference | Vertex of the difference]
+
+Trigger: a line and a parabola meet at exactly one point (tangent, one real
+solution) and the unknown constant is added to one of them. Graph the
+difference of the two sides with the unknown left out and click its vertex:
+
+y=6x-k and y=3x^2+13x+2 meet exactly once, asked for k:
+y=(3x^2+13x+2)-6x
+
+The vertex is (-7/6,-25/12). The graphs meet once exactly when k cancels that
+lowest value, so k=25/12. One row and one click replace the discriminant, a
+derivative match, and the quadratic formula; flipping the sign of the clicked
+value is the only arithmetic.
+
 REGRESSION SAFETY
 
 Regression is the highest-value tool in this library and the easiest to abuse.
@@ -1652,7 +1667,7 @@ where possible: 3x rather than x*3, 2(x+1) rather than (x+1)*2.
 DESMOS-FIRST ROUTING
 
 For each readable SAT Math question, consider every applicable approach below
-and list the 2–4 distinct techniques that genuinely solve it. Leave out
+and list every distinct technique that genuinely solves it, up to six. Leave out
 inapplicable approaches rather than inventing data or a fake executable plan. Start by looking for:
 
 1. Condition translation: convert every given fact (root, point, intercept,

@@ -1,14 +1,27 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { readFile, unlink } from "node:fs/promises";
 import { afterEach, beforeEach, mock, test } from "node:test";
 import OpenAI from "openai";
 import { Responses } from "openai/resources/responses/responses";
 import sharp from "sharp";
 
-import { createMemorySolveCache } from "../src/lib/solve-cache";
-import { createMethodHandler, createSolveHandler, type SolveDependencies } from "../src/lib/solve-handler";
+import { createMemorySolveCache, withCacheFallback, type SolveCache } from "../src/lib/solve-cache";
+import { createMethodHandler, createPreflightHandler, createSolveHandler, type SolveDependencies } from "../src/lib/solve-handler";
 import { MAX_IMAGE_BYTES } from "../src/lib/solver-schema";
-import { candidatesResponse, explanation, graphCandidate, mockModel, paperCandidate, providerBody, zeroCost } from "./method-fixtures";
+import {
+  candidatesResponse,
+  explanation,
+  graphCandidate,
+  mockModel,
+  paperCandidate,
+  providerBody,
+  TANGENT_QUESTION,
+  tangentCandidates,
+  tangentExplanations,
+  zeroCost,
+} from "./method-fixtures";
+import { explanationFromEvents } from "../src/lib/technique-selection-ui";
 
 // Tiny valid PNG; tests never send this (or any other data) to an external API.
 const png = Buffer.from(
@@ -26,6 +39,7 @@ const dependencies: SolveDependencies = {
 };
 const POST = createSolveHandler(dependencies);
 const SWITCH = createMethodHandler(dependencies);
+const PREFLIGHT = createPreflightHandler(dependencies);
 const saved = {
   key: process.env.OPENAI_API_KEY,
   model: process.env.OPENAI_MODEL,
@@ -72,6 +86,29 @@ function switchTo(cacheKey: string, methodId: string, headers: Record<string, st
     body: JSON.stringify({ cacheKey, methodId }),
     headers: { "Content-Type": "application/json", ...headers },
   });
+}
+
+function report(cacheKey: string, verdicts: unknown[]) {
+  return new Request("http://localhost/api/solve/preflight", {
+    method: "POST",
+    body: JSON.stringify({ cacheKey, verdicts }),
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+const desmosError = (message = "Cannot store a list of numbers in a list.") => ({ status: "error", errors: [{ row: 1, message }] });
+
+/** Two calculator techniques for x² = 9 and nothing else, so both can error in Desmos. */
+function calculatorOnly() {
+  return candidatesResponse([
+    graphCandidate(),
+    graphCandidate({
+      techniqueId: "graph-both-sides",
+      rows: [{ latex: "y=x^2", slider: null, copiesRow: null }, { latex: "y=9", slider: null, copiesRow: null }],
+      result: { type: "intersection", row: 1, relatedRows: [2], value: 3, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the right intersection's x-coordinate" },
+      cost: { ...zeroCost, manualIterations: 1 },
+    }),
+  ]);
 }
 
 async function otherScreenshot() {
@@ -130,7 +167,8 @@ test("a first solve makes the candidates call and the winner's explanation call,
   assert.equal(data.cached, false);
   assert.match(data.cacheKey, /^[0-9a-f]{64}\.[0-9a-f]{24}$/);
   assert.deepEqual(data.methods.map((method: { id: string }) => method.id), ["intercept-read", "factoring"]);
-  assert.deepEqual(data.methods[0].badges, ["Recommended", "Least math", "Most Desmos", "Fewest steps"]);
+  assert.deepEqual(data.methods[0].badges, ["Recommended"]);
+  assert.deepEqual(data.methods[1].badges, ["Most algebra"]);
   assert.equal(data.methods[0].mathLevel, "low");
   assert.equal(data.methods[1].shape, "no calculator · factoring · 1 algebra step");
   assert.equal(data.solution.trick, "Read the intercepts");
@@ -437,6 +475,59 @@ test("regression test 9: a method switch returns cached rows with no model call;
   assert.equal(requests.explanation.length, 2, "both explanations are now cached");
 });
 
+test("the technique selector's data: every eligible method carries its graph bounds, slider state, and readout, and a rejected candidate never appears", async () => {
+  const slider = graphCandidate({
+    techniqueId: "shared-zero",
+    rung: 3,
+    rows: [
+      { latex: "b=1", slider: { min: 1, max: 10, step: 1 }, copiesRow: null },
+      { latex: "y=x+2b", slider: null, copiesRow: null },
+      { latex: "y=3x^2+25x+14b", slider: null, copiesRow: null },
+    ],
+    answer: "3",
+    result: { type: "slider_condition", row: 1, relatedRows: [2, 3], value: null, listIndex: null, answerFrom: "reasoning", choiceLabel: null, detail: "b where the graphs share an x-intercept" },
+    answerState: { param: "b", value: 3 },
+  });
+  // A candidate whose rows fail to insert: eligible from the model's point of
+  // view, but the server rejects it before it ever reaches the client.
+  const broken = graphCandidate({ techniqueId: "factoring", rows: [{ latex: "y=x^2-9\\text{ then read it}", slider: null, copiesRow: null }] });
+  mockModel({ candidates: candidatesResponse([slider, broken], { question: "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?" }) });
+  const data = await (await POST(upload())).json();
+
+  assert.deepEqual(
+    data.methods.map((method: { techniqueId: string }) => method.techniqueId),
+    ["shared-zero"],
+    "the rejected candidate is never sent to the client",
+  );
+  const [method] = data.methods;
+  assert.deepEqual(method.answerState, { param: "b", value: 3 });
+  assert.deepEqual(method.graphBounds, { left: -5, right: 5, bottom: -12, top: 12 });
+  assert.equal(method.result.detail, "b where the graphs share an x-intercept");
+  assert.deepEqual(method.parameters, [{ name: "b", integer: true, min: -1000, max: 1000 }]);
+  assert.equal(method.mathLevel, "low");
+  assert.equal(method.shape, "3 rows · slider · no algebra");
+  assert.ok(Array.isArray(method.badges));
+  assert.equal("rejected" in method, false, "rejection bookkeeping is not part of the client payload");
+  assert.equal("repairs" in method, false);
+});
+
+test("a single-candidate solve still returns a one-element methods array, not an empty one", async () => {
+  mockModel({ candidates: candidatesResponse([graphCandidate()]) });
+  const data = await (await POST(upload())).json();
+  assert.equal(data.methods.length, 1);
+  assert.equal(data.selectedMethodId, data.methods[0].id);
+});
+
+test("no solver-mode remnant survives in the workspace UI: no segmented control, no mode field, no dead badge usage", () => {
+  const workspace = readFileSync("src/app/solve/solver-workspace.tsx", "utf8");
+  const css = readFileSync("src/app/solve/page.module.css", "utf8");
+  for (const pattern of [/Weaponized/i, /Desmos First/i, /Fastest SAT/i, /mode/i, /segmented/i]) {
+    assert.doesNotMatch(workspace, pattern, `solver-workspace.tsx must not reference ${pattern}`);
+  }
+  assert.doesNotMatch(css, /\.modeOption|\.modes\b|\.modeSelected|\.modeHint/, "no dead mode CSS in page.module.css");
+  assert.match(workspace, /TechniqueSelector/, "the technique selector replaces the mode control");
+});
+
 test("method switch rejects unknown solves, unknown methods, bad bodies, and anonymous callers", async () => {
   const { requests } = mockModel({ candidates: candidatesResponse() });
   const solved = await (await POST(upload())).json();
@@ -579,4 +670,221 @@ test("a stalled candidates call is abandoned and retried instead of failing the 
   assert.equal(response.status, 200);
   assert.equal((await response.json()).solution.answer, "3");
   assert.equal(calls, 2);
+});
+
+test("regression test 3: every method errors in Desmos → one retry of call 1 with the Desmos errors attached; if its methods error too, an honest failure with no rows", async () => {
+  const { requests } = mockModel({
+    candidates: (_body: unknown, call: number) =>
+      call === 1 ? calculatorOnly() : candidatesResponse([graphCandidate({ rows: [{ latex: "y=x^2-9", slider: null, copiesRow: null }] })]),
+  });
+  const solved = await (await POST(upload())).json();
+  assert.deepEqual(solved.methods.map((method: { id: string }) => method.id), ["intercept-read", "graph-both-sides"]);
+
+  const first = await PREFLIGHT(
+    report(solved.cacheKey, [
+      { methodId: "intercept-read", ...desmosError() },
+      { methodId: "graph-both-sides", ...desmosError("Too many variables. Try defining 'q'.") },
+    ]),
+  );
+  assert.equal(first.status, 200);
+  const retried = await first.json();
+  assert.equal(retried.status, "retry");
+  assert.equal(retried.cacheKey, `${solved.cacheKey}.desmos-retry`);
+  assert.equal(requests.candidates.length, 2, "exactly one retry");
+  const retryInput = JSON.stringify(requests.candidates[1].input);
+  assert.match(retryInput, /desmos_preflight/);
+  assert.match(retryInput, /Cannot store a list of numbers in a list\./, "the retry sees each row's Desmos error");
+  assert.match(retryInput, /Too many variables/);
+  assert.match(retryInput, /y=x\^2-9/, "and the rows that produced it");
+
+  const failed = await PREFLIGHT(report(retried.cacheKey, [{ methodId: "intercept-read", ...desmosError() }]));
+  assert.equal(failed.status, 422);
+  const failure = await failed.json();
+  assert.equal(failure.status, "failed");
+  assert.match(failure.error, /none is shown/);
+  assert.equal("methods" in failure, false, "an honest failure carries no rows");
+  assert.equal(requests.candidates.length, 2, "never a second retry");
+
+  // Later solves of the problem reuse the verdicts: no model call, the same honest failure, no rows.
+  const again = await POST(upload());
+  assert.equal(again.status, 422);
+  assert.equal("methods" in (await again.json()), false);
+  assert.equal(requests.candidates.length, 2);
+  assert.equal((await SWITCH(switchTo(solved.cacheKey, "graph-both-sides"))).status, 404, "an erroring method cannot be switched to");
+});
+
+test("a method reported erroring is dropped from every later solve; the next clean one becomes the default, re-badged, with no re-check", async () => {
+  const { requests } = mockModel({
+    candidates: calculatorOnly(),
+    explanation: (body: { input: unknown }) => explanation(JSON.stringify(body.input).includes("Technique: Graph both sides") ? 2 : 1),
+  });
+  const solved = await (await POST(upload())).json();
+  assert.equal(solved.selectedMethodId, "intercept-read");
+  assert.deepEqual(solved.methods.map((method: { verified: boolean }) => method.verified), [false, false], "nothing checked yet");
+
+  const reply = await (await PREFLIGHT(report(solved.cacheKey, [{ methodId: "intercept-read", ...desmosError() }, { methodId: "graph-both-sides", status: "clean" }]))).json();
+  assert.equal(reply.status, "ready");
+  assert.equal(reply.selectedMethodId, "graph-both-sides");
+  assert.deepEqual(reply.methods.map((method: { id: string }) => method.id), ["graph-both-sides"]);
+
+  const hit = await (await POST(upload())).json();
+  assert.equal(hit.cached, true);
+  assert.equal(hit.selectedMethodId, "graph-both-sides");
+  assert.deepEqual(hit.methods.map((method: { id: string; verified: boolean; badges: string[] }) => [method.id, method.verified, method.badges]), [["graph-both-sides", true, ["Recommended"]]]);
+  assert.equal(hit.solution.trick, "Graph both sides");
+  assert.equal(requests.candidates.length, 1, "a cache hit re-runs no validation and no model call");
+  assert.equal(requests.explanation.length, 2, "only the new default's explanation was generated");
+
+  // A stored verdict is never overwritten by a later report.
+  await PREFLIGHT(report(solved.cacheKey, [{ methodId: "intercept-read", status: "clean" }]));
+  assert.equal((await (await POST(upload())).json()).selectedMethodId, "graph-both-sides");
+});
+
+test("history saves the method the student sees: a winner reported erroring while its explanation was written is replaced", async () => {
+  let key = "";
+  const memory = cache;
+  cache = { ...memory, putEntry: async (entry) => ((key = entry.cacheKey), memory.putEntry(entry)) };
+  const paper = explanation(0, { why: "Factoring turns the equation into two simple factors." });
+  mockModel({
+    candidates: candidatesResponse(),
+    explanation: (body: { input: unknown }) => {
+      if (JSON.stringify(body.input).includes("Technique: Factoring")) return paper;
+      // The browser's pre-flight report lands while the winner's explanation is being written.
+      void memory.putPreflight(key, "intercept-read", { status: "error", errors: [{ row: 1, message: "Try adding 'y=' to the beginning of this equation." }] });
+      return explanation();
+    },
+  });
+  const save = mock.method(dependencies, "saveProblem");
+  const stream = await events(await POST(upload(png, "image/png", { Accept: "application/x-ndjson" })));
+  assert.equal(stream[0].type, "methods");
+  assert.equal(stream[0].selectedMethodId, "intercept-read");
+  const final = stream.at(-1);
+  assert.equal(final.type, "solution");
+  assert.equal(final.methodId, "factoring");
+  assert.equal(final.solution.trick, "Factoring");
+  assert.equal(save.mock.calls[0].arguments[0].solution.trick, "Factoring", "the saved method is the one that runs");
+});
+
+test("pre-flight reports are validated and need a signed-in, same-site caller", async () => {
+  mockModel({ candidates: candidatesResponse() });
+  const solved = await (await POST(upload())).json();
+  assert.equal((await PREFLIGHT(report("missing.key", []))).status, 404);
+  assert.equal((await PREFLIGHT(report(solved.cacheKey, [{ methodId: "intercept-read", status: "error", errors: [] }]))).status, 400, "an error names its rows");
+  assert.equal((await PREFLIGHT(report(solved.cacheKey, [{ methodId: "intercept-read", status: "timeout" }]))).status, 400, "a timeout is not a verdict");
+  // A row number past the method's last row is not a real report and is ignored.
+  const ignored = await (await PREFLIGHT(report(solved.cacheKey, [{ methodId: "intercept-read", status: "error", errors: [{ row: 5, message: "x" }] }]))).json();
+  assert.equal(ignored.selectedMethodId, "intercept-read");
+  mock.method(dependencies, "getCurrentUser", async () => null);
+  assert.equal((await PREFLIGHT(report(solved.cacheKey, []))).status, 401);
+});
+
+// ---- lazy explanations for non-default techniques --------------------------
+
+function tangentModel(options: { failing?: Set<string> } = {}) {
+  return mockModel({
+    candidates: candidatesResponse(tangentCandidates(), { question: TANGENT_QUESTION }),
+    explanation: (body: { input: unknown }) => {
+      const technique = JSON.stringify(body.input).match(/Technique: ([^\\]+?)\\n/)?.[1] ?? "";
+      if (options.failing?.has(technique)) return new Response(JSON.stringify({ error: { message: "upstream unavailable" } }), { status: 500 });
+      return tangentExplanations()[technique] ?? explanation();
+    },
+  });
+}
+
+test("regression test 6: the first solve writes exactly one explanation, for the default technique only", async () => {
+  const { requests } = tangentModel();
+  const stream = await events(await POST(upload(png, "image/png", { Accept: "application/x-ndjson" })));
+  assert.equal(stream[0].type, "methods");
+  assert.deepEqual(
+    stream[0].methods.map((method: { techniqueId: string }) => method.techniqueId),
+    ["vertex-of-difference", "slider-condition", "derivative-regression", "discriminant", "quadratic-formula"],
+    "rows for every technique arrive up front",
+  );
+  assert.ok(stream[0].methods.every((method: { rows: unknown[] }) => Array.isArray(method.rows)));
+  assert.equal(requests.explanation.length, 1);
+  assert.match(JSON.stringify(requests.explanation[0].input), /Technique: Vertex of the difference/);
+  assert.equal(stream.at(-1).type, "solution");
+  assert.equal(stream.at(-1).methodId, "vertex-of-difference");
+  assert.equal(stream.at(-1).explanation, "model");
+});
+
+test("regression tests 1–3, 5: a non-default technique's explanation is written on first selection, streamed, cached, and its own", async () => {
+  const { requests } = tangentModel();
+  const solved = await (await POST(upload())).json();
+  assert.equal(requests.explanation.length, 1);
+
+  // 1 + 3: selecting a paper technique streams its rows first (none, so the
+  // calculator clears), then a full explanation.
+  const first = await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+  assert.equal(first[0].type, "methods");
+  assert.deepEqual(first[0].method.rows, [], "nothing left for the calculator: it clears");
+  assert.equal(first[1].type, "solution");
+  assert.equal(first[1].explanation, "model");
+  const discriminant = explanationFromEvents(first);
+  assert.ok(discriminant, "the client accepts it");
+  assert.deepEqual(discriminant.expressions, []);
+  assert.equal(discriminant.steps.length, 3, "the whole walkthrough, not one line");
+  assert.equal(requests.explanation.length, 2, "one call, for the technique chosen");
+
+  // 2: selecting it again is instant: served from the cache, no model call.
+  const again = await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+  assert.equal(again[1].explanation, "cache");
+  assert.deepEqual(explanationFromEvents(again), discriminant);
+  assert.equal(requests.explanation.length, 2);
+
+  // 5: two techniques, two different ideas; neither is the problem-level structure line.
+  const formula = explanationFromEvents(await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" }))));
+  assert.ok(formula);
+  assert.notEqual(formula.why, discriminant.why);
+  assert.notEqual(formula.why, solved.solution.why);
+  for (const why of [formula.why, discriminant.why, solved.solution.why]) assert.notEqual(why, solved.structure);
+});
+
+test("regression test 4: a failed explanation is a retryable failure, not a blank panel, and is never cached", async () => {
+  const failing = new Set(["Quadratic formula"]);
+  const { requests } = tangentModel({ failing });
+  const solved = await (await POST(upload())).json();
+  const failed = await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  assert.equal(failed[0].type, "methods", "the rows and answer still arrive");
+  assert.equal(failed[0].method.answer, "25/12");
+  assert.equal(failed[1].explanation, "fallback");
+  assert.equal(explanationFromEvents(failed), null, "the one-line fallback counts as a failure the student can retry");
+  assert.equal(await cache.getExplanation(solved.cacheKey, "quadratic-formula"), null, "a fallback is never cached");
+
+  failing.clear();
+  const retried = await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  assert.equal(retried[1].explanation, "model");
+  assert.equal(explanationFromEvents(retried)?.steps.length, 3);
+  assert.ok(requests.explanation.length >= 3);
+});
+
+test("root cause: with the cache tables missing, switching still finds the solve through this server's memory tier", async () => {
+  // What production saw: PostgREST PGRST205 on every cache table.
+  const missingTables = Object.fromEntries(
+    ["lookupInput", "rememberInput", "getEntry", "putEntry", "getExplanation", "putExplanation", "getPreflight", "putPreflight"].map((name) => [
+      name,
+      async () => {
+        throw new Error("solve cache read failed (solve_cache): PGRST205 Could not find the table 'public.solve_cache' in the schema cache");
+      },
+    ]),
+  ) as unknown as SolveCache;
+  const warnings: string[] = [];
+
+  // Before: without a local tier the switch cannot find the solve (the 404 the client swallowed).
+  cache = withCacheFallback(missingTables, (operation) => warnings.push(operation)) as typeof cache;
+  const { requests } = tangentModel();
+  const before = await (await POST(upload())).json();
+  assert.equal((await SWITCH(switchTo(before.cacheKey, "discriminant"))).status, 404);
+
+  // After: the route's local tier keeps the solve, so the explanation is written and then served again.
+  cache = withCacheFallback(missingTables, (operation) => warnings.push(operation), createMemorySolveCache()) as typeof cache;
+  const solved = await (await POST(upload())).json();
+  const calls = requests.explanation.length;
+  const first = await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+  assert.equal(explanationFromEvents(first)?.steps.length, 3);
+  assert.equal(requests.explanation.length, calls + 1);
+  const second = await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+  assert.equal(second[1].explanation, "cache");
+  assert.equal(requests.explanation.length, calls + 1, "no second call");
+  assert.ok(warnings.includes("getEntry"), "the database failure is still reported");
 });

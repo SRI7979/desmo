@@ -3,19 +3,25 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 import { ACCEPTED_IMAGE_TYPES, MAX_IMAGE_BYTES, type Solution } from "@/lib/solver-schema";
-import { findMethod, type CacheEntry, type SolveCache } from "@/lib/solve-cache";
+import { eligibleMethods, preflightRecordSchema, type SolveCache } from "@/lib/solve-cache";
 import { SolveValidationError } from "@/lib/solve-output";
 import {
   explainMethod,
+  HONEST_FAILURE,
   loadSolveContext,
   methodSummaries,
+  PreflightFailedError,
   RefusalError,
+  resolveEntry,
+  resolveOrRetry,
   solveProblem,
   type MethodsReady,
   type PipelineDeps,
+  type ReadyEntry,
   type ServiceTierState,
   type SolveResult,
 } from "@/lib/solve-pipeline";
+import { MAX_CANDIDATES } from "@/lib/strategy-selection";
 import { TrainingBatchError } from "@/lib/training-examples";
 import { validateImage, InvalidImageError } from "@/lib/upload-validation";
 
@@ -145,6 +151,9 @@ function errorFor(error: unknown, diagnosticId: string): Response {
     );
   }
   if (error instanceof UploadError || error instanceof InvalidImageError) return errorResponse(error.message, error.status);
+  if (error instanceof PreflightFailedError) {
+    return Response.json({ status: "failed", error: HONEST_FAILURE }, { status: 422, headers: { "Cache-Control": "no-store" } });
+  }
   if (error instanceof RefusalError) {
     return errorResponse("The AI could not process that image. Try a clear crop of just the math question.", 422);
   }
@@ -176,15 +185,26 @@ function errorFor(error: unknown, diagnosticId: string): Response {
   return errorResponse("The screenshot could not be solved. Please try again.", 500);
 }
 
-function methodsPayload(entry: CacheEntry, selectedMethodId: string, cached: boolean) {
+function methodsPayload(resolved: ReadyEntry, cached: boolean, selectedMethodId = resolved.winner.id) {
   return {
-    cacheKey: entry.cacheKey,
+    cacheKey: resolved.entry.cacheKey,
     selectedMethodId,
     cached,
-    question: entry.question,
-    choices: entry.choices,
-    structure: entry.structure,
-    methods: methodSummaries(entry),
+    question: resolved.entry.question,
+    choices: resolved.entry.choices,
+    structure: resolved.entry.structure,
+    methods: methodSummaries(resolved),
+  };
+}
+
+function pipelineFor(cache: SolveCache, tier: ServiceTierState, diagnosticId: string, signal: AbortSignal, context: PipelineDeps["context"]): PipelineDeps {
+  return {
+    client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 150_000, maxRetries: 0 }),
+    cache,
+    context,
+    tier,
+    diagnosticId,
+    signal,
   };
 }
 
@@ -250,16 +270,40 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       const input = { kind: "image" as const, bytes, mime: image.type };
       const userId = user.id;
 
+      // History keeps the method the student actually sees. The browser runs
+      // pre-flight while the explanation is generated, so by the time it is
+      // saved, a winner that errored in Desmos has usually been reported: the
+      // entry is resolved again and the surviving winner is saved instead.
+      // While the Desmos retry is still running, or after it failed, nothing
+      // that could error is saved.
+      // `explanation` says where the prose came from; "fallback" is the
+      // generated one-line summary, which the client treats as a failed
+      // explanation (with a retry), never as the explanation itself.
       const finish = async (result: SolveResult) => {
+        let solution = result.solution;
+        let methodId: string | null = null;
+        let explanation: "cache" | "model" | "fallback" | null = null;
+        if (result.kind === "solved") {
+          methodId = result.method.id;
+          explanation = result.explanation;
+          const latest = await resolveEntry(pipeline.cache, result.entry);
+          if (latest.status !== "ready") return { solution, methodId, explanation, problemId: null };
+          if (latest.winner.id !== result.method.id || latest.entry.cacheKey !== result.entry.cacheKey) {
+            const explained = await explainMethod(pipeline, latest.entry, latest.winner);
+            solution = explained.solution;
+            explanation = explained.source;
+            methodId = latest.winner.id;
+          }
+        }
         let problemId: string | null = null;
         let historyWarning: string | undefined;
         try {
-          problemId = await dependencies.saveProblem({ userId, bytes, mime: image.type, solution: result.solution });
+          problemId = await dependencies.saveProblem({ userId, bytes, mime: image.type, solution });
         } catch {
           // Keep a usable answer even when storage is temporarily unavailable.
           historyWarning = "Your result is ready, but it could not be saved to history. Keep this page open to view it.";
         }
-        return { problemId, ...(historyWarning ? { historyWarning } : {}) };
+        return { solution, methodId, explanation, problemId, ...(historyWarning ? { historyWarning } : {}) };
       };
 
       if (!wantsStream(request)) {
@@ -267,8 +311,8 @@ export function createSolveHandler(dependencies: SolveDependencies) {
         const saved = await finish(result);
         const body =
           result.kind === "solved"
-            ? { solution: result.solution, ...methodsPayload(result.entry, result.method.id, result.cached), ...saved }
-            : { solution: result.solution, cacheKey: null, selectedMethodId: null, cached: false, methods: [], ...saved };
+            ? { ...methodsPayload(result.resolved, result.cached, saved.methodId ?? result.method.id), ...saved }
+            : { cacheKey: null, selectedMethodId: null, cached: false, methods: [], ...saved };
         return Response.json(body, {
           headers: { "Cache-Control": "no-store", "Server-Timing": serverTiming(result, startedAt) },
         });
@@ -284,20 +328,19 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       let announce!: () => void;
       const announced = new Promise<"methods">((resolve) => (announce = () => resolve("methods")));
       const run = solveProblem(pipeline, input, (ready: MethodsReady) => {
-        send({ type: "methods", ...methodsPayload(ready.entry, ready.method.id, ready.cached) });
+        send({ type: "methods", ...methodsPayload(ready.resolved, ready.cached) });
         announce();
       });
       const first = await Promise.race([announced, run.then(() => "done" as const, (error: unknown) => ({ error }))]);
       if (typeof first === "object") throw first.error;
       if (first === "done") {
         const result = await run;
-        const saved = await finish(result);
-        send({ type: "solution", solution: result.solution, ...saved });
+        send({ type: "solution", ...(await finish(result)) });
         controller.close();
       } else {
         void run
           .then(async (result) => {
-            send({ type: "solution", solution: result.solution, ...(await finish(result)) });
+            send({ type: "solution", ...(await finish(result)) });
           })
           .catch(() => send({ type: "error", error: "The explanation could not be loaded. The calculator steps above are complete." }))
           .finally(() => controller.close());
@@ -332,20 +375,19 @@ export function createMethodHandler(dependencies: MethodDependencies) {
       if (!body.success) return errorResponse("Choose a method from this solve.", 400);
       const cache = dependencies.getCache();
       const entry = await cache.getEntry(body.data.cacheKey);
-      const method = entry ? findMethod(entry, body.data.methodId) : null;
-      if (!entry || !method) return errorResponse("That method is not available for this problem. Solve it again.", 404);
+      // A method a browser reported erroring in Desmos is no longer offered.
+      const resolved = entry ? await resolveEntry(cache, entry) : null;
+      const method =
+        resolved?.status === "ready" && resolved.entry.cacheKey === body.data.cacheKey
+          ? resolved.methods.find((item) => item.id === body.data.methodId) ?? null
+          : null;
+      if (resolved?.status !== "ready" || !method) return errorResponse("That method is not available for this problem. Solve it again.", 404);
       if (!process.env.OPENAI_API_KEY?.trim()) return missingKey();
-      const pipeline: PipelineDeps = {
-        client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 150_000, maxRetries: 0 }),
-        cache,
-        context: await loadSolveContext(),
-        tier,
-        diagnosticId,
-        signal: request.signal,
-      };
-      const summary = { ...methodsPayload(entry, method.id, true), method: methodSummaries(entry).find((item) => item.id === method.id) };
+      const pipeline = pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext());
+      const payload = methodsPayload(resolved, true, method.id);
+      const summary = { ...payload, method: payload.methods.find((item) => item.id === method.id) };
       if (!wantsStream(request)) {
-        const explained = await explainMethod(pipeline, entry, method);
+        const explained = await explainMethod(pipeline, resolved.entry, method);
         return Response.json(
           { ...summary, solution: explained.solution, explanation: explained.source },
           { headers: { "Cache-Control": "no-store" } },
@@ -357,7 +399,7 @@ export function createMethodHandler(dependencies: MethodDependencies) {
           const send = (event: object) => controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
           send({ type: "methods", ...summary });
           try {
-            const explained = await explainMethod(pipeline, entry, method);
+            const explained = await explainMethod(pipeline, resolved.entry, method);
             send({ type: "solution", solution: explained.solution, explanation: explained.source });
           } catch {
             send({ type: "error", error: "The explanation could not be loaded. The calculator steps above are complete." });
@@ -366,6 +408,73 @@ export function createMethodHandler(dependencies: MethodDependencies) {
         },
       });
       return new Response(stream, { headers: { "Content-Type": NDJSON, "Cache-Control": "no-store" } });
+    } catch (error) {
+      return errorFor(error, diagnosticId);
+    }
+  };
+}
+
+const rowErrorsSchema = preflightRecordSchema.options[1].shape.errors;
+const preflightRequestSchema = z
+  .object({
+    cacheKey: z.string().min(1).max(240),
+    verdicts: z
+      .array(
+        z.union([
+          z.object({ methodId: z.string().min(1).max(80), status: z.literal("clean") }).strict(),
+          z.object({ methodId: z.string().min(1).max(80), status: z.literal("error"), errors: rowErrorsSchema }).strict(),
+        ]),
+      )
+      .max(MAX_CANDIDATES),
+  })
+  .strict();
+
+/**
+ * Pre-flight report: the verdicts a browser's hidden Desmos instance reached
+ * for this entry's methods. They are cached per method (first writer wins),
+ * so later solves of the problem neither re-check nor offer an erroring
+ * method. When every method errored, this runs the one retry of call 1 with
+ * the Desmos errors attached and returns its methods ("retry"); when the
+ * retry's methods error too, the result is an honest failure ("failed").
+ */
+export function createPreflightHandler(dependencies: MethodDependencies) {
+  const tier: ServiceTierState = { priorityUnavailable: false };
+  return async function POST(request: Request) {
+    const diagnosticId = randomUUID();
+    try {
+      if (crossSite(request)) return errorResponse("Send requests from the Desmo website.", 403);
+      let user: { id: string } | null;
+      try {
+        user = await dependencies.getCurrentUser();
+      } catch {
+        return errorResponse("Sign-in is temporarily unavailable. Please try again shortly.", 503);
+      }
+      if (!user) return errorResponse("Sign in to solve and save your problems.", 401);
+      const body = preflightRequestSchema.safeParse(await request.json().catch(() => null));
+      if (!body.success) return errorResponse("Send the Desmos check for a method from this solve.", 400);
+      const cache = dependencies.getCache();
+      const entry = await cache.getEntry(body.data.cacheKey);
+      if (!entry) return errorResponse("This solve is no longer available. Solve it again.", 404);
+      const rowCounts = new Map(eligibleMethods(entry).map((method) => [method.id, method.rows.length]));
+      await Promise.all(
+        body.data.verdicts.map((verdict) => {
+          const rows = rowCounts.get(verdict.methodId);
+          // A method with no rows cannot error, and a row number past the end is not a real report.
+          if (!rows || (verdict.status === "error" && verdict.errors.some((error) => error.row > rows))) return undefined;
+          return cache.putPreflight(entry.cacheKey, verdict.methodId, verdict.status === "clean" ? { status: "clean" } : { status: "error", errors: verdict.errors });
+        }),
+      );
+      const current = await resolveEntry(cache, entry);
+      if (current.status === "needs-retry" && !process.env.OPENAI_API_KEY?.trim()) return missingKey();
+      const resolved =
+        current.status === "needs-retry"
+          ? await resolveOrRetry(pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext()), entry)
+          : current;
+      if (resolved.status !== "ready") throw new PreflightFailedError();
+      return Response.json(
+        { status: resolved.entry.cacheKey === entry.cacheKey ? "ready" : "retry", ...methodsPayload(resolved, true) },
+        { headers: { "Cache-Control": "no-store" } },
+      );
     } catch (error) {
       return errorFor(error, diagnosticId);
     }

@@ -65,6 +65,7 @@ export const TECHNIQUES = [
   { id: "derivative-slope", name: "Derivative slope finder", source: "library" },
   { id: "strategic-value-test", name: "Strategic-value testing", source: "library" },
   { id: "shared-zero", name: "Shared zero", source: "library" },
+  { id: "vertex-of-difference", name: "Vertex of the difference", source: "library" },
   {
     id: "quadratic-formula",
     name: "Quadratic formula",
@@ -72,6 +73,14 @@ export const TECHNIQUES = [
     fact: "quadratic formula",
     minSteps: 1,
     use: "a quadratic's roots when it does not factor nicely",
+  },
+  {
+    id: "discriminant",
+    name: "Discriminant",
+    source: "standard",
+    fact: "discriminant",
+    minSteps: 2,
+    use: "how many real solutions a quadratic has, or the constant that makes a line meet a parabola exactly once (set the two equal, then b^2-4ac=0)",
   },
   {
     id: "factoring",

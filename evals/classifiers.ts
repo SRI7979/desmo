@@ -190,6 +190,13 @@ export const CLASSIFIERS: Record<string, Classifier> = {
     const forbidden = hasRegression(s) || s.expressions.some((e) => /=\s*(?:\\left\s*)?\[/.test(e.latex));
     return verdict(usesArithmeticOnly(s) || s.expressions.length === 0, forbidden, "used an unnecessary list/regression for a single ratio");
   },
+
+  "016-tangent-line-parabola": (s) => {
+    // x_1=[1] makes a one-element list, so [6x_1-k,6] nests a list in a list.
+    const singletonList = s.expressions.some((e) => /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*=\s*(?:\\left\s*)?\[\s*-?[\d.]+\s*(?:\\right\s*)?\]\s*$/.test(e.latex));
+    const forbidden = singletonList || isUnderdetermined(s);
+    return verdict(s.expressions.length > 0 && !forbidden, forbidden, singletonList ? "wrapped a scalar unknown in a one-element list (nested-list regression)" : "underdetermined regression");
+  },
 };
 
 export function classify(problemId: string, solution: Solution): Verdict {

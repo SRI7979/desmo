@@ -1,6 +1,6 @@
 # Desmo
 
-An SAT Math workspace: upload a screenshot, get a concise answer, and watch the solution appear in an editable Desmos calculator. The solver uses the curated 75-strategy library in `src/content/desmos-tricks.md` plus reviewed training batches to choose a useful calculator method: graphing, regression, answer-choice testing, formulas, or direct arithmetic. See [PHILOSOPHY.md](PHILOSOPHY.md) for the product's Desmos-first design philosophy — read it before changing the solver's prompt, strategy library, or scoring.
+An SAT Math workspace: upload a screenshot, get a concise answer, and watch the solution appear in an editable Desmos calculator. The solver uses the curated 76-strategy library in `src/content/desmos-tricks.md` plus reviewed training batches to choose a useful calculator method: graphing, regression, answer-choice testing, formulas, or direct arithmetic. See [PHILOSOPHY.md](PHILOSOPHY.md) for the product's Desmos-first design philosophy — read it before changing the solver's prompt, strategy library, or scoring.
 
 ## Run locally
 

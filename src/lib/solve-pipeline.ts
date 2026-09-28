@@ -10,17 +10,19 @@ import {
   fallbackExplanation,
   presentMethod,
 } from "./method-presentation";
-import { COST_WEIGHTS } from "./method-scoring";
+import { assignBadges, COST_WEIGHTS } from "./method-scoring";
+import type { MethodSummary } from "./method-summary";
 import {
   CACHE_ENTRY_VERSION,
   cacheKeyFor,
   eligibleMethods,
   explanationSchema,
-  findMethod,
   inputHash,
   problemKey,
   promptConfigVersion,
+  retryCacheKey,
   type CacheEntry,
+  type PreflightRecord,
   type SolveCache,
 } from "./solve-cache";
 import {
@@ -143,16 +145,137 @@ export type PipelineDeps = {
 
 export type CallCounts = { candidates: number; explanation: number };
 
+/**
+ * An entry with its cached pre-flight verdicts applied. "ready": the methods
+ * not known to error in Desmos, in rank order and re-badged over that set
+ * (winner first). "needs-retry": every method errored and the one Desmos
+ * retry has not run. "failed": the retry ran and its methods all errored too
+ * (or it produced none), so there is nothing that can honestly be shown.
+ */
+export type ResolvedEntry =
+  | { status: "ready"; entry: CacheEntry; verdicts: Record<string, PreflightRecord>; methods: Method[]; winner: Method }
+  | { status: "needs-retry" | "failed"; entry: CacheEntry; verdicts: Record<string, PreflightRecord> };
+export type ReadyEntry = Extract<ResolvedEntry, { status: "ready" }>;
+
+export const HONEST_FAILURE =
+  "Every method found for this problem has a Desmos line that errors, even after one corrected attempt, so none is shown. Try a tighter crop of just this question.";
+
+/** No method survived pre-flight, even after the one retry: an honest failure, never erroring rows. */
+export class PreflightFailedError extends Error {
+  constructor() {
+    super(HONEST_FAILURE);
+    this.name = "PreflightFailedError";
+  }
+}
+
+/**
+ * Applies the cached pre-flight verdicts: a method any browser's hidden
+ * Desmos instance reported erroring is dropped, the cheapest survivor becomes
+ * the default, and badges are recomputed over the survivors. When every
+ * method errored, the entry's Desmos retry (if it ran) takes its place.
+ */
+export async function resolveEntry(cache: SolveCache, entry: CacheEntry, options: { fresh?: boolean } = {}): Promise<ResolvedEntry> {
+  const verdicts = options.fresh ? {} : await cache.getPreflight(entry.cacheKey);
+  const surviving = eligibleMethods(entry).filter((method) => verdicts[method.id]?.status !== "error");
+  if (surviving.length > 0) {
+    const badges = assignBadges(surviving);
+    const methods = surviving.map((method) => ({ ...method, badges: badges.get(method.id) ?? [] }));
+    return { status: "ready", entry, verdicts, methods, winner: methods[0] };
+  }
+  if (entry.retryOf !== null) return { status: "failed", entry, verdicts };
+  const retry = await cache.getEntry(retryCacheKey(entry.cacheKey));
+  return retry ? resolveEntry(cache, retry) : { status: "needs-retry", entry, verdicts };
+}
+
+/** The Desmos errors, row by row, as a guided-retry rejection for call 1. */
+function desmosRejection(entry: CacheEntry, verdicts: Record<string, PreflightRecord>): Rejection {
+  const methods = eligibleMethods(entry);
+  const failures = methods.map((method) => {
+    const verdict = verdicts[method.id];
+    const errors = verdict?.status === "error"
+      ? verdict.errors.map((error) => `line ${error.row} ${JSON.stringify(method.rows[error.row - 1]?.latex ?? "")}: ${error.message}`).join("; ")
+      : "not run";
+    return `${method.techniqueId}: ${errors}`;
+  });
+  return {
+    stage: "desmos_preflight",
+    reason:
+      "every candidate's calculator rows were inserted into a real Desmos instance (API v1.11) and at least one row of each ERRORED, " +
+      `so no candidate can be shown. Desmos reported: ${failures.join(" | ")}. ` +
+      "Correct each technique so every row runs, or replace it with a technique whose rows run; never pad. A single unknown is a bare " +
+      "letter the regression leaves undefined, never a one-element list, and Desmos has no nested lists.",
+    previous: JSON.stringify({
+      question: entry.question,
+      candidates: methods.map((method) => ({ techniqueId: method.techniqueId, rows: method.rows.map((row) => row.latex) })),
+    }),
+  };
+}
+
+/**
+ * The one retry after every candidate errored in Desmos: call 1 again, on the
+ * already-transcribed question, with each row's Desmos error attached. The
+ * result is stored under the entry's retry key (first writer wins), including
+ * a retry that produced no usable method, so it never runs twice.
+ */
+export async function retryAfterDesmosErrors(
+  deps: PipelineDeps,
+  entry: CacheEntry,
+  verdicts: Record<string, PreflightRecord>,
+  calls: CallCounts = { candidates: 0, explanation: 0 },
+): Promise<CacheEntry> {
+  const input: SolveInput = { kind: "text", problem: entry.question, choices: entry.choices?.map((choice) => choice.text) ?? null };
+  const response = await callModel(deps, candidateRequest(deps, input, desmosRejection(entry, verdicts)), CANDIDATE_TIMEOUT_MS);
+  calls.candidates += 1;
+  const base = {
+    version: CACHE_ENTRY_VERSION,
+    cacheKey: retryCacheKey(entry.cacheKey),
+    promptConfigVersion: entry.promptConfigVersion,
+    question: entry.question,
+    choices: entry.choices,
+    structure: entry.structure,
+    retryOf: entry.cacheKey,
+    createdAt: new Date().toISOString(),
+  } as const;
+  try {
+    const { parsed } = validateCandidatesResponse(response);
+    if (parsed.status !== "solved") throw new StrategySelectionError("The retry asked for clarification instead of candidates.");
+    const selection = selectMethods({ ...parsed, question: entry.question, choices: entry.choices });
+    return await deps.cache.putEntry({
+      ...base,
+      methods: selection.methods,
+      winnerId: selection.winnerId,
+      modelPreference: selection.modelPreference,
+    });
+  } catch (error) {
+    const failure = error instanceof StrategySelectionError ? new SolveValidationError(error.stage, error.message) : error;
+    if (!(failure instanceof SolveValidationError)) throw error;
+    await logSolveRejection(`${deps.diagnosticId}-desmos-retry`, 1, response, failure);
+    return deps.cache.putEntry({ ...base, methods: [], winnerId: "", modelPreference: null });
+  }
+}
+
+/** Resolves an entry, running its one Desmos retry if every method errored and it has not run yet. */
+export async function resolveOrRetry(deps: PipelineDeps, entry: CacheEntry, calls?: CallCounts, options: { fresh?: boolean } = {}): Promise<ReadyEntry> {
+  let resolved = await resolveEntry(deps.cache, entry, options);
+  if (resolved.status === "needs-retry") {
+    await retryAfterDesmosErrors(deps, resolved.entry, resolved.verdicts, calls);
+    resolved = await resolveEntry(deps.cache, entry);
+  }
+  if (resolved.status !== "ready") throw new PreflightFailedError();
+  return resolved;
+}
+
 export type MethodsReady = {
-  entry: CacheEntry;
-  method: Method;
+  resolved: ReadyEntry;
   /** True when the entry came from the cache (an input or problem hit). */
   cached: boolean;
 };
 
 export type SolvedResult = {
   kind: "solved";
+  /** The entry the methods come from: the problem's entry, or its Desmos retry. */
   entry: CacheEntry;
+  resolved: ReadyEntry;
   method: Method;
   solution: Solution;
   cached: boolean;
@@ -411,9 +534,10 @@ export async function solveProblem(
           methods: selection.methods,
           winnerId: selection.winnerId,
           modelPreference: selection.modelPreference,
+          retryOf: null,
           createdAt: new Date().toISOString(),
         });
-        const winner = findMethod(entry, entry.winnerId);
+        const winner = eligibleMethods(entry).find((method) => method.id === entry!.winnerId);
         if (selection.modelPreference && winner && selection.modelPreference !== winner.techniqueId) {
           logSelectionDisagreement(deps.diagnosticId, selection.modelPreference, winner.techniqueId);
         }
@@ -427,17 +551,20 @@ export async function solveProblem(
     }
   }
 
-  const solved = entry!;
-  const method = findMethod(solved, solved.winnerId) ?? eligibleMethods(solved)[0];
+  // A fresh entry has no verdicts yet; a cached one may: an erroring winner
+  // is replaced, and a problem whose every method errored uses its retry.
+  const resolved = await resolveOrRetry(deps, entry!, calls, { fresh: hit === null });
+  const method = resolved.winner;
   const methodsMs = performance.now() - started;
-  await onMethods?.({ entry: solved, method, cached: hit !== null });
+  await onMethods?.({ resolved, cached: hit !== null });
   const [explained] = await Promise.all([
-    explainMethod(deps, solved, method, calls),
-    hit !== "input" ? deps.cache.rememberInput(hash, version, solved.cacheKey) : undefined,
+    explainMethod(deps, resolved.entry, method, calls),
+    hit !== "input" ? deps.cache.rememberInput(hash, version, entry!.cacheKey) : undefined,
   ]);
   return {
     kind: "solved",
-    entry: solved,
+    entry: resolved.entry,
+    resolved,
     method,
     solution: explained.solution,
     cached: hit !== null,
@@ -449,20 +576,19 @@ export async function solveProblem(
   };
 }
 
-/** The method list a client shows in its dropdown: eligible methods only, in rank order. */
-export function methodSummaries(entry: CacheEntry) {
-  return eligibleMethods(entry).map((method) => ({
-    id: method.id,
-    techniqueId: method.techniqueId,
-    name: method.name,
-    rung: method.rung,
-    rows: method.rows,
-    answer: method.answer,
-    cost: method.cost,
-    total: method.total,
-    mathScore: method.mathScore,
-    mathLevel: method.mathLevel,
-    shape: method.shape,
-    badges: method.badges,
-  }));
+/**
+ * The method list a client shows in its selector: methods that passed every
+ * rule and are not known to error in Desmos, in rank order, with everything
+ * needed to render a technique the instant it is chosen (rows, graph bounds,
+ * slider position, readout) — not a hand-picked subset, since a field left
+ * out here is a field the UI cannot show without another round trip.
+ * `verified` marks a method whose rows a browser already ran cleanly, so
+ * this client skips re-checking it before choosing a default.
+ */
+export function methodSummaries(resolved: ReadyEntry): MethodSummary[] {
+  return resolved.methods.map(({ rejected: _rejected, repairs: _repairs, ...summary }) => {
+    void _rejected;
+    void _repairs;
+    return { ...summary, verified: summary.rows.length === 0 || resolved.verdicts[summary.id]?.status === "clean" };
+  });
 }

@@ -1,64 +1,22 @@
 "use client";
 
 import Script from "next/script";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { applyAnswerState, type RowEvaluation } from "@/lib/answer-consistency";
-import { normalizeDesmosExpressions } from "@/lib/desmos-latex";
+import { useEffect, useRef, useState } from "react";
+import type { RowEvaluation } from "@/lib/answer-consistency";
+import { MATH_OPTIONS, type DesmosCalculatorInstance } from "@/lib/desmos-engine";
+import { ROW_ID_PREFIX, verdictFromAnalysis, type DesmosAnalysis } from "@/lib/desmos-preflight";
 import type { AnswerState } from "@/lib/solver-schema";
 import {
   expressionsKey,
   usePublishCalculatorRows,
   type CalculatorRows,
 } from "./calculator-verification";
+import { recordVisibleError, usePreflightGate } from "./preflight-gate";
 import styles from "./desmos-calculator.module.css";
 
 type Bounds = { left: number; right: number; bottom: number; top: number };
 
-type ExpressionAnalysis = Record<
-  string,
-  { isError?: boolean; evaluation?: RowEvaluation }
->;
-
-type DesmosInstance = {
-  expressionAnalysis: ExpressionAnalysis;
-  getExpressions: () => Array<{ id?: string; latex?: string }>;
-  observe: (name: string, callback: () => void) => void;
-  unobserve: (name: string) => void;
-  observeEvent: (name: string, callback: () => void) => void;
-  unobserveEvent: (name: string) => void;
-  setBlank: () => void;
-  setExpressions: (expressions: Array<{
-    id: string;
-    latex: string;
-    color: string;
-    sliderBounds?: { min: number; max: number; step: number };
-  }>) => void;
-  setMathBounds: (bounds: Bounds) => void;
-  resize: () => void;
-  destroy: () => void;
-};
-
-declare global {
-  interface Window {
-    Desmos?: {
-      GraphingCalculator: (
-        container: HTMLElement,
-        options: {
-          autosize: boolean;
-          expressions: boolean;
-          expressionsCollapsed: boolean;
-          settingsMenu: boolean;
-          keypad: boolean;
-          fontSize: number;
-          degreeMode: boolean;
-          clearIntoDegreeMode: boolean;
-          enableRepeatFunction: boolean;
-          forceEnableGeometryFunctions: boolean;
-        },
-      ) => DesmosInstance;
-    };
-  }
-}
+type DesmosInstance = DesmosCalculatorInstance;
 
 type Props = {
   expressions: Array<{
@@ -73,9 +31,8 @@ type Props = {
 };
 
 const defaultBounds: Bounds = { left: -10, right: 10, bottom: -10, top: 10 };
-const expressionColors = ["#169ed5", "#8a5ce6", "#e78a29", "#229b6b"];
 
-const rowIdPattern = /^desmo_(\d+)$/;
+const rowIdPattern = new RegExp(`^${ROW_ID_PREFIX}(\\d+)$`);
 
 /** The rows this component inserted, as Desmos currently holds them. */
 function loadedRows(instance: DesmosInstance): string {
@@ -87,12 +44,12 @@ function loadedRows(instance: DesmosInstance): string {
 }
 
 /** Collects what Desmos computed for the rows this component inserted. */
-function collectRows(analysis: ExpressionAnalysis, key: string): CalculatorRows {
+function collectRows(analysis: DesmosAnalysis, key: string): CalculatorRows {
   const rows: CalculatorRows["rows"] = {};
   for (const [id, item] of Object.entries(analysis)) {
     const match = id.match(rowIdPattern);
-    if (!match) continue;
-    const evaluation = item.evaluation;
+    if (!match || !item) continue;
+    const evaluation = item.evaluation as RowEvaluation | undefined;
     rows[Number(match[1])] = {
       isError: Boolean(item.isError),
       evaluation:
@@ -129,26 +86,22 @@ export default function DesmosCalculator({
   const [entriesEdited, setEntriesEdited] = useState(false);
   const [replay, setReplay] = useState(0);
   const [lineCount, setLineCount] = useState(0);
+  // Rows this component pulled after the visible calculator flagged them.
+  const [blockedKey, setBlockedKey] = useState<string | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_DESMOS_API_KEY?.trim();
   const publishRows = usePublishCalculatorRows();
-  // Defense in depth for an already-open solve or older saved response. The
-  // server normalizes new/saved data too, but the calculator never receives
-  // visually similar Unicode operators directly.
-  const executableExpressions = useMemo(
-    () => normalizeDesmosExpressions(expressions),
-    [expressions],
-  );
-  // The live calculator opens with the answer's slider position, not whatever
-  // non-answer starting value the row itself was written with; the written
-  // explanation panel still shows the model's original row untouched.
-  const loadedExpressions = useMemo(
-    () => applyAnswerState(executableExpressions, answerState),
-    [executableExpressions, answerState],
-  );
+  // The batch is built exactly as the hidden pre-flight instance received it
+  // (normalized LaTeX, the slider at the answer state), and it is inserted
+  // only once that instance reported every row clean. Nothing that errors in
+  // Desmos is ever shown; an older saved method that no longer runs is
+  // hidden with an explanation instead.
+  const { payload, gate } = usePreflightGate(expressions, answerState);
+  const blocked = blockedKey === payload.key;
+  const insertable = gate.status === "clean" && !blocked;
   // The analysis observer is registered once; it reads the latest batch here.
   // Once the student edits a loaded row, its values no longer describe the
   // explanation, so verification stops until the entries are restored.
-  const loaded = useRef<{ key: string; rows: string } | null>(null);
+  const loaded = useRef<{ key: string; rows: string; payloadKey: string; ids: string[] } | null>(null);
 
   useEffect(() => {
     if (!apiKey || scriptReady) return;
@@ -170,33 +123,44 @@ export default function DesmosCalculator({
     try {
       if (!window.Desmos) throw new Error("Desmos did not initialize");
       instance = window.Desmos.GraphingCalculator(containerRef.current, {
+        ...MATH_OPTIONS,
         autosize: false,
         expressions: true,
         expressionsCollapsed: false,
         settingsMenu: true,
         keypad: true,
         fontSize: 15,
-        degreeMode: true,
-        clearIntoDegreeMode: true,
-        enableRepeatFunction: true,
-        forceEnableGeometryFunctions: true,
       });
       calculatorRef.current = instance;
+      let tripwire: ReturnType<typeof setTimeout> | undefined;
       instance.observe("expressionAnalysis", () => {
-        if (active && instance) {
-          setExpressionError(
-            Object.values(instance.expressionAnalysis).some(
-              (item) => item.isError,
-            ),
-          );
-          const batch = loaded.current;
-          if (batch) setEntriesEdited(loadedRows(instance) !== batch.rows);
-          publishRows(
-            batch === null || loadedRows(instance) !== batch.rows
-              ? null
-              : collectRows(instance.expressionAnalysis, batch.key),
-          );
+        if (!active || !instance) return;
+        const analysis = instance.expressionAnalysis;
+        const batch = loaded.current;
+        const unedited = batch !== null && loadedRows(instance) === batch.rows;
+        // Tripwire, defense in depth: the hidden check ran the same engine on
+        // the same batch, so an unedited loaded row should never error here.
+        // If one still does once the analysis settles, the rows come out and
+        // the batch is never shown again.
+        clearTimeout(tripwire);
+        if (batch && unedited && verdictFromAnalysis(analysis, batch.ids)?.status === "error") {
+          tripwire = setTimeout(() => {
+            const current = loaded.current;
+            if (!active || !instance || current !== batch || loadedRows(instance) !== batch.rows) return;
+            const verdict = verdictFromAnalysis(instance.expressionAnalysis, batch.ids);
+            if (verdict?.status !== "error") return;
+            recordVisibleError(batch.payloadKey, verdict);
+            loaded.current = null;
+            instance.setBlank();
+            publishRows(null);
+            setLineCount(0);
+            setExpressionError(false);
+            setBlockedKey(batch.payloadKey);
+          }, 150);
         }
+        setExpressionError(Object.values(analysis).some((item) => item?.isError));
+        if (batch) setEntriesEdited(!unedited);
+        publishRows(batch === null || !unedited ? null : collectRows(analysis, batch.key));
       });
       // Editing a valid expression may leave its computed result unchanged, so
       // expressionAnalysis alone does not report every student edit.
@@ -257,26 +221,20 @@ export default function DesmosCalculator({
         return;
       }
 
-      if (loadedExpressions.length === 0) return;
+      if (!insertable || payload.items.length === 0) return;
 
       try {
-        calculator.setExpressions(
-          loadedExpressions.map((expression, index) => ({
-            id: `desmo_${index + 1}`,
-            latex: expression.latex,
-            color: expressionColors[index % expressionColors.length],
-            ...(expression.slider &&
-            expression.slider.min < expression.slider.max &&
-            expression.slider.step > 0
-              ? { sliderBounds: expression.slider }
-              : {}),
-          })),
-        );
+        calculator.setExpressions(payload.items);
         // Keep the public key tied to the canonical solution. loadedRows still
         // proves that the actual sanitized calculator rows were not edited.
-        loaded.current = { key: expressionsKey(expressions), rows: loadedRows(calculator) };
+        loaded.current = {
+          key: expressionsKey(expressions),
+          rows: loadedRows(calculator),
+          payloadKey: payload.key,
+          ids: payload.items.map((item) => item.id),
+        };
         calculator.setMathBounds(validBounds(bounds));
-        setLineCount(loadedExpressions.length);
+        setLineCount(payload.items.length);
       } catch {
         loaded.current = null;
         setError("Could not add these lines. Try solving again.");
@@ -286,22 +244,25 @@ export default function DesmosCalculator({
     return () => {
       active = false;
     };
-  }, [scriptReady, expressions, loadedExpressions, bounds, revision, replay, publishRows]);
+  }, [scriptReady, expressions, payload, insertable, bounds, revision, replay, publishRows]);
 
   const unavailableMessage = !apiKey
     ? "Add NEXT_PUBLIC_DESMOS_API_KEY to .env.local, then restart the dev server to load the calculator."
     : error;
+  const withheld = payload.items.length > 0 && (blocked || gate.status === "error" || gate.status === "unverified");
   const status = unavailableMessage
     ? "Calculator unavailable"
     : !scriptReady
       ? "Loading calculator…"
-      : expressionError
-        ? "Check the flagged line"
-        : entriesEdited
-          ? "Entries edited"
-        : lineCount > 0
-          ? `${lineCount} ${lineCount === 1 ? "line" : "lines"} added`
-          : "Ready";
+      : withheld
+        ? "Lines not shown"
+        : expressionError
+          ? "Check the flagged line"
+          : entriesEdited
+            ? "Entries edited"
+          : lineCount > 0
+            ? `${lineCount} ${lineCount === 1 ? "line" : "lines"} added`
+            : "Ready";
 
   return (
     <div className={styles.shell} data-testid="desmos-calculator">
@@ -359,16 +320,23 @@ export default function DesmosCalculator({
           className={styles.replay}
           title="Restore the original loaded equations"
           disabled={
-            !scriptReady || !!unavailableMessage || expressions.length === 0
+            !scriptReady || !!unavailableMessage || !insertable
           }
           onClick={() => setReplay((value) => value + 1)}
         >
           <span aria-hidden="true">↻</span> Restore entries
         </button>
       </div>
-      {expressionError && !unavailableMessage && (
+      {withheld && !unavailableMessage && scriptReady && (
+        <p className={styles.expressionWarning} role="status" data-testid="rows-withheld">
+          {gate.status === "unverified"
+            ? "These lines could not be checked in Desmos, so they are not shown. Reload to try again."
+            : "These lines did not run cleanly in Desmos, so they are not shown. Solve the problem again for a working method."}
+        </p>
+      )}
+      {expressionError && !withheld && !unavailableMessage && (
         <p className={styles.expressionWarning} role="status">
-          Check the flagged line in Desmos, or solve again.
+          Check the flagged line in Desmos, or restore the entries.
         </p>
       )}
     </div>

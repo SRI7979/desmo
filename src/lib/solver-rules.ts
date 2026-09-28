@@ -111,6 +111,25 @@ function balancedSplit(text: string, separator: string): string[] {
   return parts;
 }
 
+/** \left and \right only size delimiters; list and call structure is identical without them. */
+function stripDelimiters(latex: string): string {
+  return latex.replace(/\\(?:left|right)\s*/g, "");
+}
+
+/** The index of the ] that closes the [ at `open`, or -1. */
+function bracketEnd(text: string, open: number): number {
+  let depth = 0;
+  for (let index = open; index < text.length; index++) {
+    const char = text[index];
+    if ("([{".includes(char)) depth++;
+    else if (")]}".includes(char)) {
+      depth--;
+      if (depth === 0) return char === "]" ? index : -1;
+    }
+  }
+  return -1;
+}
+
 /** name=[...] declarations anywhere in the plan, with their element counts. */
 function declaredListLengths(expressions: ReadonlyArray<{ latex: string }>): Map<string, number> {
   const lengths = new Map<string, number>();
@@ -136,6 +155,15 @@ function sideConstraintCount(side: string, declaredLengths: ReadonlyMap<string, 
     if (mentionsIdentifier(side, name)) return length;
   }
   return null;
+}
+
+/** The element count of a `~` side that is a bare, fixed-length list literal ([a,b]), else null. */
+function literalSideLength(side: string): number | null {
+  const trimmed = stripDelimiters(side).trim();
+  const bareList = trimmed.match(/^\[([\s\S]*)\]$/);
+  if (!bareList || /\.\.\.|\bfor\b/.test(bareList[1])) return null;
+  if (bracketEnd(trimmed, 0) !== trimmed.length - 1) return null; // [a][b], not one literal
+  return balancedSplit(bareList[1], ",").filter((part) => part.trim()).length;
 }
 
 export type RegressionDeterminacyViolation =
@@ -164,6 +192,13 @@ export function findRegressionDeterminacyViolations(
     }
     if (new Set(referencedLists.values()).size > 1) {
       violations.push({ row: index + 1, kind: "mismatched_lists", lengths: Object.fromEntries(referencedLists) });
+      return;
+    }
+    // [a+b,c]~[1,2,3]: Desmos silently fits it (verified against v1.11), so
+    // the extra entry is dropped and the answer is whatever the fit lands on.
+    const [leftLength, rightLength] = [literalSideLength(left), literalSideLength(right)];
+    if (leftLength !== null && rightLength !== null && leftLength !== rightLength) {
+      violations.push({ row: index + 1, kind: "mismatched_lists", lengths: { "left side": leftLength, "right side": rightLength } });
       return;
     }
 
@@ -207,6 +242,143 @@ export function findRegressionDeterminacyViolations(
 
 /*
  * ================================================================================
+ * RULE 4 — list shapes Desmos can store
+ * ================================================================================
+ * Desmos has no nested lists. x_{1}=[1] makes every expression that uses x_{1}
+ * a list, so [6x_{1}-k,6] asks for a list inside a list: the regression fails
+ * ("Cannot store a list of numbers in a list.") and every row that depends on
+ * its parameters errors. A single unknown is a bare letter the regression
+ * leaves undefined, never a one-element list. This static check catches the
+ * pattern before any model output is priced; the pre-flight run in a real
+ * Desmos instance is what guarantees nothing that errors is ever shown.
+ */
+
+// These reduce a list to one number, so mean(L) inside [ ] is not nesting.
+const AGGREGATE_CALL = /\\operatorname\{(?:mean|median|total|length|count|stdev|stdevp|var|varp|mad|min|max|quartile|quantile|corr|cov)\}\s*\(/g;
+
+function stripAggregateArguments(text: string): string {
+  let result = "";
+  let cursor = 0;
+  for (const match of text.matchAll(AGGREGATE_CALL)) {
+    const start = match.index ?? 0;
+    if (start < cursor) continue;
+    const open = start + match[0].length - 1;
+    let depth = 0;
+    let close = -1;
+    for (let index = open; index < text.length; index++) {
+      if ("([{".includes(text[index])) depth++;
+      else if (")]}".includes(text[index]) && --depth === 0) {
+        close = index;
+        break;
+      }
+    }
+    if (close === -1) break;
+    result += `${text.slice(cursor, start)}0`;
+    cursor = close + 1;
+  }
+  return result + text.slice(cursor);
+}
+
+/** x_1 and x_{1} are the same identifier; compare them in one spelling. */
+function canonicalSubscripts(latex: string): string {
+  return latex.replace(/_([A-Za-z0-9])/g, "_{$1}");
+}
+
+/** [ opens a list literal unless it indexes or filters the value before it (L[2], x_{1}[x_{1}>0]). */
+function isListLiteralAt(text: string, open: number): boolean {
+  const before = text.slice(0, open).replace(/\s+$/, "");
+  return !/[A-Za-z}\])]$/.test(before);
+}
+
+type ListLiteral = { start: number; end: number; body: string };
+
+function listLiterals(text: string): ListLiteral[] {
+  const literals: ListLiteral[] = [];
+  for (let index = 0; index < text.length; index++) {
+    if (text[index] !== "[" || !isListLiteralAt(text, index)) continue;
+    const end = bracketEnd(text, index);
+    if (end !== -1) literals.push({ start: index, end, body: text.slice(index + 1, end) });
+  }
+  return literals;
+}
+
+/** A range [1...5] or a comprehension [f(n) for n=...] is not an element-by-element literal. */
+function isGeneratedList(body: string): boolean {
+  return /\.\.\.|\\operatorname\{for\}|\bfor\b/.test(body);
+}
+
+const DEFINITION = /^\s*([A-Za-z](?:_\{[^{}]*\})?)\s*=(?!=)([\s\S]*)$/;
+// y=[1,2] graphs horizontal lines; x and y are coordinates, not stored lists.
+const COORDINATE_HEAD = /^[xy]$/;
+
+function referencesName(text: string, name: string): boolean {
+  // An indexed or filtered use (L[2]) is a single value or a list the filter
+  // returns; only a bare reference carries the whole list into an element.
+  return new RegExp(`(?<![A-Za-z\\\\])${escapeRegExp(name)}(?![A-Za-z0-9{_])(?!\\s*\\[)`).test(text);
+}
+
+/** Names that hold lists: declared list literals, plus plain definitions computed from them. */
+function listValuedNames(rows: readonly string[]): Set<string> {
+  const names = new Set<string>();
+  for (const latex of rows) {
+    const definition = latex.match(DEFINITION);
+    if (!definition || REGRESSION_OP.test(latex) || COORDINATE_HEAD.test(definition[1])) continue;
+    const value = definition[2].trim();
+    if (value.startsWith("[") && isListLiteralAt(value, 0) && bracketEnd(value, 0) === value.length - 1) names.add(definition[1]);
+  }
+  for (let changed = true; changed; ) {
+    changed = false;
+    for (const latex of rows) {
+      const definition = latex.match(DEFINITION);
+      if (!definition || REGRESSION_OP.test(latex) || COORDINATE_HEAD.test(definition[1]) || names.has(definition[1])) continue;
+      const value = stripAggregateArguments(definition[2]);
+      if ([...names].some((name) => referencesName(value, name))) {
+        names.add(definition[1]);
+        changed = true;
+      }
+    }
+  }
+  return names;
+}
+
+export type ListShapeViolation =
+  | { row: number; kind: "singleton"; name: string; latex: string }
+  | { row: number; kind: "nested"; element: string };
+
+export function findListShapeViolations(expressions: ReadonlyArray<{ latex: string }>): ListShapeViolation[] {
+  const rows = expressions.map(({ latex }) => canonicalSubscripts(stripDelimiters(latex)));
+  const lists = listValuedNames(rows);
+  const violations: ListShapeViolation[] = [];
+  rows.forEach((latex, index) => {
+    const definition = latex.match(DEFINITION);
+    const value = definition?.[2].trim() ?? "";
+    if (definition && !REGRESSION_OP.test(latex) && value.startsWith("[") && bracketEnd(value, 0) === value.length - 1) {
+      const body = value.slice(1, -1);
+      if (!isGeneratedList(body) && balancedSplit(body, ",").filter((part) => part.trim()).length === 1) {
+        violations.push({ row: index + 1, kind: "singleton", name: definition[1], latex: expressions[index].latex });
+        return;
+      }
+    }
+    for (const literal of listLiterals(latex)) {
+      if (isGeneratedList(literal.body)) continue;
+      const nested = balancedSplit(literal.body, ",")
+        .map((element) => element.trim())
+        .find((element) => {
+          if (element.startsWith("[")) return true;
+          const scalar = stripAggregateArguments(element);
+          return [...lists].some((name) => referencesName(scalar, name));
+        });
+      if (nested) {
+        violations.push({ row: index + 1, kind: "nested", element: nested });
+        return;
+      }
+    }
+  });
+  return violations;
+}
+
+/*
+ * ================================================================================
  * RULE 3 — condition completeness for conditional-system questions
  * ================================================================================
  * "No solution" and "infinitely many solutions" share the same proportionality
@@ -242,9 +414,17 @@ export function checkConditionCompleteness(input: {
       ? [result.row, ...result.relatedRows].filter((row): row is number => row !== null)
       : [];
   const distinctGraphRows = [...new Set(graphRows)];
+  // The graphs show the answer value when a slider opens there (answerState)
+  // or when the parameter is one a regression row fits: Desmos then draws
+  // every row that uses it at the fitted value, with no slider to position.
+  // (analyzePlan splits juxtaposed letters, so the p in "6+7x=py" counts.)
+  const plan = analyzePlan(input.expressions);
+  const drawnAtFittedValue = distinctGraphRows.some((row) =>
+    [...(plan.rows[row - 1]?.names ?? [])].some((name) => plan.fitted.has(name)),
+  );
   const bothEquationsGraphed =
     distinctGraphRows.length >= 2 &&
-    input.answerState !== null &&
+    (input.answerState !== null || drawnAtFittedValue) &&
     distinctGraphRows.every((row) => isGraphableEquation(input.expressions[row - 1]?.latex ?? ""));
 
   if (bothEquationsGraphed) return { distinguishes: "visual-parallel-vs-overlap" };
@@ -262,7 +442,8 @@ export function checkConditionCompleteness(input: {
       "or coefficient ratios alone is necessary but not sufficient: it is equally satisfied by the OPPOSITE " +
       "condition (two coincident lines vs. two distinct parallel lines). Make the distinction observable: graph " +
       "BOTH original equations with the parameter set to the answer value (set answerState so the slider opens " +
-      "there) and set result.type to graph_overlap naming both rows, so a parallel-but-distinct pair looks " +
+      "there, or let a regression row fit the parameter so both graphs use its fitted value) and set result.type " +
+      "to graph_overlap naming both rows, so a parallel-but-distinct pair looks " +
       'visibly different from one line drawn twice, then set distinguishes to "visual-parallel-vs-overlap". ' +
       "Alternatively, if the method checks in the write-up that the constants do not scale by the same factor " +
       'as the coefficients, set distinguishes to "constant-ratio-checked".',

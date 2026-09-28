@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "In the xy-plane, the line y = 6x - k and the parabola y = 3x^2 + 13x + 2 intersect at exactly one point, where k is a constant. What is the value of k?",
+  "choices": null,
+  "correctAnswer": "25/12",
+  "intendedMethod": "vertex-of-the-difference",
+  "acceptableMethods": ["derivative-regression-scalar", "slider-until-tangent", "discriminant", "quadratic-formula"],
+  "forbiddenMethods": ["nested-list-regression", "underdetermined-regression"],
+  "notes": "Graph the difference (3x^2+13x+2)-6x and click its vertex: its minimum is -25/12, and the line touches the parabola exactly when k cancels that minimum, so k=25/12. Derivative regression is valid only with scalar unknowns: [6a-k,6]~[3a^2+13a+2,6a+13] (a, k free; two constraints). Writing a=x_1 with x_1=[1] makes every side a list inside a list, which Desmos rejects, so every dependent row errors."
+}

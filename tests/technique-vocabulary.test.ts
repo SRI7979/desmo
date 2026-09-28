@@ -26,19 +26,19 @@ test("technique ids and display names are unique, short, and stable", () => {
   }
 });
 
-test("every one of the 75 library strategies carries a vocabulary technique tag directly under its heading", async () => {
+test("every one of the 76 library strategies carries a vocabulary technique tag directly under its heading", async () => {
   const lines = (await library()).split("\n");
   let expected = 1;
   const tagged = new Map<number, string>();
   lines.forEach((line, index) => {
     const heading = line.match(/^(\d+)\. \S/);
-    if (!heading || Number(heading[1]) !== expected || expected > 75) return;
+    if (!heading || Number(heading[1]) !== expected || expected > 76) return;
     const tag = lines[index + 1]?.match(TECHNIQUE_ANNOTATION);
     assert.ok(tag, `strategy ${expected} ("${line}") needs a [technique: id | name] line`);
     tagged.set(expected, tag[1]);
     expected += 1;
   });
-  assert.equal(tagged.size, 75);
+  assert.equal(tagged.size, 76);
 });
 
 test("library annotations and the code vocabulary agree exactly", async () => {
@@ -79,6 +79,8 @@ test("the candidates prompt teaches the vocabulary, the ladder, and the cost con
     /SIMPLICITY LADDER/,
     /Every candidate has a DISTINCT techniqueId/,
     /two real techniques beat four with filler/,
+    /Enumerate EVERY technique in the vocabulary that validly solves this/,
+    /Validity is the filter; optimality only decides the/,
     /COST COMPONENTS/,
     /PRIMITIVE WHITELIST costs 0/,
     /Write no explanations, row purposes, or\s+read-the-result prose/,
@@ -87,7 +89,7 @@ test("the candidates prompt teaches the vocabulary, the ladder, and the cost con
   }
   assert.doesNotMatch(CANDIDATE_INSTRUCTIONS, /THE IDEA paragraph|Each purpose is a student-facing/);
   assert.match(EXPLANATION_INSTRUCTIONS, /THE IDEA paragraph/);
-  assert.match(buildCandidatePrompt(), /1–4 candidates, each a distinct techniqueId/);
+  assert.match(buildCandidatePrompt(), /up to 6 candidates, each a distinct techniqueId/);
 });
 
 test("regression test 10 (prompt side): no solver mode survives in either prompt or the library", async () => {

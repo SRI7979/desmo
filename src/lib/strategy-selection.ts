@@ -44,12 +44,18 @@ import {
 import {
   checkConditionCompleteness,
   findIntegerParameterViolations,
+  findListShapeViolations,
   findRegressionDeterminacyViolations,
 } from "./solver-rules";
 import { TECHNIQUE_IDS, techniqueName, type TechniqueId } from "./technique-vocabulary";
 
-/** More than four makes the method dropdown noisy and grows output tokens. */
-export const MAX_CANDIDATES = 4;
+/**
+ * Every technique that validly solves the problem, up to six: the dropdown is
+ * for picking a technique the student already knows, so it lists all real
+ * options, not just the best two. More than six grows output tokens for
+ * options no student scrolls to.
+ */
+export const MAX_CANDIDATES = 6;
 
 const count = z.number().int().min(0).max(20);
 
@@ -91,7 +97,7 @@ export const candidateSchema = z
   })
   .strict();
 
-/** Call 1: transcription, recognized structure, and 1–4 named techniques. */
+/** Call 1: transcription, recognized structure, and 1–6 named techniques. */
 export const candidatesResponseSchema = z.object({
   status: z.enum(["solved", "needs_clarification"]),
   question: z.string().max(8000),
@@ -272,6 +278,20 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   const proseRows = findProseRows(rows);
   if (proseRows.length) {
     return reject("row-fails-to-insert", `Line ${proseRows.join(", ")} contains prose instead of a Desmos expression.`, "desmos_syntax");
+  }
+  const listShapes = findListShapeViolations(rows);
+  if (listShapes.length) {
+    return reject(
+      "list-shape",
+      listShapes
+        .map((violation) =>
+          violation.kind === "singleton"
+            ? `Line ${violation.row} (${violation.latex}) wraps a single value in a one-element list, so every expression using ${violation.name} becomes a list; write an unknown as a bare letter the regression leaves undefined, and a single sample input as a plain number (an identity needs degree+1 inputs anyway)`
+            : `Line ${violation.row} puts a list inside a list (${violation.element}); Desmos has no nested lists, so the row errors and every row that depends on it errors too`,
+        )
+        .join("; "),
+      "desmos_syntax",
+    );
   }
   if (hasUnnecessaryCoefficientLists(rows, question)) {
     return reject(

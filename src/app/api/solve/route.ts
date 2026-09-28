@@ -3,7 +3,7 @@ import { getSupabaseConfig } from "@/lib/supabase/config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { reserveSolve } from "@/lib/rate-limit";
 import { saveProblem } from "@/lib/problem-history";
-import { createSupabaseSolveCache, withCacheFallback } from "@/lib/solve-cache";
+import { routeSolveCache } from "@/lib/solve-cache";
 import { createSolveHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
@@ -16,8 +16,5 @@ export const POST = createSolveHandler({
   },
   reserveSolve,
   saveProblem,
-  getCache: () =>
-    withCacheFallback(createSupabaseSolveCache(createAdminClient()), (operation) =>
-      console.warn(`[desmo:cache] ${operation} failed; solving without the cache.`),
-    ),
+  getCache: () => routeSolveCache(createAdminClient()),
 });

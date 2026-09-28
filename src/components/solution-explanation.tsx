@@ -10,6 +10,8 @@ import {
 import { reconcileWithCalculator, type CalculatorCheck } from "@/lib/answer-consistency";
 import type { Solution } from "@/lib/solver-schema";
 import { splitAnswerLabel } from "@/lib/math-text";
+import type { ExplanationStatus } from "@/lib/technique-selection-ui";
+import { usePreflightGate } from "./preflight-gate";
 import styles from "./solution-explanation.module.css";
 
 // "unverified" renders nothing; only "contradicted" gets a banner treatment.
@@ -18,8 +20,27 @@ const checkStyles: Record<"contradicted", string> = {
 };
 
 // The current solve and saved history render the same canonical solution.
-export default function SolutionExplanation({ solution }: { solution: Solution }) {
+export default function SolutionExplanation({
+  solution,
+  explanationStatus = "ready",
+  onRetryExplanation,
+}: {
+  solution: Solution;
+  /**
+   * "pending": this technique's explanation is being written, so its prose
+   * shows as a skeleton; "failed": it did not arrive, so the panel offers a
+   * retry. Rows and the answer render the same in every state.
+   */
+  explanationStatus?: ExplanationStatus;
+  onRetryExplanation?: () => void;
+}) {
+  const pending = explanationStatus === "pending";
+  const failed = explanationStatus === "failed";
+  const techniqueName = solution.trick || "this technique";
   const calculatorRows = useCalculatorRows();
+  // The copyable lines are calculator rows too: they are shown only for a
+  // batch the hidden Desmos instance reported clean, like the calculator.
+  const { gate } = usePreflightGate(solution.expressions, solution.answerState);
   const [copyStatus, setCopyStatus] = useState<{ row: number; ok: boolean } | null>(null);
   const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (copyTimeout.current) clearTimeout(copyTimeout.current); }, []);
@@ -93,13 +114,47 @@ export default function SolutionExplanation({ solution }: { solution: Solution }
           <MathText>{check.message}</MathText>
         </p>
       )}
-      {(solution.why || solution.structure) && (
+      {/* The idea is this technique's own, from its explanation: never the
+          problem-level structure line, which reads the same for every technique. */}
+      {pending ? (
+        <section className={styles.structureNote} aria-labelledby="idea-title" aria-busy="true" data-testid="explanation-skeleton">
+          <h3 id="idea-title">The idea</h3>
+          <span className={styles.srOnly} role="status">Writing the explanation for {techniqueName}…</span>
+          <div className={styles.skeletonLines} aria-hidden="true">
+            <span className={styles.purposeShimmer} />
+            <span className={`${styles.purposeShimmer} ${styles.shimmerShort}`} />
+          </div>
+        </section>
+      ) : failed ? (
+        <div className={styles.explanationFailed} role="status" data-testid="explanation-failed">
+          <p>The explanation for {techniqueName} did not load.</p>
+          {onRetryExplanation && (
+            <button type="button" className={styles.retryButton} onClick={onRetryExplanation} data-testid="explanation-retry">
+              Try again
+            </button>
+          )}
+        </div>
+      ) : solution.why ? (
         <section className={styles.structureNote} aria-labelledby="idea-title" data-testid="structure">
           <h3 id="idea-title">The idea</h3>
-          <p><MathText>{solution.why || solution.structure || ""}</MathText></p>
+          <p><MathText>{solution.why}</MathText></p>
         </section>
-      )}
-      {solution.expressions.length > 0 ? (
+      ) : null}
+      {solution.expressions.length > 0 && gate.status === "pending" ? (
+        <>
+          <div className={styles.sectionHeading}><h3>In Desmos</h3></div>
+          <div className={styles.rowsPending} role="status" data-testid="rows-pending">
+            <span className={styles.srOnly}>Checking the Desmos lines…</span>
+            {solution.expressions.map((_, index) => <span key={index} className={styles.purposeShimmer} aria-hidden="true" />)}
+          </div>
+        </>
+      ) : solution.expressions.length > 0 && gate.status !== "clean" ? (
+        <p className={styles.rowsWithheld} role="status" data-testid="rows-withheld-explanation">
+          {gate.status === "unverified"
+            ? "The Desmos lines for this method could not be checked, so they are not shown. Reload the page to try again."
+            : "The Desmos lines for this method did not run cleanly in Desmos, so they are not shown. Solve the problem again for a working method."}
+        </p>
+      ) : solution.expressions.length > 0 ? (
         <>
           <div className={styles.sectionHeading}><h3>In Desmos</h3><span>{solution.expressions.length} {solution.expressions.length === 1 ? "line" : "lines"}</span></div>
           <ol className={styles.expressionSteps} aria-label="Desmos line explanations">
@@ -113,16 +168,29 @@ export default function SolutionExplanation({ solution }: { solution: Solution }
                   </button>
                 </div>
                 <div className={styles.equation} tabIndex={0} aria-label={`Desmos line ${index + 1}`}><MathExpression latex={expression.latex} /></div>
-                <p><MathText>{expression.purpose}</MathText></p>
+                {expression.purpose ? (
+                  <p><MathText>{expression.purpose}</MathText></p>
+                ) : pending ? (
+                  <span className={styles.purposeShimmer} aria-hidden="true" />
+                ) : null}
               </li>
             ))}
           </ol>
-          <div className={styles.readAnswer}>
-            <span className={styles.readIcon} aria-hidden="true">↳</span>
-            <div><h3>Read the result</h3><p><MathText>{readAnswer ?? "Read the requested value in the calculator."}</MathText></p></div>
-          </div>
+          {!failed && (
+            <div className={styles.readAnswer}>
+              <span className={styles.readIcon} aria-hidden="true">↳</span>
+              <div>
+                <h3>Read the result</h3>
+                {pending && !readAnswer ? (
+                  <span className={styles.purposeShimmer} aria-hidden="true" />
+                ) : (
+                  <p><MathText>{readAnswer ?? "Read the requested value in the calculator."}</MathText></p>
+                )}
+              </div>
+            </div>
+          )}
         </>
-      ) : (
+      ) : solution.steps.length > 0 ? (
         <>
         <div className={styles.sectionHeading}><h3>Walkthrough</h3><span>{solution.steps.length} {solution.steps.length === 1 ? "step" : "steps"}</span></div>
         <ol className={styles.steps}>
@@ -131,7 +199,16 @@ export default function SolutionExplanation({ solution }: { solution: Solution }
           ))}
         </ol>
         </>
-      )}
+      ) : pending ? (
+        <>
+          <div className={styles.sectionHeading}><h3>Walkthrough</h3></div>
+          <div className={styles.skeletonLines} aria-hidden="true" data-testid="steps-skeleton">
+            <span className={styles.purposeShimmer} />
+            <span className={styles.purposeShimmer} />
+            <span className={`${styles.purposeShimmer} ${styles.shimmerShort}`} />
+          </div>
+        </>
+      ) : null}
       {solution.choices && solution.choices.length > 0 && (
         <details className={styles.transcription}>
           <summary>Answer choices</summary>

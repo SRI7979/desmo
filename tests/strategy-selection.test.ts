@@ -38,7 +38,8 @@ test("the default is the argmin of server-computed total cost, never the model's
   const [winner, paper] = selection.methods;
   assert.equal(winner.total, 1);
   assert.equal(paper.total, 3 * 2 + 4 * 1);
-  assert.deepEqual(winner.badges, ["Recommended", "Least math", "Most Desmos", "Fewest steps"]);
+  assert.deepEqual(winner.badges, ["Recommended"]);
+  assert.deepEqual(paper.badges, ["Most algebra"]);
   assert.equal(winner.mathLevel, "low");
   assert.equal(paper.mathLevel, "high");
   assert.equal(winner.shape, "1 row · graph · no algebra");
@@ -342,7 +343,8 @@ test("every candidate rejected → a selection error naming each rule; malformed
   );
   assert.throws(() => select(candidatesResponse([])), /at least one candidate technique/);
   assert.throws(() => select(candidatesResponse([graphCandidate()], { question: "  " })), /transcribed question/);
-  assert.equal(candidatesResponseSchema.safeParse(candidatesResponse(Array.from({ length: 5 }, () => graphCandidate()))).success, false, "at most four candidates");
+  assert.equal(candidatesResponseSchema.safeParse(candidatesResponse(Array.from({ length: 6 }, () => graphCandidate()))).success, true, "up to six candidates");
+  assert.equal(candidatesResponseSchema.safeParse(candidatesResponse(Array.from({ length: 7 }, () => graphCandidate()))).success, false, "at most six candidates");
 });
 
 test("slider bounds, answer state, and the rejected candidates themselves are all kept", () => {

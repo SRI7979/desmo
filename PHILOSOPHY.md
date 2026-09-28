@@ -107,8 +107,9 @@ to reach for, not a method of last resort to apologize for.
 
 ## Method choice
 
-For each problem Desmo lists the genuinely distinct techniques that solve it
-(two to four when that many exist; one when only one does, never padded), each
+For each problem Desmo lists every technique that validly solves it (up to
+six; one when only one does, never padded: validity is the filter, cost only
+decides the order), each
 named from a fixed vocabulary so the same technique always carries the same
 name, and each labeled with its math load and a one-line shape ("3 rows ·
 slider · no algebra"). The student may switch to any listed technique; a paper
@@ -139,7 +140,15 @@ statistics) cost nothing. Implementation: the vocabulary in
   be inserted, underdetermined regressions, integer parameters not encoded as
   integers, incomplete no-solution / infinitely-many checks (verified, not
   taken on the model's word), sampling a continuous domain, and solving a
-  "which equation represents" question instead of translating it.
+  "which equation represents" question instead of translating it, nested or
+  one-element lists, and mismatched list lengths across a `~`.
+- Nothing that errors in Desmos is ever shown. Before any row reaches the
+  student, the exact batch the calculator would receive runs in a hidden
+  Desmos instance; a technique with any erroring row is dropped and the next
+  one by cost takes its place. When every technique errors, the model gets
+  one retry with the Desmos errors attached, and after that the answer is an
+  honest failure, not broken rows. Badges discriminate: the default carries
+  only "Recommended", and every other badge names one strict leader.
 - The same problem always returns the same methods, order, and default: the
   result is cached by the normalized problem text and the prompt
   configuration version, so any prompt or library improvement regenerates.
