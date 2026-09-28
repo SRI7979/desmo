@@ -10,7 +10,7 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "next typegen && tsc --noEmit",
     "setup:check": "tsx scripts/check-setup.ts",
-    "test": "tsx --test tests/*.test.ts",
+    "test": "tsx --test --import ./tests/no-network.ts tests/*.test.ts",
     "bench": "tsx scripts/bench-solve.mts",
     "eval": "tsx evals/run-evals.mts"
   },

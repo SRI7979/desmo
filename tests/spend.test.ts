@@ -55,3 +55,9 @@ test("the meter checks the ceiling before the user's slot, and fails closed when
   });
   await assert.rejects(broken.authorizeSolve(), UsageUnavailableError);
 });
+
+test("regression test 10: any unmocked outbound network call throws", async () => {
+  await assert.rejects(fetch("https://api.openai.com/v1/responses", { method: "POST" }), /Unexpected outbound network call in a test: https:\/\/api\.openai\.com/);
+  const https = await import("node:https");
+  assert.throws(() => https.request("https://api.openai.com/v1/models"), /Unexpected outbound network call/);
+});
