@@ -109,6 +109,8 @@
 .privacyNote { margin: var(--space-4) 0 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.5; }
 .error { margin: var(--space-4) 0 0; padding: var(--space-3); border: 1px solid #edcece; border-radius: var(--radius-md); background: var(--danger-soft); color: var(--danger); font-size: var(--text-sm); line-height: 1.5; overflow-wrap: anywhere; }
 .error a { font-weight: 700; text-underline-offset: 3px; }
+.limitNotice { margin: var(--space-4) 0 0; padding: var(--space-3); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--surface); color: var(--foreground); font-size: var(--text-sm); line-height: 1.5; overflow-wrap: anywhere; }
+.limitNotice a { color: var(--accent-ink); font-weight: 650; text-underline-offset: 3px; }
 .savedNotice { margin: var(--space-5) 0 0; padding-top: var(--space-4); border-top: 1px solid var(--border-subtle); color: var(--muted); font-size: var(--text-xs); }
 .savedNotice a { color: var(--accent-ink); font-weight: 650; text-underline-offset: 3px; }
 

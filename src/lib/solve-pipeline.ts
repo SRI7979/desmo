@@ -47,6 +47,8 @@ import {
   type CandidatesResponse,
   type Method,
 } from "./strategy-selection";
+import { NO_USAGE } from "./model-pricing";
+import type { Meter, ModelCall } from "./spend";
 import { TECHNIQUES } from "./technique-vocabulary";
 import { loadTrainingExamples } from "./training-examples";
 
@@ -141,6 +143,8 @@ export type PipelineDeps = {
   tier: ServiceTierState;
   diagnosticId: string;
   signal?: AbortSignal;
+  /** Records every call's usage and enforces the spend limits; absent in evals and scripts. */
+  meter?: Meter;
 };
 
 export type CallCounts = { candidates: number; explanation: number };
@@ -224,7 +228,10 @@ export async function retryAfterDesmosErrors(
   calls: CallCounts = { candidates: 0, explanation: 0 },
 ): Promise<CacheEntry> {
   const input: SolveInput = { kind: "text", problem: entry.question, choices: entry.choices?.map((choice) => choice.text) ?? null };
-  const response = await callModel(deps, candidateRequest(deps, input, desmosRejection(entry, verdicts)), CANDIDATE_TIMEOUT_MS);
+  // Extra model work on an existing problem: only the global ceiling applies.
+  await deps.meter?.authorizeRetry();
+  deps.meter?.setCacheKey(entry.cacheKey);
+  const response = await callModel(deps, candidateRequest(deps, input, desmosRejection(entry, verdicts)), "desmos_retry", CANDIDATE_TIMEOUT_MS);
   calls.candidates += 1;
   const base = {
     version: CACHE_ENTRY_VERSION,
@@ -297,6 +304,7 @@ function isGpt5(model: string) {
 async function callModel(
   deps: PipelineDeps,
   body: Record<string, unknown>,
+  call: ModelCall,
   timeout?: number,
 ): Promise<OpenAI.Responses.Response> {
   const send = (tier: (typeof serviceTiers)[number]) =>
@@ -304,16 +312,27 @@ async function callModel(
       { ...(body as unknown as OpenAI.Responses.ResponseCreateParamsNonStreaming), ...(tier === "priority" ? { service_tier: "priority" as const } : {}) },
       { signal: deps.signal, ...(timeout ? { timeout } : {}) },
     );
-  const tier = configuredServiceTier(deps.tier);
+  let tier = configuredServiceTier(deps.tier);
   const started = performance.now();
+  const model = String(body.model);
   let response: OpenAI.Responses.Response;
   try {
-    response = await send(tier);
+    try {
+      response = await send(tier);
+    } catch (error) {
+      if (tier !== "priority" || !rejectsServiceTier(error)) throw error;
+      deps.tier.priorityUnavailable = true;
+      tier = "default";
+      response = await send(tier);
+    }
   } catch (error) {
-    if (tier !== "priority" || !rejectsServiceTier(error)) throw error;
-    deps.tier.priorityUnavailable = true;
-    response = await send("default");
+    // A rejected or failed request is not billed; it is still recorded, so
+    // failures show up next to what the successful calls cost.
+    await deps.meter?.record(call, { status: "failed", model, serviceTier: tier, usage: NO_USAGE, estimated: false });
+    throw error;
   }
+  // The tier OpenAI reports actually applied is what it bills.
+  await deps.meter?.record(call, { status: "completed", model: response.model || model, serviceTier: response.service_tier ?? tier, usage: response.usage });
   if (process.env.NODE_ENV === "development" || process.env.DESMO_DIAGNOSTICS === "1") {
     const usage = response.usage;
     console.info(
@@ -439,6 +458,7 @@ export async function explainMethod(
   method: Method,
   calls: CallCounts = { candidates: 0, explanation: 0 },
 ): Promise<{ solution: Solution; source: "cache" | "model" | "fallback" }> {
+  deps.meter?.setCacheKey(entry.cacheKey);
   const cached = await deps.cache.getExplanation(entry.cacheKey, method.id);
   if (cached) {
     try {
@@ -451,7 +471,7 @@ export async function explainMethod(
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     let response: OpenAI.Responses.Response;
     try {
-      response = await callModel(deps, explanationRequest(deps, entry, method, rejection), EXPLANATION_TIMEOUT_MS);
+      response = await callModel(deps, explanationRequest(deps, entry, method, rejection), "explanation", EXPLANATION_TIMEOUT_MS);
       calls.explanation += 1;
     } catch (error) {
       if (deps.signal?.aborted) throw error;
@@ -494,14 +514,20 @@ export async function solveProblem(
 
   const known = await deps.cache.lookupInput(hash, version);
   entry = known ? await deps.cache.getEntry(known) : null;
-  if (entry) hit = "input";
+  if (entry) {
+    hit = "input";
+    deps.meter?.setCacheKey(entry.cacheKey);
+  }
 
   if (!entry) {
     let rejection: Rejection | undefined;
     for (let attempt = 1; !entry; attempt += 1) {
       let response: OpenAI.Responses.Response;
       try {
-        response = await callModel(deps, candidateRequest(deps, input, rejection), CANDIDATE_TIMEOUT_MS);
+        // A new problem: checked against the daily cap and the spend ceiling
+        // once, before its first model call. A cached input never gets here.
+        if (attempt === 1) await deps.meter?.authorizeSolve();
+        response = await callModel(deps, candidateRequest(deps, input, rejection), "candidates", CANDIDATE_TIMEOUT_MS);
       } catch (error) {
         const stalled = error instanceof OpenAI.APIConnectionTimeoutError;
         if (!stalled || attempt >= MAX_ATTEMPTS || deps.signal?.aborted) throw error;
@@ -516,6 +542,7 @@ export async function solveProblem(
           return { kind: "clarification", solution: clarificationSolution(parsed), calls, timings: { methodsMs: elapsed, completeMs: elapsed } };
         }
         const key = cacheKeyFor(problemKey(parsed.question, stableChoices(parsed.choices)), version);
+        deps.meter?.setCacheKey(key);
         const existing = await deps.cache.getEntry(key);
         if (existing) {
           entry = existing;

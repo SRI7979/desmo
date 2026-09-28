@@ -96,6 +96,8 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   const [problemId, setProblemId] = useState<string | null>(null);
   const [historyWarning, setHistoryWarning] = useState<string | null>(null);
   const [needsSignIn, setNeedsSignIn] = useState(false);
+  // A daily limit or a full day's capacity: information, not an error.
+  const [notice, setNotice] = useState<string | null>(null);
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
@@ -409,6 +411,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
     const token = solveToken.current;
     setLoading(true);
     setError(null);
+    setNotice(null);
     setNeedsSignIn(false);
     setRevision((value) => value + 1);
     try {
@@ -423,6 +426,12 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
       if (!response.ok) {
         const data = await response.json().catch(() => null);
         if (response.status === 401) setNeedsSignIn(true);
+        // Waiting a few seconds does not help either limit, so no countdown;
+        // history and already-solved problems stay available.
+        if ((data?.kind === "daily_cap" || data?.kind === "at_capacity") && typeof data.error === "string") {
+          setNotice(data.error);
+          return;
+        }
         if (response.status === 429) {
           const retryAfter = response.headers.get("Retry-After");
           const seconds = retryAfter && /^\d+$/.test(retryAfter)
@@ -623,6 +632,11 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                   Cancel
                 </button>
               </div>
+            )}
+            {notice && (
+              <p className={styles.limitNotice} role="status" data-testid="limit-notice">
+                {notice} <Link href="/history">Open your history</Link>.
+              </p>
             )}
             {(error || needsSignIn) && (
               <div className={styles.error} role="alert">

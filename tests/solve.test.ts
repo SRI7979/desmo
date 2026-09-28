@@ -9,6 +9,7 @@ import sharp from "sharp";
 import { createMemorySolveCache, withCacheFallback, type SolveCache } from "../src/lib/solve-cache";
 import { createMethodHandler, createPreflightHandler, createSolveHandler, type SolveDependencies } from "../src/lib/solve-handler";
 import { MAX_IMAGE_BYTES } from "../src/lib/solver-schema";
+import { createMemoryUsageStore } from "../src/lib/spend";
 import {
   candidatesResponse,
   explanation,
@@ -31,11 +32,14 @@ const png = Buffer.from(
 const userId = "11111111-1111-4111-8111-111111111111";
 const problemId = "22222222-2222-4222-8222-222222222222";
 let cache = createMemorySolveCache();
+let usage = createMemoryUsageStore();
 const dependencies: SolveDependencies = {
   getCurrentUser: async () => ({ id: userId }),
   reserveSolve: async () => ({ allowed: true, retryAfter: 0 }),
   saveProblem: async () => problemId,
   getCache: () => cache,
+  getUsage: () => usage,
+  limits: () => ({ freeSolvesPerDay: 1000, dailySpendCeilingUsd: 1000 }),
 };
 const POST = createSolveHandler(dependencies);
 const SWITCH = createMethodHandler(dependencies);
@@ -49,6 +53,8 @@ const saved = {
 
 beforeEach(() => {
   cache = createMemorySolveCache();
+  usage = createMemoryUsageStore();
+  dependencies.limits = () => ({ freeSolvesPerDay: 1000, dailySpendCeilingUsd: 1000 });
   dependencies.getCurrentUser = async () => ({ id: userId });
   dependencies.reserveSolve = async () => ({ allowed: true, retryAfter: 0 });
   dependencies.saveProblem = async () => problemId;
@@ -887,4 +893,108 @@ test("root cause: with the cache tables missing, switching still finds the solve
   assert.equal(second[1].explanation, "cache");
   assert.equal(requests.explanation.length, calls + 1, "no second call");
   assert.ok(warnings.includes("getEntry"), "the database failure is still reported");
+});
+
+// ---- spend protection -------------------------------------------------------
+
+/** The usage a real candidates call reported (dev log), as OpenAI returns it. */
+const CANDIDATES_USAGE = {
+  model: "gpt-5-mini-2025-08-07",
+  service_tier: "priority",
+  usage: { input_tokens: 28763, input_tokens_details: { cached_tokens: 28672 }, output_tokens: 1351, output_tokens_details: { reasoning_tokens: 832 }, total_tokens: 30114 },
+};
+const EXPLANATION_USAGE = {
+  model: "gpt-5-mini-2025-08-07",
+  service_tier: "priority",
+  usage: { input_tokens: 1092, input_tokens_details: { cached_tokens: 0 }, output_tokens: 517, output_tokens_details: { reasoning_tokens: 192 }, total_tokens: 1609 },
+};
+
+test("regression test 3: each call's real usage is recorded per solve with its model, billed tier, and cost", async () => {
+  mockModel({ candidates: candidatesResponse(), extra: { candidates: CANDIDATES_USAGE, explanation: EXPLANATION_USAGE } });
+  const response = await POST(upload());
+  assert.equal(response.status, 200);
+  assert.equal(usage.records.length, 2);
+  const [candidates, explained] = usage.records;
+  assert.equal(candidates.solveId, explained.solveId, "both calls belong to one solve");
+  assert.equal(candidates.userId, userId);
+  assert.equal(candidates.call, "candidates");
+  assert.equal(candidates.model, "gpt-5-mini-2025-08-07");
+  assert.equal(candidates.serviceTier, "priority");
+  assert.deepEqual(candidates.usage, { inputTokens: 28763, cachedTokens: 28672, outputTokens: 1351, reasoningTokens: 832, totalTokens: 30114 });
+  assert.equal(candidates.costUsd, 0.006195);
+  assert.equal(explained.call, "explanation");
+  assert.equal(explained.costUsd, 0.002353, "1,092 × $0.45 + 517 × $3.60, per 1M");
+  assert.equal(explained.cacheKey, (await response.json()).cacheKey, "rows carry the problem's cacheKey");
+  assert.equal(candidates.estimated, false);
+});
+
+test("regression test 1: at the daily cap a user cannot start a new solve, but cached solves and method switches keep working", async () => {
+  dependencies.limits = () => ({ freeSolvesPerDay: 1, dailySpendCeilingUsd: 1000 });
+  const { requests } = tangentModel();
+  const first = await (await POST(upload())).json();
+  assert.equal(first.selectedMethodId, "vertex-of-difference", "the one free solve");
+  const callsBefore = requests.candidates.length;
+
+  // A new problem needs a model call: refused, with a clear message and no countdown.
+  const blocked = await POST(upload(await otherScreenshot()));
+  assert.equal(blocked.status, 429);
+  assert.equal(blocked.headers.get("retry-after"), null, "no countdown: waiting seconds does not help");
+  const body = await blocked.json();
+  assert.equal(body.kind, "daily_cap");
+  assert.match(body.error, /today's 1 solves.*open again (?:in about \d+ hours|within the hour).*history/);
+  assert.ok(Date.parse(body.resetsAt) > Date.now());
+  assert.equal(requests.candidates.length, callsBefore, "zero model calls");
+
+  // The same screenshot again is a cached solve: no model call, not counted, allowed.
+  const cached = await POST(upload());
+  assert.equal(cached.status, 200);
+  assert.equal((await cached.json()).cached, true);
+  assert.equal(requests.candidates.length, callsBefore);
+
+  // Switching methods on the solved problem still works, explanation included.
+  const switched = await events(await SWITCH(switchTo(first.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+  assert.equal(explanationFromEvents(switched)?.steps.length, 3);
+  assert.equal(usage.solves.length, 1, "only the new solve was counted");
+
+  // History reads never consult the limits.
+  assert.doesNotMatch(await readFile("src/lib/problem-history.ts", "utf8"), /spend|limits|reserveDailySolve/);
+});
+
+test("regression test 2: over the daily spend ceiling new solves stop, loudly, while cached reads and switches continue", async () => {
+  const { requests } = tangentModel();
+  const first = await (await POST(upload())).json();
+  dependencies.limits = () => ({ freeSolvesPerDay: 1000, dailySpendCeilingUsd: 0.01 });
+  await usage.record({ ...usage.records[0], solveId: "earlier", costUsd: 0.02 });
+  const alerts: string[] = [];
+  mock.method(console, "error", (...args: unknown[]) => alerts.push(args.map(String).join(" ")));
+  const callsBefore = requests.candidates.length;
+
+  const blocked = await POST(upload(await otherScreenshot()));
+  assert.equal(blocked.status, 503);
+  const body = await blocked.json();
+  assert.equal(body.kind, "at_capacity");
+  assert.match(body.error, /at capacity today/);
+  assert.equal(blocked.headers.get("retry-after"), null);
+  assert.equal(requests.candidates.length, callsBefore, "zero model calls");
+  assert.ok(alerts.some((line) => /\[desmo:ALERT\] ceiling_hit/.test(line)), "the trip is logged loudly");
+  assert.equal(usage.solves.length, 1, "a refused solve does not count against the user");
+
+  assert.equal((await POST(upload())).status, 200, "a cached solve is unaffected");
+  const switched = await events(await SWITCH(switchTo(first.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  assert.ok(explanationFromEvents(switched), "method switching on a solved problem continues");
+});
+
+test("with the usage tables missing, new solves are refused (fail closed) and cached solves still work", async () => {
+  const { requests } = tangentModel();
+  assert.equal((await POST(upload())).status, 200);
+  const missing = async () => {
+    throw new Error("PGRST205 Could not find the table 'public.model_usage'");
+  };
+  usage = { ...usage, spentTodayUsd: missing, reserveDailySolve: missing, record: missing } as typeof usage;
+  mock.method(console, "error", () => undefined);
+  const refused = await POST(upload(await otherScreenshot()));
+  assert.equal(refused.status, 503);
+  assert.equal((await refused.json()).kind, "unavailable");
+  assert.equal((await POST(upload())).status, 200, "the cached solve needs no model call and still works");
+  assert.equal(requests.candidates.length, 1);
 });

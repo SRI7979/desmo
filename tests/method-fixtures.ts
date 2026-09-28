@@ -94,11 +94,12 @@ export function explanation(rowCount = 1, overrides: Partial<Explanation> = {}):
 }
 
 /** A Responses API body whose only output is the given JSON text. */
-export function providerBody(value: unknown, status = "completed") {
+export function providerBody(value: unknown, status = "completed", extra: Record<string, unknown> = {}) {
   return {
     id: "resp_test",
     object: "response",
     status,
+    ...extra,
     output: [
       {
         id: "msg_test",
@@ -117,7 +118,12 @@ type Reply = unknown | ((body: Record<string, unknown>, call: number) => unknown
  * Answers the candidates call and the explanation call separately, keyed by
  * the structured-output schema name, and records every request body.
  */
-export function mockModel(replies: { candidates: Reply; explanation?: Reply }) {
+export function mockModel(replies: {
+  candidates: Reply;
+  explanation?: Reply;
+  /** Extra response fields per call, such as a real `usage` object, `model`, and `service_tier`. */
+  extra?: Partial<Record<"candidates" | "explanation", Record<string, unknown>>>;
+}) {
   const requests = { candidates: [] as Record<string, unknown>[], explanation: [] as Record<string, unknown>[] };
   const fetchMock = mock.method(globalThis, "fetch", async (_input: unknown, options?: RequestInit) => {
     const body = JSON.parse(String(options?.body)) as Record<string, unknown>;
@@ -127,7 +133,7 @@ export function mockModel(replies: { candidates: Reply; explanation?: Reply }) {
     const reply = kind === "explanation" ? (replies.explanation ?? explanation()) : replies.candidates;
     const value = typeof reply === "function" ? (reply as (b: Record<string, unknown>, n: number) => unknown)(body, requests[kind].length) : reply;
     if (value instanceof Response) return value;
-    return Response.json(providerBody(value));
+    return Response.json(providerBody(value, "completed", replies.extra?.[kind] ?? {}));
   });
   return { requests, fetchMock };
 }

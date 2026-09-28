@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { reserveSolve } from "@/lib/rate-limit";
 import { saveProblem } from "@/lib/problem-history";
 import { routeSolveCache } from "@/lib/solve-cache";
+import { createSupabaseUsageStore } from "@/lib/spend";
 import { createSolveHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
@@ -17,4 +18,5 @@ export const POST = createSolveHandler({
   reserveSolve,
   saveProblem,
   getCache: () => routeSolveCache(createAdminClient()),
+  getUsage: () => createSupabaseUsageStore(createAdminClient()),
 });

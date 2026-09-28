@@ -21,6 +21,15 @@ import {
   type ServiceTierState,
   type SolveResult,
 } from "@/lib/solve-pipeline";
+import {
+  createMeter,
+  DailyCapError,
+  limitsFromEnv,
+  SpendCeilingError,
+  UsageUnavailableError,
+  type Limits,
+  type UsageStore,
+} from "@/lib/spend";
 import { MAX_CANDIDATES } from "@/lib/strategy-selection";
 import { TrainingBatchError } from "@/lib/training-examples";
 import { validateImage, InvalidImageError } from "@/lib/upload-validation";
@@ -30,9 +39,33 @@ export type SolveDependencies = {
   reserveSolve: (userId: string) => Promise<{ allowed: boolean; retryAfter: number }>;
   saveProblem: (input: { userId: string; bytes: Buffer; mime: string; solution: Solution }) => Promise<string>;
   getCache: () => SolveCache;
+  /** Where every OpenAI call's usage and cost is recorded, and the limits are checked. */
+  getUsage: () => UsageStore;
+  /** Defaults to FREE_SOLVES_PER_DAY and DAILY_SPEND_CEILING_USD, read per request. */
+  limits?: () => Limits;
 };
 
-export type MethodDependencies = Pick<SolveDependencies, "getCurrentUser" | "getCache">;
+export type MethodDependencies = Pick<SolveDependencies, "getCurrentUser" | "getCache" | "getUsage" | "limits">;
+
+/** A meter for one request: usage recorded under this user and request id. */
+function meterFor(dependencies: MethodDependencies, userId: string, solveId: string) {
+  return createMeter({
+    store: dependencies.getUsage(),
+    userId,
+    solveId,
+    limits: (dependencies.limits ?? limitsFromEnv)(),
+    onRecordError: (error) => console.error("[desmo:usage] could not record a model call's usage", error instanceof Error ? error.message : error),
+    onCeiling: (error) =>
+      console.error(`[desmo:ALERT] ceiling_hit: ${error.message} New solves are refused until midnight UTC. Raise DAILY_SPEND_CEILING_USD to reopen.`),
+  });
+}
+
+function describeReset(resetsAt: string | null): string {
+  const remaining = resetsAt ? Date.parse(resetsAt) - Date.now() : NaN;
+  if (!Number.isFinite(remaining) || remaining <= 0) return "shortly";
+  const hours = Math.ceil(remaining / 3_600_000);
+  return hours <= 1 ? "within the hour" : `in about ${hours} hours`;
+}
 
 // Leave room for multipart headers while bounding uploads, including chunked ones.
 const MAX_REQUEST_BYTES = MAX_IMAGE_BYTES + 64 * 1024;
@@ -151,6 +184,33 @@ function errorFor(error: unknown, diagnosticId: string): Response {
     );
   }
   if (error instanceof UploadError || error instanceof InvalidImageError) return errorResponse(error.message, error.status);
+  // Limits are not failures: a clear message, no countdown, and existing work stays readable.
+  if (error instanceof DailyCapError) {
+    return Response.json(
+      {
+        kind: "daily_cap",
+        error: `You've used today's ${error.limit} solves. New solves open again ${describeReset(error.resetsAt)}. Your history and the problems you've already solved stay available.`,
+        resetsAt: error.resetsAt,
+      },
+      { status: 429, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  if (error instanceof SpendCeilingError) {
+    return Response.json(
+      {
+        kind: "at_capacity",
+        error: "Desmo is at capacity today. New solves open again after midnight UTC. Your history and the problems you've already solved stay available.",
+      },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  if (error instanceof UsageUnavailableError) {
+    console.error("[desmo:ALERT] usage limits unavailable; refusing new model work", error.cause instanceof Error ? error.cause.message : error.cause);
+    return Response.json(
+      { kind: "unavailable", error: "The solver is temporarily unavailable. Please try again shortly." },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
   if (error instanceof PreflightFailedError) {
     return Response.json({ status: "failed", error: HONEST_FAILURE }, { status: 422, headers: { "Cache-Control": "no-store" } });
   }
@@ -197,7 +257,14 @@ function methodsPayload(resolved: ReadyEntry, cached: boolean, selectedMethodId 
   };
 }
 
-function pipelineFor(cache: SolveCache, tier: ServiceTierState, diagnosticId: string, signal: AbortSignal, context: PipelineDeps["context"]): PipelineDeps {
+function pipelineFor(
+  cache: SolveCache,
+  tier: ServiceTierState,
+  diagnosticId: string,
+  signal: AbortSignal,
+  context: PipelineDeps["context"],
+  meter: PipelineDeps["meter"],
+): PipelineDeps {
   return {
     client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 150_000, maxRetries: 0 }),
     cache,
@@ -205,6 +272,7 @@ function pipelineFor(cache: SolveCache, tier: ServiceTierState, diagnosticId: st
     tier,
     diagnosticId,
     signal,
+    meter,
   };
 }
 
@@ -266,6 +334,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
         tier,
         diagnosticId,
         signal: request.signal,
+        meter: meterFor(dependencies, user.id, diagnosticId),
       };
       const input = { kind: "image" as const, bytes, mime: image.type };
       const userId = user.id;
@@ -383,7 +452,9 @@ export function createMethodHandler(dependencies: MethodDependencies) {
           : null;
       if (resolved?.status !== "ready" || !method) return errorResponse("That method is not available for this problem. Solve it again.", 404);
       if (!process.env.OPENAI_API_KEY?.trim()) return missingKey();
-      const pipeline = pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext());
+      // Switching methods on a problem already solved is never limited:
+      // at most one explanation per method, cached, and still recorded.
+      const pipeline = pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext(), meterFor(dependencies, user.id, diagnosticId));
       const payload = methodsPayload(resolved, true, method.id);
       const summary = { ...payload, method: payload.methods.find((item) => item.id === method.id) };
       if (!wantsStream(request)) {
@@ -468,7 +539,7 @@ export function createPreflightHandler(dependencies: MethodDependencies) {
       if (current.status === "needs-retry" && !process.env.OPENAI_API_KEY?.trim()) return missingKey();
       const resolved =
         current.status === "needs-retry"
-          ? await resolveOrRetry(pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext()), entry)
+          ? await resolveOrRetry(pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext(), meterFor(dependencies, user.id, diagnosticId)), entry)
           : current;
       if (resolved.status !== "ready") throw new PreflightFailedError();
       return Response.json(

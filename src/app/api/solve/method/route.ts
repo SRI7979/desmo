@@ -2,6 +2,7 @@ import { getCurrentUser } from "@/lib/auth";
 import { getSupabaseConfig } from "@/lib/supabase/config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { routeSolveCache } from "@/lib/solve-cache";
+import { createSupabaseUsageStore } from "@/lib/spend";
 import { createMethodHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
@@ -13,4 +14,5 @@ export const POST = createMethodHandler({
     return getCurrentUser();
   },
   getCache: () => routeSolveCache(createAdminClient()),
+  getUsage: () => createSupabaseUsageStore(createAdminClient()),
 });
