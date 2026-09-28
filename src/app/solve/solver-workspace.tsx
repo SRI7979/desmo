@@ -11,6 +11,7 @@ import SolutionExplanation from "@/components/solution-explanation";
 import TechniqueSelector from "@/components/technique-selector";
 import { calculatorPayload, preflightInRankOrder, reportable, type ReportedVerdict } from "@/lib/desmos-preflight";
 import type { MethodSummary } from "@/lib/method-summary";
+import { retryCountdown } from "@/lib/retry-countdown";
 import {
   ACCEPTED_IMAGE_TYPES,
   MAX_IMAGE_BYTES,
@@ -432,12 +433,8 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
           setNotice(data.error);
           return;
         }
-        if (response.status === 429) {
-          const retryAfter = response.headers.get("Retry-After");
-          const seconds = retryAfter && /^\d+$/.test(retryAfter)
-            ? Number(retryAfter)
-            : retryAfter ? Math.ceil((Date.parse(retryAfter) - Date.now()) / 1000) : 60;
-          const wait = Number.isFinite(seconds) ? Math.min(86_400, Math.max(1, seconds)) : 60;
+        const wait = retryCountdown(response.status, data, response.headers.get("Retry-After"));
+        if (wait !== null) {
           setCooldownSeconds(wait);
           setCooldownUntil(Date.now() + wait * 1000);
         }

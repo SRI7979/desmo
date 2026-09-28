@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { z } from "zod";
 
 import { ACCEPTED_IMAGE_TYPES, type Solution } from "@/lib/solver-schema";
+import { classifyOpenAIError } from "@/lib/openai-errors";
 import { eligibleMethods, preflightRecordSchema, type SolveCache } from "@/lib/solve-cache";
 import { SolveValidationError } from "@/lib/solve-output";
 import {
@@ -99,6 +100,14 @@ class UploadError extends Error {
 
 function errorResponse(message: string, status: number) {
   return Response.json({ error: message }, { status, headers: { "Cache-Control": "no-store" } });
+}
+
+/** A failure waiting will not fix (no credit, a configuration problem): no countdown, no internals. */
+function unavailable() {
+  return Response.json(
+    { kind: "unavailable", error: "Service temporarily unavailable. Please try again later." },
+    { status: 503, headers: { "Cache-Control": "no-store" } },
+  );
 }
 
 function crossSite(request: Request): boolean {
@@ -254,22 +263,36 @@ function errorFor(error: unknown, diagnosticId: string): Response {
     return errorResponse("The solve was canceled. Upload the screenshot again to retry.", 408);
   }
   if (error instanceof OpenAI.APIError) {
-    if (error.status === 401 || error.status === 403) {
-      return errorResponse("OpenAI rejected the API key or project access. Check OPENAI_API_KEY in .env.local and restart the server.", 503);
+    const failure = classifyOpenAIError(error);
+    // Only a real rate limit clears by waiting, so only it gets a countdown.
+    if (failure.kind === "rate_limited") {
+      const seconds = failure.retryAfterSeconds;
+      return Response.json(
+        { kind: "rate_limited", error: `The AI service is busy right now. Try again in ${seconds} seconds.`, retryAfter: seconds },
+        { status: 429, headers: { "Cache-Control": "no-store", "Retry-After": String(seconds) } },
+      );
     }
-    if (error.status === 429) {
-      return error.code === "insufficient_quota"
-        ? errorResponse("The OpenAI project has no available API credits. Check its billing and usage limits, then try again.", 503)
-        : errorResponse("OpenAI is receiving too many requests. Wait a moment and try again.", 429);
+    // Out of credit: waiting never helps, so no countdown (and no billing
+    // details for students). callModel has already logged the real cause.
+    if (failure.kind === "quota") return unavailable();
+    const development = process.env.NODE_ENV === "development";
+    if (error.status === 401 || error.status === 403) {
+      return development
+        ? errorResponse("OpenAI rejected the API key or project access. Check OPENAI_API_KEY in .env.local and restart the server.", 503)
+        : unavailable();
     }
     if (error.status === 404 || error.code === "model_not_found") {
-      return errorResponse("The configured AI model is unavailable. Check OPENAI_MODEL in .env.local and your project's model access.", 503);
+      return development
+        ? errorResponse("The configured AI model is unavailable. Check OPENAI_MODEL in .env.local and your project's model access.", 503)
+        : unavailable();
     }
     if (error.status === 400) {
       if (error.code?.includes("image")) return errorResponse("OpenAI could not read that image. Try a new PNG or JPG screenshot.", 400);
-      return errorResponse("OpenAI could not use the current model settings. Check OPENAI_MODEL supports images and structured outputs.", 502);
+      return development
+        ? errorResponse("OpenAI could not use the current model settings. Check OPENAI_MODEL supports images and structured outputs.", 502)
+        : errorResponse("The solver could not finish. Please try again.", 502);
     }
-    return errorResponse("Could not reach the AI service. Check your connection and try again.", 502);
+    return errorResponse("Could not reach the AI service. Please try again.", 502);
   }
   return errorResponse("The screenshot could not be solved. Please try again.", 500);
 }
@@ -356,7 +379,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       if (!reservation.allowed) {
         const retryAfter = Math.max(1, reservation.retryAfter);
         return Response.json(
-          { error: `You can solve 3 problems per minute. Try again in ${retryAfter} seconds.`, retryAfter },
+          { kind: "rate_limited", error: `You can solve 3 problems per minute. Try again in ${retryAfter} seconds.`, retryAfter },
           { status: 429, headers: { "Cache-Control": "no-store", "Retry-After": String(retryAfter) } },
         );
       }

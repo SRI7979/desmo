@@ -10,6 +10,7 @@ import { createMemorySolveCache, withCacheFallback, type SolveCache } from "../s
 import { createMethodHandler, createPreflightHandler, createSolveHandler, type SolveDependencies } from "../src/lib/solve-handler";
 import { MAX_IMAGE_BYTES } from "../src/lib/solver-schema";
 import { createMemoryUsageStore } from "../src/lib/spend";
+import { retryCountdown } from "../src/lib/retry-countdown";
 import {
   candidatesResponse,
   explanation,
@@ -353,16 +354,17 @@ test("handles model refusal without exposing the provider payload", async () => 
   assert.doesNotMatch(await result.text(), /private provider payload/);
 });
 
-test("maps authentication, quota, rate, model, image, and service errors to useful messages", async () => {
+test("maps authentication, quota, rate, model, image, and service errors to honest messages that expose no internals", async () => {
   for (const [upstreamStatus, code, status, message] of [
-    [401, "invalid_api_key", 503, /API key/],
-    [429, "insufficient_quota", 503, /credits/],
-    [429, "rate_limit_exceeded", 429, /too many requests/],
-    [404, "model_not_found", 503, /model is unavailable/],
+    [401, "invalid_api_key", 503, /^Service temporarily unavailable/],
+    [429, "insufficient_quota", 503, /^Service temporarily unavailable/],
+    [429, "rate_limit_exceeded", 429, /busy right now/],
+    [404, "model_not_found", 503, /^Service temporarily unavailable/],
     [400, "invalid_image", 400, /could not read/],
     [500, "server_error", 502, /AI service/],
   ] as const) {
     mock.restoreAll();
+    mock.method(console, "error", () => undefined);
     const fetchMock = mock.method(globalThis, "fetch", async () =>
       Response.json({ error: { code, message: "private provider payload" } }, { status: upstreamStatus }),
     );
@@ -370,8 +372,20 @@ test("maps authentication, quota, rate, model, image, and service errors to usef
     assert.equal(result.status, status);
     const error = (await result.json()).error;
     assert.match(error, message);
-    assert.doesNotMatch(error, /private provider payload|unit-test-key/);
+    assert.doesNotMatch(error, /private provider payload|unit-test-key|OPENAI_|\.env|billing|credits/);
     assert.equal(fetchMock.mock.callCount(), 1, "does not automatically retry paid requests");
+  }
+  // In development, a configuration problem still names its fix.
+  const environment = process.env.NODE_ENV;
+  (process.env as Record<string, string | undefined>).NODE_ENV = "development";
+  try {
+    mock.restoreAll();
+    mock.method(console, "error", () => undefined);
+    mock.method(console, "info", () => undefined);
+    mock.method(globalThis, "fetch", async () => Response.json({ error: { code: "invalid_api_key", message: "x" } }, { status: 401 }));
+    assert.match((await (await POST(upload())).json()).error, /OPENAI_API_KEY/);
+  } finally {
+    (process.env as Record<string, string | undefined>).NODE_ENV = environment;
   }
 });
 
@@ -1114,4 +1128,78 @@ test("regression test 7: a 4000 px-wide screenshot is sent to OpenAI at 1600 px;
   await POST(upload(small));
   const sentSmall = await sentImage(second.requests.candidates[0]);
   assert.deepEqual([sentSmall.width, sentSmall.height], [1200, 700]);
+});
+
+// ---- honest OpenAI error states ------------------------------------------------
+
+const OPENAI_429 = {
+  rateLimit: {
+    body: { error: { message: "Rate limit reached for gpt-5-mini in organization org-test on tokens per min (TPM): Limit 200000, Used 199000, Requested 3000. Please try again in 7s. Visit https://platform.openai.com/account/rate-limits to learn more.", type: "tokens", param: null, code: "rate_limit_exceeded" } },
+    headers: { "retry-after": "7" },
+  },
+  // A rate-limit message can link the billing page; the code still decides.
+  rateLimitMentioningBilling: {
+    body: { error: { message: "Rate limit reached for requests. Add a payment method to your account to increase your rate limit. Visit https://platform.openai.com/account/billing to add a payment method.", type: "requests", param: null, code: "rate_limit_exceeded" } },
+    headers: {},
+  },
+  quota: {
+    body: { error: { message: "You exceeded your current quota, please check your plan and billing details.", type: "insufficient_quota", param: null, code: "insufficient_quota" } },
+    headers: {},
+  },
+  // What the billing stop in the eval actually said, with no usable code.
+  noCredits: {
+    body: { error: { message: "You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.", type: null, param: null, code: null } },
+    headers: {},
+  },
+};
+const reply429 = (variant: keyof typeof OPENAI_429) => () =>
+  new Response(JSON.stringify(OPENAI_429[variant].body), { status: 429, headers: { "content-type": "application/json", ...OPENAI_429[variant].headers } });
+
+test("regression tests 8 + 9: a rate limit gets a countdown, being out of credit does not; neither is ever retried", async () => {
+  const alerts: string[] = [];
+  mock.method(console, "error", (...args: unknown[]) => alerts.push(args.map(String).join(" ")));
+  for (const [variant, expected] of [
+    ["rateLimit", { status: 429, kind: "rate_limited", retryAfter: "7" }],
+    ["rateLimitMentioningBilling", { status: 429, kind: "rate_limited", retryAfter: "20" }],
+    ["quota", { status: 503, kind: "unavailable", retryAfter: null }],
+    ["noCredits", { status: 503, kind: "unavailable", retryAfter: null }],
+  ] as const) {
+    mock.restoreAll();
+    mock.method(console, "error", (...args: unknown[]) => alerts.push(args.map(String).join(" ")));
+    const { fetchMock } = mockModel({ candidates: reply429(variant) });
+    const response = await POST(upload());
+    const body = await response.json();
+    assert.equal(response.status, expected.status, variant);
+    assert.equal(body.kind, expected.kind, variant);
+    assert.equal(response.headers.get("retry-after"), expected.retryAfter, variant);
+    assert.equal(retryCountdown(response.status, body, response.headers.get("retry-after")), expected.retryAfter ? Number(expected.retryAfter) : null, `${variant}: the client's countdown`);
+    if (expected.kind === "unavailable") {
+      assert.equal(body.error, "Service temporarily unavailable. Please try again later.", "no billing details for students");
+      assert.ok(alerts.some((line) => /\[desmo:ALERT\].*candidates call/.test(line) && /no credits remaining|current quota/.test(line)), `${variant}: the real cause is logged loudly`);
+    }
+    assert.equal(fetchMock.mock.callCount(), 1, `${variant}: one request, no automatic retry`);
+  }
+});
+
+test("regression test 9: a 429 on an explanation is not retried either; the student gets the retry button instead", async () => {
+  const { requests } = tangentModel();
+  const solved = await (await POST(upload())).json();
+  mock.restoreAll();
+  mock.method(console, "error", () => undefined);
+  const model = mockModel({ candidates: candidatesResponse(), explanation: reply429("rateLimit") });
+  const stream = await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+  assert.equal(stream.at(-1).explanation, "fallback");
+  assert.equal(explanationFromEvents(stream), null);
+  assert.equal(model.requests.explanation.length, 1, "one request");
+  assert.ok(requests.explanation.length >= 1);
+});
+
+test("the per-minute limit and OpenAI's rate limit are the only responses with a countdown", () => {
+  assert.equal(retryCountdown(429, { kind: "rate_limited" }, "12"), 12);
+  assert.equal(retryCountdown(429, { kind: "rate_limited", retryAfter: 9 }, null), 9);
+  assert.equal(retryCountdown(429, { kind: "rate_limited" }, null), 20, "a default when neither says");
+  assert.equal(retryCountdown(429, { kind: "daily_cap", resetsAt: "2026-09-28T00:00:00Z" }, null), null, "a daily cap is not a countdown");
+  assert.equal(retryCountdown(429, { error: "Too many" }, "60"), null, "an unmarked 429 is not trusted to clear by waiting");
+  assert.equal(retryCountdown(503, { kind: "unavailable" }, "30"), null);
+  assert.equal(retryCountdown(503, { kind: "at_capacity" }, null), null);
 });

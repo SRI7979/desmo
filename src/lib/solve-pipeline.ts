@@ -48,6 +48,7 @@ import {
   type Method,
 } from "./strategy-selection";
 import { NO_USAGE, timeoutEstimate } from "./model-pricing";
+import { classifyOpenAIError, describeOpenAIError } from "./openai-errors";
 import type { Meter, ModelCall } from "./spend";
 import { TECHNIQUES } from "./technique-vocabulary";
 import { loadTrainingExamples } from "./training-examples";
@@ -376,6 +377,11 @@ async function callModel(
     // A rejected or failed request is not billed; it is still recorded, so
     // failures show up next to what the successful calls cost.
     await deps.meter?.record(call, { status: "failed", model, serviceTier: tier, usage: NO_USAGE, estimated: false });
+    // Out of credit or locked out: every later call fails too, and students
+    // only see "temporarily unavailable", so the real cause is logged loudly here.
+    if (classifyOpenAIError(error).kind === "quota" || (error instanceof OpenAI.APIError && (error.status === 401 || error.status === 403))) {
+      console.error(`[desmo:ALERT] OpenAI refused the ${call} call; new solves will fail until this is fixed: ${describeOpenAIError(error)}`);
+    }
     throw error;
   } finally {
     clearTimeout(timer);
