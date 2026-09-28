@@ -11,6 +11,7 @@ import { createMethodHandler, createPreflightHandler, createSolveHandler, type S
 import { MAX_IMAGE_BYTES } from "../src/lib/solver-schema";
 import { createMemoryUsageStore } from "../src/lib/spend";
 import { retryCountdown } from "../src/lib/retry-countdown";
+import { createTelemetry, memorySink, supabaseSink, type TelemetryRecord } from "../src/lib/telemetry";
 import {
   candidatesResponse,
   explanation,
@@ -35,6 +36,7 @@ const userId = "11111111-1111-4111-8111-111111111111";
 const problemId = "22222222-2222-4222-8222-222222222222";
 let cache = createMemorySolveCache();
 let usage = createMemoryUsageStore();
+let telemetryRecords: TelemetryRecord[] = [];
 const dependencies: SolveDependencies = {
   getCurrentUser: async () => ({ id: userId }),
   reserveSolve: async () => ({ allowed: true, retryAfter: 0 }),
@@ -43,6 +45,7 @@ const dependencies: SolveDependencies = {
   getUsage: () => usage,
   limits: () => ({ freeSolvesPerDay: 1000, dailySpendCeilingUsd: 1000 }),
   maxDurationSeconds: 180,
+  telemetry: createTelemetry([]),
 };
 const POST = createSolveHandler(dependencies);
 const SWITCH = createMethodHandler(dependencies);
@@ -57,6 +60,8 @@ const saved = {
 beforeEach(() => {
   cache = createMemorySolveCache();
   usage = createMemoryUsageStore();
+  telemetryRecords = [];
+  dependencies.telemetry = createTelemetry([memorySink(telemetryRecords)]);
   dependencies.limits = () => ({ freeSolvesPerDay: 1000, dailySpendCeilingUsd: 1000 });
   dependencies.getCurrentUser = async () => ({ id: userId });
   dependencies.reserveSolve = async () => ({ allowed: true, retryAfter: 0 });
@@ -1202,4 +1207,106 @@ test("the per-minute limit and OpenAI's rate limit are the only responses with a
   assert.equal(retryCountdown(429, { error: "Too many" }, "60"), null, "an unmarked 429 is not trusted to clear by waiting");
   assert.equal(retryCountdown(503, { kind: "unavailable" }, "30"), null);
   assert.equal(retryCountdown(503, { kind: "at_capacity" }, null), null);
+});
+
+// ---- error tracking and events ------------------------------------------------
+
+const named = (name: string) => telemetryRecords.filter((record) => record.name === name);
+
+test("events: solve_started and solve_succeeded carry the user, solve, problem, technique, and cost", async () => {
+  mockModel({ candidates: candidatesResponse(), extra: { candidates: CANDIDATES_USAGE, explanation: EXPLANATION_USAGE } });
+  const data = await (await POST(upload())).json();
+  const [started] = named("solve_started");
+  const [succeeded] = named("solve_succeeded");
+  assert.equal(started.context.userId, userId);
+  assert.equal(started.context.mime, "image/png");
+  assert.equal(succeeded.context.solveId, started.context.solveId);
+  assert.equal(succeeded.context.cacheKey, data.cacheKey);
+  assert.equal(succeeded.context.techniqueId, "intercept-read");
+  assert.equal(succeeded.context.costUsd, 0.008548, "0.006195 + 0.002353");
+  assert.equal(succeeded.context.outcome, "solved");
+  assert.equal(telemetryRecords.filter((record) => record.type === "error").length, 0);
+});
+
+test("events: upload_rejected names the reason, and a rejected upload never starts a solve", async () => {
+  mockModel({ candidates: candidatesResponse() });
+  await POST(upload(png, "image/gif"));
+  await POST(upload(Buffer.from("not really a png"), "image/png"));
+  const rejected = named("upload_rejected");
+  assert.equal(rejected.length, 2);
+  assert.match(String(rejected[0].context.reason), /GIF file/);
+  assert.equal(rejected[0].context.status, 415);
+  assert.equal(rejected[1].context.reason, "signature_mismatch");
+  assert.equal(named("solve_started").length, 0);
+});
+
+test("events: cap_hit and ceiling_hit are recorded when a limit refuses a solve", async () => {
+  mockModel({ candidates: candidatesResponse() });
+  mock.method(console, "error", () => undefined);
+  dependencies.limits = () => ({ freeSolvesPerDay: 0, dailySpendCeilingUsd: 1000 });
+  await POST(upload());
+  const [cap] = named("cap_hit");
+  assert.equal(cap.context.userId, userId);
+  assert.equal(cap.context.limit, 0);
+  dependencies.limits = () => ({ freeSolvesPerDay: 1000, dailySpendCeilingUsd: 0 });
+  await POST(upload());
+  assert.equal(named("ceiling_hit")[0].context.ceilingUsd, 0);
+  assert.equal(named("solve_failed").length, 0, "a limit is not a failure");
+});
+
+test("errors: a failed solve is captured with its stack, user, solve id, and the call that failed", async () => {
+  mock.method(console, "error", () => undefined);
+  mockModel({ candidates: () => Response.json({ error: { code: "server_error", message: "upstream exploded" } }, { status: 500 }) });
+  assert.equal((await POST(upload())).status, 502);
+  const [error] = telemetryRecords.filter((record) => record.type === "error");
+  assert.ok(error.error?.stack?.includes("at "), "a stack trace");
+  assert.equal(error.context.userId, userId);
+  assert.equal(error.context.call, "candidates");
+  assert.ok(error.context.solveId);
+  const [failed] = named("solve_failed");
+  assert.equal(failed.context.reason, "openai_other_500");
+  assert.equal(failed.context.solveId, error.context.solveId);
+});
+
+test("events: method_switched carries the problem and technique; a fallen-back explanation is captured with its cause", async () => {
+  const { requests } = tangentModel({ failing: new Set(["Quadratic formula"]) });
+  const solved = await (await POST(upload())).json();
+  await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
+  await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  const switched = named("method_switched");
+  assert.deepEqual(switched.map((record) => [record.context.techniqueId, record.context.explanation]), [["discriminant", "model"], ["quadratic-formula", "fallback"]]);
+  assert.equal(switched[0].context.cacheKey, solved.cacheKey);
+  const [error] = telemetryRecords.filter((record) => record.type === "error");
+  assert.equal(error.context.techniqueId, "quadratic-formula");
+  assert.equal(error.context.call, "explanation");
+  assert.equal(error.context.cacheKey, solved.cacheKey);
+  assert.ok(requests.explanation.length >= 3);
+});
+
+test("telemetry never fails a request: a throwing or hanging sink is ignored", async () => {
+  dependencies.telemetry = createTelemetry([
+    () => {
+      throw new Error("sink down");
+    },
+    () => new Promise(() => undefined),
+  ]);
+  mockModel({ candidates: candidatesResponse() });
+  const started = performance.now();
+  assert.equal((await POST(upload())).status, 200);
+  assert.ok(performance.now() - started < 5_000, "the flush gives up after a short limit");
+});
+
+test("the Supabase sink writes one app_events row per record, with context split out and no problem text", async () => {
+  const rows: Record<string, unknown>[] = [];
+  const sink = supabaseSink(() => ({ from: (table: string) => ({ insert: async (row: Record<string, unknown>) => (rows.push({ table, ...row }), { error: null }) }) }));
+  const telemetry = createTelemetry([sink]);
+  telemetry.error(new Error("boom"), { userId, solveId: "s1", cacheKey: "k1", techniqueId: "discriminant", call: "explanation", stage: "method_switch" });
+  await telemetry.flush();
+  assert.equal(rows[0].table, "app_events");
+  assert.equal(rows[0].type, "error");
+  assert.equal(rows[0].user_id, userId);
+  assert.equal(rows[0].technique_id, "discriminant");
+  assert.equal(rows[0].call, "explanation");
+  assert.deepEqual(rows[0].context, { stage: "method_switch" });
+  assert.match(String(rows[0].error_stack), /boom/);
 });

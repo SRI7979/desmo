@@ -73,3 +73,21 @@ test("only the server can read usage or call the limit functions", async () => {
     await db.exec("reset role");
   }
 });
+
+test("app_events stores events and errors for the server only", async () => {
+  await db.exec(await readFile(new URL("../supabase/migrations/202609290002_app_events.sql", import.meta.url), "utf8"));
+  await db.query(
+    `insert into public.app_events(type, name, user_id, solve_id, cache_key, technique_id, call, context, error_name, error_message, error_stack)
+     values ('error', 'ModelTimeoutError', $1, 'solve-9', 'key.v1', 'discriminant', 'explanation', '{"stage":"method_switch"}', 'ModelTimeoutError', 'aborted', 'at callModel')`,
+    [alice],
+  );
+  const row = (await db.query<{ call: string; context: { stage: string } }>("select call, context from public.app_events where solve_id='solve-9'")).rows[0];
+  assert.equal(row.call, "explanation");
+  assert.equal(row.context.stage, "method_switch");
+  await db.exec("set role authenticated");
+  try {
+    await assert.rejects(db.query("select * from public.app_events"), /permission denied/);
+  } finally {
+    await db.exec("reset role");
+  }
+});

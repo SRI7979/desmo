@@ -5,6 +5,7 @@ import { reserveSolve } from "@/lib/rate-limit";
 import { saveProblem } from "@/lib/problem-history";
 import { routeSolveCache } from "@/lib/solve-cache";
 import { createSupabaseUsageStore } from "@/lib/spend";
+import { routeTelemetry } from "@/lib/route-telemetry";
 import { createSolveHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
@@ -24,4 +25,5 @@ export const POST = createSolveHandler({
   getCache: () => routeSolveCache(createAdminClient()),
   getUsage: () => createSupabaseUsageStore(createAdminClient()),
   maxDurationSeconds: maxDuration,
+  telemetry: routeTelemetry,
 });

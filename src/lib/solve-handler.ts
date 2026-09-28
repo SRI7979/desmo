@@ -26,6 +26,7 @@ import {
 import {
   createMeter,
   DailyCapError,
+  type Meter,
   limitsFromEnv,
   SpendCeilingError,
   UsageUnavailableError,
@@ -33,6 +34,7 @@ import {
   type UsageStore,
 } from "@/lib/spend";
 import { MAX_CANDIDATES } from "@/lib/strategy-selection";
+import { consoleSink, createTelemetry, type Telemetry, type TelemetryContext } from "@/lib/telemetry";
 import { TrainingBatchError } from "@/lib/training-examples";
 import {
   InvalidImageError,
@@ -54,9 +56,33 @@ export type SolveDependencies = {
   limits?: () => Limits;
   /** The route's maxDuration: every model call must finish inside it. */
   maxDurationSeconds: number;
+  /** Error capture and product events; defaults to structured console logs. */
+  telemetry?: Telemetry;
 };
 
-export type MethodDependencies = Pick<SolveDependencies, "getCurrentUser" | "getCache" | "getUsage" | "limits" | "maxDurationSeconds">;
+export type MethodDependencies = Pick<SolveDependencies, "getCurrentUser" | "getCache" | "getUsage" | "limits" | "maxDurationSeconds" | "telemetry">;
+
+const consoleTelemetry = createTelemetry([consoleSink()]);
+
+function telemetryFor(dependencies: MethodDependencies): Telemetry {
+  return dependencies.telemetry ?? consoleTelemetry;
+}
+
+/** Limits, refusals, and rejected uploads are answered, not failures to investigate. */
+function isExpected(error: unknown): boolean {
+  return error instanceof UploadError || error instanceof InvalidImageError || error instanceof DailyCapError || error instanceof SpendCeilingError;
+}
+
+/** A short, stable label for why a request failed, for events and dashboards. */
+function failureKind(error: unknown): string {
+  if (error instanceof ModelTimeoutError) return `timeout_${error.call}`;
+  if (error instanceof PreflightFailedError) return "desmos_preflight";
+  if (error instanceof UsageUnavailableError) return "usage_unavailable";
+  if (error instanceof SolveValidationError) return `validation_${error.stage}`;
+  if (error instanceof RefusalError) return "refusal";
+  if (error instanceof OpenAI.APIError) return `openai_${classifyOpenAIError(error).kind}_${error.status ?? "none"}`;
+  return error instanceof Error ? error.name : "unknown";
+}
 
 /** Room left after the last model call for cache writes, saving history, and the response. */
 const DEADLINE_MARGIN_MS = 5_000;
@@ -67,14 +93,18 @@ function deadlineFor(dependencies: MethodDependencies, startedAt: number): numbe
 
 /** A meter for one request: usage recorded under this user and request id. */
 function meterFor(dependencies: MethodDependencies, userId: string, solveId: string) {
+  const telemetry = telemetryFor(dependencies);
   return createMeter({
     store: dependencies.getUsage(),
     userId,
     solveId,
     limits: (dependencies.limits ?? limitsFromEnv)(),
-    onRecordError: (error) => console.error("[desmo:usage] could not record a model call's usage", error instanceof Error ? error.message : error),
-    onCeiling: (error) =>
-      console.error(`[desmo:ALERT] ceiling_hit: ${error.message} New solves are refused until midnight UTC. Raise DAILY_SPEND_CEILING_USD to reopen.`),
+    onRecordError: (error) => telemetry.error(error, { userId, solveId, stage: "usage_record" }),
+    onCeiling: (error) => {
+      console.error(`[desmo:ALERT] ceiling_hit: ${error.message} New solves are refused until midnight UTC. Raise DAILY_SPEND_CEILING_USD to reopen.`);
+      telemetry.event("ceiling_hit", { userId, solveId, spentUsd: error.spentUsd, ceilingUsd: error.ceilingUsd });
+    },
+    onCap: (error) => telemetry.event("cap_hit", { userId, solveId, limit: error.limit, resetsAt: error.resetsAt }),
   });
 }
 
@@ -351,6 +381,41 @@ export function createSolveHandler(dependencies: SolveDependencies) {
     const startedAt = performance.now();
     const requestStarted = Date.now();
     const diagnosticId = randomUUID();
+    const telemetry = telemetryFor(dependencies);
+    let currentUserId: string | null = null;
+    let meter: Meter | null = null;
+    let techniqueId: string | null = null;
+    const context = (details: TelemetryContext = {}): TelemetryContext => ({
+      userId: currentUserId,
+      solveId: diagnosticId,
+      cacheKey: meter?.cacheKey() ?? null,
+      techniqueId,
+      call: meter?.lastCall() ?? null,
+      ...details,
+    });
+    const succeeded = (result: SolveResult, explanation: string | null) => {
+      if (result.kind === "solved") techniqueId = result.method.techniqueId;
+      // The rows reached the student, but the explanation fell back: report why.
+      if (result.kind === "solved" && result.explanationFailure) {
+        telemetry.error(result.explanationFailure, context({ stage: "explanation", call: "explanation" }));
+      }
+      telemetry.event(
+        "solve_succeeded",
+        context({
+          outcome: result.kind,
+          cached: result.kind === "solved" ? result.cached : false,
+          hit: result.kind === "solved" ? result.hit : null,
+          explanation,
+          modelCalls: result.calls.candidates + result.calls.explanation,
+          costUsd: meter?.costUsd() ?? 0,
+          durationMs: Math.round(performance.now() - startedAt),
+        }),
+      );
+    };
+    const failed = (error: unknown, stage: string) => {
+      telemetry.error(error, context({ stage }));
+      telemetry.event("solve_failed", context({ stage, reason: failureKind(error), durationMs: Math.round(performance.now() - startedAt) }));
+    };
     try {
       if (crossSite(request)) return errorResponse("Send uploads from the Desmo website.", 403);
       let user: { id: string } | null;
@@ -360,9 +425,11 @@ export function createSolveHandler(dependencies: SolveDependencies) {
         return errorResponse("Sign-in is temporarily unavailable. Please try again shortly.", 503);
       }
       if (!user) return errorResponse("Sign in to solve and save your problems.", 401);
+      currentUserId = user.id;
       const image = await readUpload(request);
       const bytes = Buffer.from(await image.arrayBuffer());
       if (!matchesImageSignature(bytes, image.type)) {
+        telemetry.event("upload_rejected", context({ reason: "signature_mismatch", status: 415, mime: image.type, bytes: bytes.length }));
         return errorResponse("This file is not a valid PNG, JPG, or WebP image. Export the screenshot again.", 415);
       }
       // Fully decode before anything else is spent on it: a damaged or
@@ -385,6 +452,8 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       }
       // What OpenAI sees: at most 1600 px on the long edge. History keeps the original.
       const modelImage = await prepareModelImage(bytes, image.type);
+      meter = meterFor(dependencies, user.id, diagnosticId);
+      telemetry.event("solve_started", context({ mime: image.type, bytes: bytes.length, width: modelImage.width, height: modelImage.height, downscaled: modelImage.resized }));
 
       const pipeline = pipelineFor(
         dependencies.getCache(),
@@ -392,7 +461,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
         diagnosticId,
         request.signal,
         await loadSolveContext(),
-        meterFor(dependencies, user.id, diagnosticId),
+        meter,
         deadlineFor(dependencies, requestStarted),
       );
       const input = { kind: "image" as const, bytes, mime: image.type, modelBytes: modelImage.bytes };
@@ -437,6 +506,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       if (!wantsStream(request)) {
         const result = await solveProblem(pipeline, input);
         const saved = await finish(result);
+        succeeded(result, saved.explanation);
         const body =
           result.kind === "solved"
             ? { ...methodsPayload(result.resolved, result.cached, saved.methodId ?? result.method.id), ...saved }
@@ -463,19 +533,36 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       if (typeof first === "object") throw first.error;
       if (first === "done") {
         const result = await run;
-        send({ type: "solution", ...(await finish(result)) });
+        const saved = await finish(result);
+        succeeded(result, saved.explanation);
+        send({ type: "solution", ...saved });
         controller.close();
       } else {
         void run
           .then(async (result) => {
-            send({ type: "solution", ...(await finish(result)) });
+            const saved = await finish(result);
+            succeeded(result, saved.explanation);
+            send({ type: "solution", ...saved });
           })
-          .catch(() => send({ type: "error", error: "The explanation could not be loaded. The calculator steps above are complete." }))
-          .finally(() => controller.close());
+          .catch((error: unknown) => {
+            failed(error, "explanation");
+            send({ type: "error", error: "The explanation could not be loaded. The calculator steps above are complete." });
+          })
+          .finally(() => {
+            controller.close();
+            void telemetry.flush();
+          });
       }
       return new Response(stream, { headers: { "Content-Type": NDJSON, "Cache-Control": "no-store" } });
     } catch (error) {
+      if (error instanceof UploadError || error instanceof InvalidImageError) {
+        telemetry.event("upload_rejected", context({ reason: error.message, status: error.status }));
+      } else if (!isExpected(error)) {
+        failed(error, meter ? "solve" : "request");
+      }
       return errorFor(error, diagnosticId);
+    } finally {
+      await telemetry.flush();
     }
   };
 }
@@ -491,6 +578,7 @@ export function createMethodHandler(dependencies: MethodDependencies) {
   return async function POST(request: Request) {
     const requestStarted = Date.now();
     const diagnosticId = randomUUID();
+    const telemetry = telemetryFor(dependencies);
     try {
       if (crossSite(request)) return errorResponse("Send requests from the Desmo website.", 403);
       let user: { id: string } | null;
@@ -517,8 +605,22 @@ export function createMethodHandler(dependencies: MethodDependencies) {
       const pipeline = pipelineFor(cache, tier, diagnosticId, request.signal, await loadSolveContext(), meterFor(dependencies, user.id, diagnosticId), deadlineFor(dependencies, requestStarted));
       const payload = methodsPayload(resolved, true, method.id);
       const summary = { ...payload, method: payload.methods.find((item) => item.id === method.id) };
+      const switched = (source: string, failure?: unknown) => {
+        if (failure) telemetry.error(failure, { userId: user.id, solveId: diagnosticId, cacheKey: resolved.entry.cacheKey, techniqueId: method.techniqueId, call: "explanation", stage: "method_switch" });
+        telemetry.event("method_switched", {
+          userId: user.id,
+          solveId: diagnosticId,
+          cacheKey: resolved.entry.cacheKey,
+          techniqueId: method.techniqueId,
+          explanation: source,
+          costUsd: pipeline.meter?.costUsd() ?? 0,
+        });
+      };
+      const switchFailed = (error: unknown) =>
+        telemetry.error(error, { userId: user.id, solveId: diagnosticId, cacheKey: resolved.entry.cacheKey, techniqueId: method.techniqueId, call: "explanation" });
       if (!wantsStream(request)) {
         const explained = await explainMethod(pipeline, resolved.entry, method);
+        switched(explained.source, explained.failure);
         return Response.json(
           { ...summary, solution: explained.solution, explanation: explained.source },
           { headers: { "Cache-Control": "no-store" } },
@@ -531,15 +633,20 @@ export function createMethodHandler(dependencies: MethodDependencies) {
           send({ type: "methods", ...summary });
           try {
             const explained = await explainMethod(pipeline, resolved.entry, method);
+            switched(explained.source, explained.failure);
             send({ type: "solution", solution: explained.solution, explanation: explained.source });
-          } catch {
+          } catch (error) {
+            switchFailed(error);
             send({ type: "error", error: "The explanation could not be loaded. The calculator steps above are complete." });
           }
+          await telemetry.flush();
           controller.close();
         },
       });
       return new Response(stream, { headers: { "Content-Type": NDJSON, "Cache-Control": "no-store" } });
     } catch (error) {
+      if (!isExpected(error)) telemetry.error(error, { solveId: diagnosticId, stage: "method_switch" });
+      await telemetry.flush();
       return errorFor(error, diagnosticId);
     }
   };
@@ -573,6 +680,7 @@ export function createPreflightHandler(dependencies: MethodDependencies) {
   return async function POST(request: Request) {
     const requestStarted = Date.now();
     const diagnosticId = randomUUID();
+    const telemetry = telemetryFor(dependencies);
     try {
       if (crossSite(request)) return errorResponse("Send requests from the Desmo website.", 403);
       let user: { id: string } | null;
@@ -611,6 +719,8 @@ export function createPreflightHandler(dependencies: MethodDependencies) {
         { headers: { "Cache-Control": "no-store" } },
       );
     } catch (error) {
+      if (!isExpected(error)) telemetry.error(error, { solveId: diagnosticId, stage: "preflight" });
+      await telemetry.flush();
       return errorFor(error, diagnosticId);
     }
   };

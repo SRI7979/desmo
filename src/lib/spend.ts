@@ -92,6 +92,10 @@ export type Meter = {
   setCacheKey(cacheKey: string): void;
   /** Which call is in flight or last ran, for error reports. */
   lastCall(): ModelCall | null;
+  /** The problem this request's calls were recorded under, once known. */
+  cacheKey(): string | null;
+  /** What this request's calls cost, as recorded. */
+  costUsd(): number;
 };
 
 export function createMeter(options: {
@@ -105,6 +109,7 @@ export function createMeter(options: {
 }): Meter {
   let cacheKey: string | null = null;
   let last: ModelCall | null = null;
+  let spent = 0;
   const guard = async <T>(run: () => Promise<T>): Promise<T> => {
     try {
       return await run();
@@ -148,6 +153,7 @@ export function createMeter(options: {
         costUsd: costUsd(usage, rate),
         estimated: !known || (outcome.status !== "completed" && outcome.estimated),
       };
+      spent += record.costUsd;
       try {
         await options.store.record(record);
       } catch (error) {
@@ -161,6 +167,8 @@ export function createMeter(options: {
       cacheKey = key;
     },
     lastCall: () => last,
+    cacheKey: () => cacheKey,
+    costUsd: () => Math.round(spent * 1_000_000) / 1_000_000,
   };
 }
 

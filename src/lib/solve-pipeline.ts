@@ -316,6 +316,8 @@ export type SolvedResult = {
   cached: boolean;
   hit: "input" | "problem" | null;
   explanation: "cache" | "model" | "fallback";
+  /** Why the default's explanation fell back, when it did: for error reports. */
+  explanationFailure?: unknown;
   calls: CallCounts;
   timings: { methodsMs: number; completeMs: number };
   repairs: string[];
@@ -512,7 +514,7 @@ export async function explainMethod(
   entry: CacheEntry,
   method: Method,
   calls: CallCounts = { candidates: 0, explanation: 0 },
-): Promise<{ solution: Solution; source: "cache" | "model" | "fallback" }> {
+): Promise<{ solution: Solution; source: "cache" | "model" | "fallback"; failure?: unknown }> {
   deps.meter?.setCacheKey(entry.cacheKey);
   const cached = await deps.cache.getExplanation(entry.cacheKey, method.id);
   if (cached) {
@@ -523,6 +525,8 @@ export async function explainMethod(
     }
   }
   let rejection: Rejection | undefined;
+  // Why the fallback was needed, so the caller can report it with context.
+  let failure: unknown;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
     let response: OpenAI.Responses.Response;
     try {
@@ -530,6 +534,7 @@ export async function explainMethod(
       calls.explanation += 1;
     } catch (error) {
       if (deps.signal?.aborted) throw error;
+      failure = error;
       break;
     }
     try {
@@ -538,13 +543,17 @@ export async function explainMethod(
       const stored = await deps.cache.putExplanation(entry.cacheKey, method.id, explanation);
       return { solution: presentMethod(entry, method, stored), source: "model" };
     } catch (error) {
-      const failure = error instanceof ExplanationError ? new SolveValidationError(error.stage, error.message) : error;
-      if (!(failure instanceof SolveValidationError)) throw error;
-      await logSolveRejection(`${deps.diagnosticId}-explanation`, attempt, response, failure);
-      rejection = { stage: failure.stage, reason: failure.message, previous: modelOutputText(response) };
+      const rejected = error instanceof ExplanationError ? new SolveValidationError(error.stage, error.message) : error;
+      if (!(rejected instanceof SolveValidationError)) throw error;
+      await logSolveRejection(`${deps.diagnosticId}-explanation`, attempt, response, rejected);
+      rejection = { stage: rejected.stage, reason: rejected.message, previous: modelOutputText(response) };
     }
   }
-  return { solution: presentMethod(entry, method, fallbackExplanation(method)), source: "fallback" };
+  return {
+    solution: presentMethod(entry, method, fallbackExplanation(method)),
+    source: "fallback",
+    failure: failure ?? new ExplanationError(`The explanation was rejected twice: ${rejection?.reason ?? "unknown"}`, rejection?.stage),
+  };
 }
 
 /**
@@ -646,6 +655,7 @@ export async function solveProblem(
     cached: hit !== null,
     hit,
     explanation: explained.source,
+    explanationFailure: explained.failure,
     calls,
     timings: { methodsMs, completeMs: performance.now() - started },
     repairs,

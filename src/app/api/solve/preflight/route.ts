@@ -3,6 +3,7 @@ import { getSupabaseConfig } from "@/lib/supabase/config";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { routeSolveCache } from "@/lib/solve-cache";
 import { createSupabaseUsageStore } from "@/lib/spend";
+import { routeTelemetry } from "@/lib/route-telemetry";
 import { createPreflightHandler } from "@/lib/solve-handler";
 
 export const runtime = "nodejs";
@@ -18,4 +19,5 @@ export const POST = createPreflightHandler({
   getCache: () => routeSolveCache(createAdminClient()),
   getUsage: () => createSupabaseUsageStore(createAdminClient()),
   maxDurationSeconds: maxDuration,
+  telemetry: routeTelemetry,
 });
