@@ -80,7 +80,7 @@
 .replaceHint { font-size: var(--text-xs); }
 .fileDetails { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-top: var(--space-2); color: var(--muted); font-size: var(--text-xs); }
 .fileDetails > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.fileDetails button { flex-shrink: 0; border: 0; background: transparent; color: var(--accent-ink); padding: var(--space-2); font-size: var(--text-xs); }
+.fileDetails button { display: inline-flex; align-items: center; flex-shrink: 0; min-height: var(--control-height); border: 0; background: transparent; color: var(--accent-ink); padding: var(--space-2); font-size: var(--text-xs); }
 .fileDetails button:hover:not(:disabled) { text-decoration: underline; }
 
 .solveButton {
@@ -143,6 +143,8 @@
   .uploadCard { border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
   .calculatorCard { position: static; border-left: 1px solid var(--border); border-top-color: var(--border-subtle); border-bottom: 0; border-radius: 0; }
   .resultCard { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+  /* --control-height (42px) is 2px short of a 44px tap target. */
+  .sampleButton, .textButton, .fileDetails button { min-height: 44px; }
 }
 @media (max-width: 520px) {
   .header { gap: var(--space-3); padding-inline: var(--space-4); }

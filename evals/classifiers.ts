@@ -197,6 +197,19 @@ export const CLASSIFIERS: Record<string, Classifier> = {
     const forbidden = singletonList || isUnderdetermined(s);
     return verdict(s.expressions.length > 0 && !forbidden, forbidden, singletonList ? "wrapped a scalar unknown in a one-element list (nested-list regression)" : "underdetermined regression");
   },
+
+  "017-integer-factor-maximum": (s) => {
+    const enumerates = s.expressions.some((e) => /\\operatorname\{for\}/.test(e.latex));
+    const compares = s.expressions.some((e) => /\\operatorname\{max\}|\\max\b/.test(e.latex));
+    return verdict(enumerates && compares, !enumerates || !compares, "reported one factorization without comparing every integer factor pair");
+  },
+
+  "018-rational-quadratic-table": (s) => {
+    const keepsInterceptInF = s.expressions.some((e) => /^f\(x\)=/.test(e.latex.replace(/\s/g, "")) && /10/.test(e.latex));
+    const readsG = s.expressions.some((e) => /g\(3\)/.test(e.latex));
+    const valid = hasRegression(s) && keepsInterceptInF && readsG;
+    return verdict(valid, !valid, "did not fit the g table while keeping f(0)=10 separate");
+  },
 };
 
 export function classify(problemId: string, solution: Solution): Verdict {

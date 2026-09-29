@@ -14,7 +14,7 @@ import { solutionSchema, type AnswerChoice, type Solution } from "./solver-schem
 
 export type SelectorMode = "single" | "multi";
 
-/** A lone technique gets a static label, never an empty-feeling dropdown. */
+/** A lone technique opens its details; multiple techniques open details and a switcher. */
 export function selectorMode(methods: readonly MethodSummary[]): SelectorMode {
   return methods.length <= 1 ? "single" : "multi";
 }

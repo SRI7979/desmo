@@ -85,6 +85,19 @@ test("normalizes Unicode operators that render correctly but Desmos rejects", ()
   );
 });
 
+test("display-size fraction commands become executable Desmos fractions", () => {
+  const original = [
+    String.raw`\sin^{-1}\left(\tfrac{1}{2}\right)`,
+    String.raw`\dfrac{3}{4}+\frac{1}{2}`,
+  ];
+  const expected = [
+    String.raw`\sin^{-1}\left(\frac{1}{2}\right)`,
+    String.raw`\frac{3}{4}+\frac{1}{2}`,
+  ];
+  assert.deepEqual(normalize(...original), expected);
+  assert.deepEqual(normalize(...expected), expected);
+});
+
 test("multi-digit identifiers are matched as a whole without changing x10 for x1", () => {
   assert.deepEqual(normalize("x1=[1,2]", "x1+x10+x11+x100"), [
     "x_{1}=[1,2]",
@@ -203,6 +216,7 @@ test("accepts coordinates, definitions, bound names, constants, and regression p
     ["3x+2y=17", "x^2+y^2=25", "y=x^2\\left\\{x>0\\right\\}"],
     ["A=[2,4,6,8]", "f(x)=x^2-6x+8", "f(A)"],
     ["\\sum_{n=1}^{20}(2n+1)", "\\left[n^{2}\\operatorname{for}n=\\left[1...5\\right]\\right]"],
+    ["a_{2}=[1,2,3]", "b_{2}=[1,5]", "k_{1}=(p+q)\\operatorname{for}p=a_{2},q=b_{2}", "\\operatorname{max}(k_{1})"],
     ["f(a,b)=a+b", "f(2,3)", "\\frac{d}{dx}f(2,x)"],
     ["L=[4,7,9]", "\\operatorname{mean}(L)", "\\operatorname{polygon}((1,2),(7,2),(4,8))", "abs(-3)"],
     ["e^2+\\pi", "y=e^x", "\\sin(30)", "\\tan^{-1}(3/4)", "(3\\cos(t),3\\sin(t))"],

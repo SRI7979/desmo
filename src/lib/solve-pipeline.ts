@@ -3,7 +3,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { normalizeChoices } from "./answer-consistency";
+import { normalizeChoices, parseNumber } from "./answer-consistency";
 import {
   ExplanationError,
   explanationInput,
@@ -52,6 +52,7 @@ import { classifyOpenAIError, describeOpenAIError } from "./openai-errors";
 import type { Meter, ModelCall } from "./spend";
 import { TECHNIQUES } from "./technique-vocabulary";
 import { loadTrainingExamples } from "./training-examples";
+import { expectedIntegerFactorExtremumAnswer, repairIntegerFactorExtremum, repairQuadraticRationalIntercept } from "./semantic-repairs";
 
 /** One guided correction per call, shared by both calls. */
 export const MAX_ATTEMPTS = 2;
@@ -274,7 +275,19 @@ export async function retryAfterDesmosErrors(
   try {
     const { parsed } = validateCandidatesResponse(response);
     if (parsed.status !== "solved") throw new StrategySelectionError("The retry asked for clarification instead of candidates.");
-    const selection = selectMethods({ ...parsed, question: entry.question, choices: entry.choices });
+    const repaired = repairQuadraticRationalIntercept({ ...parsed, question: entry.question, choices: entry.choices });
+    const selection = selectMethods(repaired);
+    const knownExtremum = expectedIntegerFactorExtremumAnswer(entry.question);
+    if (knownExtremum !== null && selection.methods.some((method) =>
+      method.rejected === null &&
+      (parseNumber(method.answer) !== knownExtremum ||
+        (method.result.value !== null && method.result.value !== knownExtremum))
+    )) {
+      throw new StrategySelectionError(
+        `A retry candidate does not reach the checked integer-factor extremum ${knownExtremum}.`,
+        "answer_consistency",
+      );
+    }
     return await deps.cache.putEntry({
       ...base,
       methods: selection.methods,
@@ -594,7 +607,8 @@ export async function solveProblem(
       const response = await callModel(deps, candidateRequest(deps, input, rejection), "candidates");
       calls.candidates += 1;
       try {
-        const { parsed, repairs: metadataRepairs } = validateCandidatesResponse(response);
+        const { parsed: rawParsed, repairs: metadataRepairs } = validateCandidatesResponse(response);
+        const parsed = repairIntegerFactorExtremum(repairQuadraticRationalIntercept(rawParsed));
         if (parsed.status === "needs_clarification") {
           const elapsed = performance.now() - started;
           return { kind: "clarification", solution: clarificationSolution(parsed), calls, timings: { methodsMs: elapsed, completeMs: elapsed } };

@@ -41,6 +41,9 @@
 @media (max-width: 600px) {
   .logo {
     gap: 9px;
+    /* The mark shrinks below 44px here; min-height keeps the link's own tap
+       target at 44px without enlarging the visible mark or wordmark. */
+    min-height: 44px;
     font-size: 24px;
   }
 

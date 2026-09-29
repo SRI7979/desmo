@@ -18,16 +18,16 @@ globalThis.fetch = (async (input: string | URL | Request) => {
   return refuse(url.origin);
 }) as typeof fetch;
 
-for (const module of [http, https]) {
-  const request = module.request;
+for (const transport of [http, https]) {
+  const request = transport.request;
   const guarded = ((...args: Parameters<typeof http.request>) => {
     const [first] = args;
     const host = typeof first === "string" || first instanceof URL ? new URL(first).hostname : (first?.hostname ?? first?.host ?? "localhost");
     if (!LOCAL.test(String(host).replace(/:\d+$/, ""))) refuse(String(host));
     return request(...(args as Parameters<typeof http.request>));
   }) as typeof http.request;
-  module.request = guarded;
-  module.get = ((...args: Parameters<typeof http.get>) => {
+  transport.request = guarded;
+  transport.get = ((...args: Parameters<typeof http.get>) => {
     const req = guarded(...(args as Parameters<typeof http.request>));
     req.end();
     return req;

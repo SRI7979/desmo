@@ -461,6 +461,34 @@ test("regression test 2: the same problem as a differently cropped screenshot hi
   assert.equal(requests.candidates.length, 2);
 });
 
+test("integer factor maximum returns 421 through the shared solve API, not one regression branch", async () => {
+  const question = "12x^18+kx^9+35 has factors ax^9+b and cx^9+d, where a, b, c, and d are all integer constants. What is the maximum value of k?";
+  const fit = graphCandidate({
+    techniqueId: "identity-regression",
+    rows: [
+      { latex: "u=[1...5]", slider: null, copiesRow: null },
+      { latex: "(au+b)(cu+d)\\sim12u^2+ku+35", slider: null, copiesRow: null },
+      { latex: "k", slider: null, copiesRow: null },
+    ],
+    answer: "47",
+    result: { type: "numeric", row: 3, relatedRows: [], value: 47, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "one fitted k" },
+  });
+  mockModel({
+    candidates: candidatesResponse([fit], { question, choices: null }),
+    explanation: explanation(6, {
+      why: "The two factor products fix the leading and constant coefficients. Desmos checks every signed divisor pair and compares all middle coefficients.",
+      readAnswer: "Read the maximum on line 6: 421.",
+    }),
+  });
+  const response = await POST(upload());
+  const data = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(data.selectedMethodId, "integer-list-filter");
+  assert.equal(data.solution.answer, "421");
+  assert.equal(data.solution.result.value, 421);
+  assert.equal(data.solution.expressions[5].latex, "\\operatorname{max}(k_{1})");
+});
+
 test("regression test 3: a prompt configuration change is a cache miss and regenerates", async () => {
   const { requests } = mockModel({ candidates: candidatesResponse() });
   const first = await (await POST(upload())).json();
@@ -543,6 +571,43 @@ test("a single-candidate solve still returns a one-element methods array, not an
   const data = await (await POST(upload())).json();
   assert.equal(data.methods.length, 1);
   assert.equal(data.selectedMethodId, data.methods[0].id);
+});
+
+test("an algebra-only reply to the rational table problem offers Desmos first and keeps substitution selectable", async () => {
+  const question = "The function g is defined by g(x)=f(x)/(x+2), where f is a quadratic function. " +
+    "The y-intercept of f is (0,10). The table shows x = 1, 4 and g(x) = 5, 7. What is g(3)?";
+  mockModel({
+    candidates: candidatesResponse([
+      paperCandidate({
+        techniqueId: "substitution",
+        answer: "31/5",
+        result: {
+          type: "written", row: null, relatedRows: [], value: null, listIndex: null,
+          answerFrom: "reasoning", choiceLabel: null, detail: "the value after solving for f",
+        },
+        cost: { ...zeroCost, derivationSteps: 4 },
+      }),
+    ], { question }),
+    explanation: (body: { input: unknown }) => JSON.stringify(body.input).includes("Technique: Substitution")
+      ? explanation(0, { why: "Use the table to find the quadratic coefficients.", steps: ["Find f from the intercept and two table values, then compute g(3)=31/5."], readAnswer: null })
+      : explanation(6, {
+        why: "Keep f(0)=10 in the quadratic and let Desmos fit the two unknown coefficients from the g table.",
+        readAnswer: "Line 6 displays g(3)=6.2, which is 31/5.",
+      }),
+  });
+  const solved = await POST(upload());
+  assert.equal(solved.status, 200);
+  const data = await solved.json();
+  assert.deepEqual(data.methods.map((method: { id: string }) => method.id), ["parameter-regression", "substitution"]);
+  assert.equal(data.selectedMethodId, "parameter-regression");
+  assert.deepEqual(data.solution.expressions.map((row: { latex: string }) => row.latex).at(-1), "g(3)");
+  assert.equal(data.solution.answer, "6.2");
+
+  const switched = await SWITCH(switchTo(data.cacheKey, "substitution"));
+  assert.equal(switched.status, 200);
+  const alternative = await switched.json();
+  assert.equal(alternative.solution.method, "algebra");
+  assert.equal(alternative.solution.answer, "31/5");
 });
 
 test("no solver-mode remnant survives in the workspace UI: no segmented control, no mode field, no dead badge usage", () => {
@@ -782,6 +847,31 @@ test("regression test 3: every method errors in Desmos → one retry of call 1 w
   assert.equal("methods" in (await again.json()), false);
   assert.equal(requests.candidates.length, 2);
   assert.equal((await SWITCH(switchTo(solved.cacheKey, "graph-both-sides"))).status, 404, "an erroring method cannot be switched to");
+});
+
+test("Desmos retry cannot replace the checked integer-factor maximum with a wrong paper answer", async () => {
+  const question = "12x^18+kx^9+35 has factors ax^9+b and cx^9+d, where a, b, c, and d are all integer constants. What is the maximum value of k?";
+  const original = graphCandidate({
+    techniqueId: "identity-regression",
+    answer: "47",
+    result: { type: "numeric", row: 1, relatedRows: [], value: 47, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "one fitted k" },
+  });
+  const wrongRetry = paperCandidate({
+    techniqueId: "direct-arithmetic",
+    answer: "47",
+    result: { type: "written", row: null, relatedRows: [], value: null, listIndex: null, answerFrom: "reasoning", choiceLabel: null, detail: "a guessed coefficient" },
+  });
+  mockModel({
+    candidates: (_body: unknown, call: number) => candidatesResponse(call === 1 ? [original] : [wrongRetry], { question, choices: null }),
+    explanation: explanation(6, { readAnswer: "Read the maximum on line 6: 421." }),
+  });
+  const solved = await (await POST(upload())).json();
+  assert.equal(solved.solution.answer, "421");
+  const retried = await PREFLIGHT(report(solved.cacheKey, [{ methodId: "integer-list-filter", ...desmosError("Hypothetical calculator error") }]));
+  assert.equal(retried.status, 422);
+  const failure = await retried.json();
+  assert.equal(failure.status, "failed");
+  assert.equal("methods" in failure, false);
 });
 
 test("a method reported erroring is dropped from every later solve; the next clean one becomes the default, re-badged, with no re-check", async () => {

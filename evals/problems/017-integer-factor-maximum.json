@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "The expression 12x^18 + kx^9 + 35 has factors ax^9 + b and cx^9 + d, where a, b, c, and d are all integer constants. What is the maximum value of k?",
+  "choices": null,
+  "correctAnswer": "421",
+  "intendedMethod": "integer-list-filter",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["single-identity-regression"],
+  "notes": "One exact identity regression can find k=47 without proving a maximum. Enumerate all signed integer divisor pairs of 12 and 35, calculate each middle coefficient, and take max. (x^9+35)(12x^9+1) gives k=421."
+}

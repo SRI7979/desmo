@@ -172,6 +172,49 @@ test("Rule 3 applies to every candidate of a no-solution question, even one that
   assert.equal(select(candidatesResponse([ratioChecked], { question: noSolution })).winnerId, "direct-arithmetic");
 });
 
+test("a stated infinite-solutions premise permits direct arithmetic for the requested coefficient ratio", () => {
+  const question = "(1/3)x + ay = b and 2x + cy = 5d. If the system has infinitely many solutions, what is the value of b/d?";
+  const ratio = paperCandidate({
+    techniqueId: "direct-arithmetic",
+    answer: "5/6",
+    result: { ...paperCandidate().result, detail: "The second equation is six times the first, so 5d=6b and b/d=5/6." },
+    conditionType: "infinitely-many",
+    distinguishes: null,
+    cost: { ...zeroCost, derivationSteps: 2 },
+  });
+  const method = select(candidatesResponse([ratio], { question })).methods[0];
+  assert.equal(method.rejected, null);
+  assert.equal(method.answer, "5/6");
+  assert.equal(method.conditionType, null, "the stated premise is not another condition the method must establish");
+
+  const parameterQuestion = "If the system has infinitely many solutions, what is the value of p?";
+  assert.throws(() => select(candidatesResponse([ratio], { question: parameterQuestion })), /condition-incomplete/);
+});
+
+test("a disposable scalar list cannot outrank direct arithmetic for one probability ratio", () => {
+  const question = "A survey of 200 students found 120 prefer math. Of those, 45 are freshmen; 80 of all 200 are freshmen. What is the probability that a non-freshman prefers math?";
+  const paper = paperCandidate({
+    techniqueId: "direct-arithmetic",
+    answer: "5/8",
+    result: { ...paperCandidate().result, detail: "(120-45)/(200-80)=5/8" },
+    cost: { ...zeroCost, derivationSteps: 3 },
+  });
+  for (const name of ["A", "counts"]) {
+    const list = graphCandidate({
+      techniqueId: "list-evaluation",
+      rows: [
+        { latex: `${name}=[200,120,45,80]`, slider: null, copiesRow: null },
+        { latex: `(${name}[2]-${name}[3])/(${name}[1]-${name}[4])`, slider: null, copiesRow: null },
+      ],
+      answer: "5/8",
+      result: { type: "numeric", row: 2, relatedRows: [1], value: 0.625, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the probability" },
+    });
+    const input = candidatesResponse([list, paper], { question });
+    assert.equal(select(input).winnerId, "direct-arithmetic", name);
+    assert.equal(rejectedRule(input, "list-evaluation"), "disposable-scalar-list", name);
+  }
+});
+
 test("Rule 1 applies to a parameter the question calls an integer, even when no candidate declared it", () => {
   const question =
     "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?";
@@ -382,7 +425,24 @@ test("question detectors: representation, continuous interval, condition, and in
   assert.equal(questionCondition("How many solutions does the system have?"), null);
   assert.deepEqual(questionIntegerParameters("where a is an integer greater than 1").map((p) => p.name), ["a"]);
   assert.deepEqual(questionIntegerParameters("How many positive integers n satisfy it?").map((p) => p.name), ["n"]);
+  assert.deepEqual(questionIntegerParameters("where a, b, c, and d are all integer constants").map((p) => p.name), ["a", "b", "c", "d"]);
+  assert.deepEqual(questionIntegerParameters("where a, b, c and d are all integer constants").map((p) => p.name), ["a", "b", "c", "d"]);
   assert.deepEqual(questionIntegerParameters("If x is an integer, which is true?"), [], "coordinates are never parameters");
+});
+
+test("one identity-regression factorization cannot establish a maximum over integer factors", () => {
+  const question = "12x^18+kx^9+35 has factors ax^9+b and cx^9+d, where a, b, c, and d are all integer constants. What is the maximum value of k?";
+  const fit = graphCandidate({
+    techniqueId: "identity-regression",
+    rows: [
+      { latex: "u=[1...5]", slider: null, copiesRow: null },
+      { latex: "(au+b)(cu+d)\\sim12u^2+ku+35", slider: null, copiesRow: null },
+      { latex: "k", slider: null, copiesRow: null },
+    ],
+    answer: "47",
+    result: { type: "numeric", row: 3, relatedRows: [], value: 47, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "one fitted k" },
+  });
+  assert.throws(() => select(candidatesResponse([fit], { question, choices: null })), /unproven-extremum/);
 });
 
 test("a LaTeX readout label is replaced with a neutral one instead of rejecting a valid technique", () => {

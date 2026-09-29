@@ -93,6 +93,9 @@ function normalizeNamedBuiltins(latex: string): string {
     .replace(/π/g, String.raw`\pi `)
     .replace(/²/g, "^{2}")
     .replace(/³/g, "^{3}")
+    // KaTeX accepts these display-size fractions, but Desmos only evaluates
+    // the ordinary fraction command when rows are inserted through its API.
+    .replace(/\\(?:tfrac|dfrac)(?![A-Za-z])/g, String.raw`\frac`)
     .replace(/==/g, "=")
     .replace(
     namedBuiltinPattern,
@@ -275,6 +278,15 @@ function rowIdentifiers(latex: string): { names: Set<string>; bound: Set<string>
     bound.add(canonicalIdentifier(name));
     return "=";
   });
+  // A Desmos list comprehension may bind several variables:
+  // expression \operatorname{for}p=A,q=B. The first binder is consumed above;
+  // subsequent comma-separated binders have the same local scope.
+  if (/\\operatorname\{for\}|\bfor\s+[A-Za-z]/.test(latex)) {
+    text = text.replace(new RegExp(String.raw`,\s*(${IDENTIFIER})\s*=`, "g"), (_match, name: string) => {
+      bound.add(canonicalIdentifier(name));
+      return ",=";
+    });
+  }
   text = text
     .replace(/\\operatorname\{[A-Za-z]+\}/g, " ")
     .replace(/\b[A-Za-z]{2,}(?=\s*\()/g, " "); // bare function names such as abs(

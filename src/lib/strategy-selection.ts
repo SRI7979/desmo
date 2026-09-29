@@ -189,6 +189,36 @@ export function questionCondition(question: string): ConditionType | null {
   return null;
 }
 
+/** The condition is given; a ratio of coefficients follows from the common scale factor. */
+function isGivenInfiniteSolutionRatioQuestion(question: string): boolean {
+  const text = question.replace(/\s+/g, " ");
+  return /\binfinitely many solutions\b|\binfinite (?:number of )?solutions\b/i.test(text) &&
+    /\bwhat is (?:the value of )?[a-z]\s*\/\s*[a-z]\s*\?/i.test(text);
+}
+
+/** A short literal list used only as numbered storage adds work to scalar arithmetic. */
+function hasDisposableScalarList(rows: ReadonlyArray<{ latex: string }>): boolean {
+  for (const [index, { latex }] of rows.entries()) {
+    const declaration = latex.match(/^\s*([A-Za-z](?:_\{[A-Za-z0-9]+\}|_[A-Za-z0-9])?)\s*=\s*\[\s*-?\d+(?:\.\d+)?(?:\s*,\s*-?\d+(?:\.\d+)?){1,3}\s*\]\s*$/);
+    if (!declaration) continue;
+    const name = declaration[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const indexed = new RegExp(`(?<![A-Za-z\\\\])${name}\\s*\\[\\s*\\d+\\s*\\]`, "g");
+    const bare = new RegExp(`(?<![A-Za-z\\\\])${name}(?![A-Za-z0-9_{])`);
+    let references = 0;
+    let onlyIndexed = true;
+    rows.forEach((row, rowIndex) => {
+      if (rowIndex === index) return;
+      const withoutIndices = row.latex.replace(indexed, () => {
+        references += 1;
+        return "";
+      });
+      if (bare.test(withoutIndices)) onlyIndexed = false;
+    });
+    if (references > 0 && onlyIndexed) return true;
+  }
+  return false;
+}
+
 /**
  * Parameters the question itself restricts to integers ("where a is an
  * integer greater than 1", "b is a positive integer constant", "positive
@@ -199,8 +229,22 @@ export function questionIntegerParameters(question: string): Parameter[] {
   const kinds = String.raw`(?:positive |negative |nonnegative |nonzero )?(?:integers?|whole numbers?|counting numbers?)`;
   for (const match of question.matchAll(new RegExp(String.raw`\b([a-z])\s+(?:is|are)\s+(?:an?\s+)?${kinds}`, "gi"))) names.add(match[1]);
   for (const match of question.matchAll(new RegExp(String.raw`\b${kinds}\s+([a-z])\b`, "gi"))) names.add(match[1]);
+  // "a, b, c, and d are all integer constants" applies to every named
+  // coefficient, not just the final d. Continuous regression cannot enforce it.
+  const group = /((?:\b[a-z]\b\s*,\s*)+\b[a-z]\b)\s+are\s+(?:all\s+)?(?:positive\s+|negative\s+|nonnegative\s+|nonzero\s+)?(?:integers?\b|whole numbers?\b|counting numbers?\b)/gi;
+  const groupedText = question.replace(/,?\s+and\s+(?=[a-z]\b\s+are\b)/gi, ", ");
+  for (const match of groupedText.matchAll(group)) {
+    for (const name of match[1].match(/\b[a-z]\b/gi) ?? []) names.add(name.toLowerCase());
+  }
   // x and y are graph coordinates, never parameters a row introduces.
   return [...names].filter((name) => !/^[xyt]$/i.test(name)).map((name) => ({ name, integer: true, min: -1000, max: 1000 }));
+}
+
+/** A single fitted factorization cannot establish an extremum over integer factorizations. */
+export function isIntegerFactorExtremumQuestion(question: string): boolean {
+  return /\b(?:maximum|minimum|greatest|least)\b/i.test(question) &&
+    /\bfactors?\b/i.test(question) &&
+    /\binteger\b/i.test(question);
 }
 
 type Interval = { low: number; high: number };
@@ -241,6 +285,7 @@ type CandidateContext = {
   interval: Interval | null;
   condition: ConditionType | null;
   integers: Parameter[];
+  integerFactorExtremum: boolean;
 };
 
 type Validated = Omit<Method, "id" | "badges" | "rejected" | "total" | "mathScore" | "mathLevel" | "shape" | "cost" | "name"> & {
@@ -255,7 +300,12 @@ function reject(rule: string, reason: string, stage = "strategy_policy"): Reject
 function validateCandidate(candidate: Candidate, context: CandidateContext): Validated | Rejection {
   const { question, choices } = context;
   const repairs: string[] = [];
-  const conditionType = candidate.conditionType ?? context.condition;
+  // For a stated infinitely-many condition, b/d-style ratio questions ask
+  // for the common scale factor itself. A direct computation need not prove
+  // that a separate parameter makes two graphed lines coincide.
+  const conditionType = candidate.techniqueId === "direct-arithmetic" && isGivenInfiniteSolutionRatioQuestion(question)
+    ? null
+    : candidate.conditionType ?? context.condition;
   const declared = new Set(candidate.parameters.map((parameter) => parameter.name));
   const parameters = [...candidate.parameters, ...context.integers.filter((parameter) => !declared.has(parameter.name))];
   const rows = normalizeDesmosExpressions(
@@ -273,6 +323,14 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
     return reject(
       "answers-different-question",
       "The question asks which equation or expression represents the situation; calculator rows solve or graph it instead of identifying the model.",
+    );
+  }
+  if (context.integerFactorExtremum &&
+      rows.some((row) => /\\sim(?![A-Za-z])|~/.test(row.latex)) &&
+      !rows.some((row) => /\\operatorname\{(?:max|min)\}|\\(?:max|min)\b/.test(row.latex))) {
+    return reject(
+      "unproven-extremum",
+      "A regression gives one factorization, not the greatest or least value. Enumerate the allowed integer factors and take max or min of every resulting coefficient.",
     );
   }
   const proseRows = findProseRows(rows);
@@ -297,6 +355,12 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
     return reject(
       "coefficient-lists",
       "Unnecessary coefficient lists for a small system. Use direct bracket regression [left side 1,left side 2]~[right side 1,right side 2], copying the original equations.",
+    );
+  }
+  if (candidate.techniqueId === "list-evaluation" && hasDisposableScalarList(rows)) {
+    return reject(
+      "disposable-scalar-list",
+      "A short list stores given numbers only to read them back by fixed index. Enter the arithmetic directly.",
     );
   }
   const derived = findDerivedConstants(rows, question, choices);
@@ -502,6 +566,7 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     interval: continuousInterval(response.question),
     condition: questionCondition(response.question),
     integers: questionIntegerParameters(response.question),
+    integerFactorExtremum: isIntegerFactorExtremumQuestion(response.question),
   };
 
   const seen = new Set<TechniqueId>();

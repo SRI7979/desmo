@@ -87,6 +87,8 @@ test("matches a computed value to exactly one choice, tolerating display roundin
     { label: "A", text: "7/3" }, { label: "B", text: "5/2" }, { label: "C", text: "3" }, { label: "D", text: "2" },
   ])!;
   assert.equal(matchChoice(2.33, fractions)?.label, "A", "a rounded display still maps to 7/3");
+  assert.equal(matchChoice(0.941, normalizeChoices([{ label: "A", text: "16/17" }])!)?.label, "A");
+  assert.equal(matchChoice(2.333333333333333, normalizeChoices([{ label: "A", text: "2.33" }])!)?.label, "A", "a rounded choice still maps to the exact calculator value");
   const close = normalizeChoices([{ label: "A", text: "1.41" }, { label: "B", text: "1.414" }])!;
   assert.equal(matchChoice(1.414, close)?.label, "B");
   assert.equal(matchChoice(1.412, close), null);
@@ -102,6 +104,31 @@ test("matches a computed value to exactly one choice, tolerating display roundin
   assert.equal(roundsTo("2/3", 2 / 3), true);
   assert.equal(formatNumber(2 / 3), "0.666667");
   assert.equal(formatNumber(-432), "-432");
+});
+
+test("choice matching does not mistake a nearby wrong value for display rounding", () => {
+  const spaced = normalizeChoices([
+    { label: "A", text: "1000" }, { label: "B", text: "1200" },
+  ])!;
+  assert.equal(matchChoice(995, spaced), null);
+  assert.equal(matchChoice(991, spaced), null);
+  assert.equal(matchChoice(1000, spaced)?.label, "A");
+  assert.equal(matchChoice(999950, normalizeChoices([{ label: "A", text: "1000000" }])!), null);
+  assert.equal(matchChoice(0.9, normalizeChoices([{ label: "A", text: "16/17" }])!), null);
+
+  const solution = desmosSolution({
+    choices: spaced.map(({ label, text }) => ({ label, text })),
+    answer: "A) 1000",
+    result: { row: 3, value: 1000, listIndex: null, answerFrom: "value", choiceLabel: "A", detail: "computed value" },
+  });
+  assert.deepEqual(reconcileWithCalculator(solution, { type: "Number", value: 995 }), { status: "unverified" });
+  assert.throws(() => deriveConsistentSolution({
+    choices: solution.choices,
+    result: { ...solution.result!, value: 995 },
+    answer: solution.answer,
+    readAnswer: "",
+    expressionCount: solution.expressions.length,
+  }), /does not match any answer choice/, "a generated result of 995 cannot justify choice 1000");
 });
 
 test("normalizes choice labels and rejects duplicates", () => {

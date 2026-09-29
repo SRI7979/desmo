@@ -13,7 +13,9 @@ test("auth redirects allow only known local destinations", () => {
 
 test("email callback origins reject credential-bearing and insecure remote URLs", () => {
   const original = process.env.NEXT_PUBLIC_SITE_URL;
+  const originalVercelEnv = process.env.VERCEL_ENV;
   try {
+    delete process.env.VERCEL_ENV;
     for (const url of ["http://evil.test", "javascript:alert(1)", "https://user:pass@example.com", ""]) {
       process.env.NEXT_PUBLIC_SITE_URL = url;
       assert.equal(getSiteOrigin(), null);
@@ -25,6 +27,37 @@ test("email callback origins reject credential-bearing and insecure remote URLs"
   } finally {
     if (original === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
     else process.env.NEXT_PUBLIC_SITE_URL = original;
+    if (originalVercelEnv === undefined) delete process.env.VERCEL_ENV;
+    else process.env.VERCEL_ENV = originalVercelEnv;
+  }
+});
+
+test("Vercel production auth callbacks use the public origin when configured for localhost", () => {
+  const original = process.env.NEXT_PUBLIC_SITE_URL;
+  const originalVercelEnv = process.env.VERCEL_ENV;
+  try {
+    process.env.VERCEL_ENV = "production";
+    for (const url of ["http://localhost:3000", "http://127.0.0.1:3000", "http://[::1]:3000"]) {
+      process.env.NEXT_PUBLIC_SITE_URL = url;
+      assert.equal(getSiteOrigin(), "https://desmo-one.vercel.app");
+    }
+
+    process.env.NEXT_PUBLIC_SITE_URL = "https://custom.example.com/path";
+    assert.equal(getSiteOrigin(), "https://custom.example.com");
+
+    process.env.NEXT_PUBLIC_SITE_URL = "http://evil.test";
+    assert.equal(getSiteOrigin(), null);
+    process.env.NEXT_PUBLIC_SITE_URL = "";
+    assert.equal(getSiteOrigin(), null);
+
+    process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
+    process.env.VERCEL_ENV = "preview";
+    assert.equal(getSiteOrigin(), "http://localhost:3000");
+  } finally {
+    if (original === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
+    else process.env.NEXT_PUBLIC_SITE_URL = original;
+    if (originalVercelEnv === undefined) delete process.env.VERCEL_ENV;
+    else process.env.VERCEL_ENV = originalVercelEnv;
   }
 });
 

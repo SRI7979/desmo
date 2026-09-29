@@ -305,6 +305,38 @@ export function normalizeChoices(
   return normalized;
 }
 
+function choiceNoiseTolerance(value: number): number {
+  // A relative tolerance alone grows far too wide for large SAT answers:
+  // 999,950 must not count as 1,000,000. Keep room for calculator float noise.
+  return Math.min(1e-4, Math.max(1e-8, 1e-7 * Math.abs(value)));
+}
+
+function decimalRoundingTolerance(text: string): number | null {
+  const numeric = text.trim().replace(/^[A-Za-z]\s*=\s*/, "").replace(/[$€£¥,]/g, "");
+  const match = numeric.match(
+    /^[+-]?(?:\d+)?\.(\d+)(?:e([+-]?\d+))?(?:\s*(?:%|percent|°|degrees|[A-Za-z][A-Za-z\s]*))?$/i,
+  );
+  if (!match) return null;
+  const significant = numeric.split(/[eE]/, 1)[0].replace(/[^\d]/g, "").replace(/^0+/, "").length;
+  if (significant < 3) return null;
+  const exponent = match[2] ? Number(match[2]) : 0;
+  const tolerance = 0.5 * 10 ** (exponent - match[1].length);
+  return Number.isFinite(tolerance) ? tolerance : null;
+}
+
+function choiceWithinNoise(target: number, choice: NormalizedChoice & { value: number }): boolean {
+  const distance = Math.abs(target - choice.value);
+  return distance <= choiceNoiseTolerance(Math.max(Math.abs(target), Math.abs(choice.value)));
+}
+
+function choiceMatchesRoundedDecimal(target: number, choice: NormalizedChoice & { value: number }): boolean {
+  const distance = Math.abs(target - choice.value);
+  const observedRounding = decimalRoundingTolerance(String(target));
+  const choiceRounding = decimalRoundingTolerance(choice.text);
+  return (observedRounding !== null && distance <= observedRounding) ||
+    (choiceRounding !== null && distance <= choiceRounding);
+}
+
 /**
  * Maps a computed number to the unique answer choice with that value.
  * Rounded displays still match ("2.33" → 7/3) as long as no other choice is
@@ -331,11 +363,11 @@ export function matchChoice(
     if (ranked.length === 0) continue;
     const [nearest, runnerUp] = ranked;
     const target = nearest.target;
-    if (numbersMatch(nearest.choice.value, target)) {
-      return runnerUp && numbersMatch(runnerUp.choice.value, target) ? null : nearest.choice;
+    if (choiceWithinNoise(target, nearest.choice)) {
+      return runnerUp && choiceWithinNoise(target, runnerUp.choice) ? null : nearest.choice;
     }
-    const tolerance = Math.max(0.01, 0.01 * Math.abs(target));
-    if (nearest.distance > tolerance) continue;
+    if (!choiceMatchesRoundedDecimal(target, nearest.choice)) continue;
+    if (runnerUp && choiceMatchesRoundedDecimal(target, runnerUp.choice)) continue;
     if (runnerUp && runnerUp.distance < nearest.distance * 10) continue;
     return nearest.choice;
   }

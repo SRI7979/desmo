@@ -15,11 +15,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const next = safeAuthRedirect(params.next);
   const mode = params.mode === "signup" || params.mode === "forgot" ? params.mode : "signin";
   const user = await getCurrentUser();
-  if (user && params.notice !== "signout-error") redirect(next);
+  if (user && params.notice !== "signout-error" && params.notice !== "google-cancelled" && params.notice !== "google-error") redirect(next);
   const configured = Boolean(getSupabaseConfig());
   const notice = params.notice === "link-expired"
     ? "This link has expired or was already used. Sign in or request a new password reset."
-    : params.notice === "signout-error" ? "Sign-out could not be completed. Please try again." : undefined;
+    : params.notice === "signout-error" ? "Sign-out could not be completed. Please try again."
+      : params.notice === "google-cancelled" ? "Google sign-in was cancelled. You can try again."
+        : params.notice === "google-error" ? "Google sign-in could not finish. Please try again." : undefined;
 
   return (
     <main className={styles.page}>

@@ -179,3 +179,8 @@
   .answerBox { padding: var(--space-4); }
   .equation { padding: var(--space-3); }
 }
+/* A separate, wider breakpoint: only the tap-target sizes need fixing up to
+   768px; the padding rules above stay scoped to their own narrower range. */
+@media (max-width: 768px) {
+  .copyButton, .retryButton, .transcription summary { min-height: 44px; }
+}

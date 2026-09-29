@@ -1552,6 +1552,25 @@ and read the value that satisfies the question (the one answer choice present,
 the least, the greatest). Never assume the first regression branch is the
 required one.
 
+When BOTH coefficients in each factor are unknown integers and the question
+asks for a maximum or minimum, one exact identity regression is especially
+misleading: it only returns one factorization. For
+12x^18+kx^9+35=(ax^9+b)(cx^9+d), the leading and constant products require
+ac=12 and bd=35. Have Desmos search every signed divisor pair instead:
+
+a_{1}=join([-12...-1],[1...12])
+b_{1}=join([-35...-1],[1...35])
+a_{2}=a_{1}[mod(12,a_{1})=0]
+b_{2}=b_{1}[mod(35,b_{1})=0]
+k_{1}=((p+q)(12/p+35/q)-12-35) for p=a_{2},q=b_{2}
+max(k_{1})
+
+The filter keeps exactly the possible integer a and b values. Desmos gets
+c=12/a and d=35/b in the fifth row. At x^9=1, the product of the factors is
+(a+b)(c+d), while the original is 12+k+35, so that row computes k for every
+pair without expanding the factors. The final row returns 421. Include both
+positive and negative divisors rather than guessing which signs maximize k.
+
 73. Pack several conditions into one regression
 [technique: bracket-regression | Bracket regression]
 

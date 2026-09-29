@@ -18,6 +18,8 @@ export function getSupabaseConfig(): { url: string; key: string } | null {
   }
 }
 
+const VERCEL_PRODUCTION_ORIGIN = "https://desmo-one.vercel.app";
+
 /** Email callbacks use a configured origin, never a request's Host header. */
 export function getSiteOrigin(): string | null {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
@@ -29,6 +31,8 @@ export function getSiteOrigin(): string | null {
     if (url.username || url.password || (url.protocol !== "https:" && !(local && url.protocol === "http:"))) {
       return null;
     }
+    // A localhost value copied to Vercel must not send production auth links back to a user's machine.
+    if (local && process.env.VERCEL_ENV === "production") return VERCEL_PRODUCTION_ORIGIN;
     return url.origin;
   } catch {
     return null;

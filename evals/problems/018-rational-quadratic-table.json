@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "The function g is defined by g(x)=f(x)/(x+2), where f is a quadratic function. The y-intercept of f is (0,10). The table gives g(1)=5 and g(4)=7. What is the value of g(3)?",
+  "choices": null,
+  "correctAnswer": "31/5",
+  "intendedMethod": "parameter-regression",
+  "acceptableMethods": [],
+  "forbiddenMethods": ["f-intercept-as-g-intercept", "hand-algebra-only"],
+  "notes": "Keep f(0)=10 separate from g's table. Regress the two paired g values against (ax^2+bx+10)/(x+2), then read g(3)=31/5 from the fitted function."
+}

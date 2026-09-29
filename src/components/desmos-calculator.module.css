@@ -20,3 +20,9 @@
   .calculatorFrame { height: 510px; min-height: 0; }
   .toolbar { padding-inline: var(--space-3); }
 }
+/* A separate, wider breakpoint: only the tap-target sizes need fixing up to
+   768px; the height/padding rules above stay scoped to their own narrower
+   range unchanged. */
+@media (max-width: 768px) {
+  .replay, .reload { min-height: 44px; }
+}

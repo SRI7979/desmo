@@ -59,9 +59,9 @@ function BadgeRow({ badges }: { badges: readonly string[] }) {
 
 /**
  * Sits above the explanation, replacing the old static trick-name badge.
- * Collapsed: current technique's name and badges. Open: every eligible
- * technique (the server never sends a rejected one) with its math level,
- * shape, and badges. Selecting one calls onSelect immediately; the caller is
+ * Collapsed: current technique's name and badges. Open: its effort details,
+ * plus every eligible technique when there is more than one (the server never
+ * sends a rejected one). Selecting one calls onSelect immediately; the caller is
  * responsible for swapping the calculator from its already-cached rows and
  * loading the explanation — this component only picks.
  */
@@ -83,6 +83,7 @@ export default function TechniqueSelector({
   const [nav, setNav] = useState<NavState>({ open: false, activeIndex: selectedIndex });
   const containerRef = useRef<HTMLDivElement>(null);
   const listId = useId();
+  const detailsId = `${listId}-details`;
   const optionId = (index: number) => `${listId}-option-${index}`;
 
   useEffect(() => {
@@ -98,21 +99,21 @@ export default function TechniqueSelector({
 
   if (!current) return null;
 
-  if (mode === "single") {
-    return (
-      <div className={styles.single} data-testid="technique-selector">
-        <span className={styles.name}>{current.name}</span>
-        <BadgeRow badges={current.badges} />
-      </div>
-    );
-  }
-
   function choose(index: number) {
     setNav({ open: false, activeIndex: index });
     onSelect(methods[index].id);
   }
 
   function handleKeyDown(event: React.KeyboardEvent) {
+    if (mode === "single") {
+      if (event.key === "Escape" && nav.open) {
+        event.preventDefault();
+        setNav((value) => ({ ...value, open: false }));
+      } else if (event.key === "Tab" && nav.open) {
+        setNav((value) => ({ ...value, open: false }));
+      }
+      return;
+    }
     if (event.key === "Tab") {
       if (nav.open) setNav((value) => ({ ...value, open: false }));
       return;
@@ -128,11 +129,11 @@ export default function TechniqueSelector({
     <div className={styles.container} ref={containerRef} data-testid="technique-selector">
       <button
         type="button"
-        role="combobox"
-        aria-haspopup="listbox"
+        role={mode === "multi" ? "combobox" : undefined}
+        aria-haspopup={mode === "multi" ? "listbox" : undefined}
         aria-expanded={nav.open}
-        aria-controls={listId}
-        aria-activedescendant={nav.open ? optionId(nav.activeIndex) : undefined}
+        aria-controls={mode === "multi" ? listId : detailsId}
+        aria-activedescendant={mode === "multi" && nav.open ? optionId(nav.activeIndex) : undefined}
         className={styles.trigger}
         onClick={() => setNav((value) => ({ open: !value.open, activeIndex: value.open ? value.activeIndex : selectedIndex }))}
         onKeyDown={handleKeyDown}
@@ -143,34 +144,63 @@ export default function TechniqueSelector({
         <ChevronIcon open={nav.open} />
       </button>
       {nav.open && (
-        <ul className={styles.listbox} role="listbox" id={listId} aria-label="Solving technique" tabIndex={-1}>
-          {methods.map((method, index) => {
-            const selected = method.id === selectedId;
-            return (
-              <li
-                key={method.id}
-                id={optionId(index)}
-                role="option"
-                aria-selected={selected}
-                className={`${styles.option} ${index === nav.activeIndex ? styles.optionActive : ""} ${selected ? styles.optionSelected : ""}`}
-                onMouseEnter={() => setNav((value) => ({ ...value, activeIndex: index }))}
-                onClick={() => choose(index)}
-              >
-                <div className={styles.optionTop}>
-                  <span className={styles.optionNameRow}>
-                    {selected && <CheckIcon />}
-                    <span className={styles.optionName}>{method.name}</span>
-                  </span>
-                  <MathLevelDots level={method.mathLevel} />
-                </div>
-                <div className={styles.optionBottom}>
-                  <span className={styles.shape}>{method.shape}</span>
-                  <BadgeRow badges={method.badges} />
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div
+          className={styles.popover}
+          id={mode === "single" ? detailsId : undefined}
+          role={mode === "single" ? "region" : undefined}
+          aria-label={mode === "single" ? `${current.name} method details` : undefined}
+        >
+          <div className={styles.details}>
+            <p className={styles.detailsHeading}>Method details</p>
+            <dl className={styles.stats}>
+              <div className={styles.stat}>
+                <dt>Desmos rows</dt>
+                <dd>{current.cost.rows}</dd>
+              </div>
+              <div className={styles.stat}>
+                <dt>Hand steps</dt>
+                <dd>{current.cost.derivationSteps}</dd>
+              </div>
+              <div className={styles.stat}>
+                <dt>Math needed</dt>
+                <dd>{current.mathLevel}</dd>
+              </div>
+            </dl>
+            <p className={styles.detailsShape}>{current.shape}</p>
+          </div>
+          {mode === "single" ? (
+            <p className={styles.singleNote}>This is the only method available for this solution.</p>
+          ) : (
+            <ul className={styles.listbox} role="listbox" id={listId} aria-label="Solving technique" tabIndex={-1}>
+              {methods.map((method, index) => {
+                const selected = method.id === selectedId;
+                return (
+                  <li
+                    key={method.id}
+                    id={optionId(index)}
+                    role="option"
+                    aria-selected={selected}
+                    className={`${styles.option} ${index === nav.activeIndex ? styles.optionActive : ""} ${selected ? styles.optionSelected : ""}`}
+                    onMouseEnter={() => setNav((value) => ({ ...value, activeIndex: index }))}
+                    onClick={() => choose(index)}
+                  >
+                    <div className={styles.optionTop}>
+                      <span className={styles.optionNameRow}>
+                        {selected && <CheckIcon />}
+                        <span className={styles.optionName}>{method.name}</span>
+                      </span>
+                      <MathLevelDots level={method.mathLevel} />
+                    </div>
+                    <div className={styles.optionBottom}>
+                      <span className={styles.shape}>{method.shape}</span>
+                      <BadgeRow badges={method.badges} />
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );

@@ -21,7 +21,12 @@
 .nav button { border-color: var(--border); color: var(--foreground); }
 .email { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
 @media (max-width: 900px) { .email { display: none; } }
+/* --control-height (42px) is 2px short of a 44px tap target; every consumer
+   below this width gets the full 44px instead. */
+@media (max-width: 768px) {
+  .nav a, .nav button { min-height: 44px; }
+}
 @media (max-width: 480px) {
   .nav { gap: var(--space-1); }
-  .nav a, .nav button { min-height: 36px; padding-inline: var(--space-2); }
+  .nav a, .nav button { padding-inline: var(--space-2); }
 }

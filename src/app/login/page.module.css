@@ -3,6 +3,14 @@
 .card h1 { margin: 0 0 var(--space-2); font-size: clamp(1.5rem, 3vw, 1.75rem); font-weight: 720; letter-spacing: -.04em; }
 .subtitle, .setup { margin: 0 0 var(--space-6); color: var(--muted); font-size: var(--text-sm); line-height: 1.6; }
 .form { display: grid; gap: var(--space-4); }
+.oauthForm { display: grid; gap: var(--space-3); }
+.googleButton { display: flex; align-items: center; justify-content: center; gap: var(--space-3); width: 100%; min-height: var(--primary-height); padding: var(--space-2) var(--space-4); border: 1px solid var(--accent-hover); border-radius: var(--radius-md); background: var(--accent); color: var(--foreground); font-size: var(--text-sm); font-weight: 750; cursor: pointer; transition: background var(--ease-ui), transform var(--ease-ui); }
+.googleButton:hover:not(:disabled) { background: var(--accent-hover); }
+.googleButton:active:not(:disabled) { background: var(--accent-hover); transform: translateY(1px); }
+.googleButton:disabled { cursor: wait; opacity: .65; }
+.googleIcon { width: 22px; height: 22px; flex: none; padding: 2px; border-radius: 50%; background: #fff; }
+.divider { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-5) 0; color: var(--muted); font-size: var(--text-xs); text-align: center; }
+.divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 .field { display: grid; gap: var(--space-2); color: var(--foreground); font-size: var(--text-sm); font-weight: 650; }
 .field input { width: 100%; min-height: var(--primary-height); padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: #fff; color: var(--foreground); font-size: var(--text-base); transition: border-color var(--ease-ui), box-shadow var(--ease-ui); }
 .field input:hover:not(:disabled) { border-color: var(--accent); }
@@ -13,6 +21,9 @@
 .button:hover:not(:disabled) { background: #304b5a; }
 .button:active:not(:disabled) { background: #0e2029; }
 .button:disabled { opacity: .55; }
+.emailButton { border-color: var(--border-strong); background: #fff; color: var(--foreground); }
+.emailButton:hover:not(:disabled) { background: var(--surface-muted); }
+.emailButton:active:not(:disabled) { background: var(--surface); }
 .switchMode { margin: var(--space-6) 0 0; color: var(--muted); font-size: var(--text-sm); text-align: center; }
 .switchMode a { color: var(--accent-ink); font-weight: 650; text-underline-offset: 3px; }
 .error, .notice { margin: 0; padding: var(--space-3); border: 1px solid #edcece; border-radius: var(--radius-md); background: var(--danger-soft); color: var(--danger); font-size: var(--text-sm); line-height: 1.5; }

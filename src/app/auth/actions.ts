@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { safeAuthRedirect } from "@/lib/auth-redirect";
+import { googleAuthorizationUrl } from "@/lib/google-oauth";
 import { getSiteOrigin, getSupabaseConfig } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 
@@ -76,6 +77,22 @@ export async function authenticate(_previous: AuthState, form: FormData): Promis
 
   revalidatePath("/", "layout");
   redirect(next);
+}
+
+export async function signInWithGoogle(_previous: AuthState, form: FormData): Promise<AuthState> {
+  const config = getSupabaseConfig();
+  const origin = getSiteOrigin();
+  if (!config || !origin) return { error: "Google sign-in is not configured yet." };
+
+  let url: string | null;
+  try {
+    const client = await createClient();
+    url = await googleAuthorizationUrl(client.auth, origin, config.url, form.get("next"));
+  } catch {
+    return { error: "Google sign-in is temporarily unavailable. Please try again." };
+  }
+  if (!url) return { error: "Google sign-in could not start. Please try again." };
+  redirect(url);
 }
 
 export async function signOut() {

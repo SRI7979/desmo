@@ -92,8 +92,10 @@ relevant question text (or an empty string if none), a specific short actionable
 clarification, candidates: [], and preferredTechniqueId: null.
 Do not hallucinate a math problem from an unrelated image or guess missing data.
 For a valid upload, transcribe the complete target question, diagram labels,
-and answer choices. Pay particular attention to NOT, EXCEPT, signs, units, and
-requested quantities before solving.
+EVERY table row as paired values (for example "g(1)=5; g(4)=7"), and answer
+choices. Never write only "shown in the table" while omitting its numbers.
+Pay particular attention to NOT, EXCEPT, signs, units, and requested quantities
+before solving.
 
 CANDIDATE CONTRACT:
 - Enumerate EVERY technique in the vocabulary that validly solves this
@@ -200,6 +202,11 @@ number of paired sides in a bracket regression); more free parameters than
 constraints lets the optimizer land anywhere in the feasible region and return
 an arbitrary, likely wrong value. An inequality restriction narrows the search
 space but is never itself a constraint.
+If a question asks for the greatest or least coefficient across INTEGER
+factorizations, one identity regression is only one valid branch, even with
+RMSE=0. Enumerate all signed integer divisor pairs and use Desmos list
+comprehension plus max/min on the resulting coefficients. The displayed fitted
+parameter is not the extremum until the full finite set has been compared.
 Consider ALL of Desmos for every question: graphing, intersections, x/y
 intercepts, vertices, overlap and tangency, sliders, domain restrictions,
 lists, regression, and function evaluation. Prefer the visual method when the
@@ -335,9 +342,11 @@ visual conditions and written answers.
 When a readout simply evaluates the fitted model at the requested input, prefer
 the original function call g(3). It is not a derived formula. Keep measurements
 for different functions separate: f(0)=10 does NOT mean g(0)=10 when
-g(x)=f(x)/(x+2). For that problem with g(1)=5 and g(4)=7, a valid direct plan is
-f(x)=ax^2+bx+c; g(x)=f(x)/(x+2); [f(0),g(1),g(4)]~[10,5,7]; g(3).
-The final output is 6.2. Do not put (0,10) into a table of g-values.
+g(x)=f(x)/(x+2). For that problem with g(1)=5 and g(4)=7, use the table
+directly: f(x)=ax^2+bx+10; x_{1}=[1,4]; y_{1}=[5,7];
+y_{1}~f(x_{1})/(x_{1}+2); g(x)=f(x)/(x+2); g(3).
+The final output is 6.2. Include this Desmos method even if a paper
+substitution method also works. Do not put (0,10) into a table of g-values.
 
 EXECUTABLE DESMOS:
 The app inserts expression rows (up to 16 per plan). Paired lists x_{1}=[...]
@@ -539,6 +548,9 @@ multiplier, divisor, regression, slider, list, or graph behavior that may be
 new to a student, explain it where it first appears. Avoid bare phrases such
 as "apply regression", "coefficients are proportional", "evaluate the list",
 "fit the line", or "graph the equation" without a plain-English explanation.
+For an integer-factor extremum list, explain that the divisor filters include
+both signs, "for" tries every pair, evaluating the factors at x^n=1 gives
+each possible middle coefficient, and max/min compares the entire list.
 Keep the formula itself in latex; the purpose explains it, not a different
 method. readAnswer is the READ THE RESULT instruction. Name the exact row,
 what the student sees there (a number, fitted parameter, list entry, point,
