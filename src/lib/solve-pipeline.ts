@@ -72,7 +72,11 @@ export function modelTimeouts(env: Record<string, string | undefined> = process.
     const parsed = Number(value?.trim());
     return value?.trim() && Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
   };
-  return { candidatesMs: read(env.CANDIDATES_TIMEOUT_MS, 60_000), explanationMs: read(env.EXPLANATION_TIMEOUT_MS, 30_000) };
+  const configuredCandidates = read(env.CANDIDATES_TIMEOUT_MS, 60_000);
+  // Earlier deployments used 20 s. A stale production setting must not keep
+  // aborting the same hard questions after the code's default was raised.
+  const candidatesMs = env.NODE_ENV === "production" ? Math.max(configuredCandidates, 60_000) : configuredCandidates;
+  return { candidatesMs, explanationMs: read(env.EXPLANATION_TIMEOUT_MS, 30_000) };
 }
 
 /** A call is not started with less time than this left before the request's deadline. */

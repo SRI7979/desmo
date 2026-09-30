@@ -5,6 +5,14 @@ import { modelTimeouts } from "../src/lib/solve-pipeline";
 
 test("hard candidate generation gets a useful default budget while overrides remain bounded by the route", () => {
   assert.deepEqual(modelTimeouts({}), { candidatesMs: 60_000, explanationMs: 30_000 });
+  assert.deepEqual(modelTimeouts({ NODE_ENV: "production", CANDIDATES_TIMEOUT_MS: "20000" }), {
+    candidatesMs: 60_000,
+    explanationMs: 30_000,
+  });
+  assert.deepEqual(modelTimeouts({ NODE_ENV: "test", CANDIDATES_TIMEOUT_MS: "80" }), {
+    candidatesMs: 80,
+    explanationMs: 30_000,
+  });
   assert.deepEqual(modelTimeouts({ CANDIDATES_TIMEOUT_MS: "75000", EXPLANATION_TIMEOUT_MS: "45000" }), {
     candidatesMs: 75_000,
     explanationMs: 45_000,
