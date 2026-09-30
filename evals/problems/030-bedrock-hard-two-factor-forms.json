@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "The polynomial 10x^4+23x^2+12 can be written both as (5x^2+j)(2x^2+k), with positive integer j and k, and as (5x^2+l)(2x^2+m), with positive noninteger l and m. What is k+l?",
+  "choices": null,
+  "correctAnswer": "21/2",
+  "intendedMethod": "compare-both-factor-assignments",
+  "acceptableMethods": ["integer-and-rational-factor-enumeration"],
+  "forbiddenMethods": ["report-first-factorization-only", "assume-l-equals-j"],
+  "notes": "Paraphrase of Bedrock Prep hard Problem 50, Two Ways to Factor. Let u=x^2. The two root assignments with fixed leading coefficients are (5u+4)(2u+3) and (5u+15/2)(2u+8/5), so k=3,l=15/2 and k+l=21/2. A single regression fit is not enough to establish both required forms. Category index: https://www.bedrockprep.com/problems"
+}

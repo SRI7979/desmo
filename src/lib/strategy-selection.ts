@@ -220,6 +220,25 @@ function hasDisposableScalarList(rows: ReadonlyArray<{ latex: string }>): boolea
 }
 
 /**
+ * One constraint on x and y usually leaves infinitely many possible pairs.
+ * Evaluating the target at one convenient pair is only enough if the plan
+ * first shows the target does not change as the pair moves along that line.
+ */
+function hasUnprovenSingleSample(question: string, rows: ReadonlyArray<{ latex: string }>, resultRow: number | null): boolean {
+  const premise = question.match(/\b(?:if|given(?: that)?)\s+([^,?]{1,100}),\s*what is (?:the )?value of\b/i)?.[1];
+  if (!premise || !premise.includes("x") || !premise.includes("y") || !premise.includes("=")) return false;
+  const target = question.split(/\bwhat is (?:the )?value of\b/i)[1] ?? "";
+  if (!target.includes("x") || !target.includes("y") || resultRow === null) return false;
+  const evaluated = rows[resultRow - 1]?.latex.replace(/\s+/g, "").match(/^([A-Za-z](?:_\{[^{}]+\})?)\((-?\d+(?:\.\d+)?)\)$/);
+  if (!evaluated) return false;
+  const [, name, input] = evaluated;
+  const definition = rows.some(({ latex }) => latex.replace(/\s+/g, "").startsWith(`${name}(x)=`));
+  if (!definition) return false;
+  const difference = `${name}(x)-${name}(${input})`;
+  return !rows.some(({ latex }) => latex.replace(/\s+/g, "").includes(difference));
+}
+
+/**
  * Parameters the question itself restricts to integers ("where a is an
  * integer greater than 1", "b is a positive integer constant", "positive
  * integers n"). Rule 1 must apply even when a candidate did not declare them.
@@ -361,6 +380,12 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
     return reject(
       "disposable-scalar-list",
       "A short list stores given numbers only to read them back by fixed index. Enter the arithmetic directly.",
+    );
+  }
+  if (hasUnprovenSingleSample(question, rows, candidate.result.row)) {
+    return reject(
+      "unproven-invariance",
+      "The given equation permits many x,y pairs. Evaluating the requested expression at one convenient x does not show every pair gives the same value. Add a row such as E(x)-E(0) that visibly stays at zero, or show an exact identity in a written method.",
     );
   }
   const derived = findDerivedConstants(rows, question, choices);

@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "Let h(x)=-sqrt(x^2+bx+c). Its graph passes through (3,0) and (0,-sqrt(366)). If its other x-intercept is m, what is the greatest possible value of m?",
+  "choices": null,
+  "correctAnswer": "122",
+  "intendedMethod": "radical-root-regression",
+  "acceptableMethods": ["quadratic-radicand-roots"],
+  "forbiddenMethods": ["discard-radicand-domain", "report-b-instead-of-root"],
+  "notes": "Paraphrase of Bedrock Prep hard Problem 8, Radical Models. Since h(0)=-sqrt(c), c=366. Since h(3)=0, 9+3b+366=0 so b=-125. Radicand x^2-125x+366 factors as (x-3)(x-122); the larger x-intercept is 122. Explain why h=0 precisely when the radicand is 0. Category index: https://www.bedrockprep.com/problems"
+}

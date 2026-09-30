@@ -210,6 +210,77 @@ export const CLASSIFIERS: Record<string, Classifier> = {
     const valid = hasRegression(s) && keepsInterceptInF && readsG;
     return verdict(valid, !valid, "did not fit the g table while keeping f(0)=10 separate");
   },
+
+  "019-bedrock-radical-equation-choice": (s) => {
+    const valid = isWrittenPlan(s) || s.expressions.some((e) => /25.*k.*2|\\sqrt/.test(e.latex));
+    return verdict(valid, !valid, "did not show the given radical equation or its common-denominator reduction");
+  },
+
+  "020-bedrock-disguised-quartic": (s) => {
+    const plotsOriginal = s.expressions.some((e) => /x\^\{?4\}?/.test(e.latex) && /13/.test(e.latex));
+    const valid = plotsOriginal || isWrittenPlan(s);
+    return verdict(valid, !valid, "did not plot or solve the original quartic");
+  },
+
+  "021-bedrock-shifted-exponential": (s) => {
+    const valid = hasRegression(s) || isWrittenPlan(s) || s.expressions.some((e) => /3\^/.test(e.latex) && /x/.test(e.latex));
+    return verdict(valid, !valid, "did not show a way to determine the exponential parameters");
+  },
+
+  "022-bedrock-quadratic-line-no-intersection": (s) => {
+    const valid = isWrittenPlan(s) || s.expressions.some((e) => /x\^\{?2\}?/.test(e.latex) && /q/.test(e.latex));
+    return verdict(valid, !valid, "did not retain the parameter q in the original quadratic");
+  },
+
+  "023-bedrock-weighted-conditional-probability": (s) => {
+    const valid = !hasRegression(s) && (isWrittenPlan(s) || s.expressions.some((e) => /0\.4|40\//.test(e.latex)));
+    return verdict(valid, !valid, "omitted the senior base rate or used a regression for direct probability arithmetic");
+  },
+
+  "024-bedrock-radical-model": (s) => {
+    const valid = isWrittenPlan(s) || (hasRegression(s) && s.expressions.some((e) => /25/.test(e.latex)));
+    return verdict(valid, !valid, "did not fit the radical model from both points and show f(25)");
+  },
+
+  "025-bedrock-hard-custom-regression": (s) => {
+    const preservesF = s.expressions.some((e) => /f\(x\)/.test(e.latex) && /x\^\{?2\}?/.test(e.latex));
+    const valid = isWrittenPlan(s) || (hasRegression(s) && preservesF);
+    return verdict(valid, !valid, "did not fit the quadratic f from the three transformed g values");
+  },
+
+  "026-bedrock-hard-radical-model": (s) => {
+    const valid = isWrittenPlan(s) || s.expressions.some((e) => /366/.test(e.latex) && /x\^\{?2\}?/.test(e.latex));
+    return verdict(valid, !valid, "did not use the radicand's roots or the given h(0) value");
+  },
+
+  "027-bedrock-hard-rearranging": (s) => {
+    const valid = isWrittenPlan(s) || s.expressions.some((e) => /[abcd]/.test(e.latex) && /6|\\frac/.test(e.latex));
+    return verdict(valid, !valid, "did not derive or verify an equivalent expression for d");
+  },
+
+  "028-bedrock-hard-disguised-variable": (s) => {
+    const relationUsed = isWrittenPlan(s) || s.expressions.some((e) => /20-2x|2x\+y/.test(e.latex.replace(/\s/g, "")));
+    const samplesOnePair = s.expressions.some((e) => /^\s*E\(0\)\s*$/.test(e.latex));
+    const explanation = [s.why, s.readAnswer, ...s.steps, ...s.expressions.map((e) => e.purpose)].join(" ");
+    const provesConstant = /\bconstant\b|\bhorizontal\b|same value for every|simplif\w*\s+to\s+980/i.test(explanation);
+    const valid = relationUsed && (!samplesOnePair || provesConstant);
+    return verdict(valid, !valid, "evaluated only one (x,y) pair without showing that the target is constant under 2x+y=20");
+  },
+
+  "029-bedrock-hard-infinite-standard-form": (s) => {
+    const valid = !hasRegression(s) && (isWrittenPlan(s) || s.expressions.some((e) => /14|27/.test(e.latex)));
+    return verdict(valid, !valid, "used an unnecessary regression or omitted the shared line scale factor");
+  },
+
+  "030-bedrock-hard-two-factor-forms": (s) => {
+    const valid = isWrittenPlan(s) || s.expressions.some((e) => /\\operatorname\{for\}|\\operatorname\{max\}|\\operatorname\{min\}/.test(e.latex));
+    return verdict(valid, !valid, "a single unconstrained fit does not identify both required factor forms");
+  },
+
+  "031-bedrock-hard-minimum-factor-product": (s) => {
+    const valid = isWrittenPlan(s) || s.expressions.some((e) => /\\operatorname\{for\}|\\operatorname\{min\}/.test(e.latex));
+    return verdict(valid, !valid, "a single unconstrained fit does not prove the integer-constrained minimum");
+  },
 };
 
 export function classify(problemId: string, solution: Solution): Verdict {
@@ -226,6 +297,20 @@ export function methodTagOf(solution: Solution): string {
 
 function normalizeAnswerText(raw: string): string {
   return raw.replace(/^[A-H][).:]\s*/, "").trim();
+}
+
+/** Compare equivalent presentation of an answer choice, without pretending arbitrary algebra is equal. */
+function normalizeSymbolicChoice(raw: string): string {
+  return raw
+    .trim()
+    .replace(/\\left|\\right/g, "")
+    .replace(/\\sqrt\s*\{([^{}]+)\}/g, "sqrt($1)")
+    .replace(/√\s*\(([^()]*)\)/g, "sqrt($1)")
+    .replace(/[²³]/g, (digit) => (digit === "²" ? "^2" : "^3"))
+    .replace(/[−–]/g, "-")
+    .replace(/\s+/g, "")
+    .replace(/^x=/i, "")
+    .toLowerCase();
 }
 
 function parseNumeric(text: string): number | null {
@@ -250,10 +335,16 @@ function extractNumericCandidates(text: string): number[] {
   return values;
 }
 
-export function answerMatches(returned: string, correct: string): boolean {
+export function answerMatches(returned: string, correct: string, choices: string[] | null = null): boolean {
+  const expectedChoice = choices?.findIndex((choice) => normalizeSymbolicChoice(normalizeAnswerText(choice)) === normalizeSymbolicChoice(correct)) ?? -1;
+  const labeled = returned.trim().match(/^([A-H])[).:]\s*(.*)$/i);
+  const bareLetter = returned.trim().match(/^[A-H]$/i);
+  if (expectedChoice >= 0 && labeled && labeled[1].toUpperCase().charCodeAt(0) - 65 !== expectedChoice) return false;
+  if (expectedChoice >= 0 && bareLetter) return bareLetter[0].toUpperCase().charCodeAt(0) - 65 === expectedChoice;
   const a = normalizeAnswerText(returned);
   const b = normalizeAnswerText(correct);
   if (a.toLowerCase() === b.toLowerCase()) return true;
+  if (normalizeSymbolicChoice(a) === normalizeSymbolicChoice(b)) return true;
   const target = parseNumeric(b);
   if (target === null) return false;
   return extractNumericCandidates(a).some((value) => Math.abs(value - target) < 0.02);

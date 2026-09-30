@@ -9,6 +9,7 @@ import {
   explanationInput,
   fallbackExplanation,
   presentMethod,
+  validateExplanationQuality,
 } from "./method-presentation";
 import { assignBadges, COST_WEIGHTS } from "./method-scoring";
 import type { MethodSummary } from "./method-summary";
@@ -61,17 +62,17 @@ export type ModelTimeouts = { candidatesMs: number; explanationMs: number };
 
 /**
  * How long one OpenAI call may run before it is aborted: CANDIDATES_TIMEOUT_MS
- * (default 20 s; the Desmos retry uses it too) and EXPLANATION_TIMEOUT_MS
- * (default 30 s). Read per call. Measured candidate calls: typically 8–15 s,
- * but real image solves and guided retries have run 20–34 s, so a 20 s
- * default fails some of them: raise it rather than let calls hang.
+ * (default 60 s; the Desmos retry uses it too) and EXPLANATION_TIMEOUT_MS
+ * (default 30 s). Read per call. Even a correct hard question can spend over
+ * 20 s in candidate generation; the former 20 s default aborted it before
+ * validation or Desmos could run. The route deadline still bounds every call.
  */
 export function modelTimeouts(env: Record<string, string | undefined> = process.env): ModelTimeouts {
   const read = (value: string | undefined, fallback: number) => {
     const parsed = Number(value?.trim());
     return value?.trim() && Number.isFinite(parsed) && parsed > 0 ? Math.floor(parsed) : fallback;
   };
-  return { candidatesMs: read(env.CANDIDATES_TIMEOUT_MS, 20_000), explanationMs: read(env.EXPLANATION_TIMEOUT_MS, 30_000) };
+  return { candidatesMs: read(env.CANDIDATES_TIMEOUT_MS, 60_000), explanationMs: read(env.EXPLANATION_TIMEOUT_MS, 30_000) };
 }
 
 /** A call is not started with less time than this left before the request's deadline. */
@@ -347,8 +348,9 @@ function isGpt5(model: string) {
 /**
  * One OpenAI call, aborted by its own AbortController at the configured
  * timeout or the request's deadline, whichever comes first (and by the
- * client disconnecting). Never retried here: the SDK's retries are off, so a
- * 429 or a timeout is reported once, honestly, instead of being amplified.
+ * client disconnecting). The SDK's retries are off; the solve pipeline alone
+ * may make one separately metered, deadline-gated candidate timeout recovery.
+ * Rate limits and explanation timeouts are never retried here.
  */
 async function callModel(
   deps: PipelineDeps,
@@ -362,6 +364,7 @@ async function callModel(
   const timeoutMs = Math.min(configured, remaining);
   const model = String(body.model);
   let tier = configuredServiceTier(deps.tier);
+  let priorityFallback = false;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   const signal = deps.signal ? AbortSignal.any([deps.signal, controller.signal]) : controller.signal;
@@ -379,10 +382,21 @@ async function callModel(
       if (tier !== "priority" || !rejectsServiceTier(error)) throw error;
       deps.tier.priorityUnavailable = true;
       tier = "default";
+      priorityFallback = true;
       response = await send(tier);
     }
   } catch (error) {
     if (controller.signal.aborted && !deps.signal?.aborted) {
+      console.warn("[desmo:call-timeout]", JSON.stringify({
+        id: deps.diagnosticId,
+        call,
+        elapsedMs: Math.round(performance.now() - started),
+        configuredMs: configured,
+        limitMs: Math.round(timeoutMs),
+        deadlineBound: remaining < configured,
+        serviceTier: tier,
+        priorityFallback,
+      }));
       // OpenAI may still have finished (and billed) the call; its usage never
       // arrives, so it is recorded at a deliberately high estimate.
       const maxOutput = typeof body.max_output_tokens === "number" ? body.max_output_tokens : 8_000;
@@ -416,6 +430,8 @@ async function callModel(
         reasoning: usage?.output_tokens_details?.reasoning_tokens,
         cached: usage?.input_tokens_details?.cached_tokens,
         input: usage?.input_tokens,
+        serviceTier: response.service_tier ?? tier,
+        priorityFallback,
       }),
     );
   }
@@ -532,6 +548,7 @@ export async function explainMethod(
   const cached = await deps.cache.getExplanation(entry.cacheKey, method.id);
   if (cached) {
     try {
+      validateExplanationQuality(method, cached);
       return { solution: presentMethod(entry, method, cached), source: "cache" };
     } catch {
       // A cached explanation that no longer matches its method is regenerated.
@@ -552,6 +569,7 @@ export async function explainMethod(
     }
     try {
       const explanation = validateExplanationResponse(response);
+      validateExplanationQuality(method, explanation);
       presentMethod(entry, method, explanation);
       const stored = await deps.cache.putExplanation(entry.cacheKey, method.id, explanation);
       return { solution: presentMethod(entry, method, stored), source: "model" };
@@ -588,6 +606,7 @@ export async function solveProblem(
   let entry: CacheEntry | null = null;
   let hit: SolvedResult["hit"] = null;
   let repairs: string[] = [];
+  let timeoutRetryUsed = false;
 
   const known = await deps.cache.lookupInput(hash, version);
   entry = known ? await deps.cache.getEntry(known) : null;
@@ -602,10 +621,27 @@ export async function solveProblem(
       // A new problem: checked against the daily cap and the spend ceiling
       // once, before its first model call. A cached input never gets here.
       if (attempt === 1) await deps.meter?.authorizeSolve();
-      // A timeout is an honest failure, not a retry: retrying would double
-      // both the wait and the spend on a call that already ran long.
-      const response = await callModel(deps, candidateRequest(deps, input, rejection), "candidates");
-      calls.candidates += 1;
+      const request = candidateRequest(deps, input, rejection);
+      const send = () => {
+        calls.candidates += 1;
+        return callModel(deps, request, "candidates");
+      };
+      let response: OpenAI.Responses.Response;
+      try {
+        response = await send();
+      } catch (error) {
+        // Concurrent provider load can make an otherwise 15–25 s candidate
+        // generation exceed its 60 s cap. Recover once only when the route
+        // still has a full candidate and explanation budget. A deadline-bound
+        // abort or a disconnected client must never start another paid call.
+        const { candidatesMs, explanationMs } = modelTimeouts();
+        const remaining = deps.deadline ? deps.deadline - Date.now() : Infinity;
+        if (!(error instanceof ModelTimeoutError) || timeoutRetryUsed || deps.signal?.aborted || remaining < candidatesMs + explanationMs) throw error;
+        timeoutRetryUsed = true;
+        await deps.meter?.authorizeRetry();
+        console.warn("[desmo:timeout-retry]", JSON.stringify({ id: deps.diagnosticId, remainingMs: Number.isFinite(remaining) ? Math.round(remaining) : null }));
+        response = await send();
+      }
       try {
         const { parsed: rawParsed, repairs: metadataRepairs } = validateCandidatesResponse(response);
         const parsed = repairIntegerFactorExtremum(repairQuadraticRationalIntercept(rawParsed));

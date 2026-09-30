@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "For positive integers k, a, b, c, and d, suppose 24x^4+60x^2+24=k(ax^2+b)(cx^2+d). What is the minimum possible value of ab?",
+  "choices": null,
+  "correctAnswer": "2",
+  "intendedMethod": "integer-factor-optimization",
+  "acceptableMethods": ["factor-form-comparison"],
+  "forbiddenMethods": ["unconstrained-regression-as-proof-of-minimum"],
+  "notes": "Paraphrase of Bedrock Prep hard Problem 51, Factors of a Quartic. The identity 24x^4+60x^2+24=12(2x^2+1)(x^2+2) attains ab=2. ab=1 would force a=b=1; equal leading and constant coefficients then force c=d, making the middle coefficient 48 rather than 60. Therefore 2 is the minimum. Compare integer configurations, not one arbitrary regression fit. Category index: https://www.bedrockprep.com/problems"
+}

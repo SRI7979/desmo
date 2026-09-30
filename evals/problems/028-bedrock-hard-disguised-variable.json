@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "If 2x+y=20, what is the value of 8x^2+18x+8xy+9y+2y^2?",
+  "choices": null,
+  "correctAnswer": "980",
+  "intendedMethod": "one-variable-in-disguise",
+  "acceptableMethods": ["identity-check-in-Desmos"],
+  "forbiddenMethods": ["arbitrary-x-y-substitution-as-proof"],
+  "notes": "Paraphrase of Bedrock Prep hard Problem 23, One Variable in Disguise. Recognize the expression as 2(2x+y)^2+9(2x+y). Substituting 20 yields 2*400+9*20=980. A calculator route can verify the identity at multiple values, but must explain why the expression depends only on 2x+y. Category index: https://www.bedrockprep.com/problems"
+}

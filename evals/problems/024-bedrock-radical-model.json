@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "For x>=-b, the function f(x)=a sqrt(x+b), where a and b are positive constants. The graph passes through (1,6) and (10,12). What is f(25)?",
+  "choices": null,
+  "correctAnswer": "18",
+  "intendedMethod": "radical-parameter-regression",
+  "acceptableMethods": ["direct-system"],
+  "forbiddenMethods": ["ignore-positive-parameter-conditions"],
+  "notes": "Original variant of Bedrock Prep's hard 'Radical Models' category. Dividing squared values gives (10+b)/(1+b)=4, hence b=2 and a=2sqrt(3); f(25)=2sqrt(3)*sqrt(27)=18. A Desmos fit should use the original two points and show the target evaluation. Source category: https://www.bedrockprep.com/problems"
+}

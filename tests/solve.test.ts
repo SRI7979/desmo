@@ -187,7 +187,7 @@ test("a first solve makes the candidates call and the winner's explanation call,
   assert.equal(data.methods[1].shape, "no calculator · factoring · 1 algebra step");
   assert.equal(data.solution.trick, "Read the intercepts");
   assert.equal(data.solution.method, "desmos");
-  assert.deepEqual(data.solution.expressions, [{ latex: "y=x^2-9", purpose: "Explains what line 1 makes Desmos do." }]);
+  assert.deepEqual(data.solution.expressions, [{ latex: "y=x^2-9", purpose: explanation().purposes[0] }]);
   assert.equal(data.solution.why, explanation().why);
   const input = save.mock.calls[0].arguments[0];
   assert.equal(input.userId, userId);
@@ -589,7 +589,15 @@ test("an algebra-only reply to the rational table problem offers Desmos first an
       }),
     ], { question }),
     explanation: (body: { input: unknown }) => JSON.stringify(body.input).includes("Technique: Substitution")
-      ? explanation(0, { why: "Use the table to find the quadratic coefficients.", steps: ["Find f from the intercept and two table values, then compute g(3)=31/5."], readAnswer: null })
+      ? explanation(0, {
+        why: "The intercept and table give three values for the quadratic f, enough to determine its coefficients.",
+        steps: [
+          "The intercept gives f(0)=10, so the constant term of f(x)=ax^2+bx+c is c=10.",
+          "From g(1)=5 and g(4)=7, compute f(1)=5(1+2)=15 and f(4)=7(4+2)=42.",
+          "Then a+b+10=15 and 16a+4b+10=42, giving a=1 and b=4; f(3)=31, so g(3)=31/5.",
+        ],
+        readAnswer: null,
+      })
       : explanation(6, {
         why: "Keep f(0)=10 in the quadratic and let Desmos fit the two unknown coefficients from the g table.",
         readAnswer: "Line 6 displays g(3)=6.2, which is 31/5.",
@@ -656,7 +664,7 @@ test("an explanation failure still shows the rows and answer with a generated su
   const first = await (await POST(upload())).json();
   assert.equal(first.solution.answer, "3");
   assert.deepEqual(first.solution.expressions.map((row: { latex: string }) => row.latex), ["y=x^2-9"]);
-  assert.equal(first.solution.why, "Read the intercepts: 1 row · graph · no algebra.");
+  assert.match(first.solution.why, /detailed explanation.*did not load/i);
   assert.match(first.solution.readAnswer, /Line 1 shows the positive x-intercept = 3/);
   failing = false;
   const second = await (await POST(upload())).json();
@@ -673,6 +681,48 @@ test("a malformed explanation is corrected once, then cached", async () => {
   assert.equal(data.solution.why, explanation().why);
   assert.equal(requests.explanation.length, 2);
   assert.match(JSON.stringify(requests.explanation[1].input), /REJECTED by the server at explanation: purposes must have exactly one entry per calculator row: expected 1, got 3/);
+});
+
+test("a placeholder calculator-row explanation gets one guided correction", async () => {
+  const { requests } = mockModel({
+    candidates: candidatesResponse([graphCandidate()]),
+    explanation: (_body: unknown, call: number) => call === 1
+      ? explanation(1, { purposes: ["Graph the equation."] })
+      : explanation(1, { purposes: ["Graph the given equation so Desmos shows its x-intercepts; the positive one is the requested solution."] }),
+  });
+  const data = await (await POST(upload())).json();
+  assert.equal(requests.explanation.length, 2);
+  assert.match(JSON.stringify(requests.explanation[1].input), /explanation_quality: Line 1 needs the given information/);
+  assert.match(data.solution.expressions[0].purpose, /positive one is the requested solution/);
+});
+
+test("a many-step written method cannot hide its derivation in one solve-it sentence", async () => {
+  const { requests } = mockModel({
+    candidates: candidatesResponse([paperCandidate({ cost: { ...zeroCost, derivationSteps: 3 } })]),
+    explanation: (_body: unknown, call: number) => call === 1
+      ? explanation(0, { steps: ["Solve x² = 9 to get 3."] })
+      : explanation(0, { steps: [
+          "Rewrite x²=9 as x²-9=0.",
+          "Factor x²-9=(x-3)(x+3), giving x=3 or x=-3; choose positive 3.",
+        ] }),
+  });
+  const data = await (await POST(upload())).json();
+  assert.equal(requests.explanation.length, 2);
+  assert.match(JSON.stringify(requests.explanation[1].input), /explanation_quality: This written method has several derivation steps/);
+  assert.equal(data.solution.steps.length, 2);
+  assert.equal(data.solution.answer, "3");
+});
+
+test("when a written explanation is unavailable, the fallback admits that its steps are missing", async () => {
+  mockModel({
+    candidates: candidatesResponse([paperCandidate()]),
+    explanation: Response.json({ error: { code: "server_error", message: "down" } }, { status: 500 }),
+  });
+  const data = await (await POST(upload())).json();
+  assert.equal(data.explanation, "fallback");
+  assert.match(data.solution.why, /detailed explanation.*did not load/i);
+  assert.match(data.solution.steps[0], /written steps did not load/i);
+  assert.doesNotMatch(data.solution.steps[0], /apply .* answer is/i);
 });
 
 test("when every candidate is rejected, call 1 is retried once with the reasons; a second rejection fails loudly", async () => {
@@ -752,7 +802,22 @@ test("development rejection exposes the exact stage and stores the raw response 
   }
 });
 
-test("regression test 4: a candidates call past CANDIDATES_TIMEOUT_MS is aborted once, fails honestly, and its cost is still recorded", async () => {
+test("a timed-out candidate call retries once within the route budget and preserves the usage record", async () => {
+  process.env.CANDIDATES_TIMEOUT_MS = "80";
+  try {
+    const { requests } = mockModel({ candidates: (_body: unknown, call: number, signal?: AbortSignal) => call === 1 ? hang(signal) : candidatesResponse() });
+    const response = await POST(upload());
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).solution.answer, "3");
+    assert.equal(requests.candidates.length, 2);
+    assert.equal(usage.records.filter((record) => record.status === "timeout").length, 1);
+    assert.equal(usage.records.filter((record) => record.status === "completed" && record.call === "candidates").length, 1);
+  } finally {
+    delete process.env.CANDIDATES_TIMEOUT_MS;
+  }
+});
+
+test("regression test 4: candidates calls past CANDIDATES_TIMEOUT_MS stop after one bounded retry and record both costs", async () => {
   process.env.CANDIDATES_TIMEOUT_MS = "80";
   try {
     const { requests } = mockModel({ candidates: (_body: unknown, _call: number, signal?: AbortSignal) => hang(signal) });
@@ -766,9 +831,9 @@ test("regression test 4: a candidates call past CANDIDATES_TIMEOUT_MS is aborted
       assert.equal(body.kind, "timeout");
       assert.match(body.error, /took too long.*stopped/);
     }
-    assert.equal(requests.candidates.length, 2, "one attempt per solve: a timeout is never retried");
+    assert.equal(requests.candidates.length, 4, "one recovery attempt per solve, then an honest timeout");
     const timedOut = usage.records.filter((record) => record.status === "timeout");
-    assert.equal(timedOut.length, 2);
+    assert.equal(timedOut.length, 4);
     assert.equal(timedOut[0].estimated, true, "OpenAI may have billed it; usage never arrives, so it is estimated high");
     assert.ok(timedOut[0].costUsd > 0.02);
   } finally {

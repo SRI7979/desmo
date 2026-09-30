@@ -72,6 +72,20 @@ test("REGRESSION 1: \\frac{g^{\\prime}^{\\prime}\\left(0\\right)}{2} repairs to 
   assert.doesNotMatch(visibleHtml(rendered), /\\/, "no backslash survives to the visibly-rendered output");
 });
 
+test("Bedrock radical model: copied square-root notation is repaired in the question and explanation", () => {
+  const question = "Let h(x) = -\\sqrt{x^2 + bx + c}. Its graph passes through (3,0) and (0,-\\sqrt{366}). What is m?";
+  const repaired = sanitizeProse(question, "question");
+  assert.equal(repaired, "Let h(x) = -sqrt(x^2 + bx + c). Its graph passes through (3,0) and (0,-sqrt(366)). What is m?");
+  assert.equal(sanitizeProse("The root is \\sqrt{\\sqrt{16}}.", "why"), "The root is sqrt(sqrt(16)).");
+  assert.equal(sanitizeProse(repaired, "question"), repaired, "the repair is stable");
+  const solution = sanitizeSolutionProse(desmosSolution({ question, why: "h(0)=-\\sqrt{366} means c=366." }));
+  assert.equal(solution.question, repaired);
+  assert.equal(solution.why, "h(0)=-sqrt(366) means c=366.");
+  const rendered = renderThroughMathText(solution.question);
+  assert.doesNotMatch(rendered, /katex-error/);
+  assert.doesNotMatch(visibleHtml(rendered), /\\/, "no raw TeX reaches the student");
+});
+
 // --- 4. Clean prose is untouched, byte-identical -----------------------------
 
 test("REGRESSION 4: prose with no LaTeX passes through byte-identical", () => {

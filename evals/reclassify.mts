@@ -13,7 +13,7 @@ async function main() {
     methodMatchable = 0,
     methodMatched = 0;
   const worstCase = new Map<string, boolean>();
-  const problemCache = new Map<string, { correctAnswer: string }>();
+  const problemCache = new Map<string, { correctAnswer: string; choices: string[] | null }>();
 
   for (const file of files) {
     const data = JSON.parse(await readFile(file, "utf8"));
@@ -25,7 +25,7 @@ async function main() {
       }
       const problem = problemCache.get(job.id)!;
       const isForbidden = !r.ok || r.forbidden;
-      const isCorrect = r.ok && answerMatches(r.answer, problem.correctAnswer);
+      const isCorrect = r.ok && answerMatches(r.answer, problem.correctAnswer, problem.choices);
       if (r.ok && r.solution) {
         methodMatchable += 1;
         const solution = { ...r.solution, answer: r.answer, trick: r.trick } as Solution;

@@ -404,10 +404,11 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
     const controller = new AbortController();
     request.current = controller;
     let timedOut = false;
+    // Leave room for the server's 180 s route limit to return its own error.
     const timeout = window.setTimeout(() => {
       timedOut = true;
       controller.abort();
-    }, 180_000);
+    }, 195_000);
     resetResult();
     const token = solveToken.current;
     setLoading(true);

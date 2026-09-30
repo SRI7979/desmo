@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "The graphs of y=x^2+4x+q and y=3x+10 have no points of intersection, where q is an integer. What is the least possible value of q?",
+  "choices": null,
+  "correctAnswer": "11",
+  "intendedMethod": "graph-integer-slider",
+  "acceptableMethods": ["vertex-comparison", "discriminant-condition"],
+  "forbiddenMethods": ["one-sample-point-as-proof"],
+  "notes": "Original variant of Bedrock Prep's hard '2 Quadratics with No Solution' and 'Lowest Possible Sum' categories. The difference is x^2+x+q-10 with minimum q-41/4; no intersection requires q>41/4, so least integer q is 11. A calculator method should make the integer q condition explicit and check the two full graphs, not a single x sample. Source category: https://www.bedrockprep.com/problems"
+}

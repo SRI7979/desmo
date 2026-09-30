@@ -1,0 +1,10 @@
+{
+  "domain": "Algebra",
+  "problem": "For nonzero real numbers a, b, c, and d satisfying 6/a=6/b+6/c-6/d, which expression is equivalent to d?",
+  "choices": ["abc/(ab+ac+bc)", "abc/(ab+ac-bc)", "abc/(ab-ac+bc)", "abc/(bc-ab-ac)"],
+  "correctAnswer": "abc/(ab+ac-bc)",
+  "intendedMethod": "direct-expression-rearrangement",
+  "acceptableMethods": ["choice-substitution"],
+  "forbiddenMethods": ["unexplained-numerator-denominator-switch"],
+  "notes": "Paraphrase of Bedrock Prep hard Problem 20, Rearranging Terms; choices are original distractor variants. Divide by 6, rearrange to 1/d=1/b+1/c-1/a, combine terms over abc to get (ab+ac-bc)/(abc), then reciprocate. Every denominator must be nonzero. Explain each fraction move; Desmos is only useful if it actually simplifies identifying the equivalent expression. Category index: https://www.bedrockprep.com/problems"
+}

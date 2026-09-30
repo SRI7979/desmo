@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "What is the greatest positive solution to 4x^4 - 13x^2 + 9 = 0?",
+  "choices": null,
+  "correctAnswer": "3/2",
+  "intendedMethod": "graph-x-intercepts",
+  "acceptableMethods": ["one-variable-in-disguise"],
+  "forbiddenMethods": ["read-negative-or-smaller-root"],
+  "notes": "Original variant of Bedrock Prep's hard 'One Variable in Disguise' category. The equation factors as (4x^2-9)(x^2-1), so its positive roots are 1 and 3/2. A Desmos graph can show all four x-intercepts; choose the greater positive one. Source category: https://www.bedrockprep.com/problems"
+}

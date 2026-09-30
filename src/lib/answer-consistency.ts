@@ -59,6 +59,7 @@ function group(expression: string): string {
  * ASCII-style math this app asks for: \frac{a}{b} → a/b (grouping only the
  * side that actually needs it), \left(/\right) → (/), ^{\prime} (however
  * many, however malformed the stacking) → the matching number of quotes,
+ * \sqrt{a} → sqrt(a), including nested square roots,
  * \text{...}/\operatorname{...} → their own contents, and a lone \{ \} or
  * ^{...}/_{...} → the bare braces/marker. Idempotent and safe on clean text.
  */
@@ -77,6 +78,11 @@ export function repairProseText(text: string): string {
     new RegExp(`\\\\frac\\{(${balancedBraces})\\}\\{(${balancedBraces})\\}`, "g"),
     (_match, numerator: string, denominator: string) => `${group(numerator)}/${group(denominator)}`,
   );
+  // Innermost-first replacement preserves the radicand and lets MathText
+  // render sqrt(...) as math. Unsupported TeX remains visible to the validator.
+  for (let depth = 0; depth < 12 && /\\sqrt\{[^{}]*\}/.test(result); depth++) {
+    result = result.replace(/\\sqrt\{([^{}]*)\}/g, (_match, radicand: string) => `sqrt(${radicand})`);
+  }
   result = result.replace(/\\text\{([^{}]*)\}/g, "$1");
   result = result.replace(/\\operatorname\{([^{}]*)\}/g, "$1");
   result = result.replace(/\^\{([^{}]*)\}/g, "^$1").replace(/_\{([^{}]*)\}/g, "_$1");
@@ -589,8 +595,10 @@ export function deriveConsistentSolution(input: {
     repairs.push("The read instruction was missing and was generated from the result row.");
     readAnswer = summary;
   }
+  const writtenAnswer = "type" in result && result.type === "written" ? parseNumber(answer) : null;
   const mentionsAnswer =
     (choice ? mentionsLabel(readAnswer, choice.label) : false) ||
+    (writtenAnswer !== null && mentionsNumber(readAnswer, writtenAnswer)) ||
     (result.value !== null &&
       (mentionsNumber(readAnswer, result.value) ||
         extractNumberTexts(readAnswer).some((text) => roundsTo(text, result.value as number)))) ||

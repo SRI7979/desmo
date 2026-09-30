@@ -160,6 +160,18 @@ test("derives the answer and rewrites a contradictory read instruction", () => {
   assert.equal(derived.repairs.length, 3);
 });
 
+test("a complete written readout is not repeated after its numeric answer", () => {
+  const readAnswer = "The expression simplifies to the constant 980; the answer is 980.";
+  const derived = deriveConsistentSolution({
+    choices: null,
+    result: { type: "written", row: null, relatedRows: [], value: null, listIndex: null, answerFrom: "reasoning", choiceLabel: null, detail: "the expression simplifies to a constant" },
+    answer: "980",
+    readAnswer,
+    expressionCount: 0,
+  });
+  assert.equal(derived.readAnswer, readAnswer);
+});
+
 test("choice-position results select the aligned choice and validate the index", () => {
   const lines = [{ label: "A", text: "−432" }, { label: "B", text: "−9" }, { label: "C", text: "72" }, { label: "D", text: "288" }];
   const derived = deriveConsistentSolution({

@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "Which expression represents one possible solution to 25k^2/sqrt(25k^2+x^2) = 65 - x^2/sqrt(25k^2+x^2), where k is a positive constant?",
+  "choices": ["5k", "sqrt(65^2-25k^2)", "sqrt(65^2+25k^2)", "65^2+25k^2"],
+  "correctAnswer": "sqrt(65^2-25k^2)",
+  "intendedMethod": "combine-common-denominator-or-graph",
+  "acceptableMethods": ["direct-algebra", "symbolic-calculator-verification"],
+  "forbiddenMethods": ["ignore-square-root-domain", "equate-numerators-to-65"],
+  "notes": "Exact equation and choices from the user-supplied screenshot of a hard SAT problem. The two fractions have the same denominator, so their sum is sqrt(25k^2+x^2)=65, giving x^2=65^2-25k^2 and the positive branch sqrt(65^2-25k^2), choice B. A real solution also requires 0<k<=13; SAT asks for one possible expression under the values of k for which a real solution exists. A clear solution must explain the common-denominator cancellation rather than hide it."
+}

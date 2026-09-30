@@ -137,7 +137,7 @@ async function runOnce(client: OpenAI, context: SolveContext, id: string, proble
         .filter((method) => method.rejected)
         .map((method) => ({ technique: method.techniqueId, rule: method.rejected!.rule })),
       explanation: result.explanation,
-      answerCorrect: answerMatches(solution.answer, problem.correctAnswer),
+      answerCorrect: answerMatches(solution.answer, problem.correctAnswer, problem.choices),
       intendedOrAcceptable: verdict.intendedOrAcceptable,
       forbidden: verdict.forbidden || failedToInsert,
       forbiddenReason: failedToInsert ? "rows failed the insertability check (undefined symbol or prose row)" : verdict.forbiddenReason,
@@ -151,6 +151,9 @@ async function runOnce(client: OpenAI, context: SolveContext, id: string, proble
         answerState: solution.answerState,
         method: solution.method,
         structure: solution.structure,
+        why: solution.why,
+        readAnswer: solution.readAnswer,
+        steps: solution.steps,
       },
     };
   } catch (error) {

@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import { SolveValidationError, validateCandidatesResponse, validateExplanationResponse } from "../src/lib/solve-output";
-import { candidatesResponse, explanation, graphCandidate, providerBody } from "./method-fixtures";
+import { selectMethods } from "../src/lib/strategy-selection";
+import { candidatesResponse, explanation, graphCandidate, paperCandidate, providerBody } from "./method-fixtures";
 
 function stage(run: () => unknown): string {
   try {
@@ -44,6 +45,30 @@ test("only metadata that follows from a candidate's own plan is repaired", () =>
   assert.deepEqual(repaired.result.relatedRows, []);
   assert.deepEqual(repaired.rows, graphCandidate().rows, "no mathematical row is touched");
   assert.equal(repairs.length, 5);
+});
+
+test("Bedrock radical model: a matching value on a written result is redundant, not a failed solve", () => {
+  const written = paperCandidate({
+    techniqueId: "direct-arithmetic",
+    answer: "122",
+    result: {
+      type: "written", row: null, relatedRows: [], value: 122, listIndex: null,
+      answerFrom: "reasoning", choiceLabel: null,
+      detail: "Use h(0) to obtain c=366, then h(3)=0 to find b and the other root.",
+    },
+  });
+  const question = "Let h(x)=-\\sqrt{x^2+bx+c}. The graph passes through (3,0) and (0,-\\sqrt{366}). What is the greatest possible value of its other x-intercept m?";
+  const { parsed, repairs } = validateCandidatesResponse(providerBody(candidatesResponse([written], { question })));
+  assert.equal(parsed.candidates[0].result.value, null);
+  assert.match(repairs.join(" "), /redundant numeric value/);
+  const selection = selectMethods(parsed);
+  assert.equal(selection.methods[0].answer, "122");
+  assert.equal(selection.methods[0].rejected, null);
+
+  const contradictory = { ...written, answer: "121" };
+  const conflicting = validateCandidatesResponse(providerBody(candidatesResponse([contradictory], { question })));
+  assert.equal(conflicting.parsed.candidates[0].result.value, 122);
+  assert.throws(() => selectMethods(conflicting.parsed), /written result requires null row\/value\/listIndex/i);
 });
 
 test("a free-form technique name, a missing cost, or a legacy result fails at the schema layer", () => {

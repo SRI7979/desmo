@@ -485,6 +485,13 @@ IMPORTANT PATTERNS:
   identity. Reject underdetermined or ambiguous fits instead of guessing.
 - Unknown coefficients from points: fit original data, then evaluate the target
   using fitted parameters. Do not derive a coefficient system manually.
+- If one equation relates two variables and the question asks for the value of
+  another expression, a convenient pair is not a proof that every allowed pair
+  gives that value. If you substitute one variable as a function of the other,
+  add a visible row comparing the resulting expression with its value at the
+  chosen input (for example E(x)-E(0)); it must be identically zero. Explain
+  that a zero graph shows the value is unchanged. A written method can instead
+  display the exact identity in the given combination of variables.
 - Given curves: use original equations, intersections/zeros, or candidate lists;
   avoid moving terms and factoring by hand if Desmos can solve the original.
 - For answer-choice testing, keep each given side intact: define f(x) as the
@@ -551,6 +558,18 @@ as "apply regression", "coefficients are proportional", "evaluate the list",
 For an integer-factor extremum list, explain that the divisor filters include
 both signs, "for" tries every pair, evaluating the factors at x^n=1 gives
 each possible middle coefficient, and max/min compares the entire list.
+Do not hide a computation by jumping from givens to a new number. For each
+intermediate number or expression, say whether it was supplied by the question,
+computed by a visible calculator row, or obtained by a calculation you now
+show. A fitted parameter must be tied to the regression row that displays it.
+For a written method, show the intermediate equations that lead to the answer;
+"solve the system to get ..." is not a walkthrough when the system itself is
+the work the student needs to understand.
+For a slider, Desmos displays the graph at the slider value; it does not find
+that value automatically. Never say that Desmos solved for or found the slider
+parameter. If a slider method claims the least or greatest allowed integer,
+tell the student to check the adjacent allowed integer too and explain why it
+fails, so the claimed boundary is visible rather than assumed.
 Keep the formula itself in latex; the purpose explains it, not a different
 method. readAnswer is the READ THE RESULT instruction. Name the exact row,
 what the student sees there (a number, fitted parameter, list entry, point,

@@ -215,6 +215,35 @@ test("a disposable scalar list cannot outrank direct arithmetic for one probabil
   }
 });
 
+test("one arbitrary constrained x,y pair cannot establish an invariant expression", () => {
+  const question = "If 2x+y=20, what is the value of 8x^2+18x+8xy+9y+2y^2?";
+  const rows = [
+    { latex: "v(x)=20-2x", slider: null, copiesRow: null },
+    { latex: "E(x)=8x^2+18x+8xv(x)+9v(x)+2v(x)^2", slider: null, copiesRow: null },
+    { latex: "E(0)", slider: null, copiesRow: null },
+  ];
+  const candidate = graphCandidate({
+    techniqueId: "function-evaluation",
+    rows,
+    answer: "980",
+    result: { type: "numeric", row: 3, relatedRows: [1, 2], value: 980, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the value of E at zero" },
+  });
+  const fallback = paperCandidate({
+    techniqueId: "substitution",
+    answer: "980",
+    result: { type: "written", row: null, relatedRows: [], value: null, listIndex: null, answerFrom: "reasoning", choiceLabel: null, detail: "the expression equals 2(2x+y)^2+9(2x+y)=980" },
+  });
+  const input = candidatesResponse([candidate, fallback], { question });
+  assert.equal(rejectedRule(input, "function-evaluation"), "unproven-invariance");
+
+  const proven = graphCandidate({
+    ...candidate,
+    rows: [...rows.slice(0, 2), { latex: "E(x)-E(0)", slider: null, copiesRow: null }, rows[2]],
+    result: { ...candidate.result, row: 4, relatedRows: [2, 3] },
+  });
+  assert.equal(rejectedRule(candidatesResponse([proven, fallback], { question }), "function-evaluation"), undefined);
+});
+
 test("Rule 1 applies to a parameter the question calls an integer, even when no candidate declared it", () => {
   const question =
     "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?";
@@ -445,11 +474,10 @@ test("one identity-regression factorization cannot establish a maximum over inte
   assert.throws(() => select(candidatesResponse([fit], { question, choices: null })), /unproven-extremum/);
 });
 
-test("a LaTeX readout label is replaced with a neutral one instead of rejecting a valid technique", () => {
+test("a LaTeX square-root readout label is repaired to readable prose", () => {
   const candidate = graphCandidate({ result: { ...graphCandidate().result, detail: "\\sqrt{9} as the positive x-intercept" } });
   const [method] = eligible(candidatesResponse([candidate]));
-  assert.equal(method.result.detail, "the output on line 1");
-  assert.match(method.repairs.join(" "), /readout label was LaTeX/);
+  assert.equal(method.result.detail, "sqrt(9) as the positive x-intercept");
   const written = paperCandidate({ result: { ...paperCandidate().result, detail: "\\sqrt{9}" } });
-  assert.equal(eligible(candidatesResponse([written]))[0].result.detail, "the answer");
+  assert.equal(eligible(candidatesResponse([written]))[0].result.detail, "sqrt(9)");
 });

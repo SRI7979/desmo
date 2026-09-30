@@ -1,0 +1,10 @@
+{
+  "domain": "Algebra",
+  "problem": "The equations (3/4)x+ay=b and (7/6)x+cy=3d describe the same line for all real x and y. What is b/d?",
+  "choices": null,
+  "correctAnswer": "27/14",
+  "intendedMethod": "same-line-scale-factor",
+  "acceptableMethods": ["coefficient-ratio-arithmetic"],
+  "forbiddenMethods": ["match-only-x-coefficients-without-constants"],
+  "notes": "Paraphrase of Bedrock Prep hard Problem 32, Standard Form - Infinite Solutions. To be the same line the second equation is 14/9 times the first, because (7/6)/(3/4)=14/9. Thus 3d=(14/9)b and b/d=27/14. Explain that both sides, including constants, scale together. Category index: https://www.bedrockprep.com/problems"
+}

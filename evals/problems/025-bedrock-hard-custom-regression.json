@@ -1,0 +1,10 @@
+{
+  "domain": "Advanced Math",
+  "problem": "A quadratic function f is related to g by g(x)=f(x)/(x-3). The known values are g(1)=2, g(4)=8, and g(5)=7. What is f(0)?",
+  "choices": null,
+  "correctAnswer": "-6",
+  "intendedMethod": "quadratic-table-regression",
+  "acceptableMethods": ["direct-quadratic-fit"],
+  "forbiddenMethods": ["fit-g-as-quadratic", "ignore-denominator"],
+  "notes": "Paraphrase of Bedrock Prep hard Problem 7, Custom Regressions. Convert given g-values into f(1)=-4, f(4)=8, f(5)=14, then fit f(x)=ax^2+bx+c. The fit yields a=1/2,b=3/2,c=-6. If Desmos regression is used, explain each conversion and why f(0) is the fitted constant term. Category index: https://www.bedrockprep.com/problems"
+}

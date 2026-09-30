@@ -1,6 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { parseNumber } from "./answer-consistency";
 import { explanationSchema, type Explanation } from "./solve-cache";
 import { candidatesResponseSchema, type CandidatesResponse } from "./strategy-selection";
 
@@ -76,6 +77,26 @@ function repairCandidates(input: unknown): { value: unknown; repairs: string[] }
     for (const key of ["value", "listIndex", "choiceLabel"]) set(result, key, null);
     set(result, "relatedRows", []);
     if (result.type === "written") set(result, "row", null);
+    // A paper result has no calculator readout. Models sometimes duplicate its
+    // already-stated numeric answer in `value`; remove only that redundant
+    // metadata when it agrees with the answer. A disagreement still fails the
+    // result contract instead of silently changing the student's answer.
+    if (
+      result.type === "written" &&
+      Array.isArray(item.rows) && item.rows.length === 0 &&
+      result.answerFrom === "reasoning" &&
+      result.row === null &&
+      Array.isArray(result.relatedRows) && result.relatedRows.length === 0 &&
+      (result.listIndex === undefined || result.listIndex === null) &&
+      typeof result.value === "number" && Number.isFinite(result.value) &&
+      typeof item.answer === "string"
+    ) {
+      const stated = parseNumber(item.answer.replace(/^\s*[A-D]\)\s*/i, ""));
+      if (stated !== null && Math.abs(stated - result.value) <= 1e-9 * Math.max(1, Math.abs(stated))) {
+        result.value = null;
+        repairs.push(`Candidate ${index + 1}: removed a redundant numeric value from its written result; the stated answer already supplies it.`);
+      }
+    }
     const rowCount = Array.isArray(item.rows) ? item.rows.length : 0;
     if (typeof result.row === "number" && result.row >= 1 && result.row <= rowCount) {
       set(result, "detail", `the output on line ${result.row}`);

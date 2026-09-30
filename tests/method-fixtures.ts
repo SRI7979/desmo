@@ -88,7 +88,8 @@ export function explanation(rowCount = 1, overrides: Partial<Explanation> = {}):
     why: "Graphing the equation shows its solutions as x-intercepts, so no rearranging is needed.",
     readAnswer: "Click the positive x-intercept of line 1 and read x = 3.",
     steps: rowCount === 0 ? ["Factor x² − 9 as (x − 3)(x + 3) and take the positive root, 3."] : [],
-    purposes: Array.from({ length: rowCount }, (_, index) => `Explains what line ${index + 1} makes Desmos do.`),
+    purposes: Array.from({ length: rowCount }, (_, index) =>
+      `Line ${index + 1} puts this part of the question into Desmos so the next row or graph can expose the requested value.`),
     ...overrides,
   };
 }
@@ -313,4 +314,3 @@ export function tangentExplanations(): Record<string, Explanation> {
     }),
   };
 }
-
