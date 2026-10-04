@@ -23,6 +23,7 @@ import { createTrace, solveProblem, type PipelineDeps } from "../src/lib/solve-p
 import { checkConditionCompleteness } from "../src/lib/solver-rules";
 import {
   desmosRescueTarget,
+  isLiteralArithmetic,
   isSolutionCountCondition,
   selectMethods,
   StrategySelectionError,
@@ -320,4 +321,16 @@ test("063: a choice label carrying the start of its text (\"B) $\") is that lett
   // no choice, so entry 1 of the filtered list was read as choice A) $360.
   const selection = selectMethods(validateCandidatesResponse(providerBody(secondRun["063-square-feet-to-square-yards-cost#ab-1"])).parsed);
   for (const method of eligible(selection)) assert.equal(method.answer, "B) $1,080", method.techniqueId);
+});
+
+test("063: a choice list does not make the computation it wraps free", () => {
+  assert.equal(isLiteralArithmetic("cost=18(540)/3^2"), true);
+  assert.equal(isLiteralArithmetic("\\frac{V}{\\pi}"), false, "a variable");
+  assert.equal(isLiteralArithmetic("C=[360,1080,3240,9720]"), false, "a list of the choices");
+  assert.equal(isLiteralArithmetic("\\operatorname{distance}((2,-3),(2,5))"), false, "a built-in does the setup");
+  assert.equal(isLiteralArithmetic("y=391"), false, "one number");
+  // C=[...], cost=18(540)/3^2, C[C=cost] cost 3 against 18(540)/3^2 alone at 4:
+  // the same setup now costs the same, and the lookup's extra rows lose.
+  const selection = eligible(selectMethods(validateCandidatesResponse(providerBody(secondRun["063-square-feet-to-square-yards-cost#ab-1"])).parsed));
+  assert.equal(selection[0].techniqueId, "calculator-arithmetic");
 });

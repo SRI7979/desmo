@@ -238,6 +238,23 @@ function derivedReadout(rows: ReadonlyArray<{ latex: string }>, resultRow: numbe
   return compact(question).includes(compact(latex)) ? null : latex.trim();
 }
 
+/**
+ * 18(540)/3^{2} or cost=391/1.15: a row computing a number from the
+ * question's numbers alone. Lists, points, equations, and rows with a
+ * variable or a built-in such as distance() are not this.
+ */
+export function isLiteralArithmetic(latex: string): boolean {
+  let expression = latex.replace(/\\left|\\right|\\[bB]igg?[lr]?/g, "").trim();
+  const definition = expression.match(/^(?:[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?|[A-Za-z]{2,})\s*=(?!=)([\s\S]*)$/);
+  if (definition) expression = definition[1];
+  if (/[[\],=<>~]|\\(?:sim|le|ge|ne)(?![A-Za-z])/.test(expression.replace(/\|/g, ""))) return false;
+  const bare = expression
+    .replace(/\\(?:frac|sqrt|cdot|times|pi)(?![A-Za-z])/g, " ")
+    .replace(/\\operatorname\{(?:round|floor|ceil|abs)\}/g, " ");
+  if (/[A-Za-z\\]/.test(bare)) return false;
+  return (bare.match(/\d+(?:\.\d+)?/g) ?? []).length >= 2;
+}
+
 /** A row that defines a function, f(x)=... or g_{1}(t)=... */
 const FUNCTION_DEFINITION = /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*\([^()]*\)\s*=(?!=)/;
 
@@ -627,6 +644,11 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   if (formula) {
     derivationFloor = 1;
     repairs.push(`Counted one derivation step: the readout ${formula} is a formula in the fitted parameters the question does not ask for.`);
+  } else if (candidate.techniqueId === "answer-choice-list" && rows.some((row) => isLiteralArithmetic(row.latex))) {
+    // A choice lookup does not make the computation it wraps free: the same
+    // row alone is calculator arithmetic, which carries its setup step.
+    derivationFloor = 1;
+    repairs.push("Counted one derivation step: the list looks up a value its own row computes from the question's numbers, the setup calculator arithmetic carries.");
   }
   return {
     techniqueId: candidate.techniqueId,
