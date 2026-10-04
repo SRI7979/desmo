@@ -144,3 +144,39 @@ test("model_usage accepts the tutor call and still rejects unknown calls", async
   const spend = Number((await db.query<{ spend: string }>("select public.daily_model_spend() as spend")).rows[0].spend);
   assert.ok(Math.abs(spend - 0.004) < 1e-9, "tutor calls count toward the global spend ceiling");
 });
+
+test("a saved trick can link only the student's own saved problem", async () => {
+  await asUser(bob, async () => {
+    await assert.rejects(
+      saveTrick(bob, { cacheKey: null, problemId: aliceProblem, techniqueId: "linked" }),
+      /row-level security/,
+      "another student's problem id is refused, so it cannot be linked or probed",
+    );
+  });
+  await asUser(alice, async () => {
+    await saveTrick(alice, { cacheKey: null, problemId: aliceProblem, techniqueId: "linked" });
+  });
+});
+
+type Reservation = { allowed: boolean; used: number; resets_at: Date };
+
+test("reserve_daily_tutor counts tutor questions per user, apart from solves, for the server only", async () => {
+  const reserve = async (user: string, limit: number) =>
+    (await db.query<Reservation>("select * from public.reserve_daily_tutor($1, $2)", [user, limit])).rows[0];
+  assert.deepEqual([(await reserve(alice, 2)).allowed, (await reserve(alice, 2)).allowed], [true, true]);
+  const blocked = await reserve(alice, 2);
+  assert.equal(blocked.allowed, false);
+  assert.equal(blocked.used, 2);
+  assert.equal((await reserve(bob, 2)).allowed, true, "one student's allowance never limits another");
+  assert.equal((await db.query("select id from public.daily_solves")).rows.length, 0, "tutor questions are not solves");
+
+  await db.query("update public.daily_tutor_questions set created_at = now() - interval '25 hours' where user_id = $1", [alice]);
+  const reopened = await reserve(alice, 2);
+  assert.equal(reopened.allowed, true);
+  assert.equal(reopened.used, 1, "questions older than 24 hours no longer count");
+
+  await asUser(alice, async () => {
+    await assert.rejects(db.query("select * from public.reserve_daily_tutor($1, 999)", [alice]), /permission denied/);
+    await assert.rejects(db.query("select * from public.daily_tutor_questions"), /permission denied/);
+  });
+});

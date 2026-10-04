@@ -187,9 +187,15 @@ export function groundingFields(context: TutorContext): GroundingField[] {
   return fields.filter((field): field is GroundingField => field !== null && field.text.trim().length > 0);
 }
 
+/**
+ * A selection the server found in its own context. A text selection keeps
+ * only the server's matching source text: the client's string is compared
+ * by letters and digits, so its spacing and punctuation are unverified and
+ * never reach the model or the database.
+ */
 export type VerifiedSelection =
   | { kind: "row"; row: number; latex: string }
-  | { kind: "text"; text: string; field: string; excerpt: string };
+  | { kind: "text"; field: string; excerpt: string };
 
 /** The selection, checked against the server's own context; null when it is not part of this solution. */
 export function verifySelection(context: TutorContext, selection: z.infer<typeof tutorSelectionSchema>): VerifiedSelection | null {
@@ -198,7 +204,7 @@ export function verifySelection(context: TutorContext, selection: z.infer<typeof
     return row ? { kind: "row", row: selection.row, latex: row.latex } : null;
   }
   const grounding = findGrounding(selection.text, groundingFields(context));
-  return grounding ? { kind: "text", text: selection.text, field: grounding.field, excerpt: grounding.excerpt } : null;
+  return grounding ? { kind: "text", field: grounding.field, excerpt: grounding.excerpt } : null;
 }
 
 /** The per-request prompt: the verified context, the verified selection, and nothing the client wrote besides it. */
@@ -215,7 +221,7 @@ export function tutorInput(context: TutorContext, selection: VerifiedSelection, 
   const asked =
     selection.kind === "row"
       ? `The student clicked Explain on calculator line ${selection.row}: ${selection.latex}`
-      : `The student highlighted this text, which appears in ${selection.field}:\n"${selection.text}"\nThe matching source text: ${selection.excerpt}`;
+      : `The student highlighted this part of ${selection.field}: ${selection.excerpt}`;
   const lines = [
     `Problem: ${context.question}`,
     `Answer choices: ${choices}`,
@@ -262,6 +268,16 @@ export class TutorOutputError extends Error {
     super(message);
     this.name = "TutorOutputError";
   }
+}
+
+/**
+ * TUTOR_QUESTIONS_PER_DAY (default 40): tutor answers per account per rolling
+ * 24 hours, read per request. It is separate from the daily solve cap, and it
+ * keeps one account from spending the global ceiling every student shares.
+ */
+export function tutorQuestionsPerDay(env: Record<string, string | undefined> = process.env): number {
+  const parsed = Number(env.TUTOR_QUESTIONS_PER_DAY?.trim());
+  return env.TUTOR_QUESTIONS_PER_DAY?.trim() && Number.isFinite(parsed) && parsed >= 0 ? Math.floor(parsed) : 40;
 }
 
 /** TUTOR_TIMEOUT_MS (default 25 s), read per call. */
@@ -420,7 +436,7 @@ export function savedTrickFrom(context: TutorContext, selection: VerifiedSelecti
     question: context.question,
     answer: context.answer,
     expressions: context.rows.map((row) => ({ latex: row.latex, purpose: row.purpose ?? "", ...(row.slider ? { slider: row.slider } : {}) })),
-    selection: selection === null ? null : selection.kind === "row" ? selection.latex : selection.text,
+    selection: selection === null ? null : selection.kind === "row" ? selection.latex : selection.excerpt,
     problemId: context.problemId,
     cacheKey: context.cacheKey,
   };

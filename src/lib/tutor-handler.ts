@@ -6,7 +6,7 @@ import { classifyOpenAIError } from "@/lib/openai-errors";
 import type { SolveCache } from "@/lib/solve-cache";
 import { ModelTimeoutError, RefusalError, type ServiceTierState } from "@/lib/solve-pipeline";
 import type { Solution } from "@/lib/solver-schema";
-import { createMeter, limitsFromEnv, SpendCeilingError, UsageUnavailableError, type Limits, type Meter, type UsageStore } from "@/lib/spend";
+import { createMeter, limitsFromEnv, SpendCeilingError, TutorCapError, UsageUnavailableError, type Limits, type Meter, type UsageStore } from "@/lib/spend";
 import { consoleSink, createTelemetry, type Telemetry } from "@/lib/telemetry";
 import {
   callTutorModel,
@@ -16,6 +16,7 @@ import {
   savedTrickFrom,
   tutorInput,
   tutorRequest,
+  tutorQuestionsPerDay,
   tutorRequestSchema,
   tutorSelectionSchema,
   tutorSourceSchema,
@@ -38,6 +39,8 @@ export type TutorDependencies = {
   /** Where the tutor call's usage and cost is recorded, and the spend ceiling is checked. */
   getUsage: () => UsageStore;
   limits?: () => Limits;
+  /** Tutor answers per account per rolling 24 hours (TUTOR_QUESTIONS_PER_DAY by default). */
+  tutorLimit?: () => number;
   /** The route's maxDuration: the model call must finish inside it. */
   maxDurationSeconds: number;
   telemetry?: Telemetry;
@@ -87,8 +90,23 @@ async function resolveContext(
   }
 }
 
+/** Worded like the solver's daily-cap message. */
+function describeReset(resetsAt: string | null): string {
+  const remaining = resetsAt ? Date.parse(resetsAt) - Date.now() : NaN;
+  if (!Number.isFinite(remaining) || remaining <= 0) return "shortly";
+  const hours = Math.ceil(remaining / 3_600_000);
+  return hours <= 1 ? "within the hour" : `in about ${hours} hours`;
+}
+
 /** Mapped like the solver's errors, in the tutor's own words. */
 function tutorErrorFor(error: unknown): Response {
+  if (error instanceof TutorCapError) {
+    return errorResponse(
+      `You've asked the tutor ${error.limit} questions today. It opens again ${describeReset(error.resetsAt)}. Your solutions and solves are not affected.`,
+      429,
+      { kind: "tutor_cap", resetsAt: error.resetsAt },
+    );
+  }
   if (error instanceof SpendCeilingError) {
     return errorResponse("Desmo is at capacity today. The tutor opens again after midnight UTC. Your solutions stay available.", 503, { kind: "at_capacity" });
   }
@@ -133,7 +151,8 @@ function failureKind(error: unknown): string {
  * POST /api/tutor: { source, selection, practice } → { title, meaning,
  * whyHere, example, practice }. The model sees only the server-resolved
  * context and the verified selection. The call is metered as "tutor" and
- * checked against the global spend ceiling, never the daily solve cap.
+ * checked against the global spend ceiling and the student's own tutor
+ * allowance (TUTOR_QUESTIONS_PER_DAY), never the daily solve cap.
  */
 export function createTutorHandler(dependencies: TutorDependencies) {
   const tier: ServiceTierState = { priorityUnavailable: false };
@@ -174,8 +193,9 @@ export function createTutorHandler(dependencies: TutorDependencies) {
       });
       if (context.cacheKey) meter.setCacheKey(context.cacheKey);
       // Extra model work on a problem the student already has: the global
-      // spend ceiling applies, the daily solve cap does not.
-      await meter.authorizeRetry();
+      // spend ceiling and the student's own tutor allowance apply, the daily
+      // solve cap does not.
+      await meter.authorizeTutor((dependencies.tutorLimit ?? tutorQuestionsPerDay)());
       const response = await callTutorModel(
         {
           client: new OpenAI({ apiKey: process.env.OPENAI_API_KEY, timeout: 60_000, maxRetries: 0 }),
@@ -205,7 +225,9 @@ export function createTutorHandler(dependencies: TutorDependencies) {
       });
       return Response.json(answer, { headers: { "Cache-Control": "no-store" } });
     } catch (error) {
-      if (!(error instanceof SpendCeilingError)) {
+      if (error instanceof TutorCapError) {
+        telemetry.event("cap_hit", { userId, solveId: diagnosticId, call: "tutor", limit: error.limit, resetsAt: error.resetsAt });
+      } else if (!(error instanceof SpendCeilingError)) {
         telemetry.error(error, { userId, solveId: diagnosticId, cacheKey: meter?.cacheKey() ?? null, techniqueId, call: "tutor", stage: "tutor", reason: failureKind(error) });
       }
       return tutorErrorFor(error);

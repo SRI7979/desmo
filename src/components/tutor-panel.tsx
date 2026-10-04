@@ -65,6 +65,8 @@ export function useTutor(source: TutorSource | null): Tutor {
   const key = sourceKey(source);
   const [state, setState] = useState<{ key: string; view: TutorView }>({ key, view: IDLE });
   const request = useRef<AbortController | null>(null);
+  // The control that opened the panel gets focus back when it closes.
+  const opener = useRef<HTMLElement | null>(null);
   // A switched technique or problem cancels a question about the old one.
   useEffect(() => () => request.current?.abort(), [key]);
   const view = state.key === key ? state.view : IDLE;
@@ -78,6 +80,8 @@ export function useTutor(source: TutorSource | null): Tutor {
 
   function ask(selection: TutorSelection, label: string) {
     if (!source) return;
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && active !== document.body && !active.closest("[data-tutor-panel]")) opener.current = active;
     const controller = start();
     const current: Ask = { selection, label };
     setState({ key, view: { status: "loading", ask: current } });
@@ -115,16 +119,24 @@ export function useTutor(source: TutorSource | null): Tutor {
   function close() {
     request.current?.abort();
     setState({ key, view: IDLE });
+    const target = opener.current;
+    opener.current = null;
+    if (target?.isConnected) target.focus({ preventScroll: true });
   }
 
   const openAt = view.status === "idle" ? null : view.ask.selection.kind === "row" ? view.ask.selection.row : "top";
   return { enabled: source !== null, view, openAt, ask, requestPractice, close };
 }
 
+/** Never part of what a student is asking about. */
+const NOT_CONTENT = "button, h3, h4, summary, [data-tutor-ignore], [data-tutor-panel]";
+
 /**
  * The selected text, as the server can verify it: rendered math is replaced
  * by its own LaTeX (a partly selected formula counts as the whole formula),
- * and buttons are left out. `display` is what the student actually sees.
+ * and controls, headings, labels, and the tutor's own panel are left out, so
+ * a selection that runs over "Line 2" or "The idea" still matches the text
+ * under it. `display` is what the student actually sees.
  */
 function selectionTexts(range: Range): { query: string; display: string } {
   const expanded = range.cloneRange();
@@ -135,7 +147,7 @@ function selectionTexts(range: Range): { query: string; display: string } {
   if (last) expanded.setEndAfter(last);
   const query = expanded.cloneContents();
   const display = expanded.cloneContents();
-  for (const fragment of [query, display]) fragment.querySelectorAll("button, [data-tutor-ignore]").forEach((node) => node.remove());
+  for (const fragment of [query, display]) fragment.querySelectorAll(NOT_CONTENT).forEach((node) => node.remove());
   query.querySelectorAll(".katex").forEach((node) => {
     const tex = node.querySelector('annotation[encoding="application/x-tex"]')?.textContent ?? "";
     node.replaceWith(document.createTextNode(` ${tex} `));
@@ -152,7 +164,8 @@ function readOffer(container: HTMLElement | null): Offer | null {
   const range = selection.getRangeAt(0);
   if (!container.contains(range.commonAncestorContainer)) return null;
   const ancestor = range.commonAncestorContainer instanceof Element ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
-  if (ancestor?.closest("[data-tutor-panel]")) return null;
+  // Wholly inside a heading, a label, a control, or the tutor's own answer: nothing to explain.
+  if (ancestor?.closest(NOT_CONTENT)) return null;
   const { query, display } = selectionTexts(range);
   if (!isExplainableSelection(query)) return null;
   const rect = range.getBoundingClientRect();

@@ -1,5 +1,7 @@
 -- AI tutor metering and saved tricks. Apply once in the Supabase SQL editor,
--- or with `supabase db push`, after the usage and limits migration.
+-- or with `supabase db push`, after the usage and limits migration, and
+-- BEFORE deploying the tutor: without reserve_daily_tutor the server refuses
+-- tutor questions (it fails closed, like the solve limits).
 begin;
 
 -- The tutor's "Explain this" calls are metered like every other OpenAI call.
@@ -8,6 +10,47 @@ begin;
 alter table public.model_usage drop constraint model_usage_call_check;
 alter table public.model_usage add constraint model_usage_call_check
   check (call in ('candidates', 'explanation', 'desmos_retry', 'tutor'));
+
+-- Tutor answers per user over a rolling 24 hours (TUTOR_QUESTIONS_PER_DAY),
+-- counted apart from daily_solves so a question never uses up a solve, and
+-- so one account cannot spend the global ceiling that every student shares.
+create table public.daily_tutor_questions (
+  id bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+create index daily_tutor_questions_user_time on public.daily_tutor_questions(user_id, created_at);
+
+-- Atomic check-and-count, like reserve_daily_solve (its own lock key).
+create function public.reserve_daily_tutor(p_user_id uuid, p_limit integer)
+returns table(allowed boolean, used integer, resets_at timestamptz)
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  window_start timestamptz := now() - interval '24 hours';
+  current_used integer;
+  oldest timestamptz;
+begin
+  perform pg_advisory_xact_lock(hashtextextended(p_user_id::text, 1));
+  delete from public.daily_tutor_questions where user_id = p_user_id and created_at <= window_start;
+  select count(*), min(created_at) into current_used, oldest
+    from public.daily_tutor_questions where user_id = p_user_id;
+  if current_used < p_limit then
+    insert into public.daily_tutor_questions(user_id) values (p_user_id);
+    return query select true, current_used + 1, coalesce(oldest, now()) + interval '24 hours';
+  else
+    return query select false, current_used, oldest + interval '24 hours';
+  end if;
+end;
+$$;
+
+alter table public.daily_tutor_questions enable row level security;
+revoke all on public.daily_tutor_questions from anon, authenticated;
+grant all on public.daily_tutor_questions to service_role;
+revoke all on function public.reserve_daily_tutor(uuid, integer) from public, anon, authenticated;
+grant execute on function public.reserve_daily_tutor(uuid, integer) to service_role;
 
 -- A technique a student bookmarked, with enough of the problem to recognize
 -- it later. Every field is resolved by the server from the solve cache or the
@@ -39,8 +82,15 @@ grant select, insert, delete on public.saved_tricks to authenticated;
 grant all on public.saved_tricks to service_role;
 create policy "Read own saved tricks" on public.saved_tricks for select to authenticated
   using ((select auth.uid()) = user_id);
+-- A saved problem it links to must be the student's own (problems' own
+-- row-level security limits the subquery to their rows).
 create policy "Save own tricks" on public.saved_tricks for insert to authenticated
-  with check ((select auth.uid()) = user_id);
+  with check (
+    (select auth.uid()) = user_id
+    and (problem_id is null or exists (
+      select 1 from public.problems where problems.id = saved_tricks.problem_id and problems.user_id = (select auth.uid())
+    ))
+  );
 create policy "Remove own saved tricks" on public.saved_tricks for delete to authenticated
   using ((select auth.uid()) = user_id);
 

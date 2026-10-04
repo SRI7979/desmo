@@ -96,7 +96,7 @@ export default function SolutionExplanation({
   return (
     <div className={styles.solution} ref={card}>
       <div className={styles.answerBox} data-testid="answer">
-        <div className={styles.answerHeading}>
+        <div className={styles.answerHeading} data-tutor-ignore>
           <span className={styles.eyebrow}>Answer</span>
           {formattedAnswer.label && <span className={styles.answerChoice}>Choice {formattedAnswer.label}</span>}
           {check.status === "verified" && (
@@ -140,12 +140,15 @@ export default function SolutionExplanation({
               Try again
             </button>
           )}
+          {tutorSource && <SaveTrickButton source={tutorSource} />}
         </div>
       ) : solution.why ? (
         <section className={styles.structureNote} aria-labelledby="idea-title" data-testid="structure">
           <div className={styles.ideaHeading}><h3 id="idea-title">The idea</h3>{tutorSource && <SaveTrickButton source={tutorSource} />}</div>
           <p><MathText>{solution.why}</MathText></p>
         </section>
+      ) : tutorSource ? (
+        <div className={`${styles.ideaHeading} ${styles.saveRow}`}><SaveTrickButton source={tutorSource} /></div>
       ) : null}
       {solution.expressions.length > 0 && gate.status === "pending" ? (
         <>
@@ -167,7 +170,7 @@ export default function SolutionExplanation({
           <ol className={styles.expressionSteps} aria-label="Desmos line explanations">
             {solution.expressions.map((expression, index) => (
               <li key={index} data-testid="explanation-line">
-                <div className={styles.lineHeading}>
+                <div className={styles.lineHeading} data-tutor-ignore>
                   <span className={styles.lineLabel}><span>{index + 1}</span>Line {index + 1}</span>
                   <span className={styles.lineActions}>
                     {tutorSource && (
@@ -211,7 +214,7 @@ export default function SolutionExplanation({
         <div className={styles.sectionHeading}><h3>Walkthrough</h3><span>{solution.steps.length} {solution.steps.length === 1 ? "step" : "steps"}</span></div>
         <ol className={styles.steps}>
           {solution.steps.map((step, index) => (
-            <li key={index}><span className={styles.stepNumber}>{index + 1}</span><p><MathText>{step}</MathText></p></li>
+            <li key={index}><span className={styles.stepNumber} data-tutor-ignore>{index + 1}</span><p><MathText>{step}</MathText></p></li>
           ))}
         </ol>
         </>
@@ -231,7 +234,7 @@ export default function SolutionExplanation({
           <ul className={styles.choiceList}>
             {solution.choices.map((choice) => (
               <li key={choice.label} className={formattedAnswer.label === choice.label ? styles.selectedChoice : undefined}>
-                <span className={styles.choiceLabel}>{choice.label}</span><div><MathText>{choice.text}</MathText></div>
+                <span className={styles.choiceLabel} data-tutor-ignore>{choice.label}</span><div><MathText>{choice.text}</MathText></div>
               </li>
             ))}
           </ul>
