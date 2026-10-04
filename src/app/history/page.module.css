@@ -27,7 +27,21 @@
 .imageWarning { padding: var(--space-3); border: 1px solid #eadcba; border-radius: var(--radius-md); background: #fffbf2; color: #80561c; font-size: var(--text-sm); line-height: 1.6; }
 .imageWarning a { color: inherit; text-underline-offset: 3px; }
 .questionText { font-size: var(--text-sm); line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Saved tricks: a collapsed list above the history, in the same list style. */
+.savedTricks { margin-bottom: var(--space-6); }
+.savedTricks summary { display: flex; align-items: center; justify-content: space-between; min-height: var(--control-height); cursor: pointer; color: var(--muted); font-size: var(--text-sm); font-weight: 650; list-style: none; }
+.savedTricks summary::-webkit-details-marker { display: none; }
+.savedTricks summary::after { content: "+"; color: var(--subtle); font-size: 1rem; }
+.savedTricks[open] summary::after { content: "−"; }
+.savedTricks summary:hover { color: var(--accent-ink); }
+.savedTricks[open] summary { margin-bottom: var(--space-3); }
+.savedTricksEmpty { margin: 0 0 var(--space-3); color: var(--muted); font-size: var(--text-sm); line-height: 1.6; }
+.trick { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); padding: var(--space-4) var(--space-5); }
+.trickText { min-width: 0; }
+.trickText p { margin: var(--space-2) 0 0; color: var(--muted); font-size: var(--text-xs); line-height: 1.5; overflow-wrap: anywhere; }
+.trickText .trickQuestion { display: -webkit-box; overflow: hidden; color: var(--foreground); font-size: var(--text-sm); -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.trickText .openLabel { display: inline-block; margin-top: var(--space-2); font-size: var(--text-xs); text-decoration: none; }
 @media (max-width: 700px) {
   .heading { align-items: flex-start; flex-wrap: wrap; }
-  .problem { padding: var(--space-4); }
+  .problem, .trick { padding: var(--space-4); }
 }

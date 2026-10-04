@@ -4,14 +4,16 @@ import { costUsd, rateFor, usageFrom, type Usage } from "./model-pricing";
  * Spend protection, in three independent layers:
  *   1. every OpenAI call's actual usage is recorded with its model, tier, and
  *      USD cost (the input to the other two, and the record of what Desmo costs);
- *   2. each user gets FREE_SOLVES_PER_DAY new solves per rolling 24 hours;
+ *   2. each user gets FREE_SOLVES_PER_DAY new solves per rolling 24 hours
+ *      (and, separately, TUTOR_QUESTIONS_PER_DAY tutor answers);
  *   3. all users together stop at DAILY_SPEND_CEILING_USD per UTC day.
  * Layers 2 and 3 gate only NEW model work on a new problem. A cached solve,
  * history, and switching methods on a problem already solved keep working,
  * so reaching a limit never locks a student out of work they already have.
  */
 
-export type ModelCall = "candidates" | "explanation" | "desmos_retry";
+/** "tutor": an "Explain this" answer about a solution the student already has. */
+export type ModelCall = "candidates" | "explanation" | "desmos_retry" | "tutor";
 
 export type UsageRecord = {
   solveId: string;
@@ -33,6 +35,8 @@ export interface UsageStore {
   record(record: UsageRecord): Promise<void>;
   /** Counts one new solve for the user unless they are at `limit` within the last 24 hours. */
   reserveDailySolve(userId: string, limit: number): Promise<DailyReservation>;
+  /** Counts one tutor question for the user unless they are at `limit` within the last 24 hours (separate from solves). */
+  reserveDailyTutor(userId: string, limit: number): Promise<DailyReservation>;
   /** Recorded cost across all users since midnight UTC. */
   spentTodayUsd(): Promise<number>;
 }
@@ -63,6 +67,14 @@ export class DailyCapError extends Error {
   }
 }
 
+/** The student's own tutor allowance for the rolling 24 hours is used up; their solves are untouched. */
+export class TutorCapError extends Error {
+  constructor(readonly limit: number, readonly resetsAt: string | null) {
+    super(`Daily tutor limit of ${limit} reached.`);
+    this.name = "TutorCapError";
+  }
+}
+
 export class SpendCeilingError extends Error {
   constructor(readonly spentUsd: number, readonly ceilingUsd: number) {
     super(`Daily spend ceiling reached: $${spentUsd.toFixed(4)} of $${ceilingUsd.toFixed(2)}.`);
@@ -88,6 +100,12 @@ export type Meter = {
   authorizeSolve(): Promise<void>;
   /** Before extra model work on an existing problem (the Desmos retry): the global ceiling only. */
   authorizeRetry(): Promise<void>;
+  /**
+   * Before a tutor answer: the global ceiling, then the user's own tutor
+   * allowance (never their daily solves), so no single account can spend
+   * the ceiling everyone shares.
+   */
+  authorizeTutor(limit: number): Promise<void>;
   record(call: ModelCall, outcome: CallOutcome): Promise<UsageRecord>;
   setCacheKey(cacheKey: string): void;
   /** Which call is in flight or last ran, for error reports. */
@@ -137,6 +155,12 @@ export function createMeter(options: {
       }
     },
     authorizeRetry: checkCeiling,
+    async authorizeTutor(limit) {
+      await checkCeiling();
+      if (!options.userId) throw new TutorCapError(limit, null);
+      const reservation = await guard(() => options.store.reserveDailyTutor(options.userId!, limit));
+      if (!reservation.allowed) throw new TutorCapError(limit, reservation.resetsAt);
+    },
     async record(call, outcome) {
       last = call;
       const usage = outcome.status === "completed" ? usageFrom(outcome.usage) : outcome.usage;
@@ -177,27 +201,36 @@ export function createMeter(options: {
 export function createMemoryUsageStore(now: () => number = Date.now): UsageStore & {
   records: UsageRecord[];
   solves: { userId: string; at: number }[];
+  tutorQuestions: { userId: string; at: number }[];
 } {
   const records: UsageRecord[] = [];
   const solves: { userId: string; at: number }[] = [];
+  const tutorQuestions: { userId: string; at: number }[] = [];
   const day = 24 * 60 * 60 * 1000;
   const recordedAt = new WeakMap<UsageRecord, number>();
+  const reserve = (log: { userId: string; at: number }[], userId: string, limit: number): DailyReservation => {
+    const windowStart = now() - day;
+    const inWindow = log.filter((item) => item.userId === userId && item.at > windowStart).sort((a, b) => a.at - b.at);
+    const oldest = inWindow[0]?.at ?? now();
+    if (inWindow.length < limit) {
+      log.push({ userId, at: now() });
+      return { allowed: true, used: inWindow.length + 1, resetsAt: new Date(oldest + day).toISOString() };
+    }
+    return { allowed: false, used: inWindow.length, resetsAt: new Date(oldest + day).toISOString() };
+  };
   return {
     records,
     solves,
+    tutorQuestions,
     async record(record) {
       records.push(record);
       recordedAt.set(record, now());
     },
     async reserveDailySolve(userId, limit) {
-      const windowStart = now() - day;
-      const inWindow = solves.filter((solve) => solve.userId === userId && solve.at > windowStart).sort((a, b) => a.at - b.at);
-      const oldest = inWindow[0]?.at ?? now();
-      if (inWindow.length < limit) {
-        solves.push({ userId, at: now() });
-        return { allowed: true, used: inWindow.length + 1, resetsAt: new Date(oldest + day).toISOString() };
-      }
-      return { allowed: false, used: inWindow.length, resetsAt: new Date(oldest + day).toISOString() };
+      return reserve(solves, userId, limit);
+    },
+    async reserveDailyTutor(userId, limit) {
+      return reserve(tutorQuestions, userId, limit);
     },
     async spentTodayUsd() {
       const midnight = new Date(now());
@@ -219,6 +252,12 @@ export function createSupabaseUsageStore(client: unknown): UsageStore {
     const { code, message } = (error ?? {}) as { code?: unknown; message?: unknown };
     return [code, message].filter((part) => typeof part === "string" && part).join(" ");
   };
+  async function reservation(fn: string, label: string, userId: string, limit: number): Promise<DailyReservation> {
+    const { data, error } = await db.rpc(fn, { p_user_id: userId, p_limit: limit });
+    const row = Array.isArray(data) ? (data[0] as { allowed?: unknown; used?: unknown; resets_at?: unknown }) : null;
+    if (error || !row || typeof row.allowed !== "boolean") throw new Error(`${label} reservation failed: ${cause(error)}`);
+    return { allowed: row.allowed, used: Number(row.used) || 0, resetsAt: typeof row.resets_at === "string" ? row.resets_at : null };
+  }
   return {
     async record(record) {
       const { error } = await db.from("model_usage").insert({
@@ -240,10 +279,10 @@ export function createSupabaseUsageStore(client: unknown): UsageStore {
       if (error) throw new Error(`usage record failed: ${cause(error)}`);
     },
     async reserveDailySolve(userId, limit) {
-      const { data, error } = await db.rpc("reserve_daily_solve", { p_user_id: userId, p_limit: limit });
-      const row = Array.isArray(data) ? (data[0] as { allowed?: unknown; used?: unknown; resets_at?: unknown }) : null;
-      if (error || !row || typeof row.allowed !== "boolean") throw new Error(`daily solve reservation failed: ${cause(error)}`);
-      return { allowed: row.allowed, used: Number(row.used) || 0, resetsAt: typeof row.resets_at === "string" ? row.resets_at : null };
+      return reservation("reserve_daily_solve", "daily solve", userId, limit);
+    },
+    async reserveDailyTutor(userId, limit) {
+      return reservation("reserve_daily_tutor", "daily tutor", userId, limit);
     },
     async spentTodayUsd() {
       const { data, error } = await db.rpc("daily_model_spend");

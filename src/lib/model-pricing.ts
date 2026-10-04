@@ -88,7 +88,7 @@ export function costUsd(usage: Usage, rate: Rate): number {
  * estimate (a typical prompt plus the request's full output allowance), so
  * a timeout can only make the spend ceiling trip early.
  */
-export function timeoutEstimate(call: "candidates" | "explanation" | "desmos_retry", maxOutputTokens: number): Usage {
-  const inputTokens = call === "explanation" ? 1_500 : 32_000;
+export function timeoutEstimate(call: "candidates" | "explanation" | "desmos_retry" | "tutor", maxOutputTokens: number): Usage {
+  const inputTokens = call === "explanation" ? 1_500 : call === "tutor" ? 2_500 : 32_000;
   return { inputTokens, cachedTokens: 0, outputTokens: maxOutputTokens, reasoningTokens: 0, totalTokens: inputTokens + maxOutputTokens };
 }
