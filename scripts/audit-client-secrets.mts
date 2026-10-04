@@ -11,8 +11,17 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
 const root = process.cwd();
+// Without .env.local (CI, a fresh container) only the key-shaped patterns are checked.
+const envFile = (() => {
+  try {
+    return readFileSync(path.join(root, ".env.local"), "utf8");
+  } catch {
+    console.warn("No .env.local: checking key-shaped patterns only, not your configured server-only values.");
+    return "";
+  }
+})();
 const env = Object.fromEntries(
-  readFileSync(path.join(root, ".env.local"), "utf8")
+  envFile
     .split("\n")
     .filter((line) => /^[A-Z0-9_]+=/.test(line))
     .map((line) => [line.slice(0, line.indexOf("=")), line.slice(line.indexOf("=") + 1).trim().replace(/^["']|["']$/g, "")]),
