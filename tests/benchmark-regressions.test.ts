@@ -152,8 +152,6 @@ test("033: the slope formula typed over the table's numbers is a memorized fact;
   assert.equal(slopeFormula.cost.oneOffFacts, 1);
   const fit = selection[0];
   assert.equal(fit.techniqueId, "linear-regression", "relabeled from three-point-regression");
-  // -b/m is the hand-solved x-intercept formula: charged, though the fit still wins.
-  assert.equal(fit.cost.derivationSteps, 1);
 });
 
 test("039: on a representation question, paper direct arithmetic is the translation, listed once", () => {

@@ -6,13 +6,11 @@ import {
   isApproximationQuestion,
   isWholeNumberQuestion,
   normalizeChoices,
-  repairProseText,
   ProseLatexError,
   sanitizeProse,
   validateAnswerState,
 } from "./answer-consistency";
 import {
-  analyzePlan,
   findDerivedConstants,
   findDerivedDefinitions,
   findProseRows,
@@ -220,23 +218,6 @@ const literalDifference = String.raw`${literal}\s*-\s*(?:\(\s*${literal}\s*\)|${
 const SLOPE_QUOTIENT = new RegExp(
   String.raw`\(\s*${literalDifference}\s*\)\s*/\s*\(\s*${literalDifference}\s*\)|\\frac\{\s*${literalDifference}\s*\}\{\s*${literalDifference}\s*\}`,
 );
-
-/**
- * -b/m read straight off a linear fit: an expression combining two or more
- * fitted parameters that the question never writes (it asks for r, not -b/m)
- * is the hand-solved formula (0 = mx + b) typed for the student. A requested
- * combination ("What is r + s?") and a single fitted value are plain readouts.
- */
-function derivedReadout(rows: ReadonlyArray<{ latex: string }>, resultRow: number | null, question: string): string | null {
-  if (resultRow === null) return null;
-  const latex = rows[resultRow - 1]?.latex;
-  if (!latex || /=|\\sim|~/.test(latex)) return null;
-  const plan = analyzePlan(rows);
-  const names = [...(plan.rows[resultRow - 1]?.names ?? [])];
-  if (names.length < 2 || !names.every((name) => plan.fitted.has(name))) return null;
-  const compact = (text: string) => repairProseText(text).replace(/\\left|\\right|\\cdot|[\s*{}()]/g, "");
-  return compact(question).includes(compact(latex)) ? null : latex.trim();
-}
 
 /**
  * 18(540)/3^{2} or cost=391/1.15: a row computing a number from the
@@ -640,11 +621,7 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
     repairs.push("Counted one memorized fact: a row types the two-point slope formula over the given numbers.");
   }
   let derivationFloor = 0;
-  const formula = derivedReadout(rows, consistent.result.row, question);
-  if (formula) {
-    derivationFloor = 1;
-    repairs.push(`Counted one derivation step: the readout ${formula} is a formula in the fitted parameters the question does not ask for.`);
-  } else if (candidate.techniqueId === "answer-choice-list" && rows.some((row) => isLiteralArithmetic(row.latex))) {
+  if (candidate.techniqueId === "answer-choice-list" && rows.some((row) => isLiteralArithmetic(row.latex))) {
     // A choice lookup does not make the computation it wraps free: the same
     // row alone is calculator arithmetic, which carries its setup step.
     derivationFloor = 1;
