@@ -15,7 +15,8 @@
     "calculator-arithmetic",
     "function-evaluation",
     "list-evaluation",
-    "intercept-read"
+    "intercept-read",
+    "translate-the-words"
   ],
   "bad": [],
   "goldRows": [

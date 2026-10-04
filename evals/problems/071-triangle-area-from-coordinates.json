@@ -24,6 +24,10 @@
     {
       "technique": "polygon-area",
       "why": "Desmos (API v1.11) draws polygon() but displays no area for it and has no area() function, so the plan never shows the answer; read the base and height from the coordinates instead."
+    },
+    {
+      "technique": "sum-product",
+      "why": "The shoelace formula is a memorized formula not on the reference sheet, built here with list rotation; one half base times height from the reference sheet needs neither."
     }
   ],
   "goldRows": [

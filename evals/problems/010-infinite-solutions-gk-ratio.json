@@ -8,7 +8,7 @@
   "correctAnswer": "1/6",
   "expectedResultType": "numeric",
   "gold": ["direct-arithmetic", "calculator-arithmetic"],
-  "acceptable": ["bracket-regression", "slider-condition"],
+  "acceptable": ["bracket-regression", "slider-condition", "substitution"],
   "bad": [
     {
       "technique": "graph-both-sides",

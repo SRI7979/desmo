@@ -16,6 +16,10 @@
     {
       "technique": "list-evaluation",
       "why": "Loading the table into lists only to read entries back by position is disposable setup; one ratio of given counts answers the question."
+    },
+    {
+      "technique": "integer-list-filter",
+      "why": "Rebuilding the table with repeat() and dividing count(S[S=10]) by total(S) sums the grade numbers instead of counting students; one ratio of the given counts answers it."
     }
   ],
   "goldRows": [
