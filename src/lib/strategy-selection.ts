@@ -241,15 +241,15 @@ function derivedReadout(rows: ReadonlyArray<{ latex: string }>, resultRow: numbe
 /** A row that defines a function, f(x)=... or g_{1}(t)=... */
 const FUNCTION_DEFINITION = /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*\([^()]*\)\s*=(?!=)/;
 
-/** A fit with no squared or higher term: y_{1}\sim mx_{1}+b. */
-const isLinearFit = (latex: string) => /\\sim(?![A-Za-z])|~/.test(latex) && !latex.includes("^");
+/** One data list fit with no squared or higher term: y_{1}\sim mx_{1}+b (never a bracket system). */
+const isLinearFit = (latex: string) => /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*(?:\\sim(?![A-Za-z])|~)/.test(latex) && !latex.includes("^");
 
 /**
  * Technique names the rows contradict, corrected before validation so the
  * student learns the pattern by its right name: scalar rows with no function
  * are calculator arithmetic (not function evaluation, and not paper
  * arithmetic); a linear fit is a linear regression however many points it
- * uses, including one read at its graphed x-intercept; and a paper "direct
+ * uses, including one whose fitted line is graphed and read; and a paper "direct
  * arithmetic" answer to a representation question is the translation itself.
  * A relabel may duplicate another candidate's technique; selection keeps the
  * better of the two.
@@ -263,7 +263,7 @@ function relabel(candidate: Candidate, representation: boolean): { candidate: Ca
     techniqueId = "calculator-arithmetic";
   } else if (candidate.techniqueId === "direct-arithmetic" && representation) {
     techniqueId = "translate-the-words";
-  } else if (candidate.techniqueId === "three-point-regression" || candidate.techniqueId === "intercept-read") {
+  } else if (["three-point-regression", "intercept-read", "graph-both-sides", "graph-raw"].includes(candidate.techniqueId)) {
     const fits = rows.filter((row) => /\\sim(?![A-Za-z])|~/.test(row.latex));
     if (fits.length > 0 && fits.every((row) => isLinearFit(row.latex))) techniqueId = "linear-regression";
   }

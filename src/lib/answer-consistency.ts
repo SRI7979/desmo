@@ -425,7 +425,7 @@ export function isWholeNumberQuestion(question: string): boolean {
 
 /** The question asks for an estimate, so its numeric choices are rounded on purpose. */
 export function isApproximationQuestion(question: string): boolean {
-  return /\b(?:approximately|approximate(?:ly)?|closest to|nearest to|best approximat\w*|estimated?|about how (?:many|much))\b/i.test(question);
+  return /\b(?:approximately|approximate(?:ly)?|closest to|nearest to|to the nearest|rounded to|best approximat\w*|estimated?|about how (?:many|much))\b/i.test(question);
 }
 
 function findChoice(

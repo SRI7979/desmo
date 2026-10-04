@@ -785,5 +785,559 @@
       }
     ],
     "preferredTechniqueId": "direct-arithmetic"
+  },
+  "040-no-solution-parameter-k#final": {
+    "status": "solved",
+    "question": "4x - ky = 9\n6x + 15y = 2\nIn the given system of equations, k is a constant. If the system has no solution, what is the value of k?",
+    "choices": null,
+    "clarification": null,
+    "structure": "two linear equations in x and y with one parameter k; ask k that makes the lines parallel (no solution)",
+    "candidates": [
+      {
+        "techniqueId": "derivative-regression",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "f(x)=(4x-9)/k",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g(x)=(-6/15)x+2/15",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f'(0)~g'(0)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "-10",
+        "result": {
+          "row": 3,
+          "value": -10,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "f' and g' regression fits k = -10 (slopes equal)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "slider-condition",
+        "rung": 3,
+        "rows": [
+          {
+            "latex": "k=0",
+            "slider": {
+              "min": -100,
+              "max": 100,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "4x-ky=9",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "6x+15y=2",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "-10",
+        "result": {
+          "row": 1,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "drag k until the two graphed lines are parallel (no intersection); k = -10",
+          "type": "slider_condition",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": {
+          "param": "k",
+          "value": -10
+        },
+        "parameters": [
+          {
+            "name": "k",
+            "integer": false,
+            "min": -100,
+            "max": 100
+          }
+        ],
+        "conditionType": "no-solution",
+        "distinguishes": "visual-parallel-vs-overlap",
+        "graphBounds": {
+          "left": -10,
+          "right": 10,
+          "bottom": -10,
+          "top": 10
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      },
+      {
+        "techniqueId": "elimination",
+        "rung": 2,
+        "rows": [],
+        "answer": "-10",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "Set coefficient ratios 4/6 = -k/15 → k = -10",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": "no-solution",
+        "distinguishes": "constant-ratio-checked",
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "derivative-regression"
+  },
+  "048-exponential-model-evaluation#final": {
+    "status": "solved",
+    "question": "The number of subscribers to an online newsletter w weeks after it launched is modeled by the function N(w) = 320(1.15)^(w/2). According to the model, how many subscribers, to the nearest whole number, did the newsletter have 10 weeks after it launched?\nAnswer choices: A) 560, B) 644, C) 5237, D) 1295",
+    "choices": [
+      {
+        "label": "A",
+        "text": "560"
+      },
+      {
+        "label": "B",
+        "text": "644"
+      },
+      {
+        "label": "C",
+        "text": "5237"
+      },
+      {
+        "label": "D",
+        "text": "1295"
+      }
+    ],
+    "clarification": null,
+    "structure": "evaluate the given exponential model at w=10 (function evaluation / direct computation).",
+    "candidates": [
+      {
+        "techniqueId": "function-evaluation",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "N(w)=320(1.15)^{w/2}",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "N(10)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 644",
+        "result": {
+          "row": 2,
+          "value": 644.4343,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "N(10)=320(1.15)^{10/2}",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 0,
+        "rows": [
+          {
+            "latex": "320(1.15)^{10/2}",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 644",
+        "result": {
+          "row": 1,
+          "value": 644.4343,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "direct numeric evaluation of 320(1.15)^{10/2}",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "A=[560,644,5237,1295]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "R=\\operatorname{round}\\left(320(1.15)^{10/2}\\right)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "A[A=R]",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 644",
+        "result": {
+          "row": 3,
+          "value": 644,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "the entry of A equal to the rounded model value",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) 644",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Compute 320(1.15)^{5} ≈ 644.434 → nearest whole number 644",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "function-evaluation"
+  },
+  "065-line-of-best-fit-tank-empty#final": {
+    "status": "solved",
+    "question": "The table shows the amount of water, in gallons, remaining in a tank t minutes after the tank began draining.\nt (minutes): 0, 2, 4, 6, 8, 10\nWater (gallons): 182, 160, 147, 121, 108, 85\nBased on a line of best fit for the data, approximately how many minutes after the tank began draining will the tank be empty?\nAnswer choices: A) 15, B) 19, C) 23, D) 27",
+    "choices": [
+      {
+        "label": "A",
+        "text": "15"
+      },
+      {
+        "label": "B",
+        "text": "19"
+      },
+      {
+        "label": "C",
+        "text": "23"
+      },
+      {
+        "label": "D",
+        "text": "27"
+      }
+    ],
+    "clarification": null,
+    "structure": "Data points given; fit a line (linear regression) and find its x-intercept (time when water=0).",
+    "candidates": [
+      {
+        "techniqueId": "linear-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "-b/m",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 4,
+          "value": 19.037735849056602,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "x-intercept of fitted line (-b/m)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "A=[15,19,23,27]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w(A)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{abs}(w(A))",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 5,
+          "value": 0.4339622641509431,
+          "listIndex": 2,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "fitted-line values at choices A; entry 2 (t=19) is closest to zero",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "graph-both-sides",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y=mt+b",
+            "slider": null,
+            "copiesRow": 3
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 4,
+          "value": 19.037735849056602,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "x-coordinate of the x-intercept of the plotted fitted line (click intersection with y=0)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) 19",
+        "result": {
+          "row": null,
+          "value": 19.037735849056602,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Arithmetic extrapolation using slope from mean-based regression (paper math done internally)",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 3,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "linear-regression"
   }
 }

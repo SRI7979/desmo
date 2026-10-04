@@ -279,3 +279,30 @@ test("010: a given-ratio question reads g/k from the scale factor, so it is not 
   assert.equal(paper.cost.oneOffFacts, 0);
   assert.equal(desmosRescueTarget(selection), null);
 });
+
+test("040: a slider readout that lists the slider row among its graphs still proves no solution", () => {
+  // relatedRows [1, 2, 3] named the slider k=0 itself; the slider was rejected on
+  // the first attempt and again after a 24 s rescue, leaving paper elimination.
+  const selection = selectSecond("040");
+  assert.equal(eligible(selection)[0].techniqueId, "slider-condition");
+  assert.equal(desmosRescueTarget(selection), null);
+});
+
+test("048: 'to the nearest whole number' with choices matches 644.43 to 644, so the gold evaluation is not rejected", () => {
+  assert.equal(isApproximationQuestion("According to the model, how many subscribers, to the nearest whole number, did the newsletter have 10 weeks after it launched?"), true);
+  assert.equal(eligible(selectSecond("048"))[0].techniqueId, "function-evaluation");
+});
+
+test("065: a fitted line graphed and read at its x-intercept is the linear regression; a bracket system is not", () => {
+  const selection = selectSecond("065");
+  const fit = eligible(selection)[0];
+  assert.equal(fit.techniqueId, "linear-regression");
+  assert.ok(!fit.rows.some((row) => row.latex === "-b/m"), "the graphed readout is kept over the -b/m formula");
+  const system = selectMethods(candidatesResponse([graphCandidate({
+    techniqueId: "graph-both-sides",
+    rows: [{ latex: "[2a+3b,a+b]\\sim[19,8]", slider: null, copiesRow: null }, { latex: "a", slider: null, copiesRow: null }],
+    answer: "5",
+    result: { type: "numeric", row: 2, relatedRows: [], value: 5, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "a" },
+  })], { question: "If 2a + 3b = 19 and a + b = 8, what is a?" }) as CandidatesResponse);
+  assert.equal(system.methods[0].techniqueId, "graph-both-sides", "a bracket regression is not a linear fit");
+});

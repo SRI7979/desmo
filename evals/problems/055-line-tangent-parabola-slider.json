@@ -31,6 +31,10 @@
     {
       "technique": "parameter-regression",
       "why": "Fitting [a^2+3,2a]~[ka-1,k] needs the tangency slopes 2a and k differentiated by hand; dragging k until the line touches the parabola needs no calculus."
+    },
+    {
+      "technique": "derivative-regression",
+      "why": "[k,kt-1]~[2t,t^2+3] types the derivatives k and 2t worked out by hand, and tangency as equal slopes is calculus; dragging k until the line touches the parabola needs neither."
     }
   ],
   "goldRows": [

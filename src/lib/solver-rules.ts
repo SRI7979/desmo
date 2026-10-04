@@ -478,8 +478,9 @@ export function checkConditionCompleteness(input: {
   const graphRows =
     result && "type" in result && (result.type === "graph_overlap" || result.type === "intersection")
       ? [result.row, ...result.relatedRows].filter((row): row is number => row !== null)
-      : result && "type" in result && result.type === "slider_condition" && sliderMovesGraphs(result.relatedRows)
-        ? result.relatedRows
+      : result && "type" in result && result.type === "slider_condition"
+        // Listing the slider itself among relatedRows does not make it a graph.
+        ? ((graphs) => (sliderMovesGraphs(graphs) ? graphs : []))(result.relatedRows.filter((row) => row !== result.row))
         : [];
   const distinctGraphRows = [...new Set(graphRows)];
   // The graphs show the answer value when a slider opens there (answerState)
