@@ -14,7 +14,10 @@
     "bench": "tsx scripts/bench-solve.mts",
     "eval": "tsx evals/run-evals.mts",
     "eval:validate": "tsx evals/validate-cases.mts",
-    "bench:solver": "tsx evals/run-benchmark.mts"
+    "bench:solver": "tsx evals/run-benchmark.mts",
+    "bench:routing": "tsx evals/routing-bench.mts",
+    "bench:replay": "tsx evals/replay.mts",
+    "bench:rescore": "tsx evals/rescore-recorded.mts"
   },
   "engines": {
     "node": ">=22.0.0"

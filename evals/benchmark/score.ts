@@ -20,6 +20,7 @@ export type MethodRecord = {
   mathScore: number;
   total: number | null;
   mathLevel: "low" | "medium" | "high" | null;
+  family?: string;
 };
 
 export type StageRecord = { stage: string; ms: number; usage?: { input: number; cached: number; output: number; reasoning: number } };
@@ -117,6 +118,8 @@ export type Metrics = {
   avgHiddenDerivation: number | null;
   hiddenDerivationRejectionsPerRun: number | null;
   avgMethodsPerSolve: number | null;
+  /** Distinct method families listed per solve: alternatives that teach something different. */
+  avgFamiliesPerSolve: number | null;
   avgExplanationScore: number | null;
   latencyMs: {
     firstUseful: { p50: number | null; p75: number | null; p95: number | null };
@@ -159,6 +162,7 @@ export function summarize(records: RunRecord[]): Metrics {
     avgHiddenDerivation: mean(winners.filter((winner) => winner.rows > 0).map((winner) => winner.derivationSteps)),
     hiddenDerivationRejectionsPerRun: mean(solved.map((record) => (record.rejections ?? []).filter((rejection) => rejection.rule === "hidden-derivation").length)),
     avgMethodsPerSolve: mean(solved.map((record) => record.methods?.length ?? 0)),
+    avgFamiliesPerSolve: mean(solved.filter((record) => record.methods?.every((method) => method.family)).map((record) => new Set(record.methods!.map((method) => method.family)).size)),
     avgExplanationScore: mean(solved.flatMap((record) => (record.explanationScore !== undefined ? [record.explanationScore] : []))),
     latencyMs: {
       firstUseful: { p50: percentile(firstUseful, 50), p75: percentile(firstUseful, 75), p95: percentile(firstUseful, 95) },

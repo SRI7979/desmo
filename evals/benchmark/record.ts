@@ -6,7 +6,7 @@ import { answerMatches, CLASSIFIERS } from "../classifiers";
 import type { LoadedCase } from "./case-schema";
 import { classifyStrategy, isInfraFailure, type MethodRecord, type RunRecord } from "./score";
 
-export function methodRecord(method: Pick<Method, "techniqueId" | "rows" | "cost" | "mathScore" | "total" | "mathLevel">): MethodRecord {
+export function methodRecord(method: Pick<Method, "techniqueId" | "rows" | "cost" | "mathScore" | "total" | "mathLevel" | "family">): MethodRecord {
   return {
     techniqueId: method.techniqueId,
     rows: method.rows.length,
@@ -15,6 +15,7 @@ export function methodRecord(method: Pick<Method, "techniqueId" | "rows" | "cost
     mathScore: method.mathScore,
     total: method.total,
     mathLevel: method.mathLevel,
+    family: method.family,
   };
 }
 

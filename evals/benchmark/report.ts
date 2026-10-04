@@ -14,6 +14,7 @@ const ROWS: { key: string; label: string; get: (metrics: Metrics) => number | nu
   { key: "avgManualMath", label: "Avg manual-math score (default)", get: (m) => m.avgManualMath, better: "down" },
   { key: "avgHiddenDerivation", label: "Avg hidden derivation (calculator defaults)", get: (m) => m.avgHiddenDerivation, better: "down" },
   { key: "avgMethodsPerSolve", label: "Avg methods listed", get: (m) => m.avgMethodsPerSolve, better: "up" },
+  { key: "avgFamiliesPerSolve", label: "Avg distinct method families listed", get: (m) => m.avgFamiliesPerSolve, better: "up" },
   { key: "avgExplanationScore", label: "Explanation rubric score (0–1)", get: (m) => m.avgExplanationScore, better: "up" },
   { key: "failureRate", label: "Solver failure rate", get: (m) => m.failureRate, better: "down", unit: "%" },
   { key: "clarificationRate", label: "Clarification rate", get: (m) => m.clarificationRate, better: "down", unit: "%" },

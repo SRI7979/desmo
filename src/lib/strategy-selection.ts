@@ -23,8 +23,11 @@ import {
   describeShape,
   mathLevel,
   mathScore,
+  methodFamily,
+  rowSignature,
   totalCost,
   BADGES,
+  METHOD_FAMILIES,
 } from "./method-scoring";
 import { hasUnnecessaryCoefficientLists } from "./regression-workflow";
 import {
@@ -134,6 +137,8 @@ export const methodSchema = z.object({
   mathScore: z.number(),
   mathLevel: z.enum(["low", "medium", "high"]),
   shape: z.string(),
+  // Optional: entries cached before families existed still load.
+  family: z.enum(METHOD_FAMILIES).optional(),
   badges: z.array(z.enum(BADGES)),
   rejected: z.object({ rule: z.string(), reason: z.string() }).nullable(),
   repairs: z.array(z.string()),
@@ -531,6 +536,7 @@ function scored(id: string, validated: Validated): Omit<Method, "badges" | "reje
     mathScore: score,
     mathLevel: mathLevel(score),
     shape: describeShape({ techniqueId: validated.techniqueId, rows: validated.rows, cost }),
+    family: methodFamily(validated.techniqueId, validated.rows),
   };
 }
 
@@ -556,6 +562,7 @@ function rejectedMethod(id: string, candidate: Candidate, rejection: Rejection):
     mathScore: score,
     mathLevel: mathLevel(score),
     shape: describeShape({ techniqueId: candidate.techniqueId, rows, cost }),
+    family: methodFamily(candidate.techniqueId, rows),
     badges: [],
     rejected: { rule: rejection.rule, reason: rejection.reason },
     repairs: [],
@@ -616,7 +623,22 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     );
   }
 
-  const ranked = [...eligible].sort(compareMethods);
+  // The same rows under a second technique name teach nothing new (a graph
+  // of y=x^2-17x+60 listed as both "Graph both sides" and "Read the
+  // intercepts"): only the cheaper listing stays.
+  const ranked: typeof eligible = [];
+  const signatures = new Map<string, string>();
+  for (const method of [...eligible].sort(compareMethods)) {
+    const signature = method.rows.length ? rowSignature(method.rows) : null;
+    const first = signature ? signatures.get(signature) : undefined;
+    if (first) {
+      const rejection = reject("duplicate-rows", `${method.name} uses exactly the same calculator rows as ${first}; listing it again teaches nothing new.`);
+      rejected.push({ ...method, badges: [], rejected: { rule: rejection.rule, reason: rejection.reason }, stage: rejection.stage });
+      continue;
+    }
+    if (signature) signatures.set(signature, method.name);
+    ranked.push(method);
+  }
   const badges = assignBadges(ranked);
   return {
     question: response.question,

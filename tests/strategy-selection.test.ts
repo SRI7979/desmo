@@ -481,3 +481,39 @@ test("a LaTeX square-root readout label is repaired to readable prose", () => {
   const written = paperCandidate({ result: { ...paperCandidate().result, detail: "\\sqrt{9}" } });
   assert.equal(eligible(candidatesResponse([written]))[0].result.detail, "sqrt(9)");
 });
+
+test("the same rows under a second technique name are one method: only the cheaper listing stays", () => {
+  // Recorded eval run: y=x^2-17x+60 listed as both "Graph both sides" and "Read the intercepts".
+  const input = candidatesResponse([
+    graphCandidate({ techniqueId: "graph-both-sides", rung: 1, cost: { ...zeroCost, manualIterations: 1 } }),
+    graphCandidate({ techniqueId: "intercept-read", rung: 1, rows: [{ latex: "y = x^2 - 9", slider: null, copiesRow: null }] }),
+    paperCandidate(),
+  ]);
+  const methods = eligible(input);
+  assert.deepEqual(methods.map((method) => method.techniqueId), ["intercept-read", "factoring"]);
+  assert.equal(rejectedRule(input, "graph-both-sides"), "duplicate-rows");
+  assert.deepEqual(methods[0].badges, ["Recommended"]);
+});
+
+test("every method carries a family derived from its technique and rows", () => {
+  const methods = eligible(
+    candidatesResponse([
+      graphCandidate(),
+      graphCandidate({
+        techniqueId: "three-point-regression",
+        rung: 4,
+        rows: [
+          { latex: "x_{1}=[1,2,4]", slider: null, copiesRow: null },
+          { latex: "y_{1}=[-8,-5,7]", slider: null, copiesRow: null },
+          { latex: "y_{1}\\sim ax_{1}^{2}+bx_{1}+c", slider: null, copiesRow: null },
+        ],
+        result: { type: "x_intercept", row: 3, relatedRows: [], value: 3, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the positive zero of the fitted parabola" },
+      }),
+      paperCandidate(),
+    ]),
+  );
+  assert.deepEqual(
+    Object.fromEntries(methods.map((method) => [method.techniqueId, method.family])),
+    { "intercept-read": "visual", "three-point-regression": "regression", factoring: "traditional" },
+  );
+});

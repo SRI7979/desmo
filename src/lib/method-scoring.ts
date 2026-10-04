@@ -128,6 +128,32 @@ export function describeShape(input: {
   return [rowsLabel, tool, algebra].join(" · ");
 }
 
+/**
+ * The kind of thinking a technique teaches, for grouping alternatives and for
+ * measuring whether the listed methods are genuinely different. Derived from
+ * the technique and its rows, never reported by the model.
+ */
+export const METHOD_FAMILIES = ["visual", "regression", "list-slider", "answer-choices", "calculator", "traditional", "translation"] as const;
+export type MethodFamily = (typeof METHOD_FAMILIES)[number];
+
+const ANSWER_CHOICE_TECHNIQUES: ReadonlySet<TechniqueId> = new Set<TechniqueId>(["answer-choice-list", "strategic-value-test", "graph-each-choice", "choice-window", "plug-in-choices"]);
+
+export function methodFamily(techniqueId: TechniqueId, rows: readonly Row[]): MethodFamily {
+  if (techniqueId === "translate-the-words") return "translation";
+  if (rows.length === 0) return "traditional";
+  if (ANSWER_CHOICE_TECHNIQUES.has(techniqueId)) return "answer-choices";
+  const primitive = primaryPrimitive(rows);
+  if (primitive === "regression" || primitive === "derivative regression") return "regression";
+  if (primitive === "list filter" || primitive === "list" || primitive === "slider") return "list-slider";
+  if (primitive === "graph" || primitive === "restriction" || primitive === "derivative") return "visual";
+  return "calculator";
+}
+
+/** The rows a student would type, whitespace-insensitive: two methods with the same signature are one method. */
+export function rowSignature(rows: readonly Row[]): string {
+  return rows.map((row) => row.latex.replace(/\\left|\\right|\s+/g, "")).join("\n");
+}
+
 export type Rankable = {
   id: string;
   techniqueId: TechniqueId;
