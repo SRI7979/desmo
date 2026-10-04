@@ -27,6 +27,10 @@
     {
       "technique": "plug-in-choices",
       "why": "Checking a starting value B means verifying by hand that (186 - B)/4 equals (342 - B)/10 for each choice, a hand-built condition the regression never needs."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized slope formula and working back to the start value; regression on the two points gives b."
     }
   ],
   "goldRows": [

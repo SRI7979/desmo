@@ -16,7 +16,8 @@
     "function-evaluation"
   ],
   "acceptable": [
-    "direct-arithmetic"
+    "direct-arithmetic",
+    "calculator-arithmetic"
   ],
   "bad": [
     {

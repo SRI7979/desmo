@@ -1,0 +1,91 @@
+{
+  "status": "solved",
+  "question": "A circle has a radius of 12 centimeters. An arc of the circle has a length of 10\\pi centimeters. What is the measure, in degrees, of the central angle that intercepts this arc?",
+  "choices": null,
+  "clarification": null,
+  "structure": "use arc-length = radius * central angle (radians), then convert to degrees",
+  "candidates": [
+    {
+      "techniqueId": "function-evaluation",
+      "rung": 2,
+      "rows": [
+        {
+          "latex": "r=12",
+          "slider": null,
+          "copiesRow": null
+        },
+        {
+          "latex": "L=10\\pi",
+          "slider": null,
+          "copiesRow": null
+        },
+        {
+          "latex": "\\theta=L/r",
+          "slider": null,
+          "copiesRow": null
+        },
+        {
+          "latex": "\\theta*180/\\pi",
+          "slider": null,
+          "copiesRow": null
+        }
+      ],
+      "answer": "150",
+      "result": {
+        "row": 4,
+        "value": 150,
+        "listIndex": null,
+        "answerFrom": "value",
+        "choiceLabel": null,
+        "detail": "central angle in degrees",
+        "type": "numeric",
+        "relatedRows": [
+          1,
+          2,
+          3
+        ]
+      },
+      "answerState": null,
+      "parameters": [],
+      "conditionType": null,
+      "distinguishes": null,
+      "graphBounds": null,
+      "cost": {
+        "derivationSteps": 0,
+        "newPrimitives": 0,
+        "oneOffFacts": 0,
+        "setupConstructions": 0,
+        "manualIterations": 0
+      }
+    },
+    {
+      "techniqueId": "direct-arithmetic",
+      "rung": 2,
+      "rows": [],
+      "answer": "150",
+      "result": {
+        "row": null,
+        "value": null,
+        "listIndex": null,
+        "answerFrom": "reasoning",
+        "choiceLabel": null,
+        "detail": "paper computation: (10\\pi/12) rad *180/\\pi =150°",
+        "type": "written",
+        "relatedRows": []
+      },
+      "answerState": null,
+      "parameters": [],
+      "conditionType": null,
+      "distinguishes": null,
+      "graphBounds": null,
+      "cost": {
+        "derivationSteps": 2,
+        "newPrimitives": 0,
+        "oneOffFacts": 0,
+        "setupConstructions": 0,
+        "manualIterations": 0
+      }
+    }
+  ],
+  "preferredTechniqueId": "function-evaluation"
+}

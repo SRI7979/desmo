@@ -12,7 +12,8 @@
     "statistics-builtin"
   ],
   "acceptable": [
-    "direct-arithmetic"
+    "direct-arithmetic",
+    "calculator-arithmetic"
   ],
   "bad": [],
   "goldRows": [

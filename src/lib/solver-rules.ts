@@ -468,16 +468,24 @@ export function checkConditionCompleteness(input: {
   if (input.conditionType === null) return null;
 
   const result = input.result;
+  const plan = analyzePlan(input.expressions);
+  // A slider readout names the slider as its row and the graphs it moves as
+  // relatedRows; with answerState the calculator opens with both original
+  // equations drawn at the answer, the same evidence as a graph_overlap.
+  const sliderMovesGraphs = (rows: number[]) =>
+    input.answerState !== null &&
+    rows.some((row) => plan.rows[row - 1]?.names.has(input.answerState!.param));
   const graphRows =
     result && "type" in result && (result.type === "graph_overlap" || result.type === "intersection")
       ? [result.row, ...result.relatedRows].filter((row): row is number => row !== null)
-      : [];
+      : result && "type" in result && result.type === "slider_condition" && sliderMovesGraphs(result.relatedRows)
+        ? result.relatedRows
+        : [];
   const distinctGraphRows = [...new Set(graphRows)];
   // The graphs show the answer value when a slider opens there (answerState)
   // or when the parameter is one a regression row fits: Desmos then draws
   // every row that uses it at the fitted value, with no slider to position.
   // (analyzePlan splits juxtaposed letters, so the p in "6+7x=py" counts.)
-  const plan = analyzePlan(input.expressions);
   const drawnAtFittedValue = distinctGraphRows.some((row) =>
     [...(plan.rows[row - 1]?.names ?? [])].some((name) => plan.fitted.has(name)),
   );
@@ -502,7 +510,7 @@ export function checkConditionCompleteness(input: {
       "condition (two coincident lines vs. two distinct parallel lines). Make the distinction observable: graph " +
       "BOTH original equations with the parameter set to the answer value (set answerState so the slider opens " +
       "there, or let a regression row fit the parameter so both graphs use its fitted value) and set result.type " +
-      "to graph_overlap naming both rows, so a parallel-but-distinct pair looks " +
+      "to graph_overlap naming both rows (or slider_condition with both graphed rows as relatedRows), so a parallel-but-distinct pair looks " +
       'visibly different from one line drawn twice, then set distinguishes to "visual-parallel-vs-overlap". ' +
       "Alternatively, if the method checks in the write-up that the constants do not scale by the same factor " +
       'as the coefficients, set distinguishes to "constant-ratio-checked".',

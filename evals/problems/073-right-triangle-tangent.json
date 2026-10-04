@@ -17,12 +17,17 @@
   ],
   "acceptable": [
     "reference-formula",
-    "inverse-trig"
+    "inverse-trig",
+    "calculator-arithmetic"
   ],
   "bad": [
     {
       "technique": "trig-evaluation",
       "why": "No angle measure is given, so there is nothing to type into tan( ) directly; the angle would first have to be found with inverse trig."
+    },
+    {
+      "technique": "direct-arithmetic",
+      "why": "The Pythagorean theorem and sqrt(441) worked by hand before SOHCAHTOA: two calculator rows do that arithmetic with no hand computation."
     }
   ],
   "goldRows": [

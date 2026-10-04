@@ -18,6 +18,10 @@
     {
       "technique": "direct-arithmetic",
       "why": "Recalling the distance formula and squaring the coordinate differences by hand is a memorized formula that the distance() built-in removes."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized distance formula; distance() between the endpoints needs none."
     }
   ],
   "goldRows": [

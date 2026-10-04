@@ -18,6 +18,10 @@
     {
       "technique": "direct-arithmetic",
       "why": "On paper the student must solve the proportion x/360 = 10pi/(24pi) for x by cross-multiplying, or use s = r*theta (not on the reference sheet) and convert 5pi/6 radians to degrees: hand rearrangement the graph replaces."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs s = r*theta and the 180/pi conversion (neither on the reference sheet), or the proportion solved for x by hand; the graph needs neither."
     }
   ],
   "goldRows": [

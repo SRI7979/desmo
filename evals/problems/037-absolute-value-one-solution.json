@@ -19,6 +19,10 @@
     {
       "technique": "direct-arithmetic",
       "why": "Setting 3k - 12 = 0 rests on the memorized fact that |u| = c has exactly one solution only when c = 0; the graph shows that instead of asking the student to recall it."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized fact that |u| = c has one solution only at c = 0; the graph shows the single touching point."
     }
   ],
   "goldRows": [

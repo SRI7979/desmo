@@ -16,7 +16,9 @@
     "reference-formula"
   ],
   "acceptable": [
-    "direct-arithmetic"
+    "direct-arithmetic",
+    "calculator-arithmetic",
+    "answer-choice-list"
   ],
   "bad": [
     {

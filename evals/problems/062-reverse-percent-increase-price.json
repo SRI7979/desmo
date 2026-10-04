@@ -18,7 +18,9 @@
   "acceptable": [
     "story-system",
     "direct-arithmetic",
-    "answer-choice-list"
+    "answer-choice-list",
+    "calculator-arithmetic",
+    "intercept-read"
   ],
   "bad": [
     {

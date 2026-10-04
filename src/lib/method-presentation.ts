@@ -2,6 +2,7 @@ import {
   AnswerConsistencyError,
   deriveConsistentSolution,
   formatChoice,
+  isApproximationQuestion,
   ProseLatexError,
   sanitizeSolutionProse,
 } from "./answer-consistency";
@@ -152,6 +153,7 @@ export function presentMethod(entry: CacheEntry, method: Method, explanation: Ex
       answer: method.answer,
       readAnswer: explanation.readAnswer ?? "",
       expressionCount: method.rows.length,
+      approximate: isApproximationQuestion(entry.question),
     });
   } catch (error) {
     if (error instanceof AnswerConsistencyError) throw new ExplanationError(error.message, error.stage);

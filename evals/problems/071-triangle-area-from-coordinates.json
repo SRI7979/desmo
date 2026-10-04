@@ -16,7 +16,9 @@
     "reference-formula"
   ],
   "acceptable": [
-    "direct-arithmetic"
+    "direct-arithmetic",
+    "calculator-arithmetic",
+    "distance-builtin"
   ],
   "bad": [
     {

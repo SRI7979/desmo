@@ -82,7 +82,8 @@ test("lesson 4: factor x + 2b — a typed hand-derived value is rejected as hidd
     paperCandidate({ techniqueId: "substitution", answer: "3", result: written("b from 12b^2 - 36b = 0"), cost: { ...zeroCost, derivationSteps: 2 } }),
   ]);
   assert.equal(winner.techniqueId, "shared-zero");
-  assert.equal(rejected.find((method) => method.techniqueId === "function-evaluation")?.rejected?.rule, "hidden-derivation");
+  // Scalar rows with no function are calculator arithmetic, and still hidden derivation.
+  assert.equal(rejected.find((method) => method.techniqueId === "calculator-arithmetic")?.rejected?.rule, "hidden-derivation");
 });
 
 test("lesson 5: several unknown constants — one bracket regression on the original equations beats elimination", () => {

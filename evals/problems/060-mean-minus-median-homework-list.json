@@ -10,11 +10,15 @@
   "gold": [
     "statistics-builtin"
   ],
-  "acceptable": [],
+  "acceptable": ["list-evaluation"],
   "bad": [
     {
       "technique": "direct-arithmetic",
       "why": "Summing ten values, dividing by 10, sorting the list, and averaging the two middle values by hand is slow and error-prone when mean() and median() read both directly from the list."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the list sorted by hand to find the median; mean() and median() read both from the list."
     }
   ],
   "goldRows": [

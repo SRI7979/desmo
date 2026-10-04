@@ -11,7 +11,10 @@
     "story-system"
   ],
   "acceptable": [
-    "direct-arithmetic"
+    "direct-arithmetic",
+    "calculator-arithmetic",
+    "function-evaluation",
+    "list-evaluation"
   ],
   "bad": [],
   "goldRows": [

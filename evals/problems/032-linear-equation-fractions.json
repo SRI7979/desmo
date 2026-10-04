@@ -22,6 +22,10 @@
     {
       "technique": "integer-list-filter",
       "why": "No stated bound and no reason the solution is an integer; an integer search over an arbitrary range is not a justified method for a continuous equation."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the equation solved for x by hand first (clearing fractions, isolating x); graphing both sides solves it."
     }
   ],
   "goldRows": [

@@ -17,7 +17,8 @@
   ],
   "acceptable": [
     "direct-arithmetic",
-    "answer-choice-list"
+    "answer-choice-list",
+    "calculator-arithmetic"
   ],
   "bad": [],
   "goldRows": [

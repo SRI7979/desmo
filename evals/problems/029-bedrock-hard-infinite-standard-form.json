@@ -7,7 +7,7 @@
   "choices": null,
   "correctAnswer": "27/14",
   "expectedResultType": "numeric",
-  "gold": ["direct-arithmetic"],
+  "gold": ["direct-arithmetic", "calculator-arithmetic"],
   "acceptable": [],
   "bad": [
     {

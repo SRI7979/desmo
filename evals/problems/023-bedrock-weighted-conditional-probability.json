@@ -7,7 +7,7 @@
   "choices": null,
   "correctAnswer": "24/43",
   "expectedResultType": "numeric",
-  "gold": ["direct-arithmetic"],
+  "gold": ["direct-arithmetic", "calculator-arithmetic"],
   "acceptable": ["statistics-builtin"],
   "bad": [
     {"technique": "parameter-regression", "why": "There is nothing to fit; a regression adds machinery to direct probability arithmetic."}

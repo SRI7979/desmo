@@ -22,6 +22,10 @@
     {
       "technique": "direct-arithmetic",
       "why": "Substituting x=3 by hand (54-45+3k-6=0) and solving 3+3k=0 is arithmetic and algebra the row p(3)~0 does for the student; a sign slip on -5(3)^2 is the usual error."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs k solved for by hand after substituting x = 3; p(3)~0 fits k directly."
     }
   ],
   "goldRows": [

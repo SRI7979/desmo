@@ -13,7 +13,8 @@
   "correctAnswer": "$1,080",
   "expectedResultType": "numeric",
   "gold": [
-    "direct-arithmetic"
+    "direct-arithmetic",
+    "calculator-arithmetic"
   ],
   "acceptable": [],
   "bad": [

@@ -13,6 +13,10 @@
     {
       "technique": "direct-arithmetic",
       "why": "Computing the mean, squared deviations, their average, and the square root by hand is the memorized standard-deviation formula Desmos replaces."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized standard-deviation formula written out term by term; stdevp() of the list needs no formula."
     }
   ],
   "goldRows": ["L=[12,15,18,22,25,30]", "\\operatorname{stdevp}(L)"],

@@ -26,6 +26,10 @@
     {
       "technique": "derivative-regression",
       "why": "Needs both lines rearranged into y = form before the slope fit, and a slope match alone does not rule out the two lines being the same line."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized coefficient-ratio rule, which alone cannot tell no solution from infinitely many; the graphs show it."
     }
   ],
   "goldRows": [

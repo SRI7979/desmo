@@ -39,6 +39,32 @@ export function containsLatex(text: string): boolean {
   return latexSignature.test(text);
 }
 
+/**
+ * Symbol commands with one exact plain-text character, which MathText renders
+ * as math (π, θ, ≤, ≥, ≠, ≈, ×, ÷) or shows as the symbol itself. A model
+ * transcribing "10π" or "x ≤ 5" often writes \pi or \le; that is the problem's
+ * own math, not a formatting slip. Structural commands (\overline, \int,
+ * \begin, ...) have no such equivalent and are still rejected.
+ */
+const PLAIN_SYMBOLS: Readonly<Record<string, string>> = {
+  pi: "π",
+  theta: "θ",
+  le: "≤",
+  leq: "≤",
+  ge: "≥",
+  geq: "≥",
+  ne: "≠",
+  neq: "≠",
+  approx: "≈",
+  times: "×",
+  cdot: "*",
+  div: "÷",
+  pm: "±",
+  infty: "∞",
+  degree: "°",
+  circ: "∘",
+};
+
 function needsGrouping(expression: string): boolean {
   let depth = 0;
   for (const char of expression) {
@@ -60,8 +86,9 @@ function group(expression: string): string {
  * side that actually needs it), \left(/\right) → (/), ^{\prime} (however
  * many, however malformed the stacking) → the matching number of quotes,
  * \sqrt{a} → sqrt(a), including nested square roots,
- * \text{...}/\operatorname{...} → their own contents, and a lone \{ \} or
- * ^{...}/_{...} → the bare braces/marker. Idempotent and safe on clean text.
+ * \text{...}/\operatorname{...} → their own contents, symbol commands such as
+ * \pi, \le, ^\circ → π, ≤, °, and a lone \{ \} or ^{...}/_{...} → the bare
+ * braces/marker. Idempotent and safe on clean text.
  */
 export function repairProseText(text: string): string {
   let result = text;
@@ -85,6 +112,10 @@ export function repairProseText(text: string): string {
   }
   result = result.replace(/\\text\{([^{}]*)\}/g, "$1");
   result = result.replace(/\\operatorname\{([^{}]*)\}/g, "$1");
+  // A degree mark before the generic ^{...} step, so 30^{\circ} is 30°, not 30^∘.
+  result = result.replace(/\^\s*(?:\{\s*\\circ\s*\}|\\circ(?![a-zA-Z]))/g, "°");
+  result = result.replace(/\\([a-zA-Z]+)/g, (match, name: string) => PLAIN_SYMBOLS[name] ?? match);
+  result = result.replace(/\\%/g, "%");
   result = result.replace(/\^\{([^{}]*)\}/g, "^$1").replace(/_\{([^{}]*)\}/g, "_$1");
   result = result.replace(/\\\{/g, "{").replace(/\\\}/g, "}");
   // A tidy-up, not a correctness step: "g'' (0)" reads more naturally as "g''(0)".
@@ -351,6 +382,7 @@ function choiceMatchesRoundedDecimal(target: number, choice: NormalizedChoice & 
 export function matchChoice(
   value: number,
   choices: readonly NormalizedChoice[],
+  approximate = false,
 ): NormalizedChoice | null {
   const numeric = choices.filter(
     (choice): choice is NormalizedChoice & { value: number } => choice.value !== null,
@@ -377,7 +409,18 @@ export function matchChoice(
     if (runnerUp && runnerUp.distance < nearest.distance * 10) continue;
     return nearest.choice;
   }
+  // "Approximately how many minutes...": the choices are rounded on purpose,
+  // so 19.05 from a fitted line is choice 19, provided no other choice is close.
+  if (approximate) {
+    const [nearest, runnerUp] = attempts[0];
+    if (nearest && (!runnerUp || runnerUp.distance >= nearest.distance * 4)) return nearest.choice;
+  }
   return null;
+}
+
+/** The question asks for an estimate, so its numeric choices are rounded on purpose. */
+export function isApproximationQuestion(question: string): boolean {
+  return /\b(?:approximately|approximate(?:ly)?|closest to|nearest to|best approximat\w*|estimated?|about how (?:many|much))\b/i.test(question);
 }
 
 function findChoice(
@@ -447,12 +490,13 @@ function deriveAnswer(
   observed: number | null,
   repairs: string[],
   source: string,
+  approximate = false,
 ): { answer: string; choice: NormalizedChoice | null } {
   const claimed = findChoice(result.choiceLabel, choices ?? []);
 
   if (result.answerFrom === "value" && observed !== null) {
     if (choices) {
-      const matched = matchChoice(observed, choices);
+      const matched = matchChoice(observed, choices, approximate);
       if (matched) {
         if (claimed && claimed.label !== matched.label) {
           repairs.push(
@@ -524,6 +568,8 @@ export function deriveConsistentSolution(input: {
   answer: string;
   readAnswer: string;
   expressionCount: number;
+  /** The question asks for an estimate (isApproximationQuestion): the nearest clear choice is its answer. */
+  approximate?: boolean;
 }): ConsistentSolution {
   const repairs: string[] = [];
   const choices = normalizeChoices(input.choices);
@@ -574,6 +620,7 @@ export function deriveConsistentSolution(input: {
     result.value,
     repairs,
     `The value on line ${result.row},`,
+    input.approximate ?? false,
   );
   const normalizedResult: SolutionResult = {
     ...result,

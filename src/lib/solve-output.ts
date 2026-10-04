@@ -82,6 +82,32 @@ function repairCandidates(input: unknown): { value: unknown; repairs: string[] }
     if (!result || typeof result !== "object") return;
     for (const key of ["value", "listIndex", "choiceLabel"]) set(result, key, null);
     set(result, "relatedRows", []);
+    const rows = Array.isArray(item.rows) ? item.rows.length : 0;
+    const statedValue = typeof item.answer === "string" ? parseNumber(item.answer.replace(/^\s*[A-D]\)\s*/i, "")) : null;
+    const agreesWithAnswer = (value: unknown) =>
+      value === null || (typeof value === "number" && statedValue !== null && Math.abs(statedValue - value) <= 1e-9 * Math.max(1, Math.abs(statedValue)));
+    // With no calculator rows nothing is displayed to read, so a paper
+    // candidate's readout can only be written; its number is the stated answer.
+    if (rows === 0 && (result.type === "numeric" || result.type === "list_entry") && result.row === null &&
+        result.listIndex === null && agreesWithAnswer(result.value)) {
+      repairs.push(`Candidate ${index + 1}: a ${result.type} readout with no calculator rows was relabeled written.`);
+      Object.assign(result, { type: "written", answerFrom: "reasoning", value: null });
+    }
+    // A written readout names no rows; a calculator plan that reasons over its
+    // displayed values keeps them in its rows, not in the readout.
+    if (rows > 0 && result.type === "written" && (result.row !== null || (Array.isArray(result.relatedRows) && result.relatedRows.length > 0)) &&
+        result.value === null && result.listIndex === null && result.answerFrom === "reasoning") {
+      repairs.push(`Candidate ${index + 1}: the rows named by its written readout were dropped from the readout.`);
+      Object.assign(result, { row: null, relatedRows: [] });
+    }
+    // A graphical readout that lists its graphs only in relatedRows: the first is its row.
+    const graphicalType = typeof result.type === "string" && !["numeric", "list_entry", "written"].includes(result.type);
+    if (graphicalType && result.row === null && Array.isArray(result.relatedRows) && result.relatedRows.length > 0 &&
+        result.relatedRows.every((row) => typeof row === "number" && row >= 1 && row <= rows)) {
+      const [first, ...rest] = result.relatedRows as number[];
+      repairs.push(`Candidate ${index + 1}: the ${result.type} readout's row was missing; line ${first}, the first graph it names, is its row.`);
+      Object.assign(result, { row: first, relatedRows: rest });
+    }
     if (result.type === "written") set(result, "row", null);
     // A paper result has no calculator readout. Models sometimes duplicate its
     // already-stated numeric answer in `value`; remove only that redundant

@@ -1,0 +1,1810 @@
+{
+  "010-infinite-solutions-gk-ratio": {
+    "status": "solved",
+    "question": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+    "choices": null,
+    "clarification": null,
+    "structure": "two linear equations with unknown coefficients; infinitely many solutions ⇒ the two equations are proportional (same line)",
+    "candidates": [
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "1/6",
+        "result": {
+          "row": null,
+          "value": 0.16666666666666666,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "g/k",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "translate-the-words",
+        "rung": 2,
+        "rows": [],
+        "answer": "1/6",
+        "result": {
+          "row": null,
+          "value": 0.16666666666666666,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "g/k from proportional coefficients",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "direct-arithmetic"
+  },
+  "033-linear-table-x-intercept": {
+    "status": "solved",
+    "question": "The table shows three values of x and their corresponding values of f(x) for the linear function f.\nx | f(x)\n-4 | 11\n1 | 1\n6 | -9\nThe graph of y = f(x) in the xy-plane crosses the x-axis at the point (r, 0). What is the value of r?",
+    "choices": null,
+    "clarification": null,
+    "structure": "linear function determined by points; find x-intercept",
+    "candidates": [
+      {
+        "techniqueId": "three-point-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "x_{1}=[-4,1,6]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}=[11,1,-9]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}\\sim mx_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "-b/m",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1.5",
+        "result": {
+          "row": 4,
+          "value": 1.5,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "x-intercept -b/m",
+          "type": "numeric",
+          "relatedRows": [
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "intercept-read",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "m=(1-11)/(1-(-4))",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "b=1-m(1)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(x)=mx+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "-b/m",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1.5",
+        "result": {
+          "row": 4,
+          "value": 1.5,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "x-intercept of f(x)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "3/2",
+        "result": {
+          "row": null,
+          "value": 1.5,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "paper computation: slope=-2, b=3, x-intercept 3/2",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 3,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "three-point-regression"
+  },
+  "037-absolute-value-one-solution": {
+    "status": "solved",
+    "question": "|2x + 6| = 3k - 12\nIn the given equation, k is a constant. If the equation has exactly one solution, what is the value of k?",
+    "choices": null,
+    "clarification": null,
+    "structure": "absolute-value equation equals a constant; exactly one solution occurs when the right-hand constant equals the absolute-value minimum",
+    "candidates": [
+      {
+        "techniqueId": "slider-condition",
+        "rung": 3,
+        "rows": [
+          {
+            "latex": "k=0",
+            "slider": {
+              "min": -10,
+              "max": 10,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "y=\\left|2x+6\\right|",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y=3k-12",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "4",
+        "result": {
+          "row": 1,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "drag k (row 1) until the two graphs meet at exactly one point; that occurs at k=4",
+          "type": "slider_condition",
+          "relatedRows": [
+            2,
+            3
+          ]
+        },
+        "answerState": {
+          "param": "k",
+          "value": 4
+        },
+        "parameters": [
+          {
+            "name": "k",
+            "integer": false,
+            "min": -10,
+            "max": 10
+          }
+        ],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": -10,
+          "right": 10,
+          "bottom": -5,
+          "top": 15
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      },
+      {
+        "techniqueId": "vertex-read",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "y=\\left|2x+6\\right|",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "4",
+        "result": {
+          "row": 1,
+          "value": 0,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "y-value of the vertex (minimum) is 0; set 3k-12 equal to 0 and solve k",
+          "type": "vertex",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": -6,
+          "right": 0,
+          "bottom": -1,
+          "top": 10
+        },
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "4",
+        "result": {
+          "row": null,
+          "value": 4,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "solve 3k-12=0 → k=4",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "slider-condition"
+  },
+  "039-representation-bouquet-roses": {
+    "status": "solved",
+    "question": "A florist makes small bouquets that each contain 5 roses and large bouquets that each contain 12 roses. On Friday, she used all 180 of her roses to make s small bouquets and b large bouquets. Which equation represents this situation?\nAnswer choices: A) 5s + 12b = 180, B) 12s + 5b = 180, C) 17(s + b) = 180, D) s/5 + b/12 = 180",
+    "choices": [
+      {
+        "label": "A",
+        "text": "5s + 12b = 180"
+      },
+      {
+        "label": "B",
+        "text": "12s + 5b = 180"
+      },
+      {
+        "label": "C",
+        "text": "17(s + b) = 180"
+      },
+      {
+        "label": "D",
+        "text": "s/5 + b/12 = 180"
+      }
+    ],
+    "clarification": null,
+    "structure": "translate the story into an equation relating counts and totals",
+    "candidates": [
+      {
+        "techniqueId": "translate-the-words",
+        "rung": 2,
+        "rows": [],
+        "answer": "A) 5s + 12b = 180",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "A",
+          "detail": "equation formed by translating '5 roses per small, 12 per large, total 180'",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "s=12",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "b=10",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "A=[5s+12b,12s+5b,17(s+b),s/5+b/12]",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "A) 5s + 12b = 180",
+        "result": {
+          "row": 3,
+          "value": 180,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "A",
+          "detail": "evaluations of each choice at s=12,b=10; first entry equals 180",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "A) 5s + 12b = 180",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "A",
+          "detail": "compute total roses: 5 per small plus 12 per large equals 180",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "answer-choice-list"
+  },
+  "040-no-solution-parameter-k": {
+    "status": "solved",
+    "question": "4x - ky = 9\n6x + 15y = 2\nIn the given system of equations, k is a constant. If the system has no solution, what is the value of k?",
+    "choices": null,
+    "clarification": null,
+    "structure": "two linear equations in x and y with one unknown parameter; set slopes equal for parallel (no solution)",
+    "candidates": [
+      {
+        "techniqueId": "derivative-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "f(x)=(4/k)x-9/k",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g(x)=(-2/5)x+2/15",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f'(0)\\sim g'(0)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "-10",
+        "result": {
+          "row": 3,
+          "value": -10,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "fitted k from f'(0)~g'(0)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "slider-condition",
+        "rung": 3,
+        "rows": [
+          {
+            "latex": "k=0",
+            "slider": {
+              "min": -20,
+              "max": 20,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "4x-ky=9",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "6x+15y=2",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "-10",
+        "result": {
+          "row": 1,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "drag k until the two lines are parallel and distinct (no intersection); k=-10",
+          "type": "slider_condition",
+          "relatedRows": [
+            2,
+            3
+          ]
+        },
+        "answerState": {
+          "param": "k",
+          "value": -10
+        },
+        "parameters": [
+          {
+            "name": "k",
+            "integer": true,
+            "min": -20,
+            "max": 20
+          }
+        ],
+        "conditionType": "no-solution",
+        "distinguishes": "visual-parallel-vs-overlap",
+        "graphBounds": {
+          "left": -10,
+          "right": 10,
+          "bottom": -10,
+          "top": 10
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "-10",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "Set slopes equal: 4/k = -2/5 ⇒ k = -10",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "derivative-regression"
+  },
+  "041-infinitely-many-parameter-k": {
+    "status": "solved",
+    "question": "3x - 5y = 8\nkx + 20y = -32\nIn the given system of equations, k is a constant. If the system has infinitely many solutions, what is the value of k?\nAnswer choices: A) -12, B) -4, C) 4, D) 12",
+    "choices": [
+      {
+        "label": "A",
+        "text": "-12"
+      },
+      {
+        "label": "B",
+        "text": "-4"
+      },
+      {
+        "label": "C",
+        "text": "4"
+      },
+      {
+        "label": "D",
+        "text": "12"
+      }
+    ],
+    "clarification": null,
+    "structure": "two linear equations with one parameter; find k that makes the two lines coincide (infinitely many solutions)",
+    "candidates": [
+      {
+        "techniqueId": "slider-condition",
+        "rung": 3,
+        "rows": [
+          {
+            "latex": "k=-1",
+            "slider": {
+              "min": -20,
+              "max": 20,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "3x-5y=8",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "kx+20y=-32",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "A) -12",
+        "result": {
+          "row": 1,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "A",
+          "detail": "drag k until the two graphed lines overlap (infinitely many solutions); occurs at k=-12",
+          "type": "slider_condition",
+          "relatedRows": [
+            2,
+            3
+          ]
+        },
+        "answerState": {
+          "param": "k",
+          "value": -12
+        },
+        "parameters": [
+          {
+            "name": "k",
+            "integer": false,
+            "min": -20,
+            "max": 20
+          }
+        ],
+        "conditionType": "infinitely-many",
+        "distinguishes": "visual-parallel-vs-overlap",
+        "graphBounds": {
+          "left": -10,
+          "right": 10,
+          "bottom": -10,
+          "top": 10
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      },
+      {
+        "techniqueId": "derivative-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "f(x)=(3x-8)/5",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g(x)=(-kx-32)/20",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g'(0)~f'(0)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "A) -12",
+        "result": {
+          "row": 3,
+          "value": -12,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "A",
+          "detail": "fitted parameter k from matching derivatives (slopes)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": "infinitely-many",
+        "distinguishes": "visual-parallel-vs-overlap",
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "K=[-12,-4,4,12]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "D=3*20-(-5)K",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "A) -12",
+        "result": {
+          "row": 2,
+          "value": 0,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "A",
+          "detail": "determinant 3*20-(-5)k equals 0 when k=-12, entry 1 of D is 0",
+          "type": "list_entry",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": "infinitely-many",
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "A) -12",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "A",
+          "detail": "For infinitely many solutions the ratios of coefficients must match: 3/k = -5/20 = 8/-32 ⇒ k=-12",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": "infinitely-many",
+        "distinguishes": "constant-ratio-checked",
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "answer-choice-list"
+  },
+  "042-inequality-system-point": {
+    "status": "solved",
+    "question": "y > 3x - 7\n2x + y <= 12\nWhich of the following points (x, y) is a solution to the given system of inequalities?\nAnswer choices: A) (1, -5), B) (2, 5), C) (4, 6), D) (6, 0)",
+    "choices": [
+      {
+        "label": "A",
+        "text": "(1, -5)"
+      },
+      {
+        "label": "B",
+        "text": "(2, 5)"
+      },
+      {
+        "label": "C",
+        "text": "(4, 6)"
+      },
+      {
+        "label": "D",
+        "text": "(6, 0)"
+      }
+    ],
+    "clarification": null,
+    "structure": "system of two linear inequalities; which given point satisfies both",
+    "candidates": [
+      {
+        "techniqueId": "graph-inequality",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "y>3x-7",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "2x+y\\le12",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "x_{1}=[1,2,4,6]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}=[-5,5,6,0]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "(x_{1},y_{1})",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) (2, 5)",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "inspect plotted points (row 5) against shaded region of rows 1–2; (2,5) lies inside",
+          "type": "visual_choice",
+          "relatedRows": [
+            1,
+            2,
+            5
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": -1,
+          "right": 7,
+          "bottom": -6,
+          "top": 7
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 1,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "x_{1}=[1,2,4,6]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}=[-5,5,6,0]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "(y_{1}>3x_{1}-7)\\operatorname{and}(2x_{1}+y_{1}\\le12)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) (2, 5)",
+        "result": {
+          "row": 3,
+          "value": null,
+          "listIndex": 2,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "boolean list marking which choice points satisfy both inequalities; second entry true",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 1,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) (2, 5)",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Substitute each point: (2,5) gives 5>3(2)-7 (5> -1 true) and 2(2)+5=9\\le12 true",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "answer-choice-list"
+  },
+  "060-mean-minus-median-homework-list": {
+    "status": "solved",
+    "question": "The number of minutes each of 10 students spent on a homework assignment is listed below.\n35, 48, 22, 60, 41, 35, 52, 29, 70, 38\nBy how many minutes does the mean of the data exceed the median of the data?\n(Student-produced response; no answer choices.)",
+    "choices": null,
+    "clarification": null,
+    "structure": "A list of 10 numbers → compute mean and median, then find mean − median.",
+    "candidates": [
+      {
+        "techniqueId": "statistics-builtin",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "L=[35,48,22,60,41,35,52,29,70,38]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{mean}(L)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{median}(L)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{mean}(L)-\\operatorname{median}(L)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "3.5",
+        "result": {
+          "row": 4,
+          "value": 3.5,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "mean minus median",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 1,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "list-evaluation",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "L=[35,48,22,60,41,35,52,29,70,38]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{mean}(L)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{median}(L)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{mean}(L)-\\operatorname{median}(L)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "3.5",
+        "result": {
+          "row": 4,
+          "value": 3.5,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "mean minus median",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 1,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "3.5",
+        "result": {
+          "row": null,
+          "value": 3.5,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "paper computation: mean = 430/10 = 43; median = (38+41)/2 = 39.5; difference = 3.5",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 3,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "statistics-builtin"
+  },
+  "061-stdev-compare-same-mean-range": {
+    "status": "solved",
+    "question": "Data set A consists of the values 40, 42, 44, 60, 76, 78, 80. Data set B consists of the values 40, 52, 58, 60, 62, 68, 80. Which of the following statements about the standard deviations of the two data sets is true?\nAnswer choices: A) The standard deviation of data set A is greater than the standard deviation of data set B., B) The standard deviation of data set B is greater than the standard deviation of data set A., C) The standard deviations of data sets A and B are equal., D) The standard deviations cannot be compared because the data sets have the same mean and the same range.",
+    "choices": [
+      {
+        "label": "A",
+        "text": "The standard deviation of data set A is greater than the standard deviation of data set B."
+      },
+      {
+        "label": "B",
+        "text": "The standard deviation of data set B is greater than the standard deviation of data set A."
+      },
+      {
+        "label": "C",
+        "text": "The standard deviations of data sets A and B are equal."
+      },
+      {
+        "label": "D",
+        "text": "The standard deviations cannot be compared because the data sets have the same mean and the same range."
+      }
+    ],
+    "clarification": null,
+    "structure": "Two numeric data sets; compare their standard deviations (compute both and compare).",
+    "candidates": [
+      {
+        "techniqueId": "statistics-builtin",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "A=[40,42,44,60,76,78,80]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "B=[40,52,58,60,62,68,80]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{stdevp}(A)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{stdevp}(B)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "A) The standard deviation of data set A is greater than the standard deviation of data set B.",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "A",
+          "detail": "stdevp(A)≈16.733 > stdevp(B)≈11.564",
+          "type": "written",
+          "relatedRows": [
+            3,
+            4
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "list-evaluation",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "A=[40,42,44,60,76,78,80]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "B=[40,52,58,60,62,68,80]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "L=[\\operatorname{stdevp}(A),\\operatorname{stdevp}(B)]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "L",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "A) The standard deviation of data set A is greater than the standard deviation of data set B.",
+        "result": {
+          "row": 4,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "A",
+          "detail": "L shows [≈16.733,≈11.564], so first entry > second",
+          "type": "written",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "A) The standard deviation of data set A is greater than the standard deviation of data set B.",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "A",
+          "detail": "Compute population variance: A variance=280 ⇒ sd=√280≈16.733; B variance≈133.714 ⇒ sd≈11.564; A>B",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 4,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "statistics-builtin"
+  },
+  "065-line-of-best-fit-tank-empty": {
+    "status": "solved",
+    "question": "t (minutes): 0, 2, 4, 6, 8, 10\nWater (gallons): 182, 160, 147, 121, 108, 85\nBased on a line of best fit for the data, approximately how many minutes after the tank began draining will the tank be empty?\nAnswer choices: A) 15, B) 19, C) 23, D) 27",
+    "choices": [
+      {
+        "label": "A",
+        "text": "15"
+      },
+      {
+        "label": "B",
+        "text": "19"
+      },
+      {
+        "label": "C",
+        "text": "23"
+      },
+      {
+        "label": "D",
+        "text": "27"
+      }
+    ],
+    "clarification": null,
+    "structure": "paired data (t,water); find line-of-best-fit then extrapolate to water=0 (solve for t when fitted line crosses y=0)",
+    "candidates": [
+      {
+        "techniqueId": "linear-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "-b/m",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 4,
+          "value": 19.046153846153846,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "t when fitted line w=mt+b equals 0 (–b/m)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(x)=mx+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "C=[15,19,23,27]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(C)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 6,
+          "value": 0.4323076923077196,
+          "listIndex": 2,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "value f(19) (second entry) is approximately 0, so 19 minutes",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) 19",
+        "result": {
+          "row": null,
+          "value": 19,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "estimate using average rate from endpoints: slope ≈(85-182)/(10-0)=-9.7 → zero at 182/9.7≈18.76 ≈19",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "linear-regression"
+  },
+  "067-weighted-mean-two-classes": {
+    "status": "solved",
+    "question": "A teacher has two classes that took the same test. The 24 students in class A had a mean score of 81, and the 16 students in class B had a mean score of 86. What was the mean score of all 40 students?",
+    "choices": null,
+    "clarification": null,
+    "structure": "weighted mean of two groups (compute combined mean from two class means and sizes)",
+    "candidates": [
+      {
+        "techniqueId": "function-evaluation",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "T=24*81+16*86",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "T/40",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "83",
+        "result": {
+          "row": 2,
+          "value": 83,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "combined mean T/40",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "statistics-builtin",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "V=[81,86]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "F=[24,16]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{mean}(\\operatorname{repeat}(V,F))",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "83",
+        "result": {
+          "row": 3,
+          "value": 83,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "weighted mean via repeat(V,F)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 1,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "83",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "(24*81+16*86)/40",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "function-evaluation"
+  },
+  "071-triangle-area-from-coordinates": {
+    "status": "solved",
+    "question": "Triangle ABC in the xy-plane has vertices A(2, -3), B(2, 5), and C(8, 1). What is the area of triangle ABC?\nAnswer choices: A) 16, B) 24, C) 32, D) 48",
+    "choices": [
+      {
+        "label": "A",
+        "text": "16"
+      },
+      {
+        "label": "B",
+        "text": "24"
+      },
+      {
+        "label": "C",
+        "text": "32"
+      },
+      {
+        "label": "D",
+        "text": "48"
+      }
+    ],
+    "clarification": null,
+    "structure": "three vertex coordinates given, compute triangle area (base × height / 2)",
+    "candidates": [
+      {
+        "techniqueId": "distance-builtin",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "d_{1}=\\operatorname{distance}((2,-3),(2,5))",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "d_{2}=\\operatorname{distance}((8,1),(2,1))",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\text{area}=\\tfrac{1}{2}d_{1}d_{2}",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 24",
+        "result": {
+          "row": 3,
+          "value": 24,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "1/2 * distance(AB) * distance from C to AB",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) 24",
+        "result": {
+          "row": null,
+          "value": 24,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Compute base AB = 8, height = 6, area = 1/2·8·6",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 3,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "distance-builtin"
+  },
+  "073-right-triangle-tangent": {
+    "status": "solved",
+    "question": "In right triangle RST, angle T is the right angle, RT = 20, and RS = 29. What is the value of tan(S)?\nAnswer choices: A) 20/29, B) 21/29, C) 20/21, D) 21/20",
+    "choices": [
+      {
+        "label": "A",
+        "text": "20/29"
+      },
+      {
+        "label": "B",
+        "text": "21/29"
+      },
+      {
+        "label": "C",
+        "text": "20/21"
+      },
+      {
+        "label": "D",
+        "text": "21/20"
+      }
+    ],
+    "clarification": null,
+    "structure": "right triangle with hypotenuse and one leg given; find tangent of the angle opposite the given leg",
+    "candidates": [
+      {
+        "techniqueId": "reference-formula",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "a=\\sqrt{29^{2}-20^{2}}",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\tan S=20/a",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "C) 20/21",
+        "result": {
+          "row": 2,
+          "value": 0.9523809523809523,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "C",
+          "detail": "tan(S) = opposite/adjacent = RT/ST",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "C) 20/21",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "C",
+          "detail": "By Pythagorean theorem ST = \\sqrt{29^2-20^2}=21, so tan(S)=20/21",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "reference-formula"
+  }
+}

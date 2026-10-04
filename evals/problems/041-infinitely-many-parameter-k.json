@@ -27,6 +27,10 @@
     {
       "technique": "plug-in-choices",
       "why": "Checking each choice by hand for proportional coefficients and constants is four rounds of ratio work the slider shows in one drag."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized rule that the equations are multiples of each other; the slider shows the lines coinciding."
     }
   ],
   "goldRows": [

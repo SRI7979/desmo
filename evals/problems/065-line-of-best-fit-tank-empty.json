@@ -15,7 +15,7 @@
   "gold": [
     "linear-regression"
   ],
-  "acceptable": [],
+  "acceptable": ["answer-choice-list"],
   "bad": [
     {
       "technique": "direct-arithmetic",
@@ -24,6 +24,10 @@
     {
       "technique": "exponential-regression",
       "why": "The water drops by a roughly constant amount per minute, so the data are linear; an exponential model never reaches zero and cannot predict when the tank is empty."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs a slope from two chosen points by formula, which is not the line of best fit; regression fits all six points."
     }
   ],
   "goldRows": [

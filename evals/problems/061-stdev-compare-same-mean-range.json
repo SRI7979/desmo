@@ -15,11 +15,15 @@
   "gold": [
     "statistics-builtin"
   ],
-  "acceptable": [],
+  "acceptable": ["list-evaluation"],
   "bad": [
     {
       "technique": "direct-arithmetic",
       "why": "Computing two standard deviations by hand needs the deviation formula and fourteen squared differences; stdev() gives both values in two rows."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the standard-deviation formula for both sets; stdev() gives both values directly."
     }
   ],
   "goldRows": [

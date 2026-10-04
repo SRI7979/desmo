@@ -17,6 +17,10 @@
     {
       "technique": "answer-choice-list",
       "why": "The choices are values of r+s, not of r or s, so they cannot be plugged into the identity without first finding r and s."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the coefficients matched and simplified by hand before anything is typed; the identity regression does that matching."
     }
   ],
   "goldRows": ["x_{1}=[1...5]", "\\frac{12x_{1}+28}{4}-\\frac{s}{13}\\sim r(x_{1}-8)", "r+s"],

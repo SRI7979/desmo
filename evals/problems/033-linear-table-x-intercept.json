@@ -22,6 +22,10 @@
     {
       "technique": "intercept-read",
       "why": "Reading an intercept needs an equation for f first, and the question gives only a table; typing y = -2x + 3 hides the slope-and-intercept derivation behind one row."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized slope formula and the intercept worked out by hand; regression on the table finds the line."
     }
   ],
   "goldRows": [

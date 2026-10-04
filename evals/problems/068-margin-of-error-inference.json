@@ -16,7 +16,8 @@
     "translate-the-words"
   ],
   "acceptable": [
-    "direct-arithmetic"
+    "direct-arithmetic",
+    "calculator-arithmetic"
   ],
   "bad": [
     {

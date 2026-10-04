@@ -1,0 +1,206 @@
+/**
+ * Regressions from the live representative benchmark (evals/results/current.json):
+ * each test replays what the model actually returned for one case.
+ */
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { afterEach, test, mock } from "node:test";
+import OpenAI from "openai";
+
+import {
+  isApproximationQuestion,
+  matchChoice,
+  normalizeChoices,
+  ProseLatexError,
+  repairProseText,
+  sanitizeProse,
+} from "../src/lib/answer-consistency";
+import { unwrapResultCaption } from "../src/lib/desmos-latex";
+import { createMemorySolveCache } from "../src/lib/solve-cache";
+import { validateCandidatesResponse } from "../src/lib/solve-output";
+import { createTrace, solveProblem, type PipelineDeps } from "../src/lib/solve-pipeline";
+import { checkConditionCompleteness } from "../src/lib/solver-rules";
+import {
+  desmosRescueTarget,
+  isSolutionCountCondition,
+  selectMethods,
+  StrategySelectionError,
+  type CandidatesResponse,
+  type CandidatesResponseInput,
+} from "../src/lib/strategy-selection";
+import { candidatesResponse, explanation, graphCandidate, mockModel, providerBody } from "./method-fixtures";
+
+const fixture = (name: string) => JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), "utf8"));
+
+function deps(): PipelineDeps {
+  return {
+    client: new OpenAI({ apiKey: "unit-test-key", maxRetries: 0 }),
+    cache: createMemorySolveCache(),
+    context: { model: "gpt-5-mini", candidateInstructions: "test", version: "test-version" },
+    tier: { priorityUnavailable: false },
+    diagnosticId: "benchmark-regression",
+    trace: createTrace(),
+  };
+}
+
+afterEach(() => {
+  mock.restoreAll();
+});
+
+// --- 074: a transcribed 10\pi failed the whole solve ---------------------------
+
+const ARC_PROBLEM = "A circle has a radius of 12 centimeters. An arc of the circle has a length of 10pi centimeters. What is the measure, in degrees, of the central angle that intercepts this arc?";
+
+test("074: symbol commands with an exact plain equivalent repair to that character", () => {
+  assert.equal(repairProseText("an arc of length 10\\pi centimeters"), "an arc of length 10π centimeters");
+  assert.equal(repairProseText("an angle of 30^{\\circ} and 45^\\circ"), "an angle of 30° and 45°");
+  assert.equal(repairProseText("x \\le 5 and y \\geq 2, x \\neq 0"), "x ≤ 5 and y ≥ 2, x ≠ 0");
+  assert.equal(repairProseText("(f \\circ g)(x) = 3 \\times 4"), "(f ∘ g)(x) = 3 × 4");
+  assert.equal(repairProseText("\\theta = \\frac{5\\pi}{6}"), "θ = 5π/6");
+  assert.equal(repairProseText("an increase of 20\\%"), "an increase of 20%");
+});
+
+test("074: LaTeX with no plain equivalent is still rejected, so validation is not weakened", () => {
+  assert.throws(() => sanitizeProse("segment \\overline{AB} has length 4", "question"), ProseLatexError);
+  assert.throws(() => sanitizeProse("\\int_0^1 x dx", "why"), ProseLatexError);
+  // An unknown command that merely starts with a symbol's name is not that symbol.
+  assert.throws(() => sanitizeProse("\\pir^2", "why"), ProseLatexError);
+});
+
+test("074: the transcribed question is repaired at selection, where call 1 owns it", () => {
+  const selection = selectMethods(fixture("arc-length-pi-candidates.json") as CandidatesResponse);
+  assert.match(selection.question, /length of 10π centimeters/);
+  assert.doesNotMatch(selection.question, /\\/);
+});
+
+test("074: an unrepairable transcription is corrected by call 1, not failed at the explanation", () => {
+  assert.throws(
+    () => selectMethods(candidatesResponse([graphCandidate()], { question: "Segment \\overline{AB} has length x where x^2 = 9. What is x?" }) as CandidatesResponse),
+    (error: unknown) => error instanceof StrategySelectionError && error.stage === "prose_text",
+  );
+});
+
+test("074: the recorded arc-length output solves with one explanation call, and the fallback cannot fail", async () => {
+  const recorded = fixture("arc-length-pi-candidates.json");
+  const winner = selectMethods(recorded as CandidatesResponse).methods[0];
+  const { requests } = mockModel({ candidates: recorded, explanation: explanation(winner.rows.length) });
+  const result = await solveProblem(deps(), { kind: "text", problem: ARC_PROBLEM, choices: null });
+  assert.equal(result.kind, "solved");
+  assert.ok(result.kind === "solved");
+  assert.equal(result.solution.answer, "150");
+  assert.equal(result.explanation, "model");
+  assert.equal(requests.explanation.length, 1, "no explanation retry is spent on the question's own math");
+  assert.match(result.solution.question, /10π/);
+
+  mock.restoreAll();
+  mockModel({ candidates: recorded, explanation: Response.json({ error: { code: "server_error", message: "down" } }, { status: 500 }) });
+  const fallback = await solveProblem(deps(), { kind: "text", problem: ARC_PROBLEM, choices: null });
+  assert.ok(fallback.kind === "solved");
+  assert.equal(fallback.explanation, "fallback");
+  assert.equal(fallback.solution.answer, "150");
+});
+
+// --- Defaults, retries, and rescues from the same run --------------------------
+
+const recorded: Record<string, CandidatesResponseInput> = fixture("live-benchmark-first-attempts.json");
+const caseOutput = (prefix: string) => {
+  const key = Object.keys(recorded).find((id) => id.startsWith(prefix));
+  assert.ok(key, `fixture for ${prefix}`);
+  return recorded[key];
+};
+/** Selection exactly as call 1 runs it: metadata repairs, then validation and scoring. */
+function selectRecorded(prefix: string) {
+  const { parsed } = validateCandidatesResponse(providerBody(caseOutput(prefix)));
+  return selectMethods(parsed);
+}
+const eligible = (selection: ReturnType<typeof selectMethods>) => selection.methods.filter((method) => !method.rejected);
+const winnerOf = (prefix: string) => eligible(selectRecorded(prefix))[0];
+
+test("040/041: a slider that opens at the answer with both equations graphed proves no solution / infinitely many", () => {
+  const graphs = [{ latex: "k=0" }, { latex: "4x-ky=9" }, { latex: "6x+15y=2" }];
+  const slider = { type: "slider_condition" as const, row: 1, relatedRows: [2, 3], value: null, listIndex: null, answerFrom: "reasoning" as const, choiceLabel: null, detail: "k where the lines are parallel" };
+  assert.deepEqual(
+    checkConditionCompleteness({ conditionType: "no-solution", distinguishes: null, result: slider, answerState: { param: "k", value: -10 }, expressions: graphs }),
+    { distinguishes: "visual-parallel-vs-overlap" },
+  );
+  // Still rejected: no answerState (the slider opens elsewhere), or a slider that moves neither graph.
+  const unopened = checkConditionCompleteness({ conditionType: "no-solution", distinguishes: null, result: slider, answerState: null, expressions: graphs });
+  assert.ok(unopened && "error" in unopened);
+  const unrelated = checkConditionCompleteness({ conditionType: "no-solution", distinguishes: null, result: slider, answerState: { param: "a", value: 3 }, expressions: [{ latex: "a=0" }, ...graphs.slice(1)] });
+  assert.ok(unrelated && "error" in unrelated);
+
+  // 040 was rejected outright and retried; 041 fell back to the memorized ratio rule.
+  assert.equal(winnerOf("040").techniqueId, "slider-condition");
+  assert.equal(winnerOf("041").techniqueId, "slider-condition");
+});
+
+test("037/041/010: a paper method that decides how many solutions there are pays for the solution-count rule", () => {
+  assert.equal(isSolutionCountCondition("|2x + 6| = 3k - 12. In the given equation, k is a constant. If the equation has exactly one solution, what is the value of k?"), true);
+  assert.equal(isSolutionCountCondition("How many solutions does x^2 = 4x have?"), false);
+  const paper = eligible(selectRecorded("037")).find((method) => method.techniqueId === "direct-arithmetic")!;
+  assert.equal(paper.cost.oneOffFacts, 1);
+  assert.equal(winnerOf("037").techniqueId, "slider-condition");
+  // 010's paper candidates said "numeric" with no rows: repaired to written, so no retry is spent.
+  assert.equal(winnerOf("010").techniqueId, "direct-arithmetic");
+});
+
+test("033: the slope formula typed over the table's numbers is a memorized fact; three points on a line are a linear fit", () => {
+  const selection = eligible(selectRecorded("033"));
+  const slopeFormula = selection.find((method) => method.techniqueId === "intercept-read")!;
+  assert.equal(slopeFormula.cost.oneOffFacts, 1);
+  const fit = selection[0];
+  assert.equal(fit.techniqueId, "linear-regression", "relabeled from three-point-regression");
+  // -b/m is the hand-solved x-intercept formula: charged, though the fit still wins.
+  assert.equal(fit.cost.derivationSteps, 1);
+});
+
+test("039: on a representation question, paper direct arithmetic is not a second translation", () => {
+  const selection = selectRecorded("039");
+  assert.equal(eligible(selection)[0].techniqueId, "translate-the-words");
+  assert.equal(selection.methods.find((method) => method.techniqueId === "direct-arithmetic")?.rejected?.rule, "answers-different-question");
+});
+
+test("060/061/067: the technique the rows visibly use wins a tie, and scalar rows are calculator arithmetic", () => {
+  assert.equal(winnerOf("060").techniqueId, "statistics-builtin");
+  assert.equal(winnerOf("061").techniqueId, "statistics-builtin");
+  const weighted = eligible(selectRecorded("067"));
+  assert.equal(weighted[0].techniqueId, "statistics-builtin");
+  const arithmetic = weighted.find((method) => method.techniqueId === "calculator-arithmetic")!;
+  assert.equal(arithmetic.cost.derivationSteps, 1, "the student still sets up 24*81+16*86 over 40");
+});
+
+test("065: an approximation question matches the clearly nearest choice, and only then", () => {
+  const choices = normalizeChoices(["15", "19", "23", "27"].map((text, index) => ({ label: "ABCD"[index], text })))!;
+  assert.equal(matchChoice(19.046, choices), null, "exact questions keep the strict match");
+  assert.equal(matchChoice(19.046, choices, true)?.label, "B");
+  assert.equal(matchChoice(21, choices, true), null, "halfway between two choices is never guessed");
+  assert.equal(isApproximationQuestion("Based on a line of best fit, approximately how many minutes after the tank began draining will the tank be empty?"), true);
+  assert.ok(eligible(selectRecorded("065")).some((method) => method.techniqueId === "linear-regression"), "the fitted line is no longer rejected");
+});
+
+test("042/061/071/073: contract slips are repaired locally, so no rescue call is spent", () => {
+  for (const prefix of ["042", "061", "071", "073"]) {
+    assert.equal(desmosRescueTarget(selectRecorded(prefix)), null, prefix);
+  }
+  assert.equal(winnerOf("042").techniqueId, "graph-inequality");
+  assert.deepEqual(winnerOf("073").rows.map((row) => row.latex), ["a=\\sqrt{29^{2}-20^{2}}", "20/a"]);
+  assert.equal(winnerOf("071").rows[2].latex, "\\frac{1}{2}d_{1}d_{2}");
+  assert.equal(unwrapResultCaption("\\operatorname{mean}=3"), null, "a built-in is not a caption");
+  assert.equal(unwrapResultCaption("\\sin x=0.5"), null, "an equation in a graph coordinate is not a caption");
+  assert.equal(unwrapResultCaption("\\tan(S)=20/a"), "20/a");
+});
+
+test("010/040: the recorded first attempts solve with a single candidates call", async () => {
+  for (const [prefix, problem] of [
+    ["010", "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?"],
+    ["040", "4x - ky = 9\n6x + 15y = 2\nIn the given system of equations, k is a constant. If the system has no solution, what is the value of k?"],
+  ] as const) {
+    mock.restoreAll();
+    const winner = winnerOf(prefix);
+    const { requests } = mockModel({ candidates: caseOutput(prefix), explanation: explanation(winner.rows.length) });
+    const result = await solveProblem(deps(), { kind: "text", problem, choices: null });
+    assert.ok(result.kind === "solved", prefix);
+    assert.equal(requests.candidates.length, 1, `${prefix}: no validation retry`);
+    assert.equal(result.method.techniqueId, winner.techniqueId);
+  }
+});

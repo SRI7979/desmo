@@ -22,6 +22,10 @@
     {
       "technique": "direct-arithmetic",
       "why": "Isolating m by inverse operations and then deciding which way to round is hand algebra the cost list or graph does without derivation."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs m isolated by inverse operations and the rounding direction decided by hand; the list filter or graph does both."
     }
   ],
   "goldRows": [

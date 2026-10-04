@@ -3,17 +3,21 @@ import { z } from "zod";
 import {
   AnswerConsistencyError,
   deriveConsistentSolution,
+  isApproximationQuestion,
   normalizeChoices,
+  repairProseText,
   ProseLatexError,
   sanitizeProse,
   validateAnswerState,
 } from "./answer-consistency";
 import {
+  analyzePlan,
   findDerivedConstants,
   findDerivedDefinitions,
   findProseRows,
   findUndefinedVariables,
   normalizeDesmosExpressions,
+  unwrapResultCaption,
   unwrapSyntheticResultAlias,
 } from "./desmos-latex";
 import {
@@ -196,6 +200,76 @@ export function questionCondition(question: string): ConditionType | null {
   return null;
 }
 
+/**
+ * The question fixes how many solutions an equation or system has (none,
+ * infinitely many, exactly one) and asks for the value that does it. A paper
+ * method can only decide that through a solution-count rule (proportional
+ * coefficients, |u| = c has one solution only at c = 0, a zero discriminant),
+ * a memorized fact the graphs show instead.
+ */
+export function isSolutionCountCondition(question: string): boolean {
+  const text = question.replace(/\s+/g, " ");
+  if (!/\bvalues?\b|\bconstants?\b|\bwhat is [a-z]\b/i.test(text)) return false;
+  return /\b(?:no|infinitely many|exactly one|exactly two|only one)\s+(?:real\s+)?solutions?\b|\binfinite (?:number of )?solutions\b|\bintersect\w*\s+(?:at\s+)?exactly (?:one|two) points?\b/i.test(text);
+}
+
+const literal = String.raw`-?\d+(?:\.\d+)?`;
+const literalDifference = String.raw`${literal}\s*-\s*(?:\(\s*${literal}\s*\)|${literal})`;
+/** (1-11)/(1-(-4)) or \frac{8-2}{5-1}: the two-point slope formula typed over given numbers. */
+const SLOPE_QUOTIENT = new RegExp(
+  String.raw`\(\s*${literalDifference}\s*\)\s*/\s*\(\s*${literalDifference}\s*\)|\\frac\{\s*${literalDifference}\s*\}\{\s*${literalDifference}\s*\}`,
+);
+
+/**
+ * -b/m read straight off a linear fit: an expression combining two or more
+ * fitted parameters that the question never writes (it asks for r, not -b/m)
+ * is the hand-solved formula (0 = mx + b) typed for the student. A requested
+ * combination ("What is r + s?") and a single fitted value are plain readouts.
+ */
+function derivedReadout(rows: ReadonlyArray<{ latex: string }>, resultRow: number | null, question: string): string | null {
+  if (resultRow === null) return null;
+  const latex = rows[resultRow - 1]?.latex;
+  if (!latex || /=|\\sim|~/.test(latex)) return null;
+  const plan = analyzePlan(rows);
+  const names = [...(plan.rows[resultRow - 1]?.names ?? [])];
+  if (names.length < 2 || !names.every((name) => plan.fitted.has(name))) return null;
+  const compact = (text: string) => repairProseText(text).replace(/\\left|\\right|\\cdot|[\s*{}()]/g, "");
+  return compact(question).includes(compact(latex)) ? null : latex.trim();
+}
+
+/** A row that defines a function, f(x)=... or g_{1}(t)=... */
+const FUNCTION_DEFINITION = /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*\([^()]*\)\s*=(?!=)/;
+
+/**
+ * Technique names the rows contradict, corrected before validation so the
+ * student learns the pattern by its right name and the right definitional
+ * cost applies: scalar rows with no function are calculator arithmetic (not
+ * function evaluation, and not paper arithmetic), a fit with no squared term
+ * is a linear regression however many points it uses, and a paper "direct
+ * arithmetic" answer to a representation question is the translation itself.
+ */
+function relabel(candidate: Candidate, representation: boolean, taken: Set<TechniqueId>): { candidate: Candidate; repair: string | null } {
+  const rows = candidate.rows;
+  let techniqueId: TechniqueId | null = null;
+  if (candidate.techniqueId === "function-evaluation" && rows.length > 0 && !rows.some((row) => FUNCTION_DEFINITION.test(row.latex))) {
+    techniqueId = "calculator-arithmetic";
+  } else if (candidate.techniqueId === "direct-arithmetic" && rows.length > 0) {
+    techniqueId = "calculator-arithmetic";
+  } else if (candidate.techniqueId === "direct-arithmetic" && representation) {
+    techniqueId = "translate-the-words";
+  } else if (candidate.techniqueId === "three-point-regression") {
+    const fits = rows.filter((row) => /\\sim(?![A-Za-z])|~/.test(row.latex));
+    if (fits.length > 0 && fits.every((row) => !row.latex.includes("^"))) techniqueId = "linear-regression";
+  }
+  // Never turn a valid candidate into a duplicate of one the model already listed.
+  if (!techniqueId || taken.has(techniqueId)) return { candidate, repair: null };
+  taken.add(techniqueId);
+  return {
+    candidate: { ...candidate, techniqueId },
+    repair: `Relabeled ${techniqueName(candidate.techniqueId)} as ${techniqueName(techniqueId)}: that is what its rows do.`,
+  };
+}
+
 /** The condition is given; a ratio of coefficients follows from the common scale factor. */
 function isGivenInfiniteSolutionRatioQuestion(question: string): boolean {
   const text = question.replace(/\s+/g, " ");
@@ -318,10 +392,16 @@ type CandidateContext = {
   condition: ConditionType | null;
   integers: Parameter[];
   integerFactorExtremum: boolean;
+  solutionCount: boolean;
+  approximate: boolean;
 };
 
 type Validated = Omit<Method, "id" | "badges" | "rejected" | "total" | "mathScore" | "mathLevel" | "shape" | "cost" | "name"> & {
   rawCost: Candidate["cost"];
+  /** Memorized facts the plan itself shows it relies on, whatever the model reported. */
+  factFloor: number;
+  /** Hand derivation the plan itself shows, whatever the model reported. */
+  derivationFloor: number;
 };
 
 function reject(rule: string, reason: string, stage = "strategy_policy"): Rejection {
@@ -335,7 +415,8 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   // For a stated infinitely-many condition, b/d-style ratio questions ask
   // for the common scale factor itself. A direct computation need not prove
   // that a separate parameter makes two graphed lines coincide.
-  const conditionType = candidate.techniqueId === "direct-arithmetic" && isGivenInfiniteSolutionRatioQuestion(question)
+  const conditionType = (candidate.techniqueId === "direct-arithmetic" || candidate.techniqueId === "calculator-arithmetic") &&
+    isGivenInfiniteSolutionRatioQuestion(question)
     ? null
     : candidate.conditionType ?? context.condition;
   const declared = new Set(candidate.parameters.map((parameter) => parameter.name));
@@ -351,10 +432,26 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   if (rows.some((row) => !row.latex.trim())) {
     return reject("row-fails-to-insert", "A calculator row normalizes to empty.", "desmos_syntax");
   }
+  // Only a numeric readout's row is a computation; a graphical one may be an equation such as \sin x=0.5.
+  const answerRow = candidate.result.type === "numeric" && candidate.result.row !== null && candidate.result.answerFrom === "value"
+    ? rows[candidate.result.row - 1]
+    : undefined;
+  const uncaptioned = answerRow ? unwrapResultCaption(answerRow.latex) : null;
+  if (answerRow && uncaptioned) {
+    rows[candidate.result.row! - 1] = { ...answerRow, latex: uncaptioned };
+    repairs.push(`Removed the caption on line ${candidate.result.row}, which Desmos cannot define; the line evaluates ${uncaptioned}.`);
+  }
   if (context.representation && rows.length > 0) {
     return reject(
       "answers-different-question",
       "The question asks which equation or expression represents the situation; calculator rows solve or graph it instead of identifying the model.",
+    );
+  }
+  // Without a listed translation, this candidate was relabeled as one above.
+  if (context.representation && candidate.techniqueId === "direct-arithmetic") {
+    return reject(
+      "answers-different-question",
+      "Direct arithmetic computes a value; this question asks which equation represents the situation, which Translate the words already answers.",
     );
   }
   if (context.integerFactorExtremum &&
@@ -488,6 +585,7 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
       answer: candidate.answer,
       readAnswer: "",
       expressionCount: rows.length,
+      approximate: context.approximate,
     });
   } catch (error) {
     if (error instanceof AnswerConsistencyError) return reject("answer-consistency", error.message, error.stage);
@@ -513,6 +611,21 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   }
   const bounds = candidate.graphBounds;
   const validBounds = bounds && bounds.left < bounds.right && bounds.bottom < bounds.top;
+  // Definitional floors the model's own report cannot lower.
+  let factFloor = 0;
+  if (rows.length === 0 && context.solutionCount) {
+    factFloor = 1;
+    repairs.push("Counted one memorized fact: deciding how many solutions there are on paper needs a solution-count rule.");
+  } else if (rows.some((row) => SLOPE_QUOTIENT.test(row.latex.replace(/\\left|\\right/g, "")))) {
+    factFloor = 1;
+    repairs.push("Counted one memorized fact: a row types the two-point slope formula over the given numbers.");
+  }
+  let derivationFloor = 0;
+  const formula = derivedReadout(rows, consistent.result.row, question);
+  if (formula) {
+    derivationFloor = 1;
+    repairs.push(`Counted one derivation step: the readout ${formula} is a formula in the fitted parameters the question does not ask for.`);
+  }
   return {
     techniqueId: candidate.techniqueId,
     rung: candidate.rung,
@@ -525,16 +638,25 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
     distinguishes: condition ? condition.distinguishes : candidate.distinguishes,
     graphBounds: validBounds ? bounds : null,
     rawCost: candidate.cost,
+    factFloor,
+    derivationFloor,
     // The generated read instruction is replaced by the explanation call.
     repairs: [...repairs, ...consistent.repairs.filter((repair) => !repair.startsWith("The read instruction was missing"))],
   };
 }
 
 function scored(id: string, validated: Validated): Omit<Method, "badges" | "rejected"> {
-  const cost = deriveCost(validated.rawCost, validated.rows.length, validated.techniqueId);
+  const derived = deriveCost(validated.rawCost, validated.rows.length, validated.techniqueId);
+  const cost = {
+    ...derived,
+    derivationSteps: Math.max(derived.derivationSteps, validated.derivationFloor),
+    oneOffFacts: Math.max(derived.oneOffFacts, validated.factFloor),
+  };
   const score = mathScore(cost);
-  const { rawCost, ...rest } = validated;
+  const { rawCost, factFloor, derivationFloor, ...rest } = validated;
   void rawCost;
+  void factFloor;
+  void derivationFloor;
   return {
     ...rest,
     id,
@@ -599,20 +721,37 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     if (error instanceof AnswerConsistencyError) throw new StrategySelectionError(error.message, error.stage);
     throw error;
   }
+  // The transcription is call 1's prose, shown to the student: repaired here
+  // (10\pi → 10π), where call 1 can still correct what does not repair, and
+  // never left for the explanation call, which cannot change it.
+  let question: string;
+  let structure: string | null;
+  try {
+    question = sanitizeProse(response.question, "question");
+    structure = response.structure.trim() ? sanitizeProse(response.structure.trim(), "structure") : null;
+    choices?.forEach((choice) => sanitizeProse(choice.text, `choice ${choice.label}`));
+  } catch (error) {
+    if (error instanceof ProseLatexError) throw new StrategySelectionError(error.message, "prose_text");
+    throw error;
+  }
   const context: CandidateContext = {
-    question: response.question,
+    question,
     choices,
-    representation: isRepresentationQuestion(response.question),
-    interval: continuousInterval(response.question),
-    condition: questionCondition(response.question),
-    integers: questionIntegerParameters(response.question),
-    integerFactorExtremum: isIntegerFactorExtremumQuestion(response.question),
+    representation: isRepresentationQuestion(question),
+    interval: continuousInterval(question),
+    condition: questionCondition(question),
+    integers: questionIntegerParameters(question),
+    integerFactorExtremum: isIntegerFactorExtremumQuestion(question),
+    solutionCount: isSolutionCountCondition(question),
+    approximate: isApproximationQuestion(question),
   };
 
   const seen = new Set<TechniqueId>();
   const eligible: Omit<Method, "badges" | "rejected">[] = [];
   const rejected: (Method & { stage: string })[] = [];
-  response.candidates.forEach((candidate, index) => {
+  const taken = new Set(response.candidates.map((candidate) => candidate.techniqueId));
+  response.candidates.forEach((original, index) => {
+    const { candidate, repair } = relabel(original, context.representation, taken);
     if (seen.has(candidate.techniqueId)) {
       const rejection = reject("duplicate-technique", `${techniqueName(candidate.techniqueId)} is already listed; each candidate must be a distinct technique.`);
       rejected.push({ ...rejectedMethod(`${candidate.techniqueId}#${index + 1}`, candidate, rejection), stage: rejection.stage });
@@ -621,7 +760,7 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     seen.add(candidate.techniqueId);
     const outcome = validateCandidate(candidate, context);
     if ("rule" in outcome) rejected.push({ ...rejectedMethod(candidate.techniqueId, candidate, outcome), stage: outcome.stage });
-    else eligible.push(scored(candidate.techniqueId, outcome));
+    else eligible.push(scored(candidate.techniqueId, repair ? { ...outcome, repairs: [repair, ...outcome.repairs] } : outcome));
   });
 
   if (eligible.length === 0) {
@@ -649,9 +788,9 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
   }
   const badges = assignBadges(ranked);
   return {
-    question: response.question,
+    question,
     choices,
-    structure: response.structure.trim() || null,
+    structure,
     methods: [
       ...ranked.map((method) => ({ ...method, badges: badges.get(method.id) ?? [], rejected: null })),
       ...rejected.map(({ stage, ...method }) => {

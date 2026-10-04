@@ -400,6 +400,10 @@ line of best fit
 slope
 intercept
 prediction
+
+For where the fitted line reaches zero ("crosses the x-axis", "when will the
+tank be empty"), also graph y=mx+b and click its x-intercept; typing -b/m is
+the hand-solved formula. Three points on a line are still this linear fit.
 15. Quadratic regression from three points
 [technique: three-point-regression | Three-point regression]
 
@@ -1017,6 +1021,10 @@ prism, sphere, cone, and pyramid volumes.
 Do not create unnecessary algebra. For an unprovided niche formula such as a
 custom surface-area or coordinate-geometry shortcut, first look for polygon,
 distance, graphing, regression, or direct geometric construction in Desmos.
+An arc or sector is the fraction x/360 of the whole circle: for an unknown
+central angle with radius 9 and arc length 3\pi, graph y=2\pi(9)\frac{x}{360}
+beside y=3\pi and click the intersection (Graph both sides). s=r\theta and
+radian conversion are not on the reference sheet.
 
 TRIG
 53. Direct trig evaluation
@@ -1677,6 +1685,22 @@ The vertex is (-7/6,-25/12). The graphs meet once exactly when k cancels that
 lowest value, so k=25/12. One row and one click replace the discriminant, a
 derivative match, and the quadratic formula; flipping the sign of the clicked
 value is the only arithmetic.
+
+77. Type the arithmetic
+[technique: calculator-arithmetic | Calculator arithmetic]
+
+When the answer is a short computation from the givens, type that computation
+and read the value:
+
+540 square feet at $18 per square yard, 1 yard = 3 feet:
+18(540)/3^{2}
+
+Desmos removes the hand arithmetic, but the student still decides which
+operations to type (here, that a square yard is 3^{2} square feet), so this
+carries that setup step. Prefer a graph, list, regression, or built-in that
+lets Desmos do the setup too: graph both sides of the relationship instead of
+inverting it by hand, mean(repeat(...)) instead of a weighted-mean formula.
+Scalar rows with no function are this technique, not function evaluation.
 
 REGRESSION SAFETY
 

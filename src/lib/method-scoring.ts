@@ -161,12 +161,37 @@ export type Rankable = {
   cost: Cost;
   total: number;
   mathScore: number;
+  rows?: readonly Row[];
 };
+
+/** The technique a distinctive primitive teaches by name; generic graphs and lists name none. */
+const PRIMITIVE_TECHNIQUE: Readonly<Record<string, TechniqueId>> = {
+  "derivative regression": "derivative-regression",
+  statistics: "statistics-builtin",
+  "distance()": "distance-builtin",
+  "midpoint()": "midpoint-builtin",
+  "polygon()": "polygon-area",
+  "repeat()": "frequency-repeat",
+  "mod()": "number-theory-builtin",
+  "gcd()": "number-theory-builtin",
+  "lcm()": "number-theory-builtin",
+  "ceil()": "ceil-floor",
+  "floor()": "ceil-floor",
+};
+
+/** 0 when the rows' most distinctive primitive is the one the technique is named for, else 1. */
+function nameMismatch(method: Rankable): number {
+  if (!method.rows) return 1;
+  const primitive = primaryPrimitive(method.rows);
+  return primitive !== null && PRIMITIVE_TECHNIQUE[primitive] === method.techniqueId ? 0 : 1;
+}
 
 /**
  * Deterministic order: cheapest total first, then least math, then the lower
- * simplicity-ladder rung, then fewer rows, then the technique id. The same
- * candidate set always sorts the same way regardless of emission order.
+ * simplicity-ladder rung, then fewer rows, then the technique its rows
+ * visibly use (mean(L) - median(L) is the statistics built-in, not "evaluate
+ * over a list"), then the technique id. The same candidate set always sorts
+ * the same way regardless of emission order.
  */
 export function compareMethods(left: Rankable, right: Rankable): number {
   return (
@@ -174,6 +199,7 @@ export function compareMethods(left: Rankable, right: Rankable): number {
     left.mathScore - right.mathScore ||
     left.rung - right.rung ||
     left.cost.rows - right.cost.rows ||
+    nameMismatch(left) - nameMismatch(right) ||
     (left.techniqueId < right.techniqueId ? -1 : left.techniqueId > right.techniqueId ? 1 : 0)
   );
 }
