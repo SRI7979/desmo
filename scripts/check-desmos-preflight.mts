@@ -20,6 +20,9 @@ import { build } from "esbuild";
 
 import { loadCases } from "../evals/benchmark/load-cases";
 import { parseNumber } from "../src/lib/answer-consistency";
+import { findDerivedConstants, findProseRows, findUndefinedVariables, normalizeDesmosExpressions } from "../src/lib/desmos-latex";
+import { hasUnnecessaryCoefficientLists } from "../src/lib/regression-workflow";
+import { findListShapeViolations, findRegressionDeterminacyViolations } from "../src/lib/solver-rules";
 import { candidatesResponseSchema, selectMethods } from "../src/lib/strategy-selection";
 import { candidatesResponse, CORRECTED_ROWS, NESTED_LIST_ROWS, NO_SOLUTION_QUESTION, noSolutionCandidates, TANGENT_QUESTION, tangentCandidates } from "../tests/method-fixtures";
 
@@ -31,6 +34,30 @@ const resultsPath = args.find((arg) => arg.startsWith("--results="))?.split("=")
 const writeFixtures = args.includes("--write-fixtures");
 // --cases: also run every benchmark case's gold rows through real Desmos.
 const auditCases = args.includes("--cases");
+// --plans=<file.json>: worked examples ({ plans: [{ source, context, rows, claimedResult, sliderRows }] })
+// checked against the server's own static rules and the real engine.
+const plansPath = args.find((arg) => arg.startsWith("--plans="))?.split("=")[1] ?? null;
+type ExamplePlan = { source: string; context: string; rows: string[]; claimedResult: string; sliderRows: number[] };
+
+/** Every static server rule a candidate's rows must pass, as the reasons it would be rejected. */
+function staticFlags(plan: ExamplePlan): string[] {
+  const rows = normalizeDesmosExpressions(plan.rows.map((latex, index) => ({
+    latex,
+    purpose: "",
+    slider: plan.sliderRows.includes(index + 1) ? { min: -10, max: 10, step: 1 } : null,
+  })));
+  const flags: string[] = [];
+  const prose = findProseRows(rows);
+  if (prose.length) flags.push(`prose rows ${prose.join(",")}`);
+  for (const { row, variables } of findUndefinedVariables(rows)) flags.push(`line ${row} undefined ${variables.join(",")}`);
+  for (const violation of findListShapeViolations(rows)) flags.push(`line ${violation.row} list-shape ${violation.kind}`);
+  for (const violation of findRegressionDeterminacyViolations(rows)) flags.push(`line ${violation.row} ${violation.kind}${violation.kind === "underdetermined" ? ` (${violation.params.join(",")} vs ${violation.constraints})` : ""}`);
+  if (plan.context.trim()) {
+    for (const { row, constants } of findDerivedConstants(rows, plan.context, null)) flags.push(`line ${row} hidden-derivation numbers ${constants.join(",")}`);
+    if (hasUnnecessaryCoefficientLists(rows, plan.context)) flags.push("coefficient-lists");
+  }
+  return flags;
+}
 const chromePath = process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 
 const env = (() => { try { return readFileSync(path.join(process.cwd(), ".env.local"), "utf8"); } catch { return ""; } })();
@@ -246,6 +273,28 @@ try {
     }
     console.log(`\nBENCHMARK GOLD ROWS (${cases.length} calculator cases): ${clean} clean`);
     for (const problem of problems) console.log(`  ${problem}`);
+  }
+
+  if (plansPath) {
+    const { plans } = JSON.parse(readFileSync(plansPath, "utf8")) as { plans: ExamplePlan[] };
+    const findings: string[] = [];
+    let engineErrors = 0;
+    let staticRejects = 0;
+    for (const plan of plans) {
+      const flags = staticFlags(plan);
+      const normalized = normalizeDesmosExpressions(plan.rows.map((latex, index) => ({ latex, purpose: "", slider: plan.sliderRows.includes(index + 1) ? { min: -10, max: 10, step: 1 } : null })));
+      const checked = await check({ label: plan.source, rows: normalized.map((row) => ({ latex: row.latex, slider: row.slider ?? null })), answerState: null });
+      const engine = checked.verdict.status === "error"
+        ? checked.verdict.errors!.map((error) => `line ${error.row} ${JSON.stringify(checked.rows[error.row - 1])}: ${error.message}`).join("; ")
+        : null;
+      if (engine) engineErrors += 1;
+      if (flags.length) staticRejects += 1;
+      if (engine || flags.length) {
+        findings.push(`- ${plan.claimedResult.startsWith("COUNTER-EXAMPLE") ? "(counter-example) " : ""}${plan.source}\n    rows: ${plan.rows.join(" | ")}${flags.length ? `\n    server rules: ${flags.join("; ")}` : ""}${engine ? `\n    Desmos: ${engine}` : ""}`);
+      }
+    }
+    console.log(`\nWORKED EXAMPLES (${plans.length} plans): ${engineErrors} error in real Desmos, ${staticRejects} fail a server rule`);
+    console.log(findings.join("\n"));
   }
 
   if (writeFixtures) {
