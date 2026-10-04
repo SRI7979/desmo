@@ -534,9 +534,25 @@ async function callModel(
   return response;
 }
 
-function effortFor(retrying: boolean): ReasoningEffort {
+/** The previous response ran out of output tokens (reasoning included) before its JSON closed. */
+export function wasTruncated(rejection: Rejection | undefined): boolean {
+  return rejection?.stage === "model_output" && /max_output_tokens/.test(rejection.reason);
+}
+
+/**
+ * A correction gets at least medium effort, except after a truncation: more
+ * reasoning under the same output cap only makes a second truncation more
+ * likely, so a truncated response is retried at the configured effort with
+ * twice the cap instead.
+ */
+function effortFor(rejection: Rejection | undefined): ReasoningEffort {
   const effort = configuredReasoningEffort();
-  return retrying && (effort === "minimal" || effort === "low") ? "medium" : effort;
+  if (!rejection || wasTruncated(rejection)) return effort;
+  return effort === "minimal" || effort === "low" ? "medium" : effort;
+}
+
+export function outputTokenLimit(base: number, rejection: Rejection | undefined): number {
+  return wasTruncated(rejection) ? base * 2 : base;
 }
 
 function textProblem(input: Extract<SolveInput, { kind: "text" }>): string {
@@ -565,8 +581,8 @@ function candidateRequest(deps: PipelineDeps, input: SolveInput, rejection?: Rej
       },
     ],
     text: { format: candidateFormat, ...(isGpt5(model) ? { verbosity: "low" } : {}) },
-    ...(isGpt5(model) ? { reasoning: { effort: effortFor(Boolean(rejection)) } } : {}),
-    max_output_tokens: 8000,
+    ...(isGpt5(model) ? { reasoning: { effort: effortFor(rejection) } } : {}),
+    max_output_tokens: outputTokenLimit(8000, rejection),
     store: false,
   };
 }
@@ -587,8 +603,8 @@ function explanationRequest(deps: PipelineDeps, entry: CacheEntry, method: Metho
       },
     ],
     text: { format: explanationFormat, ...(isGpt5(model) ? { verbosity: "low" } : {}) },
-    ...(isGpt5(model) ? { reasoning: { effort: effortFor(Boolean(rejection)) } } : {}),
-    max_output_tokens: 4000,
+    ...(isGpt5(model) ? { reasoning: { effort: effortFor(rejection) } } : {}),
+    max_output_tokens: outputTokenLimit(4000, rejection),
     store: false,
   };
 }

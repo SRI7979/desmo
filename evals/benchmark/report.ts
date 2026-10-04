@@ -84,3 +84,13 @@ export function stageTable(records: RunRecord[]): string {
   const lines = [...byStage].map(([stage, values]) => `| ${stage} | ${values.length} | ${median(values)} | ${p95(values)} |`);
   return `| Stage | Runs | p50 ms | p95 ms |\n|---|---|---|---|\n${lines.join("\n")}`;
 }
+
+/** Which validation rules rejected candidates, across every scored run. */
+export function rejectionTable(records: RunRecord[]): string {
+  const counts = new Map<string, number>();
+  for (const record of records) for (const { rule } of record.rejections ?? []) counts.set(rule, (counts.get(rule) ?? 0) + 1);
+  if (!counts.size) return "_No candidate was rejected._";
+  const rescues = records.filter((record) => record.rescue).reduce<Record<string, number>>((tally, record) => ({ ...tally, [record.rescue!]: (tally[record.rescue!] ?? 0) + 1 }), {});
+  const lines = [...counts].sort((a, b) => b[1] - a[1]).map(([rule, count]) => `| ${rule} | ${count} |`);
+  return `| Rule | Rejected candidates |\n|---|---|\n${lines.join("\n")}\n\nDesmos rescues: ${Object.keys(rescues).length ? Object.entries(rescues).map(([outcome, count]) => `${outcome} ${count}`).join(", ") : "none"}.`;
+}

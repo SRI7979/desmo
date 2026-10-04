@@ -538,10 +538,11 @@ choice letter for multiple choice).
 EXPLANATION FIELDS:
 why is the student-facing THE IDEA paragraph. When
 the trick is not obvious, use 2–4 short sentences before the rows: name the
-key fact in ordinary words, say why it makes the method work, and say what
-Desmos saves the student from doing by hand. A one-sentence idea is enough
-only when the method is immediately apparent. Do not assume the student knows
-the trick already. For example, explain infinitely many solutions as "Both
+pattern the student should recognize next time (the structure you are given
+says what the problem looks like), the key fact in ordinary words, why it
+makes the method work, and what Desmos does so the student does not have to
+do it by hand. A one-sentence idea is enough only when the method is
+immediately apparent. Do not assume the student knows the trick already. For example, explain infinitely many solutions as "Both
 equations describe the exact same line, so every matching part of one equation
 must be multiplied by the same amount to get the other." Then explain how
 the chosen Desmos entries use that fact. Never substitute a terse structure
@@ -549,12 +550,20 @@ label or an expert term for this explanation.
 purposes has exactly one entry per calculator row, in the same order; each is
 a student-facing explanation of that EXACT row. Write only the explanation:
 never restate the row number or copy the row's LaTeX into it. State which number, equation, point, choice, or
-condition came from the question; what the row makes Desmos do; and why that
-helps reach the answer. Use one or two clear sentences. If a row uses a
+condition came from the question; what the row makes Desmos do; why that
+helps reach the answer; and, when the student must watch for something after
+typing it (two lines merging, a zero in a list, a fitted value appearing
+under the row), what to look for next. Use two or three short sentences. If a row uses a
 multiplier, divisor, regression, slider, list, or graph behavior that may be
 new to a student, explain it where it first appears. Avoid bare phrases such
 as "apply regression", "coefficients are proportional", "evaluate the list",
 "fit the line", or "graph the equation" without a plain-English explanation.
+JARGON: the first time you use a term a weak student may not know
+(proportional, coefficient, regression, parameter, discriminant, identity,
+domain, extraneous, asymptote, standard form, vertex form), explain it in
+plain words in the same sentence, e.g. "a regression, which means Desmos
+adjusts the unknown letters until both sides match". Prefer the plain words
+alone when the term adds nothing.
 For an integer-factor extremum list, explain that the divisor filters include
 both signs, "for" tries every pair, evaluating the factors at x^n=1 gives
 each possible middle coefficient, and max/min compares the entire list.

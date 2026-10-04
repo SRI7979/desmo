@@ -52,6 +52,7 @@ export function explanationInput(entry: CacheEntry, method: Method): string {
   const lines = [
     `Question: ${entry.question}`,
     `Answer choices: ${choices}`,
+    entry.structure ? `Structure the student should recognize: ${entry.structure}` : null,
     `Technique: ${method.name}`,
     `Answer: ${method.answer}`,
     `Readout: ${readout}`,

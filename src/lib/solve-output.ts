@@ -48,6 +48,12 @@ function zodIssues(error: { issues: { path: PropertyKey[]; message: string }[] }
   return error.issues.map((issue) => `${issue.path.map(String).join(".")}: ${issue.message}`).join("; ");
 }
 
+/** A row Desmos draws in the plane: an equation or inequality in x and/or y. */
+function isGraphRow(row: unknown): boolean {
+  const latex = row && typeof row === "object" ? (row as { latex?: unknown }).latex : null;
+  return typeof latex === "string" && /[=<>]|\\le|\\ge/.test(latex) && /(?<![A-Za-z\\])[xy](?![A-Za-z_])/.test(latex) && !/\\sim|~/.test(latex);
+}
+
 /** Only metadata that already follows from a candidate's own plan is repaired. */
 function repairCandidates(input: unknown): { value: unknown; repairs: string[] } {
   const repairs: string[] = [];
@@ -98,6 +104,30 @@ function repairCandidates(input: unknown): { value: unknown; repairs: string[] }
       }
     }
     const rowCount = Array.isArray(item.rows) ? item.rows.length : 0;
+    // Readout-type slips whose meaning is unambiguous from the result itself.
+    if (result.type === "numeric" && typeof result.listIndex === "number" && typeof result.value === "number" && result.answerFrom !== "reasoning") {
+      // A numeric readout that names a list entry is a list entry.
+      result.type = "list_entry";
+      repairs.push(`Candidate ${index + 1}: a numeric result reading entry ${result.listIndex} of a list was relabeled list_entry.`);
+    }
+    const graphical = typeof result.type === "string" && !["numeric", "list_entry", "written"].includes(result.type);
+    if (graphical && result.answerFrom === "choice_position" && typeof result.choiceLabel === "string" && result.choiceLabel && (result.listIndex === null || result.listIndex === undefined)) {
+      // A graph cannot select by list position; the named choice is the reasoning's conclusion.
+      result.answerFrom = "reasoning";
+      repairs.push(`Candidate ${index + 1}: a graphical result naming choice ${result.choiceLabel} reads it by reasoning, not by list position.`);
+    }
+    if (
+      (result.type === "intersection" || result.type === "graph_overlap") &&
+      rowCount === 2 &&
+      (item.rows as unknown[]).every((row) => isGraphRow(row)) &&
+      typeof result.row === "number" &&
+      Array.isArray(result.relatedRows) &&
+      result.relatedRows.filter((row) => row !== result.row).length === 0
+    ) {
+      // With exactly two rows, the other graph is the only one the result can mean.
+      result.relatedRows = [result.row === 1 ? 2 : 1];
+      repairs.push(`Candidate ${index + 1}: the ${result.type} names its only other row, ${result.row === 1 ? 2 : 1}.`);
+    }
     if (typeof result.row === "number" && result.row >= 1 && result.row <= rowCount) {
       set(result, "detail", `the output on line ${result.row}`);
     }

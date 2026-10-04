@@ -25,7 +25,7 @@ import { configuredReasoningEffort, createTrace, loadSolveContext, solveProblem,
 import type { LoadedCase } from "./benchmark/case-schema";
 import { loadCases } from "./benchmark/load-cases";
 import { recordRun } from "./benchmark/record";
-import { metricsTable, perCaseTable, stageTable } from "./benchmark/report";
+import { metricsTable, perCaseTable, rejectionTable, stageTable } from "./benchmark/report";
 import { summarizeByGroup, type RunRecord } from "./benchmark/score";
 
 function parseArgs() {
@@ -120,6 +120,10 @@ async function main() {
     "## Where the time goes (per solve)",
     "",
     stageTable(records),
+    "",
+    "## Validation rejections",
+    "",
+    rejectionTable(records),
     "",
     "## Per case",
     "",
