@@ -211,7 +211,7 @@ test("010/040: the recorded first attempts solve with a single candidates call",
 // --- From the run after the first round of fixes ------------------------------
 
 const secondRun: Record<string, CandidatesResponseInput> = fixture("live-benchmark-later-runs.json");
-const secondOutput = (prefix: string) => secondRun[Object.keys(secondRun).find((id) => id.startsWith(prefix))!];
+const secondOutput = (prefix: string) => secondRun[Object.keys(secondRun).find((id) => id.startsWith(prefix))!] ?? secondRun[prefix];
 const selectSecond = (prefix: string) => selectMethods(validateCandidatesResponse(providerBody(secondOutput(prefix))).parsed);
 
 test("063: a filtered choice list's entry 1 is the value it shows, not choice A", () => {
@@ -313,4 +313,11 @@ test("050: at equal cost, the method that works without the choices beats a choi
   const selection = eligible(selectSecond("050"));
   assert.equal(selection[0].techniqueId, "function-evaluation");
   assert.ok(selection.some((method) => method.techniqueId === "answer-choice-list"), "still listed as an alternative");
+});
+
+test("063: a choice label carrying the start of its text (\"B) $\") is that letter, so the filtered entry reads as B", () => {
+  // The same filter as before, but with choiceLabel "B) $": the label matched
+  // no choice, so entry 1 of the filtered list was read as choice A) $360.
+  const selection = selectMethods(validateCandidatesResponse(providerBody(secondRun["063-square-feet-to-square-yards-cost#ab-1"])).parsed);
+  for (const method of eligible(selection)) assert.equal(method.answer, "B) $1,080", method.techniqueId);
 });

@@ -140,6 +140,14 @@ function repairCandidates(input: unknown): { value: unknown; repairs: string[] }
       result.choiceLabel = stated;
       repairs.push(`Candidate ${index + 1}: the readout's choice label was taken from its answer, ${stated}.`);
     }
+    // "B) $" or "B) ρ": the label field carried the start of the choice's text; its letter is the label.
+    const prefixed = typeof result.choiceLabel === "string" && result.choiceLabel.trim().length > 1
+      ? /^\s*\(?([A-H])\s*[).:]/i.exec(result.choiceLabel)
+      : null;
+    if (prefixed && labels.includes(prefixed[1].toUpperCase())) {
+      repairs.push(`Candidate ${index + 1}: the choice label "${result.choiceLabel}" was read as ${prefixed[1].toUpperCase()}.`);
+      result.choiceLabel = prefixed[1].toUpperCase();
+    }
     // Readout-type slips whose meaning is unambiguous from the result itself.
     if (result.type === "numeric" && typeof result.listIndex === "number" && typeof result.value === "number" && result.answerFrom !== "reasoning") {
       // A numeric readout that names a list entry is a list entry.

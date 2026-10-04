@@ -1539,5 +1539,141 @@
       }
     ],
     "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "063-square-feet-to-square-yards-cost#ab-1": {
+    "status": "solved",
+    "question": "A rectangular floor has an area of 540 square feet. Carpet for the floor costs $18 per square yard. If 1 yard = 3 feet, what is the total cost of the carpet needed to cover the floor exactly?\nAnswer choices: A) $360, B) $1,080, C) $3,240, D) $9,720",
+    "choices": [
+      {
+        "label": "A",
+        "text": "$360"
+      },
+      {
+        "label": "B",
+        "text": "$1,080"
+      },
+      {
+        "label": "C",
+        "text": "$3,240"
+      },
+      {
+        "label": "D",
+        "text": "$9,720"
+      }
+    ],
+    "clarification": null,
+    "structure": "Convert square feet to square yards (divide by 3^2), then multiply by cost per square yard.",
+    "candidates": [
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 1,
+          "value": 1080,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B) $",
+          "detail": "total cost in dollars",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "C=[360,1080,3240,9720]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "cost=18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "C[C=cost]",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 3,
+          "value": 1080,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B) $",
+          "detail": "matching choice value",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) $1,080",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B) $",
+          "detail": "540 ft^2 = 540/9 = 60 yd^2; 60*18=1080",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
   }
 }
