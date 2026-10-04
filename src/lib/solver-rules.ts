@@ -170,6 +170,64 @@ export type RegressionDeterminacyViolation =
   | { row: number; kind: "underdetermined"; freeParams: number; constraints: number; params: string[] }
   | { row: number; kind: "mismatched_lists"; lengths: Record<string, number> };
 
+/** Identifier tokens (a, y_{1}, x_1) with their positions, outside \operatorname{...} and other commands. */
+function identifierTokens(latex: string): { name: string; start: number; end: number }[] {
+  const tokens: { name: string; start: number; end: number }[] = [];
+  const pattern = /\\[A-Za-z]+(?:\{[^{}]*\})?|([A-Za-z](?:_\{[A-Za-z0-9]+\}|_[A-Za-z0-9])?)/g;
+  for (const match of latex.matchAll(pattern)) {
+    if (!match[1]) continue;
+    tokens.push({ name: match[1].replace(/_([A-Za-z0-9])$/, "_{$1}"), start: match.index!, end: match.index! + match[0].length });
+  }
+  return tokens;
+}
+
+/** Maximal runs of juxtaposed identifiers ("sy_{1}" is [s, y_{1}]); a run touching ^, (, or a command is not a plain product. */
+function productRuns(latex: string): string[][] {
+  const tokens = identifierTokens(latex);
+  const runs: { names: string[]; start: number; end: number }[] = [];
+  for (const token of tokens) {
+    const last = runs.at(-1);
+    if (last && last.end === token.start) {
+      last.names.push(token.name);
+      last.end = token.end;
+    } else runs.push({ names: [token.name], start: token.start, end: token.end });
+  }
+  return runs.map((run) => (/^[\^(\\]/.test(latex.slice(run.end)) || /\\[A-Za-z]*$/.test(latex.slice(0, run.start)) ? [...run.names, "\u0000"] : run.names));
+}
+
+/**
+ * Free parameters that only ever appear multiplied together, in every row of
+ * the plan (s and y_{1} in 7rx_{1}+12sy_{1}): the data can only fix their
+ * product, so they are one degree of freedom, and the requested parameter
+ * (r) can still be identified. Never merged when any row uses one of them
+ * on its own (a readout of s would show an arbitrary split of the product).
+ */
+function productMerges(rows: readonly string[], free: ReadonlySet<string>): number {
+  const runs = rows.flatMap(productRuns);
+  const partners = new Map<string, Set<string>>();
+  for (const name of free) {
+    const containing = runs.filter((run) => run.includes(name));
+    if (!containing.length) continue;
+    // The free parameters beside this one in EVERY run that contains it.
+    const together = containing.some((run) => run.includes("\u0000"))
+      ? new Set<string>()
+      : containing
+          .map((run) => new Set(run.filter((other) => other !== name && free.has(other))))
+          .reduce((common, others) => new Set([...common].filter((other) => others.has(other))));
+    if (together.size) partners.set(name, together);
+  }
+  // Merge mutually inseparable parameters into groups; each group of k counts once.
+  const seen = new Set<string>();
+  let merges = 0;
+  for (const [name, group] of partners) {
+    if (seen.has(name)) continue;
+    const members = [name, ...[...group].filter((other) => partners.get(other)?.has(name))];
+    members.forEach((member) => seen.add(member));
+    merges += members.length - 1;
+  }
+  return merges;
+}
+
 export function findRegressionDeterminacyViolations(
   expressions: ReadonlyArray<{ latex: string }>,
 ): RegressionDeterminacyViolation[] {
@@ -226,7 +284,8 @@ export function findRegressionDeterminacyViolations(
     if (constraintCandidates.length === 0) return; // no evidence either way; do not false-positive
     const constraints = Math.max(...constraintCandidates);
 
-    if (free.size > constraints) {
+    const effective = free.size - productMerges(expressions.map((expression) => expression.latex), free);
+    if (effective > constraints) {
       violations.push({
         row: index + 1,
         kind: "underdetermined",

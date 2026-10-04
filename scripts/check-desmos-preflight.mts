@@ -171,6 +171,8 @@ try {
     ...methodPlans("tangent", tangentCandidates(), TANGENT_QUESTION),
     ...methodPlans("no solution", noSolutionCandidates(), NO_SOLUTION_QUESTION),
     { label: "mismatched literal sides", rows: plainRows(["[a+b,c]\\sim[1,2,3]", "a"]), answerState: null },
+    // s and y_1 enter only as their product; Desmos must still fit r = 3.
+    { label: "small-system bracket regression (product unknowns)", rows: plainRows(["x_{1}=2", "[7rx_{1}+12sy_{1},3rx_{1}+4sy_{1}]\\sim[3,5]", "r"]), answerState: null },
   ];
   const fixtureResults: Checked[] = [];
   for (const plan of fixtures) fixtureResults.push(await check(plan));
