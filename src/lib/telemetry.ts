@@ -14,7 +14,8 @@ export type EventName =
   | "method_switched"
   | "cap_hit"
   | "ceiling_hit"
-  | "upload_rejected";
+  | "upload_rejected"
+  | "tutor_explained";
 
 /** What a failed solve needs to be debugged: which problem, whose, which technique, which call. */
 export type TelemetryContext = {

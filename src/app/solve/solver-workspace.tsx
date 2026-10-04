@@ -95,6 +95,8 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   const [dragging, setDragging] = useState(false);
   const [revision, setRevision] = useState(0);
   const [problemId, setProblemId] = useState<string | null>(null);
+  // The solve the shown methods come from, for the tutor ("Explain this", "Save this trick").
+  const [cacheKey, setCacheKey] = useState<string | null>(null);
   const [historyWarning, setHistoryWarning] = useState<string | null>(null);
   const [needsSignIn, setNeedsSignIn] = useState(false);
   // A daily limit or a full day's capacity: information, not an error.
@@ -156,6 +158,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
     setSelectedMethodId(null);
     setExplanationStatus("ready");
     setProblemId(null);
+    setCacheKey(null);
     setHistoryWarning(null);
   }, []);
 
@@ -323,6 +326,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
       streamMethodId: options.retried || options.distrust ? null : payload.selectedMethodId,
     };
     setMethods(payload.methods);
+    setCacheKey(payload.cacheKey);
     setVerdicts({});
     const reports: ReportedVerdict[] = [];
     const run = await preflightInRankOrder(payload.methods, preflight, {
@@ -698,7 +702,12 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                 </div>
               ) : solution ? (
                 <>
-                  <SolutionExplanation solution={solution} explanationStatus={explanationStatus} onRetryExplanation={retryExplanation} />
+                  <SolutionExplanation
+                    solution={solution}
+                    explanationStatus={explanationStatus}
+                    onRetryExplanation={retryExplanation}
+                    tutorSource={solution.status === "solved" && cacheKey && selectedMethodId ? { kind: "solve", cacheKey, methodId: selectedMethodId } : undefined}
+                  />
                   {problemId && (
                     <p className={styles.savedNotice} role="status">
                       Saved to <Link href={`/history/${encodeURIComponent(problemId)}`}>your history</Link>.

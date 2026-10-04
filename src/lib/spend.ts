@@ -11,7 +11,8 @@ import { costUsd, rateFor, usageFrom, type Usage } from "./model-pricing";
  * so reaching a limit never locks a student out of work they already have.
  */
 
-export type ModelCall = "candidates" | "explanation" | "desmos_retry";
+/** "tutor": an "Explain this" answer about a solution the student already has. */
+export type ModelCall = "candidates" | "explanation" | "desmos_retry" | "tutor";
 
 export type UsageRecord = {
   solveId: string;
@@ -86,7 +87,7 @@ export type CallOutcome =
 export type Meter = {
   /** Before the first model call of a NEW problem: the global ceiling, then the user's daily slot. */
   authorizeSolve(): Promise<void>;
-  /** Before extra model work on an existing problem (the Desmos retry): the global ceiling only. */
+  /** Before extra model work on an existing problem (the Desmos retry, a tutor answer): the global ceiling only. */
   authorizeRetry(): Promise<void>;
   record(call: ModelCall, outcome: CallOutcome): Promise<UsageRecord>;
   setCacheKey(cacheKey: string): void;
