@@ -123,3 +123,21 @@ test("a graphical readout that names a choice by list position reads it by reaso
   const { parsed } = validateCandidatesResponse(providerBody(candidatesResponse([slider], { choices })));
   assert.equal(parsed.candidates[0].result.answerFrom, "reasoning");
 });
+
+test("an answer written as a choice letter supplies an empty readout label, and only a real choice's", () => {
+  const choices = [{ label: "A", text: "5" }, { label: "B", text: "7" }];
+  const clicked = (answer: string) =>
+    graphCandidate({
+      techniqueId: "graph-both-sides",
+      rows: [{ latex: "y=x^2-4x+1", slider: null, copiesRow: null }, { latex: "y=2x+8", slider: null, copiesRow: null }],
+      answer,
+      result: { type: "intersection", row: 1, relatedRows: [2], value: null, listIndex: null, answerFrom: "reasoning", choiceLabel: null, detail: "the right intersection's x-coordinate" },
+    });
+  const label = (answer: string) => validateCandidatesResponse(providerBody(candidatesResponse([clicked(answer)], { choices }))).parsed.candidates[0].result.choiceLabel;
+  assert.equal(label("B) 7"), "B");
+  assert.equal(label("(B) 7"), "B");
+  assert.equal(label("B"), "B");
+  assert.equal(label("E) 9"), null, "not a transcribed choice");
+  assert.equal(label("7"), null);
+  assert.equal(label("Both lines"), null, "a word starting with a letter is not a label");
+});

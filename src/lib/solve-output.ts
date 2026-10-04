@@ -104,6 +104,16 @@ function repairCandidates(input: unknown): { value: unknown; repairs: string[] }
       }
     }
     const rowCount = Array.isArray(item.rows) ? item.rows.length : 0;
+    // An answer written "C) 7" names its choice even when the readout's label was left empty.
+    const labels = Array.isArray(value.choices)
+      ? (value.choices as unknown[]).flatMap((choice) => (choice && typeof choice === "object" && typeof (choice as { label?: unknown }).label === "string" ? [(choice as { label: string }).label.trim().toUpperCase()] : []))
+      : [];
+    const letter = typeof item.answer === "string" ? /^\s*(?:\(([A-H])\)|([A-H])(?:[).:]|$))/i.exec(item.answer) : null;
+    const stated = (letter?.[1] ?? letter?.[2])?.toUpperCase();
+    if ((result.choiceLabel === null || result.choiceLabel === undefined) && stated && labels.includes(stated) && result.answerFrom !== "choice_position") {
+      result.choiceLabel = stated;
+      repairs.push(`Candidate ${index + 1}: the readout's choice label was taken from its answer, ${stated}.`);
+    }
     // Readout-type slips whose meaning is unambiguous from the result itself.
     if (result.type === "numeric" && typeof result.listIndex === "number" && typeof result.value === "number" && result.answerFrom !== "reasoning") {
       // A numeric readout that names a list entry is a list entry.
