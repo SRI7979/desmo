@@ -384,3 +384,9 @@ test("a number times a fraction keeps its operator, so it never displays as a mi
   assert.equal(normalized("18\\cdot\\frac{540}{9}"), "18\\cdot\\frac{540}{9}");
   assert.equal(normalized("a\\cdot\\frac{1}{2}"), "a\\frac{1}{2}", "a letter before a fraction is still implicit multiplication");
 });
+
+test("a product of the graph coordinates is an equation, never a multi-letter name", () => {
+  const normalized = (latex: string) => normalizeDesmosExpressions([{ latex, purpose: "" }])[0].latex;
+  assert.equal(normalized("xy=12"), "xy=12");
+  assert.equal(normalized("diff=3"), "d_{iff}=3", "an invented name is still renamed");
+});

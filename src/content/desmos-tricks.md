@@ -174,12 +174,14 @@ y=3x+7
 
 Then click intersection x-values.
 
-Even simpler for one variable: type the equation exactly as written,
-x^2+4x+1=3x+7. Desmos draws a vertical line at each solution, so there is
-nothing to rearrange or split into sides; a one-variable inequality such as
-x^2-5x+6<0 shades the band of solutions. Rename the problem's variable to x
-first (t, n, or w are not graph coordinates), and zoom out before concluding
-there is no solution.
+For a polynomial equation of degree 2 or less in one variable, typing it
+exactly as written (x^2+4x+1=3x+7) also works: Desmos draws a labeled
+vertical line at each solution, and a one-variable inequality such as
+x^2-5x+6<0 shades the band of solutions. Desmos does NOT label the lines for
+rational, radical, absolute-value, exponential, or cubic equations, and an
+identity draws nothing (just like a contradiction), so for those use the two
+graphed sides above. Rename the problem's variable to x first (t, n, or w are
+not graph coordinates), and zoom out before concluding there is no solution.
 
 This works for equations involving:
 

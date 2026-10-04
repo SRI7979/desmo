@@ -63,7 +63,8 @@ function normalizeMultiLetterNames(latexRows: readonly string[]): string[] {
   const renames = new Map<string, string>();
   for (const latex of latexRows) {
     const name = latex.match(multiLetterDefinition)?.[1];
-    if (name && !reservedWords.has(name as (typeof namedBuiltins)[number])) {
+    // xy=12 is the hyperbola x·y=12, not a name: the graph coordinates never form one.
+    if (name && !/^[xy]+$/.test(name) && !reservedWords.has(name as (typeof namedBuiltins)[number])) {
       renames.set(name, `${name[0]}_{${name.slice(1)}}`);
     }
   }

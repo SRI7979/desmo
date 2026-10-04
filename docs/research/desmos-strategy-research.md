@@ -36,7 +36,7 @@ in a search-engine summary of the page, which can paraphrase badly.
 |---|---|---|
 | Scott Robinson / @scottsSATprep. Skool community https://www.skool.com/scotts-sat-prep-2430 ; free guide https://desmos.scottssatprep.com/ and https://desmosguide.scottssatprep.com/ ; guide PDF https://www.scribd.com/document/975081603/ScottsSATprep-s-SAT-Math-Desmos-Master-Guide ; course https://www.oneprep.com/course/sat-math-walkthrough-videos ; tutoring https://www.scottssatprep.com/ ; TikTok https://www.tiktok.com/@scottssatprep/video/7512645992102087967 and https://www.tiktok.com/@scottssatprep/video/7540017470363536670 | Identity: 1580 scorer, four 800 Math scores, active on YouTube, TikTok and Instagram. The guide covers single-variable equations, systems, regression and inequalities, plus planning and strategic skipping. Video topics: swap "=" for "~" to solve for a variable; drag a slider until the graph has exactly one solution; identity regression on `x_1=random(10)`, then type `a+b+c`; list regression for percentage word problems with several unknowns, plus a workaround for a "% of" quirk; a video titled "Broken Desmos Method: What's Going On?" whose content is unknown. | B (S) |
 | 1600.io Desmos course https://1600.io/courses/1698988 ; lecture "Using Regression to Find Both Solutions to a Quadratic Equation" https://1600.io/courses/1698988/lectures/47466973 | A second search summary says the lecture treats graphing as the usual default. Graph decimals cannot give exact forms such as -3+√11, so the lecture teaches a regression setup that recovers BOTH solutions exactly. The draft's paraphrase "graphing is usually better when both roots are needed" is not supported and was removed. That a plain regression returns only one root is verified directly in Desmos instead: `p^{2}-3p\sim10` returns only p=-2. | B (S) |
-| r/Sat "Official Desmos thread" (moderator comments; the regression wording matches 1600.io's). Mirror: https://cal1.lr.ggtyler.dev/r/Sat/comments/1c8at7a/official_desmos_thread | Bracket regression for systems (left sides in one list, right sides in another). Desmos lets you click the TOP and BOTTOM points of a circle but not the left or right points (confirmed in Desmos 1.11.4 by the fact-check). To test "infinitely many", hide one graph and see whether the other was on top of it. | B (S) |
+| r/Sat "Official Desmos thread" (moderator comments; the regression wording matches 1600.io's). Mirror: https://cal1.lr.ggtyler.dev/r/Sat/comments/1c8at7a/official_desmos_thread | Bracket regression for systems (left sides in one list, right sides in another). Clicking a circle exposes its highest and lowest points as clickable points, but not its leftmost or rightmost points (confirmed in Desmos 1.11.4 by the fact-check). To test "infinitely many", hide one graph and see whether the other was on top of it. | B (S) |
 | Mike McClenathan (PWN the SAT / MathChops), https://mathchops.substack.com/p/a-five-minute-dsat-desmos-intro | A mean-equals-median question for an unknown is typed as ONE line, `mean(2,3,4,5,x)=median(2,3,4,5,x)`, and read from the graph. A second search summary agrees. | B (S) |
 | Desmos Help, "Nonlinear Regressions": https://help.desmos.com/hc/en-us/articles/360042428612-Nonlinear-Regressions | Regressions can stop at a local minimum. Initial guesses fall between -5000 and 5000, concentrated near 0, so rescale data whose parameters are large. Parameters can be restricted inside the regression, e.g. `y_1~ax_1^b{1<b<5}`. A second search did not find the ±5000 range, so treat it as unconfirmed. The restriction works in Desmos 1.11.4: `p^{2}-3p\sim10\{p>0\}` returns 5. | A (S) |
 | Desmos Help, "List Operations": https://help.desmos.com/hc/en-us/articles/43732228059533-List-Operations | `repeat(list, counts)` is a documented public function. | A (S) |
@@ -123,10 +123,13 @@ and technique id, with a verdict: adequate, weak, missing, or contradicts.
   printed in the problem. The extra crossing there is the extraneous root.
 - Why: no back-substitution step, and no squaring by hand.
 - Prim: graphing (W).
-- Not when: the draft said the squared version must be given or derived.
-  That is too strict. When the problem never prints it, the extraneous root is
+- Not when: nothing was squared or cleared of denominators, so nothing can
+  be extraneous. The draft also excluded problems that never print the
+  squared version, which is too strict for radicals. The extraneous root is
   where the other branch `y=-\sqrt{x+7}` meets `y=x-5`. That intersection is
-  labelled (2,-3) (verified), and nothing has to be squared by hand.
+  labelled (2,-3) (verified), and nothing has to be squared by hand. For a
+  rational equation, the extraneous candidates are the excluded values (#73's
+  denominator condition).
 - Ex: *How many solutions does √(x+7) = x-5 have, and which value from the
   squared equation is extraneous?* Answer: **one solution, x=9**; **2 is
   extraneous**.
@@ -302,7 +305,7 @@ and technique id, with a verdict: adequate, weak, missing, or contradicts.
   entry is the answer.
 - Why: no radical simplification.
 - Prim: lists (W); `distance()` is a new primitive in the cost model.
-- Not when: two choices agree to 4 decimals (rare). A student-produced
+- Not when: two choices agree to the displayed decimals (rare). A student-produced
   response that requires an exact form cannot be entered from a decimal.
 - Ex: *What is the distance between (-1,4) and (5,-2)? A) 2√6 B) 6√2 C) 12
   D) 6√3.* Answer **6√2**.
@@ -771,34 +774,41 @@ Each item is tagged with the library strategy number, or NEW.
 
 **P1: high value, low risk**
 1. **[NEW under #2/#3, `graph-raw`]** Add "Type a one-variable equation as
-   written" (E1): vertical lines at the solutions, the rename-to-x rule, and
-   zooming out before concluding "no solution". Fold in one-variable
-   inequalities (a shaded band) and the one-row statistic equation (E6).
-2. **[#44 vs routing, `desmos-tricks.md` line 44]** Fix the contradiction:
-   line 44 says "List the 2–4 genuinely distinct techniques", while the
-   routing section (line 1689), `solver-instructions.ts` and PHILOSOPHY.md all
-   say "up to six". Change line 44 to "every technique that validly solves
-   it, up to six".
+   written" (E1). Cover the vertical lines at the solutions, the rename-to-x
+   rule, and the verified label limit: polynomial equations up to degree 2
+   get labelled crossings, other forms do not, so use #3 for a labelled
+   value. A blank graph is ambiguous: identity, contradiction and off-screen
+   solutions all look the same. Fold in one-variable inequalities (a shaded
+   band) and the statistic-as-a-function idea (E6), using the labelled
+   two-row form.
+2. **[policy paragraph vs routing, `desmos-tricks.md` line 44]** Fix the
+   contradiction: line 44 says "List the 2–4 genuinely distinct
+   techniques", while the routing section (line 1695; the draft said 1689),
+   `solver-instructions.ts` and PHILOSOPHY.md all say "up to six". Change
+   line 44 to "every technique that validly solves it, up to six".
 3. **[#36]** Trim the expanded-circle regression to 3 non-collinear samples
-   (E3 shows a unique fit). Add the top/bottom-click method as the
-   first-listed candidate once a Desmos run confirms the points are labelled.
+   (E3 shows a unique fit; Desmos returns h=-4, k=3, q=49). Add the
+   top/bottom-click method as the first-listed candidate. Its labelled points
+   are now confirmed in Desmos 1.11.4; Bluebook is still unverified.
 4. **[#60]** State that "which expression is equivalent" with fully numeric
    choices routes to strategic-value testing or an overlay (E4). Identity
    regression is for unknown constants. Add the holes caveat.
-5. **[#57, slider-parallel, solver-instructions INTEGER PARAMETERS /
-   VISUAL AND SLIDER ENDINGS]** Add a grid rule: a slider method is valid only
+5. **[#57 `slider-condition`, #61 `slider-parallel`, solver-instructions
+   INTEGER PARAMETERS / VISUAL AND SLIDER ENDINGS]** Add a grid rule: a slider method is valid only
    if the answer lies on min + n·step. Otherwise list a choice-per-row graph
    or an exact regression (E19). The server can check
    `answerState.value` against the slider field.
-6. **[RELIABILITY, #9, #18]** Add: "never multiply, divide or power clicked
-   decimals; fit the factored form or compute in a row" (E15). Also add
-   "match radical or fraction choices by listing their decimals" (E8, under
-   #49).
+6. **[RELIABILITY, #9, #18]** Add: "when an exact value is needed, prefer a
+   fitted parameter or a computed row to retyping clicked decimals" (E15).
+   The draft's "never" was too strong, because labels carry 5 decimals and
+   the drift is about 1e-6 there. Also add "match radical or fraction choices
+   by listing their decimals" (E8, under #49).
 7. **[#57, #61, solver-instructions "Parallel/no-solution" pattern]** A graph
    row that broadcasts a list of choices draws every member in one color.
-   Require a numeric discriminator row, or one row per choice, whenever the
-   student must identify which choice shows the feature. The current
-   "the overlapping choice is the impossible one" instruction gives the
+   This is verified in Desmos 1.11.4. Require a numeric discriminator row,
+   or one row per choice, whenever the student must identify which choice
+   shows the feature. The current "the overlapping choice is the impossible
+   one" instruction (`solver-instructions.ts` line 438, #61) gives the
    student no way to tell which one that is.
 8. **[#17]** Generalize parameter regression into "tilde-solve" (E18). Cover
    any single equation in a non-x letter, the one-branch warning, and the
@@ -808,7 +818,8 @@ Each item is tagged with the library strategy number, or NEW.
 9. **[NEW, near #74]** Nuisance constant: set any legal value and drag once
    to show the answer is unchanged (E5).
 10. **[NEW, near #45–48]** Graph a statistic as a function of the unknown
-    (E6). Mention that it finds every case at once.
+    (E6), using the two-row `y=mean(...)`, `y=median(...)` form so the
+    crossings are labelled. Mention that it finds every case at once.
 11. **[#16/#41]** Rate over a different period: f(1)/f(0), or f(1/12)/f(0)
     for monthly (E7).
 12. **[NEW, near #68]** Construct a triangle from its side lengths with two
@@ -820,8 +831,10 @@ Each item is tagged with the library strategy number, or NEW.
 16. **[NEW, near #33/#34/#71]** Tangent to a circle: one row per choice, or
     the half-circle derivative for student-produced responses (E13).
 17. **[#72/#60]** Remainder or quotient by identity regression (E17).
-18. **[#3]** Extraneous-root trigger (E2). **[#29]** Boundary margin lists
-    (E14). **[#41]** Model-type recognition by fit (E16).
+18. **[#3]** Extraneous-root trigger (E2), including the other-branch graph
+    `y=-\sqrt{...}` that shows the extraneous root without squaring.
+    **[#29]** Boundary margin lists (E14). **[#41]** Model-type recognition
+    by fit (E16).
 
 **P3: scoring and safety**
 19. **[method-scoring]** Add a typing-length surcharge (for example +1 per 40
@@ -830,9 +843,11 @@ Each item is tagged with the library strategy number, or NEW.
 20. **[method-scoring]** Count `for` comprehensions, `join` and chained
     filters as a new primitive. Count copying a fitted equation into a new
     row ("freezing") as a manual iteration.
-21. **[REGRESSION SAFETY]** Add rescaling (the ±5000 initial-guess range),
-    parameter restrictions as a branch selector (not a constraint), and
-    log-mode awareness for exponential fits.
+21. **[REGRESSION SAFETY]** Add rescaling for nonlinear fits (the ±5000
+    initial-guess range is unconfirmed), parameter restrictions as a branch
+    selector (verified: `\left\{p>0\right\}` picks 5 over -2), a collinearity
+    check before a circle fit (collinear points return a huge circle, not an
+    error), and log-mode awareness for exponential fits.
 22. **[#61, #72, #36]** Demote the multi-stage constructions to alternatives
     when a 1–3 row graph read exists (d.2).
 23. **[#12 vs line 64]** Reconcile the endpoint rule. #12 says always add
@@ -842,26 +857,47 @@ Each item is tagged with the library strategy number, or NEW.
     `distance()` or `midpoint()`, confirm they exist in the Bluebook build.
     Keep a fallback in each strategy: `\operatorname{total}(VF)/\operatorname{total}(F)`
     for repeat, and the Pythagorean form or averages for distance and
-    midpoint.
+    midpoint. (`distance()` runs in the embedded API build, verified.)
+25. **[#68, `polygon-area`] (added by the fact-check)** #68 tells the student
+    to "read the area Desmos displays for the polygon". In the embedded
+    Desmos 1.11.4 a `polygon()` row draws the shape but displays no area, and
+    `area()` errors with "This calculator does not support the 'area'
+    function" (verified). Until that is fixed, #68 and the `polygon-area`
+    technique cannot produce an answer in the app. Rework it, for example by
+    plotting the polygon and reading a base and height for the
+    reference-sheet ½bh, or remove it.
 
 **Benchmark seeds (case-schema field values; all problems original)**
 
 | Ex | domain | expectedResultType | gold | acceptable | bad (why) | routing flags |
 |---|---|---|---|---|---|---|
-| E1 | Advanced Math | x_intercept | graph-raw | graph-both-sides, intercept-read | quadratic-formula (needs cross-multiplying first) | none |
+| E1 | Advanced Math | intersection | graph-both-sides | graph-raw, intercept-read | quadratic-formula (needs cross-multiplying first) | none |
 | E3 | Geometry and Trigonometry | vertex | graph-raw | expanded-circle | completing-the-square (hand algebra the click avoids) | none |
 | E4 | Advanced Math | list_entry | strategic-value-test | graph-each-choice, identity-regression | factoring (4 hand steps) | none |
 | E5 | Advanced Math | vertex | vertex-read | strategic-value-test | completing-the-square (expands a nuisance constant) | none |
-| E6 | Problem-Solving and Data Analysis | x_intercept | statistics-builtin | graph-both-sides | direct-arithmetic (case analysis misses roots) | none |
+| E6 | Problem-Solving and Data Analysis | intersection | statistics-builtin | graph-both-sides | direct-arithmetic (case analysis misses roots); graph-raw (the one-row lines carry no labels, so 9.75 cannot be read exactly) | none |
 | E7 | Advanced Math | numeric | function-evaluation | strategic-value-test | direct-arithmetic (exponent laws hidden) | none |
-| E9 | Geometry and Trigonometry | intersection | graph-both-sides | polygon-area | reference-formula (Heron is not on the sheet) | none |
+| E9 | Geometry and Trigonometry | intersection | graph-both-sides | (none) | direct-arithmetic (Heron's formula is an off-sheet memorized fact); polygon-area (no area is displayed in the embedded build) | none |
 | E15 | Advanced Math | numeric | parameter-regression | intercept-read | quadratic-formula (radical product by hand) | none |
 | E17 | Advanced Math | numeric | identity-regression | function-evaluation | direct-arithmetic (long division) | none |
 | E19 | Algebra | visual_choice | graph-each-choice | slider-parallel, derivative-regression | elimination (coefficient-ratio fact) | condition: no-solution |
 
-(E19 marks `slider-parallel` acceptable only because the choices give a
-grid; for the student-produced-response version, mark it bad with the reason
-"answer is not on any slider grid".)
+(Seed corrections from the fact-check:
+- E1's gold moved to `graph-both-sides`. The one-row lines of a rational
+  equation carry no label, so `graph-raw` is acceptable only because 1 and 7
+  sit on gridlines.
+- E6's result type is now `intersection`, for the labelled two-row form, and
+  the unlabelled one-row `graph-raw` form is marked bad.
+- E9 no longer lists `polygon-area` as acceptable, since no area is
+  displayed. Its bad entry was `reference-formula`, which contradicted the
+  gold rows (they use the reference-sheet ½bh), so it is now
+  `direct-arithmetic`.
+- E19 marks `slider-parallel` acceptable because dragging brackets the
+  parallel position between k=-0.9 and k=-0.8, and only choice A (-0.857)
+  lies in that bracket. The draft said "the choices give a grid", but
+  sevenths and sixths share no simple slider step. For the
+  student-produced-response version, mark it bad with the reason "answer is
+  not on any slider grid".)
 
 ---
 
@@ -871,22 +907,21 @@ grid; for the student-produced-response version, mark it bad with the reason
    the pages. In particular, the exact content of Scott Robinson's guide,
    Masterclass and videos is unverified. His "% of" workaround and the
    "Broken Desmos Method" video are known only by title or caption.
-2. **Circle points of interest (E3).** That Desmos labels a circle's top and
-   bottom points (but not left and right) comes from one forum summary. It
-   must be checked in the embedded calculator and in Bluebook before E3
-   ships as a default.
-3. **Vertical-line reading (E1, E6).** I could not confirm that clicking a
-   vertical line from a one-variable equation shows a labelled x-axis point,
-   or that `median([...,x])` graphs as a function of x. Several tutor
-   sources describe the method; the click behavior is unconfirmed.
-4. **No row in this document was executed in Desmos** (no Chrome here).
-   The checks are mathematical: sympy solutions, uniqueness of every
-   regression's solution set at the given samples, and an exact scan for E6
-   and E12. Optimizer convergence (E10, E15, E18) is assumed, not observed.
-   Run them through `scripts/check-desmos-preflight.mts`.
-5. **Regression parameter restriction syntax** (`p^{2}-3p\sim10\left\{p>0\right\}`)
-   follows the Desmos help summary (`{1<b<5}`). The app's preflight engine
-   may treat it differently.
+2. **Circle points of interest (E3).** RESOLVED for the embedded calculator:
+   Desmos 1.11.4 shows the top and bottom points (labelled on click) and no
+   left or right points. Bluebook is still unchecked.
+3. **Vertical-line reading (E1, E6).** RESOLVED, and the draft was partly
+   wrong. Lines from non-polynomial one-variable equations (rational,
+   radical, absolute value, exponential, cubic, and `mean=median`) carry no
+   point of interest. Polynomial equations of degree at most 2 (`x^{2}=5`)
+   and an explicit `x=7` get labelled axis crossings. `median([...,x])`
+   graphs as a function of x and gives labelled crossings.
+4. **Desmos execution.** RESOLVED: every row in this document ran through the
+   app's pre-flight engine in Desmos 1.11.4 (headless Playwright Chromium),
+   and the optimizer converged to the stated values for E3, E10, E15, E17,
+   E18 and E19.
+5. **Regression parameter restriction syntax.** RESOLVED:
+   `p^{2}-3p\sim10\left\{p>0\right\}` passes the pre-flight engine and fits 5.
 6. **Bluebook feature set.** `repeat()` is a documented Desmos function, but
    whether the SAT build enables it is unconfirmed. `distance()` and
    `midpoint()` appear available on the SAT; the "disabled" list I saw may
@@ -894,7 +929,90 @@ grid; for the student-produced-response version, mark it bad with the reason
    regressions is from the testing-calculator summary.
 7. **"You cannot paste the question into Desmos in Bluebook"** is from a
    single tutor blog.
-8. **Library #68's claim that Desmos displays a polygon's area** was not
-   checked. E9 deliberately reads the height and uses ½bh instead.
-9. The proxy-status endpoint was not consulted (the action was refused), so
-   I do not know whether the blocked domains can be allowed for a rerun.
+8. **Library #68's claim that Desmos displays a polygon's area.** RESOLVED
+   as false for the embedded build: no area is displayed, and `area()`
+   errors (see recommendation 25). E9 reads the height and uses ½bh instead.
+9. **Proxy status.** The fact-check queried the proxy-status endpoint: egress
+   is enforced by organization policy. Every cited domain tried returned
+   EGRESS_BLOCKED, so a rerun needs those domains allowed by an
+   administrator. Retrying will not help.
+
+---
+
+## Verification log (fact-check, 2026-10-04)
+
+**What was checked**
+- **Answers.** All 19 examples were recomputed independently with sympy
+  (`scratchpad/research-verify/recheck.py`). Every stated answer is correct:
+  E1 7; E2 9 (2 extraneous); E3 r=7; E4 A; E5 -2; E6 31.75; E7 20; E8 6√2;
+  E9 84; E10 5; E11 -9; E12 17 (exact, both solution families); E13 -3/4;
+  E14 (-1,4); E15 1; E16 A; E17 14; E18 40/3 and 5; E19 -6/7. The supporting
+  numbers check out as well, including E19's (-28.2,-8.6), (-203,-59) and
+  (152,43).
+- **Rows in real Desmos.** Every row block ran through the app's own
+  pre-flight engine (`src/lib/desmos-engine.ts`, bundled unchanged) in
+  Desmos API v1.11.4. This used the headless Playwright Chromium at
+  `/opt/pw-browsers` and the local `calculator.js` (harness
+  `scratchpad/research-verify/desmos-check.mts`). All blocks are clean and
+  every readout or fitted parameter matches the stated value.
+- **Visual claims.** About 30 screenshots were taken after simulated clicks
+  (`scratchpad/research-verify/*.png`).
+- **"Not when" claims.** Each was tested in Desmos where possible: identity
+  and contradiction, holes, nested lists, collinear circle fits, x as a
+  regression parameter, list-graph colors, branch restriction, label
+  precision, and polygon area.
+- **Citations.** Ten cited URLs were tried with WebFetch: mathchops,
+  help.desmos.com, mrhonner, sayhellocollege, 1600.io, blog.desmos.com,
+  cheetahprep, vibrantpublishers, acely and uworld. ALL were blocked by the
+  organization's egress policy, so no page content was confirmed. Seven
+  WebSearch summaries were used instead. These corroborate MathChops, the
+  r/Sat circle tip, and log mode being on by default in the testing build.
+  They contradict the draft's readings of 1600.io and Honner. They could not
+  locate the OnePrep quote or the ±5000 range. Every attribution therefore
+  remains (S).
+- **Copying.** A 7-word n-gram comparison against the retrieved source
+  summaries matched only the cited MathChops formula. The one close
+  paraphrase (the r/Sat circle tip) was reworded. The pages themselves could
+  not be compared.
+
+**What was wrong and changed**
+1. **E1.** The draft said one-variable lines get clickable axis labels. In
+   fact the lines of rational, radical, absolute-value, exponential and cubic
+   equations carry no point of interest; only polynomials of degree at most
+   2 do. "An identity shades the plane" was also false: identity and
+   contradiction both draw nothing. Rewritten, with #3 as the labelled
+   fallback. Seed gold moved to `graph-both-sides`.
+2. **E6.** The one-row `mean=median` lines are unlabelled, so 9.75 is not
+   readable. Replaced with the two-row `y=mean(...)`, `y=median(...)` form,
+   whose crossings are labelled (verified).
+3. **E15.** Desmos labels carry 5 decimals (0.31386 and 3.18614), not 4. The
+   "1.0001, ambiguous" claim was wrong: the actual product is 1.0000019.
+   Rationale, routing 7, scoring 6 and recommendation 6 were softened.
+4. **E3.** The draft said "4 decimals"; corrected to 5. The top and bottom
+   circle points are now confirmed.
+5. **E10.** Collinear points do not cause a fit failure: Desmos returns a
+   huge circle. Corrected, and a collinearity check was added to
+   recommendation 21.
+6. **E2.** "Must be given the squared version" was too strict. Added the
+   other-branch graph `y=-\sqrt{x+7}`, which labels (2,-3).
+7. **E16.** The claim that log mode "fails for zero or negative y" is
+   unsupported, so it was softened.
+8. **E17.** "Any 5 inputs" changed to "any degree+1 distinct inputs".
+9. **E14.** Added the missing `(X,Y)` row.
+10. **Attributions.** 1600.io's claims were misattributed in (a), E15, E18,
+    routing 2 and scoring 4; they now rest on a direct Desmos check. Honner
+    was over-broad; the no-hole claim is now verified directly. The OnePrep
+    quote and the ±5000 range are marked unconfirmed. Coverage notes credited
+    bracket-regression wording to 1600.io instead of r/Sat. Routing 11 cited
+    #73 for "graph the denominator".
+11. **References.** Line 1689 corrected to 1695. Recommendation 5's tags
+    corrected (`slider-parallel` lives in #61, `slider-condition` in #57).
+12. **Seeds.** E9's bad entry `reference-formula` contradicted its own gold
+    rows (½bh), so it was replaced. E19's "the choices give a grid" was
+    wrong and was replaced with the bracket argument.
+13. **New finding (library, not the draft).** #68 `polygon-area` cannot work
+    in the embedded build: no area is displayed and `area()` is unsupported.
+    Added as recommendation 25 and removed from E9.
+
+Not changed: the Bluebook-specific claims (keypad, paste, `repeat()`
+availability). They cannot be tested here and remain (S).
