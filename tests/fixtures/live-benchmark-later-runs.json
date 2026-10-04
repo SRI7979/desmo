@@ -427,5 +427,363 @@
       }
     ],
     "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "036-moving-budget-inequality#final": {
+    "status": "solved",
+    "question": "A moving company charges a flat fee of $95 plus $1.85 for each mile it drives. Dana can spend at most $300 on the move. What is the greatest whole number of miles the company can drive for Dana's move without exceeding her budget?",
+    "choices": null,
+    "clarification": null,
+    "structure": "one linear cost expression with an inequality; find the largest integer m with 95+1.85m ≤ 300",
+    "candidates": [
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "(300-95)/1.85",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{floor}((300-95)/1.85)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 2,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "floor of the miles possible",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "integer-list-filter",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "N=[0...200]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "M=N[95+1.85N\\le300]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{max}(M)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 3,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "maximum integer N satisfying 95+1.85N≤300",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "graph-both-sides",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "y=95+1.85x",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y=300",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 1,
+          "value": 110.8108108108108,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "x-coordinate of intersection (exact miles possible ≈110.8108); take greatest whole number 110",
+          "type": "intersection",
+          "relatedRows": [
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": 0,
+          "right": 150,
+          "bottom": 0,
+          "top": 350
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "slider-condition",
+        "rung": 3,
+        "rows": [
+          {
+            "latex": "m=0",
+            "slider": {
+              "min": 0,
+              "max": 200,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "y=95+1.85m",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y=300",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 1,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "drag m until point (m,95+1.85m) is just under y=300; answer is m=110",
+          "type": "slider_condition",
+          "relatedRows": [
+            2,
+            3
+          ]
+        },
+        "answerState": {
+          "param": "m",
+          "value": 110
+        },
+        "parameters": [
+          {
+            "name": "m",
+            "integer": true,
+            "min": 0,
+            "max": 200
+          }
+        ],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": 0,
+          "right": 150,
+          "bottom": 0,
+          "top": 350
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "110",
+        "result": {
+          "row": null,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "compute (300-95)/1.85 ≈110.8108, greatest whole number ≤ that is 110",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "010-infinite-solutions-gk-ratio#final": {
+    "status": "solved",
+    "question": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+    "choices": null,
+    "clarification": null,
+    "structure": "Two linear equations with unknown coefficients; they are proportional (same line) for infinitely many solutions.",
+    "candidates": [
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "1/6",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "Set coefficient ratios equal: g/8 = 3/k = 15/60 = 1/4; solve g=2, k=12 so g/k=1/6",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "graph-both-sides",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "g=1",
+            "slider": {
+              "min": -10,
+              "max": 10,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "k=1",
+            "slider": {
+              "min": -20,
+              "max": 20,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "g x-3y=15",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "8x-ky=60",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g/k",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1/6",
+        "result": {
+          "row": 5,
+          "value": 0.16666666666666666,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "g/k after sliders set so the two graph rows overlap (infinitely many solutions)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "answerState": {
+          "param": "g",
+          "value": 2
+        },
+        "parameters": [
+          {
+            "name": "g",
+            "integer": false,
+            "min": -10,
+            "max": 10
+          }
+        ],
+        "conditionType": "infinitely-many",
+        "distinguishes": "visual-parallel-vs-overlap",
+        "graphBounds": {
+          "left": -10,
+          "right": 10,
+          "bottom": -10,
+          "top": 10
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      }
+    ],
+    "preferredTechniqueId": "direct-arithmetic"
   }
 }

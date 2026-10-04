@@ -9,6 +9,7 @@ import OpenAI from "openai";
 
 import {
   isApproximationQuestion,
+  isWholeNumberQuestion,
   matchChoice,
   normalizeChoices,
   ProseLatexError,
@@ -209,7 +210,7 @@ test("010/040: the recorded first attempts solve with a single candidates call",
 
 // --- From the run after the first round of fixes ------------------------------
 
-const secondRun: Record<string, CandidatesResponseInput> = fixture("live-benchmark-second-run.json");
+const secondRun: Record<string, CandidatesResponseInput> = fixture("live-benchmark-later-runs.json");
 const secondOutput = (prefix: string) => secondRun[Object.keys(secondRun).find((id) => id.startsWith(prefix))!];
 const selectSecond = (prefix: string) => selectMethods(validateCandidatesResponse(providerBody(secondOutput(prefix))).parsed);
 
@@ -257,4 +258,24 @@ test("073: a caption Desmos cannot define is removed from any row nothing refere
     result: { type: "numeric", row: 3, relatedRows: [], value: 110, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the greatest allowed m" },
   })], { question: "A move costs $95 plus $1.85 per mile, with at most $300 to spend. What is the greatest whole number of miles?" }) as CandidatesResponse);
   assert.equal(named.methods[0].rows[1].latex, "\\operatorname{ok}=M[95+1.85M\\le300]");
+});
+
+test("036: a clicked boundary of 110.81 never replaces the whole-number answer 110 the question asks for", () => {
+  const graph = selectSecond("036").methods.find((method) => method.techniqueId === "graph-both-sides")!;
+  assert.equal(graph.rejected, null);
+  assert.equal(graph.answer, "110");
+  assert.equal(isWholeNumberQuestion("What is the greatest whole number of miles the company can drive for Dana's move without exceeding her budget?"), true);
+  // Without a whole-number question the calculator's value still wins over a disagreeing stated answer.
+  const plain = selectMethods(candidatesResponse([graphCandidate({ answer: "4", result: { ...graphCandidate().result, value: 3 } })]) as CandidatesResponse);
+  assert.equal(plain.methods[0].answer, "3");
+});
+
+test("010: a given-ratio question reads g/k from the scale factor, so it is not charged a solution-count fact or rescued", () => {
+  // The rescue replaced this gold paper method with bracket regression for 26 s
+  // only because the fact made a rejected slider candidate look cheaper.
+  const selection = selectSecond("010");
+  const paper = eligible(selection)[0];
+  assert.equal(paper.techniqueId, "direct-arithmetic");
+  assert.equal(paper.cost.oneOffFacts, 0);
+  assert.equal(desmosRescueTarget(selection), null);
 });

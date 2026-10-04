@@ -18,7 +18,8 @@
   ],
   "acceptable": [
     "strategic-value-test",
-    "function-evaluation"
+    "function-evaluation",
+    "answer-choice-list"
   ],
   "bad": [
     {

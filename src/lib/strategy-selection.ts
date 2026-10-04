@@ -4,6 +4,7 @@ import {
   AnswerConsistencyError,
   deriveConsistentSolution,
   isApproximationQuestion,
+  isWholeNumberQuestion,
   normalizeChoices,
   repairProseText,
   ProseLatexError,
@@ -397,6 +398,7 @@ type CandidateContext = {
   integerFactorExtremum: boolean;
   solutionCount: boolean;
   approximate: boolean;
+  wholeNumber: boolean;
 };
 
 type Validated = Omit<Method, "id" | "badges" | "rejected" | "total" | "mathScore" | "mathLevel" | "shape" | "cost" | "name"> & {
@@ -583,6 +585,7 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
       readAnswer: "",
       expressionCount: rows.length,
       approximate: context.approximate,
+      wholeNumber: context.wholeNumber,
     });
   } catch (error) {
     if (error instanceof AnswerConsistencyError) return reject("answer-consistency", error.message, error.stage);
@@ -610,7 +613,9 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   const validBounds = bounds && bounds.left < bounds.right && bounds.bottom < bounds.top;
   // Definitional floors the model's own report cannot lower.
   let factFloor = 0;
-  if (rows.length === 0 && context.solutionCount) {
+  // A given-ratio question (infinitely many solutions, what is g/k?) reads the
+  // ratio straight from the scale factor, as the condition rule above allows.
+  if (rows.length === 0 && context.solutionCount && !isGivenInfiniteSolutionRatioQuestion(question)) {
     factFloor = 1;
     repairs.push("Counted one memorized fact: deciding how many solutions there are on paper needs a solution-count rule.");
   } else if (rows.some((row) => SLOPE_QUOTIENT.test(row.latex.replace(/\\left|\\right/g, "")))) {
@@ -741,6 +746,7 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     integerFactorExtremum: isIntegerFactorExtremumQuestion(question),
     solutionCount: isSolutionCountCondition(question),
     approximate: isApproximationQuestion(question),
+    wholeNumber: isWholeNumberQuestion(question),
   };
 
   // Validate every candidate, then keep the best one per technique: two

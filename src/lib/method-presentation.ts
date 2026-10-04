@@ -3,6 +3,7 @@ import {
   deriveConsistentSolution,
   formatChoice,
   isApproximationQuestion,
+  isWholeNumberQuestion,
   ProseLatexError,
   sanitizeSolutionProse,
 } from "./answer-consistency";
@@ -154,6 +155,7 @@ export function presentMethod(entry: CacheEntry, method: Method, explanation: Ex
       readAnswer: explanation.readAnswer ?? "",
       expressionCount: method.rows.length,
       approximate: isApproximationQuestion(entry.question),
+      wholeNumber: isWholeNumberQuestion(entry.question),
     });
   } catch (error) {
     if (error instanceof AnswerConsistencyError) throw new ExplanationError(error.message, error.stage);

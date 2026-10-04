@@ -418,6 +418,11 @@ export function matchChoice(
   return null;
 }
 
+/** The answer must be a whole number: "the greatest whole number of miles", "the least integer value of x". */
+export function isWholeNumberQuestion(question: string): boolean {
+  return /\b(?:greatest|least|largest|smallest|maximum|minimum)\s+(?:possible\s+)?(?:whole number|integer|number of)\b|\bnearest (?:whole number|integer)\b/i.test(question);
+}
+
 /** The question asks for an estimate, so its numeric choices are rounded on purpose. */
 export function isApproximationQuestion(question: string): boolean {
   return /\b(?:approximately|approximate(?:ly)?|closest to|nearest to|best approximat\w*|estimated?|about how (?:many|much))\b/i.test(question);
@@ -491,6 +496,7 @@ function deriveAnswer(
   repairs: string[],
   source: string,
   approximate = false,
+  wholeNumber = false,
 ): { answer: string; choice: NormalizedChoice | null } {
   const claimed = findChoice(result.choiceLabel, choices ?? []);
 
@@ -515,6 +521,14 @@ function deriveAnswer(
       );
     }
     if (roundsTo(modelAnswer, observed) || modelAnswer.includes(formatNumber(observed))) {
+      return { answer: modelAnswer.trim(), choice: null };
+    }
+    // "Greatest whole number of miles": the clicked boundary 110.81 is not the
+    // answer, and the whole number next to it is. Never replace that answer
+    // with a non-integer the question rules out.
+    const stated = parseNumber(modelAnswer);
+    if (wholeNumber && stated !== null && Number.isInteger(stated) && !Number.isInteger(observed) && Math.abs(stated - observed) < 1) {
+      repairs.push(`${source} ${formatNumber(observed)} is the boundary; the question asks for a whole number, so the answer is ${stated}.`);
       return { answer: modelAnswer.trim(), choice: null };
     }
     repairs.push(
@@ -570,6 +584,8 @@ export function deriveConsistentSolution(input: {
   expressionCount: number;
   /** The question asks for an estimate (isApproximationQuestion): the nearest clear choice is its answer. */
   approximate?: boolean;
+  /** The question asks for a whole number (isWholeNumberQuestion). */
+  wholeNumber?: boolean;
 }): ConsistentSolution {
   const repairs: string[] = [];
   const choices = normalizeChoices(input.choices);
@@ -640,6 +656,7 @@ export function deriveConsistentSolution(input: {
     repairs,
     `The value on line ${result.row},`,
     input.approximate ?? false,
+    input.wholeNumber ?? false,
   );
   const normalizedResult: SolutionResult = {
     ...result,

@@ -16,7 +16,8 @@
     "translate-the-words"
   ],
   "acceptable": [
-    "function-evaluation"
+    "function-evaluation",
+    "calculator-arithmetic"
   ],
   "bad": [
     {
@@ -30,6 +31,10 @@
     {
       "technique": "linear-regression",
       "why": "There is no data to fit; the model is already given, and the question asks for meaning, not a number."
+    },
+    {
+      "technique": "derivative-slope",
+      "why": "W'(t) brings in a derivative to read the rate -35 that the equation already prints as the coefficient of t; the question is an interpretation, answered by translating the model."
     }
   ],
   "goldRows": [],
