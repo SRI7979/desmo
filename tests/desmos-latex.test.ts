@@ -361,3 +361,20 @@ test("multiplication stars become juxtaposition unless that would change the mea
     ["f(x)=x^2+1", "f*(3)", "g_{1}(x)=2x", "g_{1}*(4)", "L=[1,2]", "\\operatorname{mean}*(L)"],
   );
 });
+
+test("hand-written forms that error through the Desmos API are repaired (each verified against the real v1.11 engine)", () => {
+  const normalized = (latex: string) => normalizeDesmosExpressions([{ latex, purpose: "" }])[0].latex;
+  // "Only functions and variables may have subscripts."
+  assert.equal(normalized("y_{1}\\sim a(b)^x_{1}"), "y_{1}\\sim a(b)^{x_{1}}");
+  assert.equal(normalized("y_{1}\\sim ab^{x_{1}}"), "y_{1}\\sim ab^{x_{1}}", "already braced");
+  // "Sorry, I don't understand the '|' symbol."
+  assert.equal(normalized("y=|2x-5|"), "y=\\left|2x-5\\right|");
+  assert.equal(normalized("y=\\left|x\\right|+|x-1|"), "y=\\left|x\\right|+|x-1|", "mixed rows are left for pre-flight");
+  // "I don't understand the way that '=' is used here."
+  assert.equal(normalized("k_{1}=(p+q)(12/p+35/q) for p=a_{2},q=b_{2}"), "k_{1}=[(p+q)(12/p+35/q)\\operatorname{for}p=a_{2},q=b_{2}]");
+  assert.equal(normalized("k_{1}=[p^{2} for p=a_{2}]"), "k_{1}=[p^{2} \\operatorname{for} p=a_{2}]");
+  assert.equal(normalized("k_{1}=[p^{2}\\operatorname{for}p=a_{2}]"), "k_{1}=[p^{2}\\operatorname{for}p=a_{2}]", "already valid");
+  // "pi" through the API is p times i.
+  assert.equal(normalized("pi*5^{2}"), "\\pi*5^{2}");
+  assert.equal(normalized("\\pi r^{2}"), "\\pi r^{2}");
+});

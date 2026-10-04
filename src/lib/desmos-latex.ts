@@ -77,9 +77,45 @@ function normalizeMultiLetterNames(latexRows: readonly string[]): string[] {
   );
 }
 
+/**
+ * |2x-5| as written by hand is not calculator LaTeX: Desmos reports "I don't
+ * understand the '|' symbol" (checked against v1.11). Bare bars are paired in
+ * order and become \left|...\right|; rows that already use \left| or \mid,
+ * or have an odd number of bars, are left alone.
+ */
+function normalizeAbsoluteBars(latex: string): string {
+  if (/\\(?:left|right|mid|vert)/.test(latex)) return latex;
+  const bars = [...latex.matchAll(/\|/g)].map((match) => match.index!);
+  if (bars.length === 0 || bars.length % 2 !== 0) return latex;
+  let result = "";
+  let cursor = 0;
+  bars.forEach((at, index) => {
+    result += latex.slice(cursor, at) + (index % 2 === 0 ? String.raw`\left|` : String.raw`\right|`);
+    cursor = at + 1;
+  });
+  return result + latex.slice(cursor);
+}
+
+/**
+ * A list comprehension only runs as [expression \operatorname{for} p=L]:
+ * plain "for", or a comprehension outside brackets, errors ("I don't
+ * understand the way that '=' is used here"; checked against v1.11).
+ */
+function normalizeComprehension(latex: string): string {
+  const withOperator = latex.replace(/(?<!\\operatorname\{)(?<![A-Za-z\\])for(?=\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*=)/g, String.raw`\operatorname{for}`);
+  if (!withOperator.includes(String.raw`\operatorname{for}`)) return withOperator;
+  const unbracketed = /^(\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*=\s*)(?!\[|\\left\[)(.+?)\s*\\operatorname\{for\}\s*(.+?)\s*$/.exec(withOperator);
+  return unbracketed ? `${unbracketed[1]}[${unbracketed[2]}\\operatorname{for}${unbracketed[3]}]` : withOperator;
+}
+
 function normalizeNamedBuiltins(latex: string): string {
   // Desmos compares with a single = inside list filters; == does not parse.
-  return latex
+  return normalizeComprehension(normalizeAbsoluteBars(latex))
+    // b^x_{1} errors ("Only functions and variables may have subscripts");
+    // a subscripted exponent needs braces: b^{x_{1}}.
+    .replace(/\^([A-Za-z])(_\{[^{}]+\}|_[A-Za-z0-9])/g, (_match, name: string, subscript: string) => `^{${name}${subscript}}`)
+    // "pi" typed as a word is p·i through the API; the calculator UI would have turned it into π.
+    .replace(/(?<![A-Za-z\\])pi(?![A-Za-z_])/g, String.raw`\pi `)
     // These characters look correct in KaTeX but are not valid calculator
     // LaTeX when passed through setExpressions. Normalize them before every
     // syntax/variable check so displayed and executed rows are identical.

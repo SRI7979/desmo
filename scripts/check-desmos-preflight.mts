@@ -287,6 +287,13 @@ try {
       const engine = checked.verdict.status === "error"
         ? checked.verdict.errors!.map((error) => `line ${error.row} ${JSON.stringify(checked.rows[error.row - 1])}: ${error.message}`).join("; ")
         : null;
+      // A clean plan whose text states a number must display it on its last row.
+      const stated = parseNumber(plan.claimedResult.replace(/^.*=\s*/, ""));
+      const last = checked.verdict.status === "clean" ? ((checked.verdict.evaluations ?? {})[String(plan.rows.length)] as { value?: unknown } | null | undefined)?.value : undefined;
+      const mismatch = stated !== null && typeof last === "number" && Math.abs(last - stated) > 1e-6 * Math.max(1, Math.abs(stated))
+        ? `last row shows ${last}, text says ${plan.claimedResult}`
+        : null;
+      if (mismatch) flags.push(mismatch);
       if (engine) engineErrors += 1;
       if (flags.length) staticRejects += 1;
       if (engine || flags.length) {

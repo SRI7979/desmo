@@ -25,17 +25,16 @@
       "D": "12"
     },
     "correct_answer": "D",
-    "strategy_name": "Two-stage parameter regression for constant-rate word problems",
-    "trigger_pattern": "Constant-rate word problem where you know an initial amount, an amount after a known time, and need the time for another target amount.",
+    "strategy_name": "Pack both rate conditions into one bracket regression",
+    "trigger_pattern": "Constant-rate word problem: a starting amount, the amount after a known time, and a target amount whose time is asked for. Both facts share the unknown rate, so they fit together in one regression.",
     "desmos_steps": [
-      "19350 ~ 24000 - 5x_1",
-      "Read x_1=930",
-      "12840 ~ 24000 - p930",
-      "Read p=12"
+      "[24000-5r,24000-tr]\\sim[19350,12840]",
+      "t",
+      "Read t=12 (Desmos also fits the hourly rate r=930)."
     ],
-    "why_preferred": "Desmos finds the hourly removal rate first, then directly solves for the requested time with almost no manual arithmetic or algebra.",
+    "why_preferred": "One regression row uses both facts from the question at once: Desmos finds the hourly rate and the requested time together, so nothing is computed by hand or copied between rows.",
     "needs_review": false,
-    "techniqueId": "parameter-regression"
+    "techniqueId": "bracket-regression"
   },
   {
     "id": "003",
