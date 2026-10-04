@@ -1,0 +1,2849 @@
+{
+  "label": "recorded-after-enum",
+  "format": 2,
+  "source": [
+    "after-enum"
+  ],
+  "metrics": {
+    "all": {
+      "runs": 80,
+      "scoredRuns": 55,
+      "infraFailureRate": 31.3,
+      "answerAccuracy": 100,
+      "goldRate": 63.6,
+      "acceptableRate": 72.7,
+      "badRate": 7.3,
+      "unlistedRate": 20,
+      "mathHeavyRate": 12.7,
+      "goldListedRate": 78.2,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 5.5,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 10.9,
+      "avgRows": 1.8,
+      "avgManualMath": 0.4,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0.07,
+      "avgMethodsPerSolve": 1.75,
+      "avgFamiliesPerSolve": null,
+      "avgExplanationScore": null,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 14917,
+          "p75": 16938,
+          "p95": 25919
+        },
+        "complete": {
+          "p50": 18253,
+          "p75": 21083,
+          "p95": 28712
+        }
+      },
+      "tokens": {
+        "input": null,
+        "cached": null,
+        "output": null,
+        "reasoning": null
+      }
+    },
+    "representative": {
+      "runs": 35,
+      "scoredRuns": 18,
+      "infraFailureRate": 48.6,
+      "answerAccuracy": 100,
+      "goldRate": 55.6,
+      "acceptableRate": 77.8,
+      "badRate": 0,
+      "unlistedRate": 22.2,
+      "mathHeavyRate": 5.6,
+      "goldListedRate": 77.8,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 5.6,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 22.2,
+      "avgRows": 1.56,
+      "avgManualMath": 0.33,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0.06,
+      "avgMethodsPerSolve": 1.67,
+      "avgFamiliesPerSolve": null,
+      "avgExplanationScore": null,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 13293,
+          "p75": 16208,
+          "p95": 25919
+        },
+        "complete": {
+          "p50": 15452,
+          "p75": 17442,
+          "p95": 26908
+        }
+      },
+      "tokens": {
+        "input": null,
+        "cached": null,
+        "output": null,
+        "reasoning": null
+      }
+    },
+    "hard": {
+      "runs": 45,
+      "scoredRuns": 37,
+      "infraFailureRate": 17.8,
+      "answerAccuracy": 100,
+      "goldRate": 67.6,
+      "acceptableRate": 70.3,
+      "badRate": 10.8,
+      "unlistedRate": 18.9,
+      "mathHeavyRate": 16.2,
+      "goldListedRate": 78.4,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 5.4,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 5.4,
+      "avgRows": 1.92,
+      "avgManualMath": 0.43,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0.08,
+      "avgMethodsPerSolve": 1.78,
+      "avgFamiliesPerSolve": null,
+      "avgExplanationScore": null,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 15655,
+          "p75": 17952,
+          "p95": 30631
+        },
+        "complete": {
+          "p50": 19424,
+          "p75": 21187,
+          "p95": 33855
+        }
+      },
+      "tokens": {
+        "input": null,
+        "cached": null,
+        "output": null,
+        "reasoning": null
+      }
+    }
+  },
+  "records": [
+    {
+      "caseId": "001-quadratic-three-points",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 18483,
+      "ok": true,
+      "answer": "2",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "three-point-regression",
+        "rows": 4,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "three-point-regression",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 14917
+    },
+    {
+      "caseId": "001-quadratic-three-points",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 19925,
+      "ok": true,
+      "answer": "2",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "three-point-regression",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "three-point-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "elimination",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 14301
+    },
+    {
+      "caseId": "001-quadratic-three-points",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 20030,
+      "ok": true,
+      "answer": "2",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "three-point-regression",
+        "rows": 4,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "three-point-regression",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16023
+    },
+    {
+      "caseId": "001-quadratic-three-points",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 20561,
+      "ok": true,
+      "answer": "2",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "three-point-regression",
+        "rows": 4,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "three-point-regression",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "bracket-regression",
+          "rule": "underdetermined-regression"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16287
+    },
+    {
+      "caseId": "001-quadratic-three-points",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 21083,
+      "ok": true,
+      "answer": "2",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "three-point-regression",
+        "rows": 4,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "three-point-regression",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "bracket-regression",
+          "rule": "list-shape"
+        },
+        {
+          "technique": "substitution",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16714
+    },
+    {
+      "caseId": "002-quadratic-inequality-integer-count",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 20511,
+      "ok": true,
+      "answer": "C) 6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "graph-both-sides",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "graph-both-sides",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "intercept-read",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 17381
+    },
+    {
+      "caseId": "002-quadratic-inequality-integer-count",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 19460,
+      "ok": true,
+      "answer": "C) 6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "integer-list-filter",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "intercept-read",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16246
+    },
+    {
+      "caseId": "002-quadratic-inequality-integer-count",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 21187,
+      "ok": true,
+      "answer": "C) 6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "integer-list-filter",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "factoring",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 1,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "graph-both-sides",
+          "rule": "row-fails-to-insert"
+        },
+        {
+          "technique": "intercept-read",
+          "rule": "row-fails-to-insert"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 17974
+    },
+    {
+      "caseId": "002-quadratic-inequality-integer-count",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 22235,
+      "ok": true,
+      "answer": "C) 6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "integer-list-filter",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "answer-choice-list",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "factoring",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 18668
+    },
+    {
+      "caseId": "002-quadratic-inequality-integer-count",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 19424,
+      "ok": true,
+      "answer": "C) 6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "integer-list-filter",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "factoring",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 1,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "intercept-read",
+          "rule": "row-fails-to-insert"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16166
+    },
+    {
+      "caseId": "003-representation-linear-model",
+      "group": "representative",
+      "runIndex": 0,
+      "completeMs": 11635,
+      "ok": true,
+      "answer": "A) n + (2n + 18) = 162",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "translate-the-words",
+        "rows": 0,
+        "derivationSteps": 1,
+        "oneOffFacts": 0,
+        "mathScore": 1,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "translate-the-words",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 7471
+    },
+    {
+      "caseId": "003-representation-linear-model",
+      "group": "representative",
+      "runIndex": 1,
+      "completeMs": 10261,
+      "ok": true,
+      "answer": "A) n + (2n + 18) = 162",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "translate-the-words",
+        "rows": 0,
+        "derivationSteps": 1,
+        "oneOffFacts": 0,
+        "mathScore": 1,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "translate-the-words",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 6909
+    },
+    {
+      "caseId": "003-representation-linear-model",
+      "group": "representative",
+      "runIndex": 2,
+      "completeMs": 9998,
+      "ok": true,
+      "answer": "A) n + (2n + 18) = 162",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "translate-the-words",
+        "rows": 0,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "translate-the-words",
+          "rows": 0,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 6916
+    },
+    {
+      "caseId": "003-representation-linear-model",
+      "group": "representative",
+      "runIndex": 3,
+      "completeMs": 8844,
+      "ok": true,
+      "answer": "A) n + (2n + 18) = 162",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "translate-the-words",
+        "rows": 0,
+        "derivationSteps": 1,
+        "oneOffFacts": 0,
+        "mathScore": 1,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "translate-the-words",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 5525
+    },
+    {
+      "caseId": "003-representation-linear-model",
+      "group": "representative",
+      "runIndex": 4,
+      "completeMs": 60007,
+      "ok": false,
+      "error": "Request timed out.",
+      "infraFailure": "Request timed out."
+    },
+    {
+      "caseId": "004-factor-shared-zero-integer-slider",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 22036,
+      "ok": true,
+      "answer": "3",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "substitution",
+        "rows": 0,
+        "derivationSteps": 2,
+        "oneOffFacts": 0,
+        "mathScore": 2,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "bad",
+      "methods": [
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "shared-zero",
+          "rule": "answer-consistency"
+        },
+        {
+          "technique": "integer-list-filter",
+          "rule": "hidden-derivation"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 19462
+    },
+    {
+      "caseId": "004-factor-shared-zero-integer-slider",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 21534,
+      "ok": true,
+      "answer": "3",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "shared-zero",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "shared-zero",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "factoring",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 1,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "parameter-regression",
+          "rule": "list-shape"
+        },
+        {
+          "technique": "integer-list-filter",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 17952
+    },
+    {
+      "caseId": "004-factor-shared-zero-integer-slider",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 19973,
+      "ok": true,
+      "answer": "3",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "integer-list-filter",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "acceptable",
+      "methods": [
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "shared-zero",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "factoring",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 15622
+    },
+    {
+      "caseId": "004-factor-shared-zero-integer-slider",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 17577,
+      "ok": true,
+      "answer": "3",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "shared-zero",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "shared-zero",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "integer-list-filter",
+          "rule": "hidden-derivation"
+        },
+        {
+          "technique": "factoring",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 14269
+    },
+    {
+      "caseId": "004-factor-shared-zero-integer-slider",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 16524,
+      "ok": true,
+      "answer": "3",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "substitution",
+        "rows": 0,
+        "derivationSteps": 2,
+        "oneOffFacts": 0,
+        "mathScore": 2,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "bad",
+      "methods": [
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "shared-zero",
+          "rule": "answer-consistency"
+        },
+        {
+          "technique": "integer-list-filter",
+          "rule": "hidden-derivation"
+        },
+        {
+          "technique": "identity-regression",
+          "rule": "integer-not-encoded"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 13220
+    },
+    {
+      "caseId": "005-constraint-regression-intersection",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 19159,
+      "ok": true,
+      "answer": "11",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "bracket-regression",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "bracket-regression",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "slider-condition",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 15655
+    },
+    {
+      "caseId": "005-constraint-regression-intersection",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 15318,
+      "ok": true,
+      "answer": "11",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "bracket-regression",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "bracket-regression",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "elimination",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 12387
+    },
+    {
+      "caseId": "005-constraint-regression-intersection",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 13900,
+      "ok": true,
+      "answer": "11",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "bracket-regression",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "bracket-regression",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "elimination",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 10417
+    },
+    {
+      "caseId": "005-constraint-regression-intersection",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 18253,
+      "ok": true,
+      "answer": "11",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "bracket-regression",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "bracket-regression",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "elimination",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 15004
+    },
+    {
+      "caseId": "005-constraint-regression-intersection",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 14534,
+      "ok": true,
+      "answer": "11",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "bracket-regression",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "bracket-regression",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "elimination",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 11655
+    },
+    {
+      "caseId": "006-identity-regression-r-plus-s",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 27564,
+      "ok": true,
+      "answer": "C) 406",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "bracket-regression",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "bracket-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "identity-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "derivative-regression",
+          "rule": "list-shape"
+        },
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 23276
+    },
+    {
+      "caseId": "006-identity-regression-r-plus-s",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 14969,
+      "ok": true,
+      "answer": "C) 406",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "identity-regression",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "identity-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 11180
+    },
+    {
+      "caseId": "006-identity-regression-r-plus-s",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 15437,
+      "ok": true,
+      "answer": "C) 406",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "identity-regression",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "identity-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 11847
+    },
+    {
+      "caseId": "006-identity-regression-r-plus-s",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 14774,
+      "ok": true,
+      "answer": "C) 406",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "identity-regression",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "identity-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 11409
+    },
+    {
+      "caseId": "006-identity-regression-r-plus-s",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 14285,
+      "ok": true,
+      "answer": "C) 406",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "identity-regression",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "identity-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 10510
+    },
+    {
+      "caseId": "007-infinitely-many-ratio",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 17880,
+      "ok": true,
+      "answer": "5/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "elimination",
+        "rows": 0,
+        "derivationSteps": 2,
+        "oneOffFacts": 0,
+        "mathScore": 2,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "elimination",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 13334
+    },
+    {
+      "caseId": "007-infinitely-many-ratio",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 33855,
+      "ok": true,
+      "answer": "5/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 1,
+        "oneOffFacts": 0,
+        "mathScore": 1,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 2,
+      "explanationSource": "model",
+      "methodsMs": 30631
+    },
+    {
+      "caseId": "007-infinitely-many-ratio",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 11982,
+      "ok": true,
+      "answer": "5/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 2,
+        "oneOffFacts": 0,
+        "mathScore": 2,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 9936
+    },
+    {
+      "caseId": "007-infinitely-many-ratio",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 18589,
+      "ok": true,
+      "answer": "5/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 2,
+        "oneOffFacts": 0,
+        "mathScore": 2,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        },
+        {
+          "techniqueId": "elimination",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        },
+        {
+          "techniqueId": "substitution",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 14126
+    },
+    {
+      "caseId": "007-infinitely-many-ratio",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 38335,
+      "ok": true,
+      "answer": "5/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 1,
+        "oneOffFacts": 0,
+        "mathScore": 1,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "identity-regression",
+          "rule": "list-shape"
+        }
+      ],
+      "candidateCalls": 2,
+      "explanationSource": "model",
+      "methodsMs": 36009
+    },
+    {
+      "caseId": "008-restricted-domain-minimum",
+      "group": "representative",
+      "runIndex": 0,
+      "completeMs": 17065,
+      "ok": true,
+      "answer": "5",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "restricted-extremum",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "restricted-extremum",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "function-evaluation",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 13668
+    },
+    {
+      "caseId": "008-restricted-domain-minimum",
+      "group": "representative",
+      "runIndex": 1,
+      "completeMs": 16436,
+      "ok": true,
+      "answer": "5",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "restricted-extremum",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "restricted-extremum",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "function-evaluation",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 12530
+    },
+    {
+      "caseId": "008-restricted-domain-minimum",
+      "group": "representative",
+      "runIndex": 2,
+      "completeMs": 15731,
+      "ok": true,
+      "answer": "5",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "restricted-extremum",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "restricted-extremum",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "function-evaluation",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 13293
+    },
+    {
+      "caseId": "008-restricted-domain-minimum",
+      "group": "representative",
+      "runIndex": 3,
+      "completeMs": 17442,
+      "ok": true,
+      "answer": "5",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "function-evaluation",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "acceptable",
+      "methods": [
+        {
+          "techniqueId": "function-evaluation",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "restricted-extremum",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 14578
+    },
+    {
+      "caseId": "008-restricted-domain-minimum",
+      "group": "representative",
+      "runIndex": 4,
+      "completeMs": 15091,
+      "ok": true,
+      "answer": "5",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "restricted-extremum",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "restricted-extremum",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "function-evaluation",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 12374
+    },
+    {
+      "caseId": "009-integer-list-coefficient-read",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 28712,
+      "ok": true,
+      "answer": "D) -15",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "answer-choice-list",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "bad",
+      "methods": [
+        {
+          "techniqueId": "answer-choice-list",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 20350
+    },
+    {
+      "caseId": "009-integer-list-coefficient-read",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 17020,
+      "ok": true,
+      "answer": "D) -15",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 2,
+        "oneOffFacts": 0,
+        "mathScore": 2,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 14127
+    },
+    {
+      "caseId": "009-integer-list-coefficient-read",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 21260,
+      "ok": true,
+      "answer": "D) -15",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "answer-choice-list",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "bad",
+      "methods": [
+        {
+          "techniqueId": "answer-choice-list",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16838
+    },
+    {
+      "caseId": "009-integer-list-coefficient-read",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 19775,
+      "ok": true,
+      "answer": "D) -15",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 1,
+        "oneOffFacts": 0,
+        "mathScore": 1,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        },
+        {
+          "techniqueId": "shared-zero",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "answer-choice-list",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 15619
+    },
+    {
+      "caseId": "009-integer-list-coefficient-read",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 25897,
+      "ok": true,
+      "answer": "D) -15",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "slider-condition",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "slider-condition",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "answer-choice-list",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 21498
+    },
+    {
+      "caseId": "010-infinite-solutions-gk-ratio",
+      "group": "representative",
+      "runIndex": 0,
+      "completeMs": 26908,
+      "ok": true,
+      "answer": "1/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "identity-regression",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "identity-regression",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 0,
+          "mathScore": 2,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16938
+    },
+    {
+      "caseId": "010-infinite-solutions-gk-ratio",
+      "group": "representative",
+      "runIndex": 1,
+      "completeMs": 26684,
+      "ok": true,
+      "answer": "1/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 3,
+        "oneOffFacts": 0,
+        "mathScore": 3,
+        "total": null,
+        "mathLevel": "high"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 2,
+      "explanationSource": "model",
+      "methodsMs": 22579
+    },
+    {
+      "caseId": "010-infinite-solutions-gk-ratio",
+      "group": "representative",
+      "runIndex": 2,
+      "completeMs": 26558,
+      "ok": true,
+      "answer": "1/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "identity-regression",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "identity-regression",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "derivative-regression",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "slider-condition",
+          "rows": 5,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "graph-both-sides",
+          "rule": "row-fails-to-insert"
+        },
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "fallback",
+      "methodsMs": 25919
+    },
+    {
+      "caseId": "010-infinite-solutions-gk-ratio",
+      "group": "representative",
+      "runIndex": 3,
+      "completeMs": 20636,
+      "ok": true,
+      "answer": "1/6",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "slider-condition",
+        "rows": 5,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "acceptable",
+      "methods": [
+        {
+          "techniqueId": "slider-condition",
+          "rows": 5,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 16579
+    },
+    {
+      "caseId": "010-infinite-solutions-gk-ratio",
+      "group": "representative",
+      "runIndex": 4,
+      "completeMs": 879,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "011-no-solution-slider-both-graphed",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 919,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "011-no-solution-slider-both-graphed",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 775,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "011-no-solution-slider-both-graphed",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 630,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "011-no-solution-slider-both-graphed",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 18854,
+      "ok": true,
+      "answer": "10",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "direct-arithmetic",
+        "rows": 0,
+        "derivationSteps": 1,
+        "oneOffFacts": 0,
+        "mathScore": 1,
+        "total": null,
+        "mathLevel": "medium"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": null,
+          "mathLevel": "medium"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "derivative-regression",
+          "rule": "condition-incomplete"
+        },
+        {
+          "technique": "slider-parallel",
+          "rule": "condition-incomplete"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "fallback",
+      "methodsMs": 18427
+    },
+    {
+      "caseId": "011-no-solution-slider-both-graphed",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 659,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "012-circle-radius",
+      "group": "representative",
+      "runIndex": 0,
+      "completeMs": 511,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "012-circle-radius",
+      "group": "representative",
+      "runIndex": 1,
+      "completeMs": 15452,
+      "ok": true,
+      "answer": "5",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "expanded-circle",
+        "rows": 4,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "acceptable",
+      "methods": [
+        {
+          "techniqueId": "expanded-circle",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "completing-the-square",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 11647
+    },
+    {
+      "caseId": "012-circle-radius",
+      "group": "representative",
+      "runIndex": 2,
+      "completeMs": 575,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "012-circle-radius",
+      "group": "representative",
+      "runIndex": 3,
+      "completeMs": 516,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "012-circle-radius",
+      "group": "representative",
+      "runIndex": 4,
+      "completeMs": 470,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "013-trig-intersection",
+      "group": "representative",
+      "runIndex": 0,
+      "completeMs": 499,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "013-trig-intersection",
+      "group": "representative",
+      "runIndex": 1,
+      "completeMs": 551,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "013-trig-intersection",
+      "group": "representative",
+      "runIndex": 2,
+      "completeMs": 440,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "013-trig-intersection",
+      "group": "representative",
+      "runIndex": 3,
+      "completeMs": 15024,
+      "ok": true,
+      "answer": "30",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "intercept-read",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "acceptable",
+      "methods": [
+        {
+          "techniqueId": "intercept-read",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "graph-both-sides",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "inverse-trig",
+          "rule": "list-shape"
+        },
+        {
+          "technique": "substitution",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "fallback",
+      "methodsMs": 14590
+    },
+    {
+      "caseId": "013-trig-intersection",
+      "group": "representative",
+      "runIndex": 4,
+      "completeMs": 546,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "014-stdev-list",
+      "group": "representative",
+      "runIndex": 0,
+      "completeMs": 615,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "014-stdev-list",
+      "group": "representative",
+      "runIndex": 1,
+      "completeMs": 507,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "014-stdev-list",
+      "group": "representative",
+      "runIndex": 2,
+      "completeMs": 14391,
+      "ok": true,
+      "answer": "6.07",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "statistics-builtin",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "statistics-builtin",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "model",
+      "methodsMs": 11653
+    },
+    {
+      "caseId": "014-stdev-list",
+      "group": "representative",
+      "runIndex": 3,
+      "completeMs": 528,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "014-stdev-list",
+      "group": "representative",
+      "runIndex": 4,
+      "completeMs": 554,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "015-two-way-table-probability",
+      "group": "representative",
+      "runIndex": 0,
+      "completeMs": 645,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "015-two-way-table-probability",
+      "group": "representative",
+      "runIndex": 1,
+      "completeMs": 16607,
+      "ok": true,
+      "answer": "0.625",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "function-evaluation",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "function-evaluation",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "integer-list-filter",
+          "rule": "hidden-derivation"
+        },
+        {
+          "technique": "direct-arithmetic",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "fallback",
+      "methodsMs": 16208
+    },
+    {
+      "caseId": "015-two-way-table-probability",
+      "group": "representative",
+      "runIndex": 2,
+      "completeMs": 14643,
+      "ok": true,
+      "answer": "0.625",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "function-evaluation",
+        "rows": 5,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "function-evaluation",
+          "rows": 5,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": null,
+          "mathLevel": "high"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "explanationSource": "fallback",
+      "methodsMs": 14226
+    },
+    {
+      "caseId": "015-two-way-table-probability",
+      "group": "representative",
+      "runIndex": 3,
+      "completeMs": 513,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "015-two-way-table-probability",
+      "group": "representative",
+      "runIndex": 4,
+      "completeMs": 683,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "016-tangent-line-parabola",
+      "group": "hard",
+      "runIndex": 0,
+      "completeMs": 16109,
+      "ok": true,
+      "answer": "25/12",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "vertex-of-difference",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": null,
+        "mathLevel": "low"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "vertex-of-difference",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": null,
+          "mathLevel": "low"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "discriminant",
+          "rule": "answer-consistency"
+        }
+      ],
+      "candidateCalls": 1,
+      "explanationSource": "fallback",
+      "methodsMs": 15656
+    },
+    {
+      "caseId": "016-tangent-line-parabola",
+      "group": "hard",
+      "runIndex": 1,
+      "completeMs": 630,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "016-tangent-line-parabola",
+      "group": "hard",
+      "runIndex": 2,
+      "completeMs": 824,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "016-tangent-line-parabola",
+      "group": "hard",
+      "runIndex": 3,
+      "completeMs": 433,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    },
+    {
+      "caseId": "016-tangent-line-parabola",
+      "group": "hard",
+      "runIndex": 4,
+      "completeMs": 568,
+      "ok": false,
+      "error": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organization/billing/.",
+      "infraFailure": "429 You have no credits remaining. Add credits to continue using the API at https://platform.openai.com/settings/organiz"
+    }
+  ]
+}

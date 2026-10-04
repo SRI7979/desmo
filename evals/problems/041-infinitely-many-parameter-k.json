@@ -1,0 +1,64 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "System with infinitely many solutions",
+  "problem": "3x - 5y = 8\nkx + 20y = -32\nIn the given system of equations, k is a constant. If the system has infinitely many solutions, what is the value of k?",
+  "choices": [
+    "-12",
+    "-4",
+    "4",
+    "12"
+  ],
+  "correctAnswer": "-12",
+  "expectedResultType": "graph_overlap",
+  "gold": [
+    "slider-condition"
+  ],
+  "acceptable": [
+    "slider-parallel",
+    "graph-each-choice"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Finding the multiplier 20/(-5) = -4 and applying it to 3 relies on the memorized rule that the equations must be multiples of each other; the overlapping graphs show it without the rule."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "Checking each choice by hand for proportional coefficients and constants is four rounds of ratio work the slider shows in one drag."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized rule that the equations are multiples of each other; the slider shows the lines coinciding."
+    },
+    {
+      "technique": "answer-choice-list",
+      "why": "Testing each choice against coefficient and constant determinants needs the memorized proportionality rule in determinant form; the slider shows the two lines coinciding."
+    }
+  ],
+  "goldRows": [
+    "k=1",
+    "3x-5y=8",
+    "kx+20y=-32"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Uses the rule that the two equations must be multiples of each other: finds the factor 20/(-5) = -4 and multiplies 3 by it to get k = -12."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": "infinitely-many",
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'infinitely many solutions' as 'both equations draw the exact same line', so every point on it solves both. Dragging k swings the second line until it lies exactly on top of the first at k = -12; a merely parallel pair would instead mean no solution."
+}

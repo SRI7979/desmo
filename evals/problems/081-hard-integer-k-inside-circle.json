@@ -1,0 +1,48 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "How many integer values of k place a point inside a circle",
+  "problem": "In the xy-plane, the point (k, 3k - 4) lies inside the circle x^2 + y^2 = 100 and not on the circle. If k is an integer, how many possible values of k are there?",
+  "choices": null,
+  "correctAnswer": "6",
+  "expectedResultType": "numeric",
+  "gold": [
+    "integer-list-filter"
+  ],
+  "acceptable": [
+    "graph-both-sides",
+    "graph-inequality"
+  ],
+  "bad": [
+    {
+      "technique": "quadratic-formula",
+      "why": "Substituting to get 5k^2 - 12k - 42 < 0, using the quadratic formula with sqrt(984), and rounding the irrational boundaries -1.94 and 4.34 by hand is multi-step and slip-prone."
+    }
+  ],
+  "goldRows": [
+    "K=[-10...10]",
+    "\\operatorname{count}(K[K^{2}+(3K-4)^{2}<100])"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Substitutes into x^2 + y^2 < 100 to get 10k^2 - 24k - 84 < 0, solves 5k^2 - 12k - 42 = 0 with the quadratic formula (k is about -1.94 or 4.34), and counts the integers -1 through 4."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [
+      "k"
+    ],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "'Inside the circle' means closer to the center (0, 0) than the radius 10, which is x^2 + y^2 < 100 with a strict < because points on the circle do not count. The point's x-coordinate k must then be between -10 and 10, so testing the integers -10 through 10 covers every possibility; the filter keeps k = -1, 0, 1, 2, 3, 4, which is 6 values."
+}

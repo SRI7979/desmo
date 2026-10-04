@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Counting integer solutions of a quadratic inequality",
   "problem": "How many positive integers n satisfy the inequality n^2 - 17n + 60 < 0?",
   "choices": ["4", "5", "6", "7"],
   "correctAnswer": "6",
+  "expectedResultType": "numeric",
+  "gold": ["integer-list-filter"],
+  "acceptable": ["intercept-read", "graph-inequality"],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Factoring to (n-5)(n-12)<0 and doing a sign analysis by hand is more math than letting Desmos filter and count the integers."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "Finding the roots with the quadratic formula, then counting the integers between them, adds a memorized formula and off-by-one risk."
+    }
+  ],
+  "goldRows": ["N=[1...100]", "\\operatorname{count}(N[N^{2}-17N+60<0])"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Factor to (n-5)(n-12)<0, reason that n lies strictly between 5 and 12, and count the integers 6 through 11."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": ["n"],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the question asks how many whole numbers work, not for the roots: Desmos lists the positive integers and keeps only those that make n^2-17n+60 negative, then counts them. Mention why a long list is safe (an upward-opening parabola is negative only between its two x-intercepts) and that the strict < leaves out 5 and 12 themselves.",
   "intendedMethod": "integer-list-filter-count",
   "acceptableMethods": ["graph-restriction-count"],
   "forbiddenMethods": [],

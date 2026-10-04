@@ -1,8 +1,45 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Algebra",
+  "topic": "Infinitely many solutions: ratio of constants",
   "problem": "In the system of equations below, a and c are constants.\n(1/3)x + ay = b\n2x + cy = 5d\nIf the system has infinitely many solutions, what is the value of b/d?",
   "choices": null,
   "correctAnswer": "5/6",
+  "expectedResultType": "numeric",
+  "gold": ["direct-arithmetic", "calculator-arithmetic"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "identity-regression",
+      "why": "There is no data to fit and a, b, c, d are not individually determined, so a regression is unnecessary machinery and underdetermined."
+    },
+    {
+      "technique": "bracket-regression",
+      "why": "Fitting the coefficient conditions leaves free parameters (only the ratios are fixed), so the fit returns an arbitrary branch."
+    },
+    {
+      "technique": "slider-condition",
+      "why": "Four unknown constants make dragging sliders until the lines overlap an absurd setup for one ratio."
+    }
+  ],
+  "goldRows": ["m=\\frac{2}{\\frac{1}{3}}", "\\frac{5}{m}"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Sets up the proportion (1/3)/2 = b/(5d), cross-multiplies to 6b=5d, and solves for b/d; often also tries to find a and c, which are not determined."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": "infinitely-many",
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'infinitely many solutions' as 'both equations are really the same line', so the second equation is the first one multiplied by a single number. Comparing the x-terms shows that number is 2 divided by 1/3, which is 6; it must also turn b into 5d, so 6b=5d and b/d=5/6.",
   "intendedMethod": "coefficient-ratio-arithmetic",
   "acceptableMethods": [],
   "forbiddenMethods": ["any-regression"],

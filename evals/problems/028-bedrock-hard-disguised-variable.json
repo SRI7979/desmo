@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Expression value from a linear constraint",
   "problem": "If 2x+y=20, what is the value of 8x^2+18x+8xy+9y+2y^2?",
   "choices": null,
   "correctAnswer": "980",
+  "expectedResultType": "numeric",
+  "gold": ["function-evaluation"],
+  "acceptable": ["identity-regression", "graph-raw"],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Spotting the regrouping 2(2x+y)^2+9(2x+y) is a hard factoring insight; substituting y=20-2x lets Desmos show the value directly."
+    },
+    {
+      "technique": "strategic-value-test",
+      "why": "One convenient pair such as x=0, y=20 gives 980 but does not show that every pair on the line gives the same value."
+    }
+  ],
+  "goldRows": ["h(x)=8x^{2}+18x+8x(20-2x)+9(20-2x)+2(20-2x)^{2}", "h(x)-h(0)", "h(0)"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 2,
+      "description": "Either spots the regrouping 2(2x+y)^2+9(2x+y) (a hard factoring insight) or plugs one convenient pair like x=0, y=20 without showing every pair gives the same value."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 2x+y=20 lets every y be replaced by 20-2x, so the expression becomes a function of x alone. The row h(x)-h(0) graphs as a flat line on the x-axis, which shows the expression has the same value at every point on the line; h(0) then shows that value, 980, so it is not a lucky pick of x and y.",
   "intendedMethod": "one-variable-in-disguise",
   "acceptableMethods": ["identity-check-in-Desmos"],
   "forbiddenMethods": ["arbitrary-x-y-substitution-as-proof"],

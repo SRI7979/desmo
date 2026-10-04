@@ -1,0 +1,48 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Rational identity with several constants: a + k + m",
+  "problem": "The equation (12x^2 + kx - 10)/(3x - 2) = ax + m is true for all values of x except x = 2/3, where a, k, and m are constants. What is the value of a + k + m?",
+  "choices": null,
+  "correctAnswer": "16",
+  "expectedResultType": "numeric",
+  "gold": [
+    "identity-regression"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Cross-multiplying to (3x - 2)(ax + m), expanding, and matching the x^2, x, and constant coefficients (a = 4, m = 5, then k = 3m - 2a = 7) is a three-equation derivation the regression replaces."
+    },
+    {
+      "technique": "strategic-value-test",
+      "why": "There are no answer choices to test and the answer is a number, not an expression in a parameter; plugging in x = 0 gives m = 5 quickly, but a and k still need equations from other inputs solved by hand."
+    }
+  ],
+  "goldRows": [
+    "x_{1}=[1...5]",
+    "\\frac{12x_{1}^{2}+kx_{1}-10}{3x_{1}-2}\\sim ax_{1}+m",
+    "a+k+m"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Multiplies both sides by 3x - 2, expands (3x - 2)(ax + m) = 3ax^2 + (3m - 2a)x - 2m, matches coefficients to get a = 4 and m = 5, then k = 15 - 8 = 7, so a + k + m = 16."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "'True for all values of x except 2/3' means the two sides are the same function everywhere the left side is defined, so they must agree at any test input. The regression picks a, k, and m that make both sides match at x = 1 through 5 (a list of test inputs that avoids 2/3, where the left side is undefined): a = 4, k = 7, m = 5, and the last row adds them to 16."
+}

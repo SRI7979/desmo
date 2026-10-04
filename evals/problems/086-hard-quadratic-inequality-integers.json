@@ -1,0 +1,55 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Counting integer solutions of a quadratic inequality with irrational boundaries",
+  "problem": "How many integer values of x satisfy the inequality (x + 3)(2x - 1) <= x + 15?",
+  "choices": [
+    "5",
+    "6",
+    "7",
+    "9"
+  ],
+  "correctAnswer": "7",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides",
+    "integer-list-filter"
+  ],
+  "acceptable": [
+    "graph-inequality"
+  ],
+  "bad": [
+    {
+      "technique": "quadratic-formula",
+      "why": "Rearranging to x^2 + 2x - 9 <= 0, applying the quadratic formula to get -1 +/- sqrt(10), and estimating sqrt(10) to find the integer endpoints is three steps with a rounding trap."
+    },
+    {
+      "technique": "factoring",
+      "why": "x^2 + 2x - 9 does not factor over the integers, so factoring cannot find the boundary values."
+    }
+  ],
+  "goldRows": [
+    "y=(x+3)(2x-1)",
+    "y=x+15"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Expands and rearranges to x^2 + 2x - 9 <= 0, uses the quadratic formula to get x = -1 +/- sqrt(10) (about -4.16 and 2.16), and counts the integers -4 through 2."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "The inequality holds where the parabola y = (x + 3)(2x - 1) is at or below the line y = x + 15, which is between their two crossings at x of about -4.16 and 2.16. The integers in that stretch are -4, -3, -2, -1, 0, 1, 2, so there are 7. The tied list method count(X[(X+3)(2X-1) <= X+15]) with X = [-10...10] also gives 7; that range is safe because an upward parabola is at or below a line on one unbroken stretch, x = 0 works, and x = -10 and x = 10 both fail."
+}

@@ -1,0 +1,57 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Quadratic zeros",
+  "problem": "Which of the following is a solution to the equation 4x^2 + 4x - 15 = 0?",
+  "choices": [
+    "-3/2",
+    "3/2",
+    "5/2",
+    "5/4"
+  ],
+  "correctAnswer": "3/2",
+  "expectedResultType": "x_intercept",
+  "gold": [
+    "intercept-read"
+  ],
+  "acceptable": [
+    "answer-choice-list"
+  ],
+  "bad": [
+    {
+      "technique": "quadratic-formula",
+      "why": "Recalling the quadratic formula and simplifying sqrt(256) by hand is memorized-formula work the graph's labeled x-intercepts make unnecessary."
+    },
+    {
+      "technique": "factoring",
+      "why": "Factoring 4x^2+4x-15 into (2x-3)(2x+5) needs the AC method by hand; a sign slip gives the distractors -3/2 or 5/2."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "Evaluating 4x^2+4x-15 at four fractions by hand is slow, error-prone arithmetic."
+    }
+  ],
+  "goldRows": [
+    "y=4x^2+4x-15"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Factors 4x^2+4x-15 as (2x-3)(2x+5) or applies the quadratic formula to get x=3/2 and x=-5/2, then matches 3/2."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Solutions of an expression set equal to 0 are the x-intercepts of its graph: graph y=4x^2+4x-15 and click where it crosses the x-axis, (-2.5, 0) and (1.5, 0). Only 1.5 = 3/2 is a choice; make clear that 'solution' here and 'x-intercept' name the same x-value."
+}

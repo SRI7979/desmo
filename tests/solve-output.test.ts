@@ -86,3 +86,58 @@ test("an explanation must be the exact explanation fields, no extras", () => {
   assert.equal(stage(() => validateExplanationResponse(providerBody({ ...explanation(), rows: [] }))), "zod");
   assert.equal(stage(() => validateExplanationResponse(providerBody({ ...explanation(), why: "" }))), "zod");
 });
+
+test("readout-type slips with one possible meaning are repaired, and a graph with two rows names the other", () => {
+  const listed = graphCandidate({
+    techniqueId: "answer-choice-list",
+    rows: [{ latex: "A=[2,3,4,5]", slider: null, copiesRow: null }, { latex: "A^2-9", slider: null, copiesRow: null }],
+    answer: "B) 3",
+    result: { type: "numeric", row: 2, relatedRows: [], value: 0, listIndex: 2, answerFrom: "choice_position", choiceLabel: "B", detail: "the entry that equals zero" },
+  });
+  const crossing = graphCandidate({
+    techniqueId: "graph-both-sides",
+    rows: [{ latex: "y=x^2", slider: null, copiesRow: null }, { latex: "y=9", slider: null, copiesRow: null }],
+    result: { type: "intersection", row: 1, relatedRows: [], value: 3, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the right intersection" },
+  });
+  const { parsed, repairs } = validateCandidatesResponse(providerBody(candidatesResponse([listed, crossing])));
+  assert.equal(parsed.candidates[0].result.type, "list_entry");
+  assert.deepEqual(parsed.candidates[1].result.relatedRows, [2]);
+  assert.equal(repairs.length, 2);
+  // A list row is not a graph: a one-row "intersection" next to it is left for the result contract to reject.
+  const notGraphs = graphCandidate({
+    techniqueId: "graph-both-sides",
+    rows: [{ latex: "y=x^2", slider: null, copiesRow: null }, { latex: "y_{1}=[1,2]", slider: null, copiesRow: null }],
+    result: { type: "intersection", row: 1, relatedRows: [], value: 3, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the right intersection" },
+  });
+  assert.deepEqual(validateCandidatesResponse(providerBody(candidatesResponse([notGraphs]))).parsed.candidates[0].result.relatedRows, []);
+});
+
+test("a graphical readout that names a choice by list position reads it by reasoning instead", () => {
+  const choices = [{ label: "A", text: "1" }, { label: "B", text: "3" }];
+  const slider = graphCandidate({
+    techniqueId: "slider-condition",
+    rows: [{ latex: "k=1", slider: { min: 0, max: 5, step: 1 }, copiesRow: null }, { latex: "y=x^2-k^2", slider: null, copiesRow: null }],
+    answer: "B) 3",
+    result: { type: "slider_condition", row: 1, relatedRows: [2], value: null, listIndex: null, answerFrom: "choice_position", choiceLabel: "B", detail: "k where the graph passes through (3, 0)" },
+  });
+  const { parsed } = validateCandidatesResponse(providerBody(candidatesResponse([slider], { choices })));
+  assert.equal(parsed.candidates[0].result.answerFrom, "reasoning");
+});
+
+test("an answer written as a choice letter supplies an empty readout label, and only a real choice's", () => {
+  const choices = [{ label: "A", text: "5" }, { label: "B", text: "7" }];
+  const clicked = (answer: string) =>
+    graphCandidate({
+      techniqueId: "graph-both-sides",
+      rows: [{ latex: "y=x^2-4x+1", slider: null, copiesRow: null }, { latex: "y=2x+8", slider: null, copiesRow: null }],
+      answer,
+      result: { type: "intersection", row: 1, relatedRows: [2], value: null, listIndex: null, answerFrom: "reasoning", choiceLabel: null, detail: "the right intersection's x-coordinate" },
+    });
+  const label = (answer: string) => validateCandidatesResponse(providerBody(candidatesResponse([clicked(answer)], { choices }))).parsed.candidates[0].result.choiceLabel;
+  assert.equal(label("B) 7"), "B");
+  assert.equal(label("(B) 7"), "B");
+  assert.equal(label("B"), "B");
+  assert.equal(label("E) 9"), null, "not a transcribed choice");
+  assert.equal(label("7"), null);
+  assert.equal(label("Both lines"), null, "a word starting with a letter is not a label");
+});

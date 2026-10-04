@@ -1,0 +1,48 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "similar triangles with a parallel segment",
+  "problem": "In triangle ABC, point D lies on side AB and point E lies on side AC such that segment DE is parallel to side BC. If AD = 6, DB = 4, and DE = 9, what is the length of BC?",
+  "choices": [
+    "6",
+    "13.5",
+    "15",
+    "22.5"
+  ],
+  "correctAnswer": "15",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides"
+  ],
+  "acceptable": [
+    "direct-arithmetic",
+    "answer-choice-list",
+    "calculator-arithmetic"
+  ],
+  "bad": [],
+  "goldRows": [
+    "y=\\frac{6}{6+4}",
+    "y=\\frac{9}{x}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Sets up 6/10 = 9/BC, cross-multiplies to 6 * BC = 90, and divides; the common trap pairs AD with DB = 4 instead of the whole side AB = 10 (giving 13.5 or 6)."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain why the triangles are similar: DE parallel to BC makes triangle ADE a scaled-down copy of triangle ABC that shares angle A. Corresponding sides are AD with the whole side AB (6 with 6 + 4 = 10) and DE with BC, so 6/10 = 9/BC; graphing each side of that proportion puts the answer at the intersection x = 15.",
+  "notes": "Verified: BC = 9*10/6 = 15; distractors 9*6/4 = 13.5, 9*4/6 = 6, 9*10/4 = 22.5. Intersection of y=0.6 and y=9/x is (15, 0.6). Typing 6/(6+4)=9/x as one equation plots an implicit vertical line with no labeled point in Desmos v1.11.4, so it is not listed."
+}

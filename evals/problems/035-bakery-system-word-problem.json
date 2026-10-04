@@ -1,0 +1,61 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Linear system word problem",
+  "problem": "A bakery sold a total of 85 muffins and scones on Saturday. Each muffin sold for $3.25 and each scone sold for $4.50. If the bakery collected a total of $320.00 from these sales, how many scones did it sell?",
+  "choices": [
+    "35",
+    "40",
+    "45",
+    "50"
+  ],
+  "correctAnswer": "35",
+  "expectedResultType": "intersection",
+  "gold": [
+    "story-system"
+  ],
+  "acceptable": [
+    "graph-both-sides",
+    "graph-raw",
+    "bracket-regression",
+    "answer-choice-list"
+  ],
+  "bad": [
+    {
+      "technique": "substitution",
+      "why": "Substituting x = 85 - y into the revenue equation and distributing 3.25 is multi-step decimal algebra the graphed intersection removes."
+    },
+    {
+      "technique": "elimination",
+      "why": "Scaling the count equation by 3.25 and subtracting is multi-step decimal algebra the graphed intersection removes."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "Testing four choices by hand means four rounds of decimal multiplication; the two typed equations do that work once and transfer to questions without choices."
+    }
+  ],
+  "goldRows": [
+    "x+y=85",
+    "3.25x+4.5y=320"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Substitutes x = 85 - y into 3.25x + 4.5y = 320, distributes, and solves 276.25 + 1.25y = 320 for y = 35 by hand."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain how each sentence becomes one equation: the count gives x + y = 85 and the money gives 3.25x + 4.5y = 320, with x for muffins and y for scones. The intersection is (50, 35), so the answer is the y-coordinate 35; 50 is the number of muffins, a trap choice."
+}

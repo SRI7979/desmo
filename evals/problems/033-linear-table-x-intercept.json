@@ -1,0 +1,56 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Linear function from a table",
+  "problem": "The table shows three values of x and their corresponding values of f(x) for the linear function f.\nx | f(x)\n-4 | 11\n1 | 1\n6 | -9\nThe graph of y = f(x) in the xy-plane crosses the x-axis at the point (r, 0). What is the value of r?",
+  "choices": null,
+  "correctAnswer": "3/2",
+  "expectedResultType": "x_intercept",
+  "gold": [
+    "linear-regression"
+  ],
+  "acceptable": [
+    "parameter-regression",
+    "bracket-regression"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Needs the memorized slope formula, then the intercept from a point, then solving -2x + 3 = 0: a multi-step derivation the table regression replaces."
+    },
+    {
+      "technique": "intercept-read",
+      "why": "Reading an intercept needs an equation for f first, and the question gives only a table; typing y = -2x + 3 hides the slope-and-intercept derivation behind one row."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the memorized slope formula and the intercept worked out by hand; regression on the table finds the line."
+    }
+  ],
+  "goldRows": [
+    "x_{1}=[-4,1,6]",
+    "y_{1}=[11,1,-9]",
+    "y_{1}\\sim mx_{1}+b",
+    "y=mx+b"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 2,
+      "description": "Computes the slope (1 - 11)/(1 - (-4)) = -2 with the slope formula, finds the intercept 3 from a table point, then types or solves -2x + 3 = 0 for x = 3/2."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'linear' means all the table's points lie on one straight line, which linear regression finds for you (m is the slope, b the starting value), so no slope formula is needed. 'Crosses the x-axis' means the point where y = 0: click the line's x-intercept, (1.5, 0), so r = 3/2."
+}

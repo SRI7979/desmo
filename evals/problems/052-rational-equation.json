@@ -1,0 +1,48 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Rational equation",
+  "problem": "What is the solution to the equation 3/(x - 2) + 1 = 12/(x^2 - 4)?",
+  "choices": null,
+  "correctAnswer": "-5",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides",
+    "intercept-read"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Clearing denominators, expanding to x^2+3x-10=0, factoring, and rejecting the extraneous x=2 is multi-step algebra with a trap; the graphs cross only at x=-5."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "Requires first clearing the fractions by hand and still produces the extraneous root x=2 that must be rejected."
+    }
+  ],
+  "goldRows": [
+    "y=\\frac{3}{x-2}+1",
+    "y=\\frac{12}{x^2-4}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Multiplies both sides by (x-2)(x+2), expands to x^2+3x-10=0, factors as (x+5)(x-2)=0, and rejects x=2 because it makes a denominator zero."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "A solution is an x-value where the two sides are equal, which is where their graphs cross; the only crossing is at x = -5. Mention that x = 2 and x = -2 make a denominator zero, so they can never be solutions, even though clearing fractions by hand produces x = 2. Typing the difference of the sides as one row, y = 3/(x-2) + 1 - 12/(x^2-4), shows the same answer as its only x-intercept."
+}

@@ -1,8 +1,38 @@
 {
+  "group": "representative",
+  "source": "original",
   "domain": "Problem-Solving and Data Analysis",
+  "topic": "Conditional probability from survey counts",
   "problem": "A survey of 200 students found that 120 prefer math class. Of the students who prefer math, 45 are freshmen, and 80 of the 200 students surveyed are freshmen. What is the probability that a randomly selected student who is NOT a freshman prefers math class?",
   "choices": null,
   "correctAnswer": "5/8",
+  "expectedResultType": "numeric",
+  "gold": ["direct-arithmetic", "calculator-arithmetic"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "list-evaluation",
+      "why": "There is no list of values; building lists for a single ratio adds setup without removing any math."
+    },
+    {"technique": "parameter-regression", "why": "There is nothing to fit; a regression is unnecessary machinery for one probability."}
+  ],
+  "goldRows": ["\\frac{120-45}{200-80}"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Builds the two-way table by hand: 200-80=120 non-freshmen, 120-45=75 of them prefer math, so 75/120=5/8."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'a student who is NOT a freshman' shrinks the group to the 200-80=120 non-freshmen, so 120 is the denominator; the numerator is the math-lovers who are not freshmen, 120-45=75. A quick two-way table makes both counts visible and gives 75/120=5/8.",
   "intendedMethod": "direct-arithmetic-ratio",
   "acceptableMethods": [],
   "forbiddenMethods": ["unnecessary-list-or-regression"],

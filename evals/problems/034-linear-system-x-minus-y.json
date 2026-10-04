@@ -1,0 +1,59 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Systems of linear equations",
+  "problem": "3x - 4y = 26\n5x + 2y = 0\nThe solution to the given system of equations is (x, y). What is the value of x - y?",
+  "choices": [
+    "-7",
+    "-3",
+    "3",
+    "7"
+  ],
+  "correctAnswer": "7",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides"
+  ],
+  "acceptable": [
+    "graph-raw",
+    "bracket-regression"
+  ],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Multiplying, adding to eliminate y, solving, and back-substituting is several hand steps that two typed equations and one click replace."
+    },
+    {
+      "technique": "substitution",
+      "why": "Solving 5x + 2y = 0 for y, substituting, simplifying, and back-substituting is multi-step algebra the intersection gives directly."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "The choices are values of x - y, not a point, so they cannot be checked in the equations without first solving the system."
+    }
+  ],
+  "goldRows": [
+    "3x-4y=26",
+    "5x+2y=0"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Multiplies 5x + 2y = 0 by 2 and adds it to eliminate y (13x = 26), back-substitutes to get y = -5, then subtracts."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the solution of a system is the one point on both lines, which is the intersection Desmos labels at (2, -5). Then x - y = 2 - (-5) = 7; subtracting a negative is where sign slips land on the trap choices -3 and -7."
+}

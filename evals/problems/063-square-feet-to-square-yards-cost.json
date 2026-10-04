@@ -1,0 +1,49 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "unit conversion with square units",
+  "problem": "A rectangular floor has an area of 540 square feet. Carpet for the floor costs $18 per square yard. If 1 yard = 3 feet, what is the total cost of the carpet needed to cover the floor exactly?",
+  "choices": [
+    "$360",
+    "$1,080",
+    "$3,240",
+    "$9,720"
+  ],
+  "correctAnswer": "$1,080",
+  "expectedResultType": "numeric",
+  "gold": [
+    "direct-arithmetic",
+    "calculator-arithmetic"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "answer-choice-list",
+      "why": "Testing the cost choices still requires the same square-unit conversion for every entry; one product of the givens answers the question directly."
+    }
+  ],
+  "goldRows": [
+    "\\frac{540}{3^{2}}\\cdot18"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Converts 540 square feet to 60 square yards by dividing by 9, then multiplies by $18; the common slip divides by 3 (giving $3,240)."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "The key idea is that a square yard is 3 feet by 3 feet, so 1 square yard = 3^2 = 9 square feet, not 3. Dividing 540 by 3^2 gives 60 square yards, and 60 times $18 is $1,080.",
+  "notes": "Verified: 540/9*18 = 1080; distractors 540/27*18 = 360, 540/3*18 = 3240, 540*18 = 9720. The gold row is written fraction-first: the app's normalizer drops a leading \\cdot, so 18\\cdot\\frac{540}{3^{2}} would display as 18\\frac{540}{3^{2}}, which reads like a mixed number; \\frac{540}{3^{2}}\\cdot18 survives normalization unchanged and shows 1080 in Desmos v1.11.4."
+}

@@ -63,7 +63,8 @@ function normalizeMultiLetterNames(latexRows: readonly string[]): string[] {
   const renames = new Map<string, string>();
   for (const latex of latexRows) {
     const name = latex.match(multiLetterDefinition)?.[1];
-    if (name && !reservedWords.has(name as (typeof namedBuiltins)[number])) {
+    // xy=12 is the hyperbola x·y=12, not a name: the graph coordinates never form one.
+    if (name && !/^[xy]+$/.test(name) && !reservedWords.has(name as (typeof namedBuiltins)[number])) {
       renames.set(name, `${name[0]}_{${name.slice(1)}}`);
     }
   }
@@ -77,9 +78,45 @@ function normalizeMultiLetterNames(latexRows: readonly string[]): string[] {
   );
 }
 
+/**
+ * |2x-5| as written by hand is not calculator LaTeX: Desmos reports "I don't
+ * understand the '|' symbol" (checked against v1.11). Bare bars are paired in
+ * order and become \left|...\right|; rows that already use \left| or \mid,
+ * or have an odd number of bars, are left alone.
+ */
+function normalizeAbsoluteBars(latex: string): string {
+  if (/\\(?:left|right|mid|vert)/.test(latex)) return latex;
+  const bars = [...latex.matchAll(/\|/g)].map((match) => match.index!);
+  if (bars.length === 0 || bars.length % 2 !== 0) return latex;
+  let result = "";
+  let cursor = 0;
+  bars.forEach((at, index) => {
+    result += latex.slice(cursor, at) + (index % 2 === 0 ? String.raw`\left|` : String.raw`\right|`);
+    cursor = at + 1;
+  });
+  return result + latex.slice(cursor);
+}
+
+/**
+ * A list comprehension only runs as [expression \operatorname{for} p=L]:
+ * plain "for", or a comprehension outside brackets, errors ("I don't
+ * understand the way that '=' is used here"; checked against v1.11).
+ */
+function normalizeComprehension(latex: string): string {
+  const withOperator = latex.replace(/(?<!\\operatorname\{)(?<![A-Za-z\\])for(?=\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*=)/g, String.raw`\operatorname{for}`);
+  if (!withOperator.includes(String.raw`\operatorname{for}`)) return withOperator;
+  const unbracketed = /^(\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*=\s*)(?!\[|\\left\[)(.+?)\s*\\operatorname\{for\}\s*(.+?)\s*$/.exec(withOperator);
+  return unbracketed ? `${unbracketed[1]}[${unbracketed[2]}\\operatorname{for}${unbracketed[3]}]` : withOperator;
+}
+
 function normalizeNamedBuiltins(latex: string): string {
   // Desmos compares with a single = inside list filters; == does not parse.
-  return latex
+  return normalizeComprehension(normalizeAbsoluteBars(latex))
+    // b^x_{1} errors ("Only functions and variables may have subscripts");
+    // a subscripted exponent needs braces: b^{x_{1}}.
+    .replace(/\^([A-Za-z])(_\{[^{}]+\}|_[A-Za-z0-9])/g, (_match, name: string, subscript: string) => `^{${name}${subscript}}`)
+    // "pi" typed as a word is p·i through the API; the calculator UI would have turned it into π.
+    .replace(/(?<![A-Za-z\\])pi(?![A-Za-z_])/g, String.raw`\pi `)
     // These characters look correct in KaTeX but are not valid calculator
     // LaTeX when passed through setExpressions. Normalize them before every
     // syntax/variable check so displayed and executed rows are identical.
@@ -170,7 +207,9 @@ function removeRedundantMultiplication(
       /[0-9A-Za-z}\)\]]$/.test(left) &&
       (/^[A-Za-z(\[]/.test(right) || /^\\[A-Za-z]/.test(right)) &&
       // f(3) would call the function f; \operatorname{mean}(L) likewise.
-      !(opensGroup && (left.endsWith("}") || functionNames.has(left.match(trailingIdentifier)?.[0] ?? "")));
+      !(opensGroup && (left.endsWith("}") || functionNames.has(left.match(trailingIdentifier)?.[0] ?? ""))) &&
+      // 18\frac{540}{9} reads as a mixed number to a student; keep the operator.
+      !(/[0-9]$/.test(left) && /^\\frac/.test(right));
     result += left + (implicitIsSafe ? "" : match[0]);
     cursor = at + match[0].length;
     if (implicitIsSafe) cursor += latex.slice(cursor).length - right.length;
@@ -372,6 +411,22 @@ export function findUndefinedVariables(
     if (variables.length) reports.push({ row: index + 1, variables: variables.sort() });
   });
   return reports;
+}
+
+/**
+ * \text{area}=\frac{1}{2}bh or \tan S=20/a: the left side is a caption Desmos
+ * cannot define (prose, an unknown operator, a trig function of a letter), so
+ * the row errors although its right side is the whole computation. Returns
+ * that right side, or null when the row has no such caption.
+ */
+export function unwrapCaption(latex: string): string | null {
+  // x and y are graph coordinates: \sin x=0.5 is an equation, never a caption.
+  const match = latex.match(
+    /^\s*(?:\\(?:text|mathrm)\{[^{}]*\}|\\operatorname\{([A-Za-z]+)\}|\\(?:sin|cos|tan|sec|csc|cot)\s*(?:\\left\s*)?\(?\s*(?![xy](?![A-Za-z]))[A-Za-z](?:_\{[^{}]*\})?\s*(?:\\right\s*)?\)?)\s*=(?!=)\s*([\s\S]+?)\s*$/,
+  );
+  if (!match?.[2]?.trim()) return null;
+  if (match[1] && (namedBuiltins as readonly string[]).includes(match[1])) return null;
+  return match[2].trim();
 }
 
 export type DerivedDefinitionReport = { row: number; parameters: string[] };

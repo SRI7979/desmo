@@ -1,0 +1,56 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Radical equation with an extraneous root",
+  "problem": "Which of the following describes all solutions to the equation x - sqrt(4x + 1) = 5?",
+  "choices": [
+    "2 only",
+    "12 only",
+    "2 and 12",
+    "There are no solutions"
+  ],
+  "correctAnswer": "12 only",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides",
+    "intercept-read"
+  ],
+  "acceptable": [
+    "answer-choice-list",
+    "plug-in-choices"
+  ],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Isolating the radical, squaring to x^2-14x+24=0 and factoring gives 2 and 12; both are positive, so a student who skips checking each in the original equation picks the trap '2 and 12'."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "The same squaring route with a memorized formula, and it still needs the extraneous-root check that the single crossing on the graph makes automatic."
+    }
+  ],
+  "goldRows": [
+    "y=x-\\sqrt{4x+1}",
+    "y=5"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Isolates the radical as x-5=sqrt(4x+1), squares to x^2-10x+25=4x+1, solves x^2-14x+24=0 to get x=2 or x=12, then checks both and rejects x=2 because 2-3=-1, not 5."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Graph each side as written; solutions are where the graphs cross, and there is only one crossing, at (12, 5). Explain 'extraneous' in plain words: squaring both sides also produces x = 2, but at x = 2 the left side is 2 - 3 = -1, not 5, so 2 is a fake solution created by squaring. Both candidates are positive, so 'throw out the negative one' does not catch the trap; the graph does. The one-row version y = x - sqrt(4x+1) - 5 shows the same answer as its only x-intercept."
+}

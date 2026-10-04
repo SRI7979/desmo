@@ -1,0 +1,65 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Quadratic with a parameter: exactly one solution",
+  "problem": "In the xy-plane, the line y = kx - 1, where k is a positive constant, intersects the parabola y = x^2 + 3 at exactly one point. What is the value of k?",
+  "choices": [
+    "2",
+    "4",
+    "8",
+    "16"
+  ],
+  "correctAnswer": "4",
+  "expectedResultType": "slider_condition",
+  "gold": [
+    "slider-condition"
+  ],
+  "acceptable": [
+    "graph-each-choice",
+    "answer-choice-list",
+    "vertex-of-difference"
+  ],
+  "bad": [
+    {
+      "technique": "discriminant",
+      "why": "Setting the equations equal, rearranging to x^2-kx+4=0, and recalling that b^2-4ac=0 means one solution is derivation plus a memorized rule; the slider shows the touching line directly."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "Needs the same rearrangement and then reasoning about when the square root is zero, which is the discriminant idea in disguise."
+    },
+    {
+      "technique": "parameter-regression",
+      "why": "Fitting [a^2+3,2a]~[ka-1,k] needs the tangency slopes 2a and k differentiated by hand; dragging k until the line touches the parabola needs no calculus."
+    },
+    {
+      "technique": "derivative-regression",
+      "why": "[k,kt-1]~[2t,t^2+3] types the derivatives k and 2t worked out by hand, and tangency as equal slopes is calculus; dragging k until the line touches the parabola needs neither."
+    }
+  ],
+  "goldRows": [
+    "k=1",
+    "y=kx-1",
+    "y=x^2+3"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 2,
+      "description": "Sets x^2+3=kx-1, rearranges to x^2-kx+4=0, applies the discriminant condition k^2-16=0, and takes the positive root k=4."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "'Intersects at exactly one point' means the line just touches the parabola without crossing it. Dragging the slider for k, the line goes from missing the parabola to cutting through it twice; the in-between touching position is k = 4, where it touches at (2, 7)."
+}

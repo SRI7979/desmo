@@ -1,8 +1,38 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Quadratic and line with no intersection, integer parameter",
   "problem": "The graphs of y=x^2+4x+q and y=3x+10 have no points of intersection, where q is an integer. What is the least possible value of q?",
   "choices": null,
   "correctAnswer": "11",
+  "expectedResultType": "slider_condition",
+  "gold": ["slider-condition"],
+  "acceptable": ["vertex-of-difference", "count-intersections"],
+  "bad": [
+    {
+      "technique": "discriminant",
+      "why": "Needs the memorized condition b^2-4ac<0, collecting terms by hand, and solving an inequality; the slider shows the answer directly."
+    },
+    {"technique": "function-evaluation", "why": "Checking the difference at a single x-value cannot show the graphs never meet."}
+  ],
+  "goldRows": ["q=0", "y=x^{2}+4x+q", "y=3x+10"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Sets the equations equal, rewrites x^2+x+(q-10)=0, requires the discriminant 1-4(q-10)<0, solves q>41/4, and rounds up to 11."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": ["q"],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'no points of intersection' as the parabola staying completely above the line. Dragging the whole-number slider q upward, the graphs still cross at q=10 and separate at q=11, so 11 is the least possible integer.",
   "intendedMethod": "graph-integer-slider",
   "acceptableMethods": ["vertex-comparison", "discriminant-condition"],
   "forbiddenMethods": ["one-sample-point-as-proof"],

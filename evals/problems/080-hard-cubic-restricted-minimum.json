@@ -1,0 +1,53 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Minimum of a cubic on a closed continuous interval",
+  "problem": "The function f is defined by f(x) = 4x^3 - 18x^2 + 15x + 20 for 0 <= x <= 3. What is the minimum value of f(x) on this interval?",
+  "choices": [
+    "7.5",
+    "10",
+    "11",
+    "20"
+  ],
+  "correctAnswer": "7.5",
+  "expectedResultType": "vertex",
+  "gold": [
+    "restricted-extremum"
+  ],
+  "acceptable": [
+    "vertex-read"
+  ],
+  "bad": [
+    {
+      "technique": "list-evaluation",
+      "why": "Evaluating f at x = 0, 1, 2, 3 returns 10 as the smallest value, but the true minimum is at x = 2.5, between integers: the interval is continuous."
+    },
+    {
+      "technique": "derivative-slope",
+      "why": "Needs the calculus idea that a low point sits where f'(x) = 0, then evaluating f there and at both endpoints; the restricted graph shows the lowest point directly."
+    }
+  ],
+  "goldRows": [
+    "y=4x^{3}-18x^{2}+15x+20\\left\\{0\\le x\\le3\\right\\}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 2,
+      "description": "Either tabulates f(0), f(1), f(2), f(3) and wrongly reports 10, or differentiates to 12x^2 - 36x + 15 = 0, solves for x = 0.5 and x = 2.5, and compares f(0) = 20, f(0.5) = 23.5, f(2.5) = 7.5, f(3) = 11."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": true,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "'0 <= x <= 3' includes every decimal in between, not just whole numbers, so the lowest point can fall between integers. Graph f with the restriction and click its lowest point, (2.5, 7.5); the endpoints (0, 20) and (3, 11) are higher. Checking only x = 0, 1, 2, 3 gives 10, which is the trap choice."
+}

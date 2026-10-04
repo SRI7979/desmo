@@ -1,0 +1,60 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "No solution versus infinitely many solutions",
+  "problem": "2x + ky = 8\nkx + 8y = 3k + 4\nIn the given system of equations, k is a constant. For which of the following values of k does the system have no solution?",
+  "choices": [
+    "-4",
+    "0",
+    "4",
+    "16"
+  ],
+  "correctAnswer": "-4",
+  "expectedResultType": "graph_overlap",
+  "gold": [
+    "slider-parallel"
+  ],
+  "acceptable": [
+    "slider-condition",
+    "graph-each-choice"
+  ],
+  "bad": [
+    {
+      "technique": "derivative-regression",
+      "why": "A slope fit has two branches (k = 4 and k = -4) and returns one arbitrarily, and matching slopes alone cannot separate no solution from infinitely many."
+    },
+    {
+      "technique": "elimination",
+      "why": "Eliminating x (multiply by k and by 2, then subtract) gives (k^2 - 16)y = 2k - 8; the student must still argue that no solution needs k^2 = 16 with 2k - 8 not 0. Stopping at k^2 = 16 can pick 4, which makes the lines identical."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "Solving four systems by hand to see which has no solution is heavy algebra the slider shows in one drag."
+    }
+  ],
+  "goldRows": [
+    "k=1",
+    "2x+ky=8",
+    "kx+8y=3k+4"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Sets the slopes -2/k and -k/8 equal, solves k^2 = 16 for k = 4 or k = -4, and must then check each pair of constants; a slopes-only solution picks 4, which makes the lines identical."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": "no-solution",
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'no solution' as 'the lines are parallel but separate'. Dragging k shows two values where the lines stop crossing: at k = 4 the second line lands exactly on the first (the same line, so infinitely many solutions), and only at k = -4 are they parallel and apart; choice 4 is the trap that matches slopes but not separation."
+}

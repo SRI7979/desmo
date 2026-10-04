@@ -26,19 +26,19 @@ test("technique ids and display names are unique, short, and stable", () => {
   }
 });
 
-test("every one of the 76 library strategies carries a vocabulary technique tag directly under its heading", async () => {
+test("every one of the 77 library strategies carries a vocabulary technique tag directly under its heading", async () => {
   const lines = (await library()).split("\n");
   let expected = 1;
   const tagged = new Map<number, string>();
   lines.forEach((line, index) => {
     const heading = line.match(/^(\d+)\. \S/);
-    if (!heading || Number(heading[1]) !== expected || expected > 76) return;
+    if (!heading || Number(heading[1]) !== expected || expected > 77) return;
     const tag = lines[index + 1]?.match(TECHNIQUE_ANNOTATION);
     assert.ok(tag, `strategy ${expected} ("${line}") needs a [technique: id | name] line`);
     tagged.set(expected, tag[1]);
     expected += 1;
   });
-  assert.equal(tagged.size, 76);
+  assert.equal(tagged.size, 77);
 });
 
 test("library annotations and the code vocabulary agree exactly", async () => {

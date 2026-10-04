@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Square-root function with a quadratic radicand: other x-intercept",
   "problem": "Let h(x)=-sqrt(x^2+bx+c). Its graph passes through (3,0) and (0,-sqrt(366)). If its other x-intercept is m, what is the greatest possible value of m?",
   "choices": null,
   "correctAnswer": "122",
+  "expectedResultType": "x_intercept",
+  "gold": ["parameter-regression"],
+  "acceptable": ["bracket-regression", "intercept-read"],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Squaring to get c=366, substituting x=3 to get b=-125, and then factoring x^2-125x+366 is three written steps the regression and graph replace."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "Solving x^2-125x+366=0 with the quadratic formula is heavy arithmetic after deriving b by hand; the graph shows the other x-intercept."
+    }
+  ],
+  "goldRows": ["f(x)=x^{2}+bx+366", "f(3)\\sim0"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Squares h(0) to get c=366, substitutes x=3 into the radicand to get b=-125, then factors x^2-125x+366 or uses the quadratic formula."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that h is zero exactly where the expression under the square root is zero, and that h(0)=-sqrt(c) tells us c=366. Fit b from the root at x=3, then click the radicand's other x-intercept, 122.",
   "intendedMethod": "radical-root-regression",
   "acceptableMethods": ["quadratic-radicand-roots"],
   "forbiddenMethods": ["discard-radicand-domain", "report-b-instead-of-root"],

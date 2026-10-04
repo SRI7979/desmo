@@ -1,0 +1,56 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Function composition",
+  "problem": "The functions f and g are defined by f(x) = x^2 - 4x + 1 and g(x) = 2x - 5. What is the value of f(g(4))?",
+  "choices": [
+    "-3",
+    "-2",
+    "1",
+    "3"
+  ],
+  "correctAnswer": "-2",
+  "expectedResultType": "numeric",
+  "gold": [
+    "function-evaluation"
+  ],
+  "acceptable": [
+    "direct-arithmetic",
+    "calculator-arithmetic"
+  ],
+  "bad": [
+    {
+      "technique": "graph-both-sides",
+      "why": "Invalid: the intersection of f and g solves f(x)=g(x), which has nothing to do with the composition f(g(4))."
+    },
+    {
+      "technique": "answer-choice-list",
+      "why": "There is no condition to test the choices against; the composition is a single evaluation."
+    }
+  ],
+  "goldRows": [
+    "f(x)=x^2-4x+1",
+    "g(x)=2x-5",
+    "f(g(4))"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Computes g(4)=3 by hand, then substitutes into f to get f(3)=9-12+1=-2."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "f(g(4)) means 'do g first, then f': g(4) = 3, then f(3) = -2. Typing f(g(4)) into Desmos does both steps in the right order; note that g(f(4)) = -3 is the reversed-order trap among the choices."
+}

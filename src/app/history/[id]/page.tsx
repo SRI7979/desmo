@@ -67,7 +67,7 @@ export default async function SavedProblemPage({ params }: { params: Promise<{ i
             <h2 id="result-title">Explanation</h2>
             {solution.status === "solved" && <span className={workspace.methodBadge}>{solution.trick || (solution.expressions.length > 0 ? "Desmos" : METHOD_LABELS[solution.method])}</span>}
           </div>
-          <div className={workspace.resultBody}><SolutionExplanation solution={solution} /></div>
+          <div className={workspace.resultBody}><SolutionExplanation solution={solution} tutorSource={solution.status === "solved" ? { kind: "history", problemId: problem.id } : undefined} /></div>
         </section>
       </div>
       </CalculatorVerificationProvider>

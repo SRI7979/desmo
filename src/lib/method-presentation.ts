@@ -2,6 +2,8 @@ import {
   AnswerConsistencyError,
   deriveConsistentSolution,
   formatChoice,
+  isApproximationQuestion,
+  isWholeNumberQuestion,
   ProseLatexError,
   sanitizeSolutionProse,
 } from "./answer-consistency";
@@ -52,6 +54,7 @@ export function explanationInput(entry: CacheEntry, method: Method): string {
   const lines = [
     `Question: ${entry.question}`,
     `Answer choices: ${choices}`,
+    entry.structure ? `Structure the student should recognize: ${entry.structure}` : null,
     `Technique: ${method.name}`,
     `Answer: ${method.answer}`,
     `Readout: ${readout}`,
@@ -151,6 +154,8 @@ export function presentMethod(entry: CacheEntry, method: Method, explanation: Ex
       answer: method.answer,
       readAnswer: explanation.readAnswer ?? "",
       expressionCount: method.rows.length,
+      approximate: isApproximationQuestion(entry.question),
+      wholeNumber: isWholeNumberQuestion(entry.question),
     });
   } catch (error) {
     if (error instanceof AnswerConsistencyError) throw new ExplanationError(error.message, error.stage);

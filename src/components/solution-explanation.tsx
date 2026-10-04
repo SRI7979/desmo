@@ -12,6 +12,7 @@ import type { Solution } from "@/lib/solver-schema";
 import { splitAnswerLabel } from "@/lib/math-text";
 import type { ExplanationStatus } from "@/lib/technique-selection-ui";
 import { usePreflightGate } from "./preflight-gate";
+import { ExplainIcon, SaveTrickButton, SelectionExplain, TutorPanel, useTutor, type TutorSource } from "./tutor-panel";
 import styles from "./solution-explanation.module.css";
 
 // "unverified" renders nothing; only "contradicted" gets a banner treatment.
@@ -24,6 +25,7 @@ export default function SolutionExplanation({
   solution,
   explanationStatus = "ready",
   onRetryExplanation,
+  tutorSource,
 }: {
   solution: Solution;
   /**
@@ -33,6 +35,8 @@ export default function SolutionExplanation({
    */
   explanationStatus?: ExplanationStatus;
   onRetryExplanation?: () => void;
+  /** Which solve or saved problem this is, for "Explain this" and "Save this trick"; without it neither appears. */
+  tutorSource?: TutorSource;
 }) {
   const pending = explanationStatus === "pending";
   const failed = explanationStatus === "failed";
@@ -41,6 +45,8 @@ export default function SolutionExplanation({
   // The copyable lines are calculator rows too: they are shown only for a
   // batch the hidden Desmos instance reported clean, like the calculator.
   const { gate } = usePreflightGate(solution.expressions, solution.answerState);
+  const tutor = useTutor(tutorSource ?? null);
+  const card = useRef<HTMLDivElement>(null);
   const [copyStatus, setCopyStatus] = useState<{ row: number; ok: boolean } | null>(null);
   const copyTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (copyTimeout.current) clearTimeout(copyTimeout.current); }, []);
@@ -88,9 +94,9 @@ export default function SolutionExplanation({
   const formattedAnswer = splitAnswerLabel(answer);
 
   return (
-    <div className={styles.solution}>
+    <div className={styles.solution} ref={card}>
       <div className={styles.answerBox} data-testid="answer">
-        <div className={styles.answerHeading}>
+        <div className={styles.answerHeading} data-tutor-ignore>
           <span className={styles.eyebrow}>Answer</span>
           {formattedAnswer.label && <span className={styles.answerChoice}>Choice {formattedAnswer.label}</span>}
           {check.status === "verified" && (
@@ -114,11 +120,12 @@ export default function SolutionExplanation({
           <MathText>{check.message}</MathText>
         </p>
       )}
+      {tutor.openAt === "top" && <TutorPanel tutor={tutor} />}
       {/* The idea is this technique's own, from its explanation: never the
           problem-level structure line, which reads the same for every technique. */}
       {pending ? (
         <section className={styles.structureNote} aria-labelledby="idea-title" aria-busy="true" data-testid="explanation-skeleton">
-          <h3 id="idea-title">The idea</h3>
+          <div className={styles.ideaHeading}><h3 id="idea-title">The idea</h3>{tutorSource && <SaveTrickButton source={tutorSource} />}</div>
           <span className={styles.srOnly} role="status">Writing the explanation for {techniqueName}…</span>
           <div className={styles.skeletonLines} aria-hidden="true">
             <span className={styles.purposeShimmer} />
@@ -133,12 +140,15 @@ export default function SolutionExplanation({
               Try again
             </button>
           )}
+          {tutorSource && <SaveTrickButton source={tutorSource} />}
         </div>
       ) : solution.why ? (
         <section className={styles.structureNote} aria-labelledby="idea-title" data-testid="structure">
-          <h3 id="idea-title">The idea</h3>
+          <div className={styles.ideaHeading}><h3 id="idea-title">The idea</h3>{tutorSource && <SaveTrickButton source={tutorSource} />}</div>
           <p><MathText>{solution.why}</MathText></p>
         </section>
+      ) : tutorSource ? (
+        <div className={`${styles.ideaHeading} ${styles.saveRow}`}><SaveTrickButton source={tutorSource} /></div>
       ) : null}
       {solution.expressions.length > 0 && gate.status === "pending" ? (
         <>
@@ -160,12 +170,20 @@ export default function SolutionExplanation({
           <ol className={styles.expressionSteps} aria-label="Desmos line explanations">
             {solution.expressions.map((expression, index) => (
               <li key={index} data-testid="explanation-line">
-                <div className={styles.lineHeading}>
+                <div className={styles.lineHeading} data-tutor-ignore>
                   <span className={styles.lineLabel}><span>{index + 1}</span>Line {index + 1}</span>
-                  <button type="button" className={styles.copyButton} onClick={() => copyLine(expression.latex, index)} aria-label={`Copy line ${index + 1}`}>
-                    <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M11 4V3H5a2 2 0 0 0-2 2v7h1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
-                    {copyStatus?.row === index ? copyStatus.ok ? "Copied" : "Select to copy" : "Copy"}
-                  </button>
+                  <span className={styles.lineActions}>
+                    {tutorSource && (
+                      <button type="button" className={styles.copyButton} onClick={() => tutor.ask({ kind: "row", row: index + 1 }, `line ${index + 1}`)} aria-label={`Explain line ${index + 1}`}>
+                        <ExplainIcon />
+                        Explain
+                      </button>
+                    )}
+                    <button type="button" className={styles.copyButton} onClick={() => copyLine(expression.latex, index)} aria-label={`Copy line ${index + 1}`}>
+                      <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M11 4V3H5a2 2 0 0 0-2 2v7h1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                      {copyStatus?.row === index ? copyStatus.ok ? "Copied" : "Select to copy" : "Copy"}
+                    </button>
+                  </span>
                 </div>
                 <div className={styles.equation} tabIndex={0} aria-label={`Desmos line ${index + 1}`}><MathExpression latex={expression.latex} /></div>
                 {expression.purpose ? (
@@ -173,6 +191,7 @@ export default function SolutionExplanation({
                 ) : pending ? (
                   <span className={styles.purposeShimmer} aria-hidden="true" />
                 ) : null}
+                {tutor.openAt === index + 1 && <TutorPanel tutor={tutor} />}
               </li>
             ))}
           </ol>
@@ -195,7 +214,7 @@ export default function SolutionExplanation({
         <div className={styles.sectionHeading}><h3>Walkthrough</h3><span>{solution.steps.length} {solution.steps.length === 1 ? "step" : "steps"}</span></div>
         <ol className={styles.steps}>
           {solution.steps.map((step, index) => (
-            <li key={index}><span className={styles.stepNumber}>{index + 1}</span><p><MathText>{step}</MathText></p></li>
+            <li key={index}><span className={styles.stepNumber} data-tutor-ignore>{index + 1}</span><p><MathText>{step}</MathText></p></li>
           ))}
         </ol>
         </>
@@ -215,7 +234,7 @@ export default function SolutionExplanation({
           <ul className={styles.choiceList}>
             {solution.choices.map((choice) => (
               <li key={choice.label} className={formattedAnswer.label === choice.label ? styles.selectedChoice : undefined}>
-                <span className={styles.choiceLabel}>{choice.label}</span><div><MathText>{choice.text}</MathText></div>
+                <span className={styles.choiceLabel} data-tutor-ignore>{choice.label}</span><div><MathText>{choice.text}</MathText></div>
               </li>
             ))}
           </ul>
@@ -226,6 +245,7 @@ export default function SolutionExplanation({
         <p><MathText>{solution.question}</MathText></p>
       </details>
       <span className={styles.srOnly} role="status">{copyStatus ? copyStatus.ok ? `Line ${copyStatus.row + 1} copied.` : "Clipboard is unavailable. Select the equation to copy it." : ""}</span>
+      {tutorSource && <SelectionExplain tutor={tutor} containerRef={card} />}
     </div>
   );
 }

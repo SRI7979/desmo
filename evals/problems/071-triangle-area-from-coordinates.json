@@ -1,0 +1,56 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "triangle area from vertex coordinates",
+  "problem": "Triangle ABC in the xy-plane has vertices A(2, -3), B(2, 5), and C(8, 1). What is the area of triangle ABC?",
+  "choices": [
+    "16",
+    "24",
+    "32",
+    "48"
+  ],
+  "correctAnswer": "24",
+  "expectedResultType": "numeric",
+  "gold": [
+    "reference-formula"
+  ],
+  "acceptable": [
+    "direct-arithmetic",
+    "calculator-arithmetic",
+    "distance-builtin"
+  ],
+  "bad": [
+    {
+      "technique": "polygon-area",
+      "why": "Desmos (API v1.11) draws polygon() but displays no area for it and has no area() function, so the plan never shows the answer; read the base and height from the coordinates instead."
+    },
+    {
+      "technique": "sum-product",
+      "why": "The shoelace formula is a memorized formula not on the reference sheet, built here with list rotation; one half base times height from the reference sheet needs neither."
+    }
+  ],
+  "goldRows": [
+    "\\frac{1}{2}(5-(-3))(8-2)"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Applies the shoelace formula to the three vertices, or sketches the triangle and computes (1/2)(8)(6) by hand."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that A and B share x = 2, so side AB is vertical with length 5 - (-3) = 8 and works as the base; the height is the horizontal distance from C to that side, 8 - 2 = 6. The reference-sheet formula area = (1/2)(base)(height) then gives 24.",
+  "notes": "Verified: shoelace area 24. Distractors: 48 omits the 1/2, 32 uses 8 as the height, 16 uses 4. In Desmos v1.11.4 \\operatorname{polygon}(...) has evaluationDisplayed false, and area()/perimeter() error with 'This calculator does not support the area function'."
+}

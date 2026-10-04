@@ -1,0 +1,1679 @@
+{
+  "033-linear-table-x-intercept": {
+    "status": "solved",
+    "question": "The table shows three values of x and their corresponding values of f(x) for the linear function f.\nx | f(x)\n-4 | 11\n1 | 1\n6 | -9\nThe graph of y = f(x) in the xy-plane crosses the x-axis at the point (r, 0). What is the value of r?",
+    "choices": null,
+    "clarification": null,
+    "structure": "three points for a linear function → find the line then its x-intercept",
+    "candidates": [
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "1.5",
+        "result": {
+          "row": null,
+          "value": 1.5,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "paper calculation: slope = (1-11)/(1-(-4)) = -2; b=1+2=3; root r = -b/m = -3/(-2)=1.5",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 3,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "linear-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "x_{1}=[-4,1,6]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}=[11,1,-9]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}\\sim mx_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(x)=mx+b",
+            "slider": null,
+            "copiesRow": 3
+          },
+          {
+            "latex": "-b/m",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1.5",
+        "result": {
+          "row": 5,
+          "value": 1.5,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "x-intercept -b/m",
+          "type": "numeric",
+          "relatedRows": [
+            3,
+            4
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "intercept-read",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "x_{1}=[-4,1,6]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}=[11,1,-9]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}\\sim mx_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(x)=mx+b",
+            "slider": null,
+            "copiesRow": 3
+          },
+          {
+            "latex": "y=0",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1.5",
+        "result": {
+          "row": 4,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "click the intersection of the graphed f(x) (row 4) with y=0 (row 5); x-coordinate = 1.5",
+          "type": "intersection",
+          "relatedRows": [
+            5
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": -6,
+          "right": 8,
+          "bottom": -12,
+          "top": 12
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "direct-arithmetic"
+  },
+  "063-square-feet-to-square-yards-cost": {
+    "status": "solved",
+    "question": "A rectangular floor has an area of 540 square feet. Carpet for the floor costs $18 per square yard. If 1 yard = 3 feet, what is the total cost of the carpet needed to cover the floor exactly?\nAnswer choices: A) $360, B) $1,080, C) $3,240, D) $9,720",
+    "choices": [
+      {
+        "label": "A",
+        "text": "$360"
+      },
+      {
+        "label": "B",
+        "text": "$1,080"
+      },
+      {
+        "label": "C",
+        "text": "$3,240"
+      },
+      {
+        "label": "D",
+        "text": "$9,720"
+      }
+    ],
+    "clarification": null,
+    "structure": "unit conversion then multiply cost (area in sq ft → sq yd, then cost per sq yd × quantity).",
+    "candidates": [
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) $1,080",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Compute 540/9=60 sq yd, cost 60·18=1080",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 1,
+          "value": 1080,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "total cost in dollars",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "A=[360,1080,3240,9720]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "cost=18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "A[cost=A]",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 3,
+          "value": 1080,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "entry of A equal to computed cost (choices in original order)",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "073-right-triangle-tangent": {
+    "status": "solved",
+    "question": "In right triangle RST, angle T is the right angle, RT = 20, and RS = 29. What is the value of tan(S)?\nAnswer choices: A) 20/29, B) 21/29, C) 20/21, D) 21/20",
+    "choices": [
+      {
+        "label": "A",
+        "text": "20/29"
+      },
+      {
+        "label": "B",
+        "text": "21/29"
+      },
+      {
+        "label": "C",
+        "text": "20/21"
+      },
+      {
+        "label": "D",
+        "text": "21/20"
+      }
+    ],
+    "clarification": null,
+    "structure": "right triangle with right angle at T; hypotenuse RS and one leg RT given; find tangent of angle S (opposite/adjacent)",
+    "candidates": [
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "ST=\\sqrt{29^2-20^2}",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "20/ST",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "C) 20/21",
+        "result": {
+          "row": 2,
+          "value": 0.9523809523809523,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "C",
+          "detail": "tan(S)=20/ST = 20/21",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "A=[20/29,21/29,20/21,21/20]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\tanS=20/\\sqrt{29^2-20^2}",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "C) 20/21",
+        "result": {
+          "row": 1,
+          "value": 0.9523809523809523,
+          "listIndex": 3,
+          "answerFrom": "choice_position",
+          "choiceLabel": "C",
+          "detail": "third entry of A equals tan(S) = 20/21",
+          "type": "list_entry",
+          "relatedRows": [
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "C) 20/21",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "C",
+          "detail": "Pythagorean: ST=\\sqrt{29^2-20^2}=21 so tan(S)=RT/ST=20/21",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "036-moving-budget-inequality#final": {
+    "status": "solved",
+    "question": "A moving company charges a flat fee of $95 plus $1.85 for each mile it drives. Dana can spend at most $300 on the move. What is the greatest whole number of miles the company can drive for Dana's move without exceeding her budget?",
+    "choices": null,
+    "clarification": null,
+    "structure": "one linear cost expression with an inequality; find the largest integer m with 95+1.85m ≤ 300",
+    "candidates": [
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "(300-95)/1.85",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{floor}((300-95)/1.85)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 2,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "floor of the miles possible",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "integer-list-filter",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "N=[0...200]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "M=N[95+1.85N\\le300]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{max}(M)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 3,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "maximum integer N satisfying 95+1.85N≤300",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "graph-both-sides",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "y=95+1.85x",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y=300",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 1,
+          "value": 110.8108108108108,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "x-coordinate of intersection (exact miles possible ≈110.8108); take greatest whole number 110",
+          "type": "intersection",
+          "relatedRows": [
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": 0,
+          "right": 150,
+          "bottom": 0,
+          "top": 350
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "slider-condition",
+        "rung": 3,
+        "rows": [
+          {
+            "latex": "m=0",
+            "slider": {
+              "min": 0,
+              "max": 200,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "y=95+1.85m",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y=300",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "110",
+        "result": {
+          "row": 1,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "drag m until point (m,95+1.85m) is just under y=300; answer is m=110",
+          "type": "slider_condition",
+          "relatedRows": [
+            2,
+            3
+          ]
+        },
+        "answerState": {
+          "param": "m",
+          "value": 110
+        },
+        "parameters": [
+          {
+            "name": "m",
+            "integer": true,
+            "min": 0,
+            "max": 200
+          }
+        ],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": 0,
+          "right": 150,
+          "bottom": 0,
+          "top": 350
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "110",
+        "result": {
+          "row": null,
+          "value": 110,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "compute (300-95)/1.85 ≈110.8108, greatest whole number ≤ that is 110",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "010-infinite-solutions-gk-ratio#final": {
+    "status": "solved",
+    "question": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
+    "choices": null,
+    "clarification": null,
+    "structure": "Two linear equations with unknown coefficients; they are proportional (same line) for infinitely many solutions.",
+    "candidates": [
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "1/6",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "Set coefficient ratios equal: g/8 = 3/k = 15/60 = 1/4; solve g=2, k=12 so g/k=1/6",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "graph-both-sides",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "g=1",
+            "slider": {
+              "min": -10,
+              "max": 10,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "k=1",
+            "slider": {
+              "min": -20,
+              "max": 20,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "g x-3y=15",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "8x-ky=60",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g/k",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1/6",
+        "result": {
+          "row": 5,
+          "value": 0.16666666666666666,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "g/k after sliders set so the two graph rows overlap (infinitely many solutions)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "answerState": {
+          "param": "g",
+          "value": 2
+        },
+        "parameters": [
+          {
+            "name": "g",
+            "integer": false,
+            "min": -10,
+            "max": 10
+          }
+        ],
+        "conditionType": "infinitely-many",
+        "distinguishes": "visual-parallel-vs-overlap",
+        "graphBounds": {
+          "left": -10,
+          "right": 10,
+          "bottom": -10,
+          "top": 10
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      }
+    ],
+    "preferredTechniqueId": "direct-arithmetic"
+  },
+  "040-no-solution-parameter-k#final": {
+    "status": "solved",
+    "question": "4x - ky = 9\n6x + 15y = 2\nIn the given system of equations, k is a constant. If the system has no solution, what is the value of k?",
+    "choices": null,
+    "clarification": null,
+    "structure": "two linear equations in x and y with one parameter k; ask k that makes the lines parallel (no solution)",
+    "candidates": [
+      {
+        "techniqueId": "derivative-regression",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "f(x)=(4x-9)/k",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g(x)=(-6/15)x+2/15",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f'(0)~g'(0)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "-10",
+        "result": {
+          "row": 3,
+          "value": -10,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "f' and g' regression fits k = -10 (slopes equal)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "slider-condition",
+        "rung": 3,
+        "rows": [
+          {
+            "latex": "k=0",
+            "slider": {
+              "min": -100,
+              "max": 100,
+              "step": 1
+            },
+            "copiesRow": null
+          },
+          {
+            "latex": "4x-ky=9",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "6x+15y=2",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "-10",
+        "result": {
+          "row": 1,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "drag k until the two graphed lines are parallel (no intersection); k = -10",
+          "type": "slider_condition",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": {
+          "param": "k",
+          "value": -10
+        },
+        "parameters": [
+          {
+            "name": "k",
+            "integer": false,
+            "min": -100,
+            "max": 100
+          }
+        ],
+        "conditionType": "no-solution",
+        "distinguishes": "visual-parallel-vs-overlap",
+        "graphBounds": {
+          "left": -10,
+          "right": 10,
+          "bottom": -10,
+          "top": 10
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 1
+        }
+      },
+      {
+        "techniqueId": "elimination",
+        "rung": 2,
+        "rows": [],
+        "answer": "-10",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "Set coefficient ratios 4/6 = -k/15 → k = -10",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": "no-solution",
+        "distinguishes": "constant-ratio-checked",
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "derivative-regression"
+  },
+  "048-exponential-model-evaluation#final": {
+    "status": "solved",
+    "question": "The number of subscribers to an online newsletter w weeks after it launched is modeled by the function N(w) = 320(1.15)^(w/2). According to the model, how many subscribers, to the nearest whole number, did the newsletter have 10 weeks after it launched?\nAnswer choices: A) 560, B) 644, C) 5237, D) 1295",
+    "choices": [
+      {
+        "label": "A",
+        "text": "560"
+      },
+      {
+        "label": "B",
+        "text": "644"
+      },
+      {
+        "label": "C",
+        "text": "5237"
+      },
+      {
+        "label": "D",
+        "text": "1295"
+      }
+    ],
+    "clarification": null,
+    "structure": "evaluate the given exponential model at w=10 (function evaluation / direct computation).",
+    "candidates": [
+      {
+        "techniqueId": "function-evaluation",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "N(w)=320(1.15)^{w/2}",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "N(10)",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 644",
+        "result": {
+          "row": 2,
+          "value": 644.4343,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "N(10)=320(1.15)^{10/2}",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 0,
+        "rows": [
+          {
+            "latex": "320(1.15)^{10/2}",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 644",
+        "result": {
+          "row": 1,
+          "value": 644.4343,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "direct numeric evaluation of 320(1.15)^{10/2}",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "A=[560,644,5237,1295]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "R=\\operatorname{round}\\left(320(1.15)^{10/2}\\right)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "A[A=R]",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 644",
+        "result": {
+          "row": 3,
+          "value": 644,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "the entry of A equal to the rounded model value",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) 644",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Compute 320(1.15)^{5} ≈ 644.434 → nearest whole number 644",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "function-evaluation"
+  },
+  "065-line-of-best-fit-tank-empty#final": {
+    "status": "solved",
+    "question": "The table shows the amount of water, in gallons, remaining in a tank t minutes after the tank began draining.\nt (minutes): 0, 2, 4, 6, 8, 10\nWater (gallons): 182, 160, 147, 121, 108, 85\nBased on a line of best fit for the data, approximately how many minutes after the tank began draining will the tank be empty?\nAnswer choices: A) 15, B) 19, C) 23, D) 27",
+    "choices": [
+      {
+        "label": "A",
+        "text": "15"
+      },
+      {
+        "label": "B",
+        "text": "19"
+      },
+      {
+        "label": "C",
+        "text": "23"
+      },
+      {
+        "label": "D",
+        "text": "27"
+      }
+    ],
+    "clarification": null,
+    "structure": "Data points given; fit a line (linear regression) and find its x-intercept (time when water=0).",
+    "candidates": [
+      {
+        "techniqueId": "linear-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "-b/m",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 4,
+          "value": 19.037735849056602,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "x-intercept of fitted line (-b/m)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "A=[15,19,23,27]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w(A)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\operatorname{abs}(w(A))",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 5,
+          "value": 0.4339622641509431,
+          "listIndex": 2,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "fitted-line values at choices A; entry 2 (t=19) is closest to zero",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2,
+            3,
+            4
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "graph-both-sides",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "t_{1}=[0,2,4,6,8,10]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}=[182,160,147,121,108,85]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "w_{1}\\sim mt_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y=mt+b",
+            "slider": null,
+            "copiesRow": 3
+          }
+        ],
+        "answer": "B) 19",
+        "result": {
+          "row": 4,
+          "value": 19.037735849056602,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "x-coordinate of the x-intercept of the plotted fitted line (click intersection with y=0)",
+          "type": "numeric",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) 19",
+        "result": {
+          "row": null,
+          "value": 19.037735849056602,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Arithmetic extrapolation using slope from mean-based regression (paper math done internally)",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 3,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "linear-regression"
+  },
+  "050-function-composition#final": {
+    "status": "solved",
+    "question": "The functions f and g are defined by f(x) = x^2 - 4x + 1 and g(x) = 2x - 5. What is the value of f(g(4))? Answer choices: A) -3, B) -2, C) 1, D) 3",
+    "choices": [
+      {
+        "label": "A",
+        "text": "-3"
+      },
+      {
+        "label": "B",
+        "text": "-2"
+      },
+      {
+        "label": "C",
+        "text": "1"
+      },
+      {
+        "label": "D",
+        "text": "3"
+      }
+    ],
+    "clarification": null,
+    "structure": "evaluate g at 4, then evaluate f at that result (function composition / direct function evaluation).",
+    "candidates": [
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "g4=2\\cdot 4-5",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g4^2-4g4+1",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) -2",
+        "result": {
+          "row": 2,
+          "value": -2,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "f(g(4)) computed from g4",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "function-evaluation",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "f(x)=x^2-4x+1",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g(x)=2x-5",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g(4)",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(g(4))",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) -2",
+        "result": {
+          "row": 4,
+          "value": -2,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "f evaluated at g(4)",
+          "type": "numeric",
+          "relatedRows": [
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "A=[-3,-2,1,3]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "g(x)=2x-5",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(x)=x^2-4x+1",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "v=f(g(4))",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) -2",
+        "result": {
+          "row": 4,
+          "value": -2,
+          "listIndex": 2,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "v equals the second entry of A",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2,
+            3
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) -2",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Paper: g(4)=2(4)-5=3; f(3)=3^2-4(3)+1=-2",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "063-square-feet-to-square-yards-cost#ab-1": {
+    "status": "solved",
+    "question": "A rectangular floor has an area of 540 square feet. Carpet for the floor costs $18 per square yard. If 1 yard = 3 feet, what is the total cost of the carpet needed to cover the floor exactly?\nAnswer choices: A) $360, B) $1,080, C) $3,240, D) $9,720",
+    "choices": [
+      {
+        "label": "A",
+        "text": "$360"
+      },
+      {
+        "label": "B",
+        "text": "$1,080"
+      },
+      {
+        "label": "C",
+        "text": "$3,240"
+      },
+      {
+        "label": "D",
+        "text": "$9,720"
+      }
+    ],
+    "clarification": null,
+    "structure": "Convert square feet to square yards (divide by 3^2), then multiply by cost per square yard.",
+    "candidates": [
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 1,
+          "value": 1080,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B) $",
+          "detail": "total cost in dollars",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "C=[360,1080,3240,9720]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "cost=18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "C[C=cost]",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 3,
+          "value": 1080,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B) $",
+          "detail": "matching choice value",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) $1,080",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B) $",
+          "detail": "540 ft^2 = 540/9 = 60 yd^2; 60*18=1080",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  }
+}

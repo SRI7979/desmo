@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Algebra",
+  "topic": "Same line in standard form: ratio of constants",
   "problem": "The equations (3/4)x+ay=b and (7/6)x+cy=3d describe the same line for all real x and y. What is b/d?",
   "choices": null,
   "correctAnswer": "27/14",
+  "expectedResultType": "numeric",
+  "gold": ["direct-arithmetic", "calculator-arithmetic"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "bracket-regression",
+      "why": "Four unknown constants and no data: a regression is unnecessary and leaves the individual constants undetermined."
+    },
+    {
+      "technique": "identity-regression",
+      "why": "There is no identity to fit; only the ratio b/d is determined, so a fit returns an arbitrary branch."
+    }
+  ],
+  "goldRows": ["m=\\frac{\\frac{7}{6}}{\\frac{3}{4}}", "\\frac{3}{m}"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Sets (3/4)/(7/6) = b/(3d), cross-multiplies, and simplifies the fractions to get b/d=27/14."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": "infinitely-many",
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'the same line' means the second equation is the first one multiplied by a single number, so every part scales together, including the constants b and 3d. That number is (7/6)/(3/4)=14/9, so 3d=(14/9)b and b/d=3/(14/9)=27/14.",
   "intendedMethod": "same-line-scale-factor",
   "acceptableMethods": ["coefficient-ratio-arithmetic"],
   "forbiddenMethods": ["match-only-x-coefficients-without-constants"],

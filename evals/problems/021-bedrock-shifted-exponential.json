@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Shifted exponential with two unknown constants",
   "problem": "A function is defined by f(x)=a(3)^(x+2)+b, where a and b are constants. If f(0)=29 and f(1)=83, what is f(2)?",
   "choices": null,
   "correctAnswer": "245",
+  "expectedResultType": "numeric",
+  "gold": ["bracket-regression", "parameter-regression"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Building 9a+b=29 and 27a+b=83 and solving by hand is a multi-step derivation the regression does instantly."
+    },
+    {
+      "technique": "exponential-regression",
+      "why": "A plain y~ab^x fit ignores the +b shift and the x+2 exponent, so it fits the wrong family and gives a wrong f(2)."
+    }
+  ],
+  "goldRows": ["f(x)=a(3)^{x+2}+b", "[f(0),f(1)]\\sim[29,83]", "f(2)"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Substitutes x=0 and x=1 to get 9a+b=29 and 27a+b=83, subtracts to get a=3, back-substitutes b=2, then computes 3(81)+2."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that f(0)=29 and f(1)=83 are two facts about the same function, so Desmos can find a and b at once by fitting f's formula to both with ~. Then f(2) is just the fitted function evaluated at 2; there is no need to work out powers of 3 or solve a system.",
   "intendedMethod": "parameter-regression",
   "acceptableMethods": ["direct-system"],
   "forbiddenMethods": ["unexplained-parameter-values"],

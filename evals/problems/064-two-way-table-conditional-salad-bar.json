@@ -1,0 +1,48 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "two-way table conditional probability",
+  "problem": "A school surveyed 300 students about their preferred lunch option. The results are shown below.\nGrade 9: hot lunch 52, salad bar 18, packed lunch 30\nGrade 10: hot lunch 41, salad bar 27, packed lunch 32\nGrade 11: hot lunch 35, salad bar 35, packed lunch 30\nIf one of the students who prefer the salad bar is selected at random, what is the probability that the student is in grade 10?",
+  "choices": null,
+  "correctAnswer": "27/80",
+  "expectedResultType": "numeric",
+  "gold": [
+    "direct-arithmetic",
+    "calculator-arithmetic"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "list-evaluation",
+      "why": "Loading the table into lists only to read entries back by position is disposable setup; one ratio of given counts answers the question."
+    },
+    {
+      "technique": "integer-list-filter",
+      "why": "Rebuilding the table with repeat() and dividing count(S[S=10]) by total(S) sums the grade numbers instead of counting students; one ratio of the given counts answers it."
+    }
+  ],
+  "goldRows": [
+    "\\frac{27}{18+27+35}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Adds the salad-bar column by hand (80) and divides 27 by it; frequent errors divide by the grade 10 total (100) or by all 300 students."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'selected from the students who prefer the salad bar' shrinks the group to the salad-bar column only, so the denominator is that column's total 18 + 27 + 35 = 80, not 300 or the grade 10 row total of 100. The probability is 27/80 (0.3375).",
+  "notes": "Verified: each grade row totals 100 (300 overall); salad-bar total 80; 27/80 = 0.3375."
+}

@@ -1,0 +1,48 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "mean and median from a data list",
+  "problem": "The number of minutes each of 10 students spent on a homework assignment is listed below.\n35, 48, 22, 60, 41, 35, 52, 29, 70, 38\nBy how many minutes does the mean of the data exceed the median of the data?",
+  "choices": null,
+  "correctAnswer": "3.5",
+  "expectedResultType": "numeric",
+  "gold": [
+    "statistics-builtin"
+  ],
+  "acceptable": ["list-evaluation"],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Summing ten values, dividing by 10, sorting the list, and averaging the two middle values by hand is slow and error-prone when mean() and median() read both directly from the list."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the list sorted by hand to find the median; mean() and median() read both from the list."
+    }
+  ],
+  "goldRows": [
+    "L=[35,48,22,60,41,35,52,29,70,38]",
+    "\\operatorname{mean}(L)-\\operatorname{median}(L)"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Adds the ten values (430) and divides by 10 for a mean of 43, sorts the list and averages the 5th and 6th values (38 and 41) for a median of 39.5, then subtracts."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Make clear that with an even number of values the median is the average of the two middle values after sorting, which median() handles without sorting by hand; mean() is the total divided by the count. The answer is the mean 43 minus the median 39.5, which is 3.5.",
+  "notes": "Verified: mean 43, median 39.5 (Python statistics and Desmos v1.11.4 both give 3.5 on the last gold row)."
+}

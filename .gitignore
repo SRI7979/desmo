@@ -17,3 +17,9 @@ next-env.d.ts
 .vercel/
 .playwright-mcp/
 .desmo-debug/
+
+# Licensed benchmark problems (e.g. Bedrock Prep) stay local; see evals/private.example
+evals/private/
+
+# Agent worktrees
+.claude/worktrees/

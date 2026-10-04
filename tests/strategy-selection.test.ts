@@ -74,13 +74,20 @@ test("selection is identical whatever order the candidates arrive in", () => {
   assert.equal(forward.winnerId, backward.winnerId);
 });
 
-test("regression test 5: two candidates with the same techniqueId → the later one is rejected", () => {
-  const selection = select(candidatesResponse([graphCandidate(), graphCandidate({ rows: [{ latex: "y=x^2", slider: null, copiesRow: null }, { latex: "y=9", slider: null, copiesRow: null }], result: { ...graphCandidate().result, type: "intersection", relatedRows: [2] } })]));
+test("regression test 5: two candidates with the same techniqueId → the costlier one is rejected", () => {
+  const twoRows = graphCandidate({ rows: [{ latex: "y=x^2", slider: null, copiesRow: null }, { latex: "y=9", slider: null, copiesRow: null }], result: { ...graphCandidate().result, type: "intersection", relatedRows: [2] } });
+  const selection = select(candidatesResponse([graphCandidate(), twoRows]));
   const eligibleIds = selection.methods.filter((method) => !method.rejected).map((method) => method.id);
   assert.deepEqual(eligibleIds, ["intercept-read"]);
   const duplicate = selection.methods.find((method) => method.rejected);
   assert.equal(duplicate?.rejected?.rule, "duplicate-technique");
   assert.equal(duplicate?.id, "intercept-read#2");
+  // Emission order does not decide: the cheaper listing is kept even when it comes second.
+  const reversed = select(candidatesResponse([twoRows, graphCandidate()]));
+  const kept = reversed.methods.filter((method) => !method.rejected);
+  assert.deepEqual(kept.map((method) => method.rows.length), [1]);
+  assert.equal(kept[0].id, "intercept-read");
+  assert.equal(reversed.methods.find((method) => method.rejected)?.id, "intercept-read#1");
 });
 
 test("regression test 6: a problem with only one real technique returns one method, not padded to two", () => {
@@ -480,4 +487,56 @@ test("a LaTeX square-root readout label is repaired to readable prose", () => {
   assert.equal(method.result.detail, "sqrt(9) as the positive x-intercept");
   const written = paperCandidate({ result: { ...paperCandidate().result, detail: "\\sqrt{9}" } });
   assert.equal(eligible(candidatesResponse([written]))[0].result.detail, "sqrt(9)");
+});
+
+test("the same rows under a second technique name are one method: only the cheaper listing stays", () => {
+  // Recorded eval run: y=x^2-17x+60 listed as both "Graph both sides" and "Read the intercepts".
+  const input = candidatesResponse([
+    graphCandidate({ techniqueId: "graph-both-sides", rung: 1, cost: { ...zeroCost, manualIterations: 1 } }),
+    graphCandidate({ techniqueId: "intercept-read", rung: 1, rows: [{ latex: "y = x^2 - 9", slider: null, copiesRow: null }] }),
+    paperCandidate(),
+  ]);
+  const methods = eligible(input);
+  assert.deepEqual(methods.map((method) => method.techniqueId), ["intercept-read", "factoring"]);
+  assert.equal(rejectedRule(input, "graph-both-sides"), "duplicate-rows");
+  assert.deepEqual(methods[0].badges, ["Recommended"]);
+});
+
+test("every method carries a family derived from its technique and rows", () => {
+  const methods = eligible(
+    candidatesResponse([
+      graphCandidate(),
+      graphCandidate({
+        techniqueId: "three-point-regression",
+        rung: 4,
+        rows: [
+          { latex: "x_{1}=[1,2,4]", slider: null, copiesRow: null },
+          { latex: "y_{1}=[-8,-5,7]", slider: null, copiesRow: null },
+          { latex: "y_{1}\\sim ax_{1}^{2}+bx_{1}+c", slider: null, copiesRow: null },
+        ],
+        result: { type: "x_intercept", row: 3, relatedRows: [], value: 3, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the positive zero of the fitted parabola" },
+      }),
+      paperCandidate(),
+    ]),
+  );
+  assert.deepEqual(
+    Object.fromEntries(methods.map((method) => [method.techniqueId, method.family])),
+    { "intercept-read": "visual", "three-point-regression": "regression", factoring: "traditional" },
+  );
+});
+
+test("routing detectors on held-out phrasings (not the benchmark's wording)", async () => {
+  const { isIntegerFactorExtremumQuestion } = await import("../src/lib/strategy-selection");
+  // A solution expressed in a parameter is not a model of a situation.
+  assert.equal(isRepresentationQuestion("Which expression represents the solutions to x^2 = 9m^2, where m > 0?"), false);
+  assert.equal(isRepresentationQuestion("Which of the following represents a possible value of x in terms of p?"), false);
+  assert.equal(isRepresentationQuestion("Which equation represents the total cost c of renting a kayak for h hours?"), true);
+  // Every letter of a listed integer group, never a word that starts the next phrase.
+  assert.deepEqual(questionIntegerParameters("If p, q, and r are positive integers with p < q < r, what is p + q + r?").map((p) => p.name).sort(), ["p", "q", "r"]);
+  assert.deepEqual(questionIntegerParameters("For positive integers m and n, 2^m + 3^n = 17. What is mn?").map((p) => p.name).sort(), ["m", "n"]);
+  assert.deepEqual(questionIntegerParameters("where k is an integer constant greater than 2").map((p) => p.name), ["k"]);
+  assert.deepEqual(questionIntegerParameters("for some positive integer value of t").map((p) => p.name), []);
+  // An integer factorization can be written without the word "factor".
+  assert.equal(isIntegerFactorExtremumQuestion("For integers a and b, x^2 + kx + 6 = (x + a)(x + b). What is the greatest possible value of k?"), true);
+  assert.equal(isIntegerFactorExtremumQuestion("What is the greatest possible value of k if (x + 2)(x + 3) = x^2 + kx + 6?"), false, "no integer restriction");
 });

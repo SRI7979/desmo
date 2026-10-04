@@ -41,7 +41,7 @@ variables, unnecessary lists, duplicated rows, overcomplicated regressions,
 numeric checks of what the graph already shows, and rows added only for
 automation. Advanced tricks earn their place only when they materially simplify.
 
-List the 2–4 genuinely distinct techniques that solve the problem, each named
+List every genuinely distinct technique that validly solves the problem (up to six), each named
 by the [technique: id | name] tag of the strategy that teaches it, and report
 each one's cost components honestly. The server scores them; the lowest total
 cost is the default, and the student may switch to any other listed technique.
@@ -173,6 +173,15 @@ y=x^2+4x+1
 y=3x+7
 
 Then click intersection x-values.
+
+For a polynomial equation of degree 2 or less in one variable, typing it
+exactly as written (x^2+4x+1=3x+7) also works: Desmos draws a labeled
+vertical line at each solution, and a one-variable inequality such as
+x^2-5x+6<0 shades the band of solutions. Desmos does NOT label the lines for
+rational, radical, absolute-value, exponential, or cubic equations, and an
+identity draws nothing (just like a contradiction), so for those use the two
+graphed sides above. Rename the problem's variable to x first (t, n, or w are
+not graph coordinates), and zoom out before concluding there is no solution.
 
 This works for equations involving:
 
@@ -340,9 +349,10 @@ the function WITH the restriction so Desmos shows only the relevant piece:
 
 y=-2x^2+12x+7\left\{0\le x\le 5\right\}
 
-Click the highest/lowest point of the restricted graph; also evaluate the
-endpoints as rows, f(0) and f(5), so the extremum is read numerically rather
-than estimated. For a monotonic exponential the endpoints are the extremes; for
+Click the highest/lowest point of the restricted graph; add the endpoint rows
+f(0) and f(5) only when an endpoint could be the extremum (the restricted
+graph shows whether it is), so the extremum is read numerically rather than
+estimated. For a monotonic exponential the endpoints are the extremes; for
 any other function do NOT assume the extremum sits at an endpoint. If the
 question asks which equation "displays, as a constant or coefficient" the
 minimum or maximum, first determine the actual numerical extremum with Desmos,
@@ -390,6 +400,10 @@ line of best fit
 slope
 intercept
 prediction
+
+For where the fitted line reaches zero ("crosses the x-axis", "when will the
+tank be empty"), also graph y=mx+b and click its x-intercept; typing -b/m is
+the hand-solved formula. Three points on a line are still this linear fit.
 15. Quadratic regression from three points
 [technique: three-point-regression | Three-point regression]
 
@@ -414,7 +428,7 @@ Desmos supports quadratic custom regression exactly this way.
 
 Paired coordinate lists → then:
 
-y_{1} ~ a(b)^x_{1}
+y_{1}\sim ab^{x_{1}}
 
 Use when data follows exponential growth/decay.
 
@@ -494,7 +508,7 @@ Possible forms:
 y_{1}~mx_{1}+b
 y_{1}~ax_{1}^2+bx_{1}+c
 y_{1}~a(x_{1}-h)^2+k
-y_{1}~a(b)^x_{1}
+y_{1}\sim ab^{x_{1}}
 y_{1}~a/x_{1}+b
 
 Choose model based on question structure. When the question supplies the SAME
@@ -817,10 +831,11 @@ Given:
 
 Graph:
 
-y=|2x-5|
+y=\left|2x-5\right|
 y=9
 
-Intersections are solutions.
+Intersections are solutions. Type absolute value as \left|...\right| or
+\operatorname{abs}(...): bare | bars do not run through the calculator.
 
 Use these entries even for a simple equation; the intersections show both
 solutions without splitting the absolute value into manual cases.
@@ -830,7 +845,7 @@ solutions without splitting the absolute value into manual cases.
 
 Graph:
 
-y=a|x-h|+k
+y=a\left|x-h\right|+k
 
 Vertex immediately gives:
 
@@ -860,7 +875,7 @@ No logarithms required.
 
 Paired x_{1} and y_{1} lists +:
 
-y_{1}~a(b)^x_{1}
+y_{1}\sim ab^{x_{1}}
 
 Then use a and b.
 
@@ -1006,16 +1021,23 @@ prism, sphere, cone, and pyramid volumes.
 Do not create unnecessary algebra. For an unprovided niche formula such as a
 custom surface-area or coordinate-geometry shortcut, first look for polygon,
 distance, graphing, regression, or direct geometric construction in Desmos.
+An arc or sector is the fraction x/360 of the whole circle: for an unknown
+central angle with radius 9 and arc length 3\pi, graph y=2\pi(9)\frac{x}{360}
+beside y=3\pi and click the intersection (Graph both sides). s=r\theta and
+radian conversion are not on the reference sheet.
 
 TRIG
 53. Direct trig evaluation
 [technique: trig-evaluation | Direct trig evaluation]
 
-For:
+Type the angle itself, in degrees: for a 30-degree angle,
 
-\sin(θ)
-\cos(θ)
-\tan(θ)
+\sin(30)
+\cos(30)
+\tan(30)
+
+Desmos reserves θ for polar graphs, so θ can never be defined as a variable;
+use the number or another letter.
 
 The embedded calculator uses degrees to match the SAT testing calculator. If the
 question explicitly uses radians, convert that input to degrees with *180/π or
@@ -1464,8 +1486,12 @@ Prefer this when it avoids:
 - decomposing the figure
 - finding base and height manually
 
-Enter the vertices in boundary order so the polygon is traced correctly, then
-read the area Desmos displays for the polygon.
+Enter the vertices in boundary order so the polygon is traced correctly.
+Desmos draws the figure but the embedded calculator does NOT display its area
+(polygon() shows no value and area() is unsupported in API v1.11), so never
+promise an area readout. Use the drawing to read a horizontal or vertical base
+and its height from the coordinates, then type the reference-sheet formula,
+e.g. \frac{1}{2}(7-1)(8-2) for the triangle above.
 
 69. Number-theory built-ins
 [technique: number-theory-builtin | mod/gcd/lcm built-ins]
@@ -1558,12 +1584,14 @@ misleading: it only returns one factorization. For
 12x^18+kx^9+35=(ax^9+b)(cx^9+d), the leading and constant products require
 ac=12 and bd=35. Have Desmos search every signed divisor pair instead:
 
-a_{1}=join([-12...-1],[1...12])
-b_{1}=join([-35...-1],[1...35])
-a_{2}=a_{1}[mod(12,a_{1})=0]
-b_{2}=b_{1}[mod(35,b_{1})=0]
-k_{1}=((p+q)(12/p+35/q)-12-35) for p=a_{2},q=b_{2}
-max(k_{1})
+a_{1}=\operatorname{join}([-12...-1],[1...12])
+b_{1}=\operatorname{join}([-35...-1],[1...35])
+a_{2}=a_{1}[\operatorname{mod}(12,a_{1})=0]
+b_{2}=b_{1}[\operatorname{mod}(35,b_{1})=0]
+k_{1}=[(p+q)(12/p+35/q)-12-35\operatorname{for}p=a_{2},q=b_{2}]
+\operatorname{max}(k_{1})
+
+A list comprehension runs only inside brackets with \operatorname{for}.
 
 The filter keeps exactly the possible integer a and b values. Desmos gets
 c=12/a and d=35/b in the fifth row. At x^9=1, the product of the factors is
@@ -1658,6 +1686,22 @@ lowest value, so k=25/12. One row and one click replace the discriminant, a
 derivative match, and the quadratic formula; flipping the sign of the clicked
 value is the only arithmetic.
 
+77. Type the arithmetic
+[technique: calculator-arithmetic | Calculator arithmetic]
+
+When the answer is a short computation from the givens, type that computation
+and read the value:
+
+540 square feet at $18 per square yard, 1 yard = 3 feet:
+18(540)/3^{2}
+
+Desmos removes the hand arithmetic, but the student still decides which
+operations to type (here, that a square yard is 3^{2} square feet), so this
+carries that setup step. Prefer a graph, list, regression, or built-in that
+lets Desmos do the setup too: graph both sides of the relationship instead of
+inverting it by hand, mean(repeat(...)) instead of a weighted-mean formula.
+Scalar rows with no function are this technique, not function evaluation.
+
 REGRESSION SAFETY
 
 Regression is the highest-value tool in this library and the easiest to abuse.
@@ -1738,7 +1782,7 @@ exception above still applies. For 3x=18, the original graphs y=3x and y=18
 let the student read the intersection without deciding to divide first. Compare
 that with 18/3 and account for its inverse-operation knowledge. Similarly,
 y=x+7 and y=12 avoid manually isolating x. Graphing y=x²-9 exposes both roots.
-A direct 0.2*80 or pi*5² may be suitable when the conversion or formula is given
+A direct 0.2*80 or \pi 5^{2} may be suitable when the conversion or formula is given
 or requires no greater human knowledge than alternatives. Preserve exact units
 and values; a rounded calculator decimal is not automatically an exact answer.
 

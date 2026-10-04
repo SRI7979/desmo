@@ -39,6 +39,32 @@ export function containsLatex(text: string): boolean {
   return latexSignature.test(text);
 }
 
+/**
+ * Symbol commands with one exact plain-text character, which MathText renders
+ * as math (π, θ, ≤, ≥, ≠, ≈, ×, ÷) or shows as the symbol itself. A model
+ * transcribing "10π" or "x ≤ 5" often writes \pi or \le; that is the problem's
+ * own math, not a formatting slip. Structural commands (\overline, \int,
+ * \begin, ...) have no such equivalent and are still rejected.
+ */
+const PLAIN_SYMBOLS: Readonly<Record<string, string>> = {
+  pi: "π",
+  theta: "θ",
+  le: "≤",
+  leq: "≤",
+  ge: "≥",
+  geq: "≥",
+  ne: "≠",
+  neq: "≠",
+  approx: "≈",
+  times: "×",
+  cdot: "*",
+  div: "÷",
+  pm: "±",
+  infty: "∞",
+  degree: "°",
+  circ: "∘",
+};
+
 function needsGrouping(expression: string): boolean {
   let depth = 0;
   for (const char of expression) {
@@ -60,8 +86,9 @@ function group(expression: string): string {
  * side that actually needs it), \left(/\right) → (/), ^{\prime} (however
  * many, however malformed the stacking) → the matching number of quotes,
  * \sqrt{a} → sqrt(a), including nested square roots,
- * \text{...}/\operatorname{...} → their own contents, and a lone \{ \} or
- * ^{...}/_{...} → the bare braces/marker. Idempotent and safe on clean text.
+ * \text{...}/\operatorname{...} → their own contents, symbol commands such as
+ * \pi, \le, ^\circ → π, ≤, °, and a lone \{ \} or ^{...}/_{...} → the bare
+ * braces/marker. Idempotent and safe on clean text.
  */
 export function repairProseText(text: string): string {
   let result = text;
@@ -85,6 +112,10 @@ export function repairProseText(text: string): string {
   }
   result = result.replace(/\\text\{([^{}]*)\}/g, "$1");
   result = result.replace(/\\operatorname\{([^{}]*)\}/g, "$1");
+  // A degree mark before the generic ^{...} step, so 30^{\circ} is 30°, not 30^∘.
+  result = result.replace(/\^\s*(?:\{\s*\\circ\s*\}|\\circ(?![a-zA-Z]))/g, "°");
+  result = result.replace(/\\([a-zA-Z]+)/g, (match, name: string) => PLAIN_SYMBOLS[name] ?? match);
+  result = result.replace(/\\%/g, "%");
   result = result.replace(/\^\{([^{}]*)\}/g, "^$1").replace(/_\{([^{}]*)\}/g, "_$1");
   result = result.replace(/\\\{/g, "{").replace(/\\\}/g, "}");
   // A tidy-up, not a correctness step: "g'' (0)" reads more naturally as "g''(0)".
@@ -351,6 +382,7 @@ function choiceMatchesRoundedDecimal(target: number, choice: NormalizedChoice & 
 export function matchChoice(
   value: number,
   choices: readonly NormalizedChoice[],
+  approximate = false,
 ): NormalizedChoice | null {
   const numeric = choices.filter(
     (choice): choice is NormalizedChoice & { value: number } => choice.value !== null,
@@ -377,7 +409,23 @@ export function matchChoice(
     if (runnerUp && runnerUp.distance < nearest.distance * 10) continue;
     return nearest.choice;
   }
+  // "Approximately how many minutes...": the choices are rounded on purpose,
+  // so 19.05 from a fitted line is choice 19, provided no other choice is close.
+  if (approximate) {
+    const [nearest, runnerUp] = attempts[0];
+    if (nearest && (!runnerUp || runnerUp.distance >= nearest.distance * 4)) return nearest.choice;
+  }
   return null;
+}
+
+/** The answer must be a whole number: "the greatest whole number of miles", "the least integer value of x". */
+export function isWholeNumberQuestion(question: string): boolean {
+  return /\b(?:greatest|least|largest|smallest|maximum|minimum)\s+(?:possible\s+)?(?:whole number|integer|number of)\b|\bnearest (?:whole number|integer)\b/i.test(question);
+}
+
+/** The question asks for an estimate, so its numeric choices are rounded on purpose. */
+export function isApproximationQuestion(question: string): boolean {
+  return /\b(?:approximately|approximate(?:ly)?|closest to|nearest to|to the nearest|rounded to|best approximat\w*|estimated?|about how (?:many|much))\b/i.test(question);
 }
 
 function findChoice(
@@ -447,12 +495,14 @@ function deriveAnswer(
   observed: number | null,
   repairs: string[],
   source: string,
+  approximate = false,
+  wholeNumber = false,
 ): { answer: string; choice: NormalizedChoice | null } {
   const claimed = findChoice(result.choiceLabel, choices ?? []);
 
   if (result.answerFrom === "value" && observed !== null) {
     if (choices) {
-      const matched = matchChoice(observed, choices);
+      const matched = matchChoice(observed, choices, approximate);
       if (matched) {
         if (claimed && claimed.label !== matched.label) {
           repairs.push(
@@ -471,6 +521,14 @@ function deriveAnswer(
       );
     }
     if (roundsTo(modelAnswer, observed) || modelAnswer.includes(formatNumber(observed))) {
+      return { answer: modelAnswer.trim(), choice: null };
+    }
+    // "Greatest whole number of miles": the clicked boundary 110.81 is not the
+    // answer, and the whole number next to it is. Never replace that answer
+    // with a non-integer the question rules out.
+    const stated = parseNumber(modelAnswer);
+    if (wholeNumber && stated !== null && Number.isInteger(stated) && !Number.isInteger(observed) && Math.abs(stated - observed) < 1) {
+      repairs.push(`${source} ${formatNumber(observed)} is the boundary; the question asks for a whole number, so the answer is ${stated}.`);
       return { answer: modelAnswer.trim(), choice: null };
     }
     repairs.push(
@@ -524,6 +582,10 @@ export function deriveConsistentSolution(input: {
   answer: string;
   readAnswer: string;
   expressionCount: number;
+  /** The question asks for an estimate (isApproximationQuestion): the nearest clear choice is its answer. */
+  approximate?: boolean;
+  /** The question asks for a whole number (isWholeNumberQuestion). */
+  wholeNumber?: boolean;
 }): ConsistentSolution {
   const repairs: string[] = [];
   const choices = normalizeChoices(input.choices);
@@ -552,6 +614,25 @@ export function deriveConsistentSolution(input: {
     repairs.push(
       `Entry ${result.listIndex} of line ${result.row} selects the answer by position, so the result was read as a choice position.`,
     );
+  } else if (
+    // The reverse slip: a filter such as A[c=A] shows only the matching
+    // choices, so its entry 1 is not choice A. When the displayed value is the
+    // claimed choice's own value, the entry shows that value, not a position.
+    result.answerFrom === "choice_position" &&
+    result.listIndex !== null &&
+    result.value !== null &&
+    choices
+  ) {
+    const byValue = matchChoice(result.value, choices);
+    const atPosition = choices[result.listIndex - 1];
+    const claimed = findChoice(result.choiceLabel, choices);
+    if (byValue && claimed?.label === byValue.label && atPosition?.label !== byValue.label &&
+        (atPosition?.value === null || atPosition?.value === undefined || !numbersMatch(atPosition.value, result.value))) {
+      result = { ...result, answerFrom: "value" };
+      repairs.push(
+        `Entry ${result.listIndex} of line ${result.row} shows ${formatNumber(result.value!)}, choice ${byValue.label}'s own value, so it was read as a value, not a choice position.`,
+      );
+    }
   }
   if (!("type" in result) && result.row === input.expressionCount + 1 && input.expressionCount > 0) {
     // A one-past-the-end reference is the model miscounting its own rows.
@@ -574,6 +655,8 @@ export function deriveConsistentSolution(input: {
     result.value,
     repairs,
     `The value on line ${result.row},`,
+    input.approximate ?? false,
+    input.wholeNumber ?? false,
   );
   const normalizedResult: SolutionResult = {
     ...result,
@@ -683,6 +766,15 @@ export function validateAnswerState(
   if (slider.step === 1 && !Number.isInteger(answerState.value)) {
     throw new AnswerConsistencyError(
       `${answerState.param} is an integer slider (step 1), so answerState.value must be an integer, not ${answerState.value}.`,
+      "answer_state",
+    );
+  }
+  // A slider only stops at min + n*step: an answer between grid points can
+  // never be shown by dragging (the student would read the nearest stop).
+  const steps = slider.step > 0 ? (answerState.value - slider.min) / slider.step : 0;
+  if (slider.step > 0 && Math.abs(steps - Math.round(steps)) > 1e-6) {
+    throw new AnswerConsistencyError(
+      `${answerState.param}=${answerState.value} is not a stop of its slider (min ${slider.min}, step ${slider.step}); dragging can never land on it. Use a step that reaches the answer, or a regression or one row per choice.`,
       "answer_state",
     );
   }

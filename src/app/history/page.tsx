@@ -1,9 +1,11 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth";
 import { listProblems } from "@/lib/problem-history";
+import { listTricks } from "@/lib/saved-tricks";
 import { METHOD_LABELS } from "@/lib/method-labels";
 import MathText from "@/components/math-text";
 import HistoryShell from "./history-shell";
+import SavedTricks, { type SavedTrickItem } from "./saved-tricks";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -16,12 +18,14 @@ export default async function HistoryPage({ searchParams }: {
   const query = await searchParams;
   const requestedPage = typeof query.page === "string" && /^\d+$/.test(query.page) ? Number(query.page) : 1;
   const page = Number.isSafeInteger(requestedPage) ? Math.max(1, Math.min(10_000, requestedPage)) : 1;
-  let result: Awaited<ReturnType<typeof listProblems>> | null = null;
-  try {
-    result = await listProblems(user.id, page);
-  } catch {
-    // Keep provider errors and credentials out of the rendered page.
-  }
+  // Provider errors and credentials stay out of the rendered page. Without
+  // the saved-tricks migration, the saved tricks section is simply not shown.
+  const [problems, saved] = await Promise.allSettled([listProblems(user.id, page), listTricks(user.id)]);
+  const result = problems.status === "fulfilled" ? problems.value : null;
+  const tricks: SavedTrickItem[] | null =
+    saved.status === "fulfilled"
+      ? saved.value.map(({ id, techniqueName, structure, question, problemId }) => ({ id, techniqueName, structure, question, problemId }))
+      : null;
 
   return (
     <HistoryShell email={user.email}>
@@ -29,6 +33,7 @@ export default async function HistoryPage({ searchParams }: {
         <div><h1>Your problems</h1><p>Saved questions, answers, and Desmos entries.</p></div>
         <Link href="/solve" className={styles.button}>New question</Link>
       </div>
+      {tricks && <SavedTricks initial={tricks} />}
       {result === null ? (
         <div className={styles.empty} role="alert">
           <h2>History couldn’t load</h2>

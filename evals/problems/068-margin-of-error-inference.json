@@ -1,0 +1,53 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "margin of error and sampling inference",
+  "problem": "A researcher selected a random sample of 400 adults from a certain city and found that 62% of the adults in the sample support building a new park. The margin of error associated with this estimate is 4.8%. Which of the following is the most appropriate conclusion?",
+  "choices": [
+    "Exactly 62% of all adults in the city support building the new park.",
+    "It is plausible that between 57.2% and 66.8% of all adults in the city support building the new park.",
+    "Between 57.2% and 66.8% of the 400 adults in the sample support building the new park.",
+    "It is plausible that between 57.2% and 66.8% of all adults in the state support building the new park."
+  ],
+  "correctAnswer": "It is plausible that between 57.2% and 66.8% of all adults in the city support building the new park.",
+  "expectedResultType": "written",
+  "gold": [
+    "translate-the-words"
+  ],
+  "acceptable": [
+    "direct-arithmetic",
+    "calculator-arithmetic"
+  ],
+  "bad": [
+    {
+      "technique": "reference-formula",
+      "why": "The margin of error is already given; recomputing it with a confidence-interval formula is unneeded and that formula is not on the SAT reference sheet."
+    },
+    {
+      "technique": "statistics-builtin",
+      "why": "There is no data list to analyze; mean or standard deviation functions cannot interpret what a margin of error says about a population."
+    }
+  ],
+  "goldRows": [],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Computes 62 - 4.8 and 62 + 4.8, then must still decide which group the interval describes; generic solvers sometimes recompute the margin with 1.96*sqrt(p(1-p)/n) instead of interpreting it."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain margin of error in plain words: the sample's 62% could be off by up to 4.8 percentage points, so the percent for the whole population that was sampled (adults in this city) is plausibly between 57.2% and 66.8%. Point out that the sample itself is exactly 62%, and the result cannot be stretched to a population that was never sampled, such as the whole state.",
+  "notes": "Verified: 62 - 4.8 = 57.2 and 62 + 4.8 = 66.8; three choices share that interval, so the decision is the interpretation (population vs sample vs unsampled population), not the arithmetic. 1.96*sqrt(0.62*0.38/400) = 4.76%, consistent with the stated 4.8%."
+}

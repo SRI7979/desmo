@@ -1,0 +1,53 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Exponential growth representation: percent per period",
+  "problem": "A town had a population of 18,000 at the start of 2020. The population increases by 3% every 2 years. Which of the following functions P models the town's population t years after the start of 2020?",
+  "choices": [
+    "P(t) = 18000(1.03)^(2t)",
+    "P(t) = 18000(1.03)^(t/2)",
+    "P(t) = 18000(1.06)^t",
+    "P(t) = 18000(0.03)^(t/2)"
+  ],
+  "correctAnswer": "P(t) = 18000(1.03)^(t/2)",
+  "expectedResultType": "written",
+  "gold": [
+    "translate-the-words"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "exponential-regression",
+      "why": "The question asks for the model, not a value; building data points from the story and fitting them is solving work a representation question does not need."
+    },
+    {
+      "technique": "answer-choice-list",
+      "why": "Evaluating every choice at sample times first requires computing what the population should be by hand, which is the translation itself plus extra steps."
+    },
+    {
+      "technique": "graph-each-choice",
+      "why": "Four similar growth curves cannot be told apart by looking without computing target values; the words already identify the model."
+    }
+  ],
+  "goldRows": [],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Translates the starting value 18000, the growth factor 1.03 and the 2-year period into 18000(1.03)^(t/2), sometimes then evaluating P(2) to double-check, which is unnecessary."
+    }
+  },
+  "routing": {
+    "representation": true,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Translate the words piece by piece: 18000 is the starting amount, 'increases by 3%' gives the multiplier 1.03 (100% plus 3%), and 'every 2 years' means one multiplication per 2 years, so the exponent is t/2. The task ends once the model matches a choice; explain why (1.03)^(2t) and (1.06)^t are the tempting wrong readings."
+}

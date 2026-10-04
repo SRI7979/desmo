@@ -214,3 +214,14 @@ test("regression test 8: a solution with no regressions, no integer parameters, 
     null,
   );
 });
+
+test("Rule 2: parameters that only ever appear as one product count as one unknown, unless a row reads one alone", () => {
+  // The prompt's own small-system example: s and y_1 are not individually
+  // determined, but only their product enters, so r is identifiable.
+  const plan = [{ latex: "x_{1}=2" }, { latex: "[7rx_{1}+12sy_{1},3rx_{1}+4sy_{1}]\\sim[3,5]" }, { latex: "r" }];
+  assert.deepEqual(findRegressionDeterminacyViolations(plan), []);
+  // Reading s alone would show an arbitrary split of the product.
+  assert.equal(findRegressionDeterminacyViolations([...plan.slice(0, 2), { latex: "s" }])[0]?.kind, "underdetermined");
+  // A product that is also raised to a power is not a plain product.
+  assert.equal(findRegressionDeterminacyViolations([{ latex: "x_{1}=2" }, { latex: "[7rx_{1}+12s^{2}y_{1},3rx_{1}+4sy_{1}]\\sim[3,5]" }])[0]?.kind, "underdetermined");
+});

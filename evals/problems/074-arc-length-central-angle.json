@@ -1,0 +1,50 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "Arc length to central angle in degrees",
+  "problem": "A circle has a radius of 12 centimeters. An arc of the circle has a length of 10pi centimeters. What is the measure, in degrees, of the central angle that intercepts this arc?",
+  "choices": null,
+  "correctAnswer": "150",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides"
+  ],
+  "acceptable": [
+    "reference-formula",
+    "parameter-regression"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "On paper the student must solve the proportion x/360 = 10pi/(24pi) for x by cross-multiplying, or use s = r*theta (not on the reference sheet) and convert 5pi/6 radians to degrees: hand rearrangement the graph replaces."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs s = r*theta and the 180/pi conversion (neither on the reference sheet), or the proportion solved for x by hand; the graph needs neither."
+    }
+  ],
+  "goldRows": [
+    "y=2\\pi(12)\\frac{x}{360}",
+    "y=10\\pi"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Sets 10pi = (theta/360)(2pi)(12) and solves theta = 360(10pi)/(24pi) = 150, or uses s = r*theta to get 5pi/6 radians and converts with 180/pi."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "An arc is a fraction of the whole circumference: a central angle of x degrees out of 360 gives an arc of length (x/360)(2pi)(12). Graph that next to y = 10pi and click where they meet, (150, 31.42), so x = 150 degrees with no equation solved by hand and no radian conversion. Zoom out on the x-axis, since the crossing is far to the right."
+}

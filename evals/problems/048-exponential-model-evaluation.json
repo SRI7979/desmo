@@ -1,0 +1,59 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Exponential model evaluation",
+  "problem": "The number of subscribers to an online newsletter w weeks after it launched is modeled by the function N(w) = 320(1.15)^(w/2). According to the model, how many subscribers, to the nearest whole number, did the newsletter have 10 weeks after it launched?",
+  "choices": [
+    "560",
+    "644",
+    "5237",
+    "1295"
+  ],
+  "correctAnswer": "644",
+  "expectedResultType": "numeric",
+  "gold": [
+    "function-evaluation"
+  ],
+  "acceptable": [
+    "direct-arithmetic",
+    "calculator-arithmetic"
+  ],
+  "bad": [
+    {
+      "technique": "exponential-regression",
+      "why": "The model is fully given; there are no unknown constants to fit, so a regression adds setup without doing any useful work."
+    },
+    {
+      "technique": "graph-both-sides",
+      "why": "Nothing needs solving: the question asks for the model's output at a known input, not for an input that produces a target value."
+    },
+    {
+      "technique": "graph-raw",
+      "why": "Graphing the model and reading it at x = 10 (y(10) is not an evaluation) is imprecise; N(10) evaluates the model exactly."
+    }
+  ],
+  "goldRows": [
+    "N(w)=320(1.15)^{w/2}",
+    "N(10)"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Substitutes w=10, simplifies the exponent to 10/2=5, and computes 320(1.15)^5 = 643.6, rounding to 644."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Plug the 10 weeks into the model exactly as given: the exponent w/2 means 10 weeks is 5 growth periods, and typing N(10) lets Desmos handle that. Point out the traps of using 10 as the exponent (1295), reading w/2 as 2w (5237), or adding 15% linearly (560)."
+}

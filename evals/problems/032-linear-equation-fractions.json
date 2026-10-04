@@ -1,0 +1,54 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Linear equations in one variable",
+  "problem": "What value of x satisfies the equation (2/3)(x - 4) + 5 = (x + 9)/2 ?",
+  "choices": null,
+  "correctAnswer": "13",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides"
+  ],
+  "acceptable": [
+    "intercept-read",
+    "graph-raw"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Solving by hand means clearing fractions (multiply by 6), distributing, and isolating x: several algebra steps, not one-step arithmetic, when two typed sides give the intersection."
+    },
+    {
+      "technique": "integer-list-filter",
+      "why": "No stated bound and no reason the solution is an integer; an integer search over an arbitrary range is not a justified method for a continuous equation."
+    },
+    {
+      "technique": "calculator-arithmetic",
+      "why": "Typed into Desmos, the same computation still needs the equation solved for x by hand first (clearing fractions, isolating x); graphing both sides solves it."
+    }
+  ],
+  "goldRows": [
+    "y=\\frac{2}{3}(x-4)+5",
+    "y=\\frac{x+9}{2}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Clears fractions by multiplying both sides by 6, distributes to get 4x - 16 + 30 = 3x + 27, and isolates x = 13 by hand."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that solving the equation means finding the x where the left side and the right side give the same value, which is exactly where their two graphs cross. The answer is the x-coordinate 13 of the intersection (13, 11); the 11 is only the shared value of both sides."
+}

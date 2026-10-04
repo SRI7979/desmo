@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Quadratic through three points",
   "problem": "A quadratic function is defined by f(x) = ax^2 + bx + c. The graph of y = f(x) in the xy-plane passes through the points (1, 7), (2, 15), and (4, 43). What is the value of b?",
   "choices": null,
   "correctAnswer": "2",
+  "expectedResultType": "numeric",
+  "gold": ["three-point-regression"],
+  "acceptable": ["bracket-regression"],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Solving a+b+c=7, 4a+2b+c=15, 16a+4b+c=43 by hand is a multi-step derivation that the regression does for free."
+    },
+    {
+      "technique": "substitution",
+      "why": "Substituting through a three-variable system by hand is long and error-prone; Desmos fits all three constants at once."
+    }
+  ],
+  "goldRows": ["x_{1}=[1,2,4]", "y_{1}=[7,15,43]", "y_{1}\\sim ax_{1}^{2}+bx_{1}+c", "b"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Write a+b+c=7, 4a+2b+c=15, 16a+4b+c=43 and eliminate by hand to get a=2, b=2, c=3."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that three points pin down exactly one parabola, so Desmos can find a, b, and c at once by fitting y=ax^2+bx+c to a table of the points (the ~ means 'find the constants that make this fit'). Point out that b is the x-coefficient read from the fitted values, not the y-intercept or one of the y-values.",
   "intendedMethod": "three-point-quadratic-regression",
   "acceptableMethods": ["bracket-regression-three-points"],
   "forbiddenMethods": ["underdetermined-regression"],

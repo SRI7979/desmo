@@ -1,13 +1,45 @@
 {
-  "domain": "Problem-Solving and Data Analysis",
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Linear equation modeling a word problem",
   "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
-  "choices": [
-    "n + (2n + 18) = 162",
-    "2n + 18 = 162",
-    "n(2n + 18) = 162",
-    "n - (2n + 18) = 162"
-  ],
+  "choices": ["n + (2n + 18) = 162", "2n + 18 = 162", "n(2n + 18) = 162", "n - (2n + 18) = 162"],
   "correctAnswer": "n + (2n + 18) = 162",
+  "expectedResultType": "written",
+  "gold": ["translate-the-words"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "story-system",
+      "why": "Graphing or solving the model for n is irrelevant: the question only asks which equation represents the situation."
+    },
+    {
+      "technique": "graph-both-sides",
+      "why": "Graphing y=n+(2n+18) against y=162 solves for n, which does not identify the representation."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "There is no value to test; solving n=48 and checking it confirms an equation but does not show which one models the words."
+    }
+  ],
+  "goldRows": [],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Writes n+(2n+18)=162, then solves 3n+18=162 for n=48 and checks it, work the question never asked for."
+    }
+  },
+  "routing": {
+    "representation": true,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Make clear the question asks which equation describes the situation, not what n equals: the total is ninth graders plus tenth graders, n + (2n + 18), and that total is 162. Stop once this matches a choice; solving for n is extra work the question never asked for.",
   "intendedMethod": "conceptual-translation",
   "acceptableMethods": [],
   "forbiddenMethods": ["solving-for-n"],

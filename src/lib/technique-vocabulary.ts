@@ -21,7 +21,10 @@ export type Technique = {
   fact?: string;
   /** Standard techniques only: when the technique genuinely applies. */
   use?: string;
-  /** Standard techniques only: written steps the technique needs by definition. */
+  /**
+   * Steps the technique needs by definition: a paper technique's written
+   * steps, or the setup of a computation the student designs by hand.
+   */
   minSteps?: number;
 };
 
@@ -66,6 +69,9 @@ export const TECHNIQUES = [
   { id: "strategic-value-test", name: "Strategic-value testing", source: "library" },
   { id: "shared-zero", name: "Shared zero", source: "library" },
   { id: "vertex-of-difference", name: "Vertex of the difference", source: "library" },
+  // Desmos as a scientific calculator: the student still decides which
+  // operations to type, so the setup is one derivation step by definition.
+  { id: "calculator-arithmetic", name: "Calculator arithmetic", source: "library", minSteps: 1 },
   {
     id: "quadratic-formula",
     name: "Quadratic formula",
@@ -124,7 +130,7 @@ export const TECHNIQUES = [
     name: "Direct arithmetic",
     source: "standard",
     minSteps: 1,
-    use: "a value computed directly from the givens in one or two arithmetic steps",
+    use: "a value computed by hand directly from the givens in one or two arithmetic steps, with no calculator rows (typed into Desmos it is calculator-arithmetic)",
   },
   {
     id: "translate-the-words",

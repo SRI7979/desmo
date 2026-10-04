@@ -22,3 +22,14 @@ test("hard candidate generation gets a useful default budget while overrides rem
     explanationMs: 30_000,
   });
 });
+
+test("a truncated response is retried with twice the output cap at the configured effort, not more reasoning", async () => {
+  const { outputTokenLimit, wasTruncated } = await import("../src/lib/solve-pipeline");
+  const truncated = { stage: "model_output", reason: 'Response status incomplete; incomplete_details={"reason":"max_output_tokens"}', previous: "" };
+  const rejected = { stage: "zod", reason: "candidates.0.rows: Required", previous: "" };
+  assert.equal(wasTruncated(truncated), true);
+  assert.equal(wasTruncated(rejected), false);
+  assert.equal(outputTokenLimit(8000, truncated), 16000);
+  assert.equal(outputTokenLimit(8000, rejected), 8000);
+  assert.equal(outputTokenLimit(8000, undefined), 8000);
+});

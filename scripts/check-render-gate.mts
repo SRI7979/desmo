@@ -22,8 +22,8 @@ import { CORRECTED_ROWS, NESTED_LIST_ROWS } from "../tests/method-fixtures";
 const args = process.argv.slice(2);
 const screenshotDir = args.find((arg) => arg.startsWith("--screenshots="))?.split("=")[1] ?? null;
 const chromePath = process.env.CHROME_PATH ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const env = readFileSync(path.join(process.cwd(), ".env.local"), "utf8");
-const apiKey = /^NEXT_PUBLIC_DESMOS_API_KEY=(.+)$/m.exec(env)?.[1]?.trim();
+const env = (() => { try { return readFileSync(path.join(process.cwd(), ".env.local"), "utf8"); } catch { return ""; } })();
+const apiKey = process.env.NEXT_PUBLIC_DESMOS_API_KEY?.trim() || /^NEXT_PUBLIC_DESMOS_API_KEY=(.+)$/m.exec(env)?.[1]?.trim();
 if (!apiKey) throw new Error("NEXT_PUBLIC_DESMOS_API_KEY missing from .env.local");
 
 function solution(rows: string[], answer: string) {
@@ -99,7 +99,7 @@ const server = http.createServer((_request, response) => {
 });
 await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
 
-const chrome = spawn(chromePath, ["--headless=new", "--remote-debugging-port=0", "--window-size=1100,1400", `--user-data-dir=${mkdtempSync(path.join(os.tmpdir(), "desmo-chrome-"))}`, "--no-first-run", "--no-default-browser-check", "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
+const chrome = spawn(chromePath, ["--headless=new", "--remote-debugging-port=0", "--window-size=1100,1400", `--user-data-dir=${mkdtempSync(path.join(os.tmpdir(), "desmo-chrome-"))}`, "--no-first-run", "--no-default-browser-check", ...(process.getuid?.() === 0 ? ["--no-sandbox"] : []), ...(process.env.HTTPS_PROXY ? [`--proxy-server=${process.env.HTTPS_PROXY}`] : []), "about:blank"], { stdio: ["ignore", "ignore", "pipe"] });
 const wsUrl = await new Promise<string>((resolve, reject) => {
   let buffer = "";
   chrome.stderr!.on("data", (chunk) => {

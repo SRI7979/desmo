@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Linear factor of a quadratic with an integer parameter",
   "problem": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
   "choices": null,
   "correctAnswer": "3",
+  "expectedResultType": "slider_condition",
+  "gold": ["shared-zero"],
+  "acceptable": ["integer-list-filter", "slider-condition"],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Polynomial division or the factor theorem by hand (substitute x=-2b, solve 12b^2-36b=0) is hidden algebra the shared-zero graph avoids."
+    },
+    {
+      "technique": "substitution",
+      "why": "Substituting x=-2b and solving the resulting quadratic in b by hand is exactly the derivation the slider replaces."
+    }
+  ],
+  "goldRows": ["b=1", "y=x+2b", "y=3x^{2}+25x+14b"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Applies the factor theorem: substitute x=-2b, simplify to 12b^2-36b=0, factor out 12b, and keep b=3 (or does polynomial division)."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": ["b"],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain in plain words that 'x+2b is a factor' means both expressions equal zero at the same x, so the line y=x+2b and the parabola must cross the x-axis at the same point. Drag the whole-number slider b until those x-intercepts line up (b=3); no division or factor-theorem algebra is needed.",
   "intendedMethod": "integer-slider-shared-zero",
   "acceptableMethods": ["integer-list-shared-zero"],
   "forbiddenMethods": ["derived-factor-formula"],

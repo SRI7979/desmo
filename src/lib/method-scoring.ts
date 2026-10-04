@@ -128,6 +128,32 @@ export function describeShape(input: {
   return [rowsLabel, tool, algebra].join(" · ");
 }
 
+/**
+ * The kind of thinking a technique teaches, for grouping alternatives and for
+ * measuring whether the listed methods are genuinely different. Derived from
+ * the technique and its rows, never reported by the model.
+ */
+export const METHOD_FAMILIES = ["visual", "regression", "list-slider", "answer-choices", "calculator", "traditional", "translation"] as const;
+export type MethodFamily = (typeof METHOD_FAMILIES)[number];
+
+const ANSWER_CHOICE_TECHNIQUES: ReadonlySet<TechniqueId> = new Set<TechniqueId>(["answer-choice-list", "strategic-value-test", "graph-each-choice", "choice-window", "plug-in-choices"]);
+
+export function methodFamily(techniqueId: TechniqueId, rows: readonly Row[]): MethodFamily {
+  if (techniqueId === "translate-the-words") return "translation";
+  if (rows.length === 0) return "traditional";
+  if (ANSWER_CHOICE_TECHNIQUES.has(techniqueId)) return "answer-choices";
+  const primitive = primaryPrimitive(rows);
+  if (primitive === "regression" || primitive === "derivative regression") return "regression";
+  if (primitive === "list filter" || primitive === "list" || primitive === "slider") return "list-slider";
+  if (primitive === "graph" || primitive === "restriction" || primitive === "derivative") return "visual";
+  return "calculator";
+}
+
+/** The rows a student would type, whitespace-insensitive: two methods with the same signature are one method. */
+export function rowSignature(rows: readonly Row[]): string {
+  return rows.map((row) => row.latex.replace(/\\left|\\right|\s+/g, "")).join("\n");
+}
+
 export type Rankable = {
   id: string;
   techniqueId: TechniqueId;
@@ -135,19 +161,48 @@ export type Rankable = {
   cost: Cost;
   total: number;
   mathScore: number;
+  rows?: readonly Row[];
 };
 
+/** The technique a distinctive primitive teaches by name; generic graphs and lists name none. */
+const PRIMITIVE_TECHNIQUE: Readonly<Record<string, TechniqueId>> = {
+  "derivative regression": "derivative-regression",
+  statistics: "statistics-builtin",
+  "distance()": "distance-builtin",
+  "midpoint()": "midpoint-builtin",
+  "polygon()": "polygon-area",
+  "repeat()": "frequency-repeat",
+  "mod()": "number-theory-builtin",
+  "gcd()": "number-theory-builtin",
+  "lcm()": "number-theory-builtin",
+  "ceil()": "ceil-floor",
+  "floor()": "ceil-floor",
+};
+
+/** 0 when the rows' most distinctive primitive is the one the technique is named for, else 1. */
+function nameMismatch(method: Rankable): number {
+  if (!method.rows) return 1;
+  const primitive = primaryPrimitive(method.rows);
+  return primitive !== null && PRIMITIVE_TECHNIQUE[primitive] === method.techniqueId ? 0 : 1;
+}
+
 /**
- * Deterministic order: cheapest total first, then least math, then the lower
- * simplicity-ladder rung, then fewer rows, then the technique id. The same
- * candidate set always sorts the same way regardless of emission order.
+ * Deterministic order: cheapest total first, then least math, then a method
+ * that works without the answer choices (PHILOSOPHY.md: at equal effort the
+ * generalizable method transfers to the next problem), then the lower
+ * simplicity-ladder rung, then fewer rows, then the technique its rows
+ * visibly use (mean(L) - median(L) is the statistics built-in, not "evaluate
+ * over a list"), then the technique id. The same candidate set always sorts
+ * the same way regardless of emission order.
  */
 export function compareMethods(left: Rankable, right: Rankable): number {
   return (
     left.total - right.total ||
     left.mathScore - right.mathScore ||
+    Number(ANSWER_CHOICE_TECHNIQUES.has(left.techniqueId)) - Number(ANSWER_CHOICE_TECHNIQUES.has(right.techniqueId)) ||
     left.rung - right.rung ||
     left.cost.rows - right.cost.rows ||
+    nameMismatch(left) - nameMismatch(right) ||
     (left.techniqueId < right.techniqueId ? -1 : left.techniqueId > right.techniqueId ? 1 : 0)
   );
 }

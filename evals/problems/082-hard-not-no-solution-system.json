@@ -1,0 +1,55 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "NOT wording: which pairing does not give a no-solution system",
+  "problem": "Each of the following equations is paired with 4x - 6y = 18 to form a system of two linear equations. Which of the following equations does NOT result in a system with no solution?",
+  "choices": [
+    "10x - 15y = 30",
+    "2x - 3y = 7",
+    "6x - 9y = 27",
+    "-2x + 3y = 9"
+  ],
+  "correctAnswer": "6x - 9y = 27",
+  "expectedResultType": "graph_overlap",
+  "gold": [
+    "graph-each-choice"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Rescaling every choice to compare its coefficients and constant with 4x - 6y = 18 is four proportion checks by hand, and the NOT wording makes it easy to pick a parallel line instead of the identical one."
+    },
+    {
+      "technique": "substitution",
+      "why": "Solving each of the four systems by substitution until it hits a contradiction or an identity is long algebra for a question the graph answers at a glance."
+    }
+  ],
+  "goldRows": [
+    "4x-6y=18",
+    "10x-15y=30",
+    "2x-3y=7",
+    "6x-9y=27",
+    "-2x+3y=9"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Scales each choice to match the coefficients 4 and -6, compares its constant with 18, and finds that 6x - 9y = 27 scales to 4x - 6y = 18 exactly."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "A system has no solution when its two lines are parallel and never meet; if one equation is just the other multiplied by a number, the graphs are the same line and every point on it is a solution (infinitely many). Graph 4x - 6y = 18 with each choice: three choices run parallel beside it, while 6x - 9y = 27 lies right on top of it, so it is the one that does NOT give no solution."
+}

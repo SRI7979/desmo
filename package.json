@@ -12,7 +12,13 @@
     "setup:check": "tsx scripts/check-setup.ts",
     "test": "tsx --test --import ./tests/no-network.ts tests/*.test.ts",
     "bench": "tsx scripts/bench-solve.mts",
-    "eval": "tsx evals/run-evals.mts"
+    "eval": "tsx evals/run-evals.mts",
+    "eval:validate": "tsx evals/validate-cases.mts",
+    "bench:solver": "tsx evals/run-benchmark.mts",
+    "bench:routing": "tsx evals/routing-bench.mts",
+    "bench:replay": "tsx evals/replay.mts",
+    "bench:rescore": "tsx evals/rescore-recorded.mts",
+    "bench:prompt": "tsx scripts/prompt-budget.mts"
   },
   "engines": {
     "node": ">=22.0.0"
@@ -37,6 +43,7 @@
     "@types/react-dom": "19.3.0",
     "eslint": "9.39.5",
     "eslint-config-next": "16.3.5",
+    "gpt-tokenizer": "^3.4.0",
     "tsx": "4.23.13",
     "typescript": "6.0.3"
   }

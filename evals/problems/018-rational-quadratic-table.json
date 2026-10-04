@@ -1,8 +1,48 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Rational function built from a quadratic, table values",
   "problem": "The function g is defined by g(x)=f(x)/(x+2), where f is a quadratic function. The y-intercept of f is (0,10). The table gives g(1)=5 and g(4)=7. What is the value of g(3)?",
   "choices": null,
   "correctAnswer": "31/5",
+  "expectedResultType": "numeric",
+  "gold": ["parameter-regression", "bracket-regression"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Converting to f(1)=15 and f(4)=42 and solving a+b=5, 4a+b=8 by hand is a multi-step derivation the regression avoids."
+    },
+    {
+      "technique": "three-point-regression",
+      "why": "Putting (0,10) into g's table treats f's y-intercept as g's; g(0) is 10/2=5, so the fit is wrong."
+    }
+  ],
+  "goldRows": [
+    "f(x)=ax^{2}+bx+10",
+    "x_{1}=[1,4]",
+    "y_{1}=[5,7]",
+    "y_{1}\\sim\\frac{f(x_{1})}{x_{1}+2}",
+    "g(x)=\\frac{f(x)}{x+2}",
+    "g(3)"
+  ],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Multiplies the table values by x+2 to get f(1)=15 and f(4)=42, solves a+b=5 and 16a+4b=32 by elimination, then computes f(3)/5."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the 10 belongs to f (f's y-intercept), not to g, so it goes into f's formula while the table values 5 and 7 are g's outputs. Desmos fits a and b through g's formula and then evaluates g(3)=31/5; putting (0,10) in g's table would be wrong because g(0)=5.",
   "intendedMethod": "parameter-regression",
   "acceptableMethods": [],
   "forbiddenMethods": ["f-intercept-as-g-intercept", "hand-algebra-only"],
