@@ -1,8 +1,44 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Greatest middle coefficient over integer factorizations",
   "problem": "The expression 12x^18 + kx^9 + 35 has factors ax^9 + b and cx^9 + d, where a, b, c, and d are all integer constants. What is the maximum value of k?",
   "choices": null,
   "correctAnswer": "421",
+  "expectedResultType": "numeric",
+  "gold": ["integer-list-filter"],
+  "acceptable": ["factoring", "number-theory-builtin"],
+  "bad": [
+    {
+      "technique": "identity-regression",
+      "why": "One exact identity fit returns a single factorization (for example k=47) and cannot show it is the maximum."
+    }
+  ],
+  "goldRows": [
+    "a_{1}=\\operatorname{join}([-12...-1],[1...12])",
+    "b_{1}=\\operatorname{join}([-35...-1],[1...35])",
+    "a_{2}=a_{1}[\\operatorname{mod}(12,a_{1})=0]",
+    "b_{2}=b_{1}[\\operatorname{mod}(35,b_{1})=0]",
+    "k_{1}=[(p+q)(\\frac{12}{p}+\\frac{35}{q})-12-35\\operatorname{for}p=a_{2},q=b_{2}]",
+    "\\operatorname{max}(k_{1})"
+  ],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Expands to get ac=12, bd=35, k=ad+bc, lists a few factor pairs by hand, and often stops at the first factorization (k=47) instead of proving the maximum."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": ["a", "b", "c", "d"],
+    "continuousInterval": false,
+    "integerFactorExtremum": true
+  },
+  "explanationNotes": "Explain that multiplying the two factors gives ac=12 and bd=35, so a and b must be divisors of 12 and 35 (negative ones too), and k changes with the pairing. Desmos computes k for every pairing (plugging x^9=1 into both forms) and max picks the largest, 421; one regression would find only one factorization, not the maximum.",
   "intendedMethod": "integer-list-filter",
   "acceptableMethods": [],
   "forbiddenMethods": ["single-identity-regression"],

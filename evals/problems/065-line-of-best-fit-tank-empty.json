@@ -1,0 +1,54 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "line of best fit prediction",
+  "problem": "The table shows the amount of water, in gallons, remaining in a tank t minutes after the tank began draining.\nt (minutes): 0, 2, 4, 6, 8, 10\nWater (gallons): 182, 160, 147, 121, 108, 85\nBased on a line of best fit for the data, approximately how many minutes after the tank began draining will the tank be empty?",
+  "choices": [
+    "15",
+    "19",
+    "23",
+    "27"
+  ],
+  "correctAnswer": "19",
+  "expectedResultType": "x_intercept",
+  "gold": [
+    "linear-regression"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Picking two points, computing a slope by formula, writing the line, and solving for zero is hand algebra, and a line through two chosen points is not the line of best fit."
+    },
+    {
+      "technique": "exponential-regression",
+      "why": "The water drops by a roughly constant amount per minute, so the data are linear; an exponential model never reaches zero and cannot predict when the tank is empty."
+    }
+  ],
+  "goldRows": [
+    "x_{1}=[0,2,4,6,8,10]",
+    "y_{1}=[182,160,147,121,108,85]",
+    "y_{1}\\sim mx_{1}+b"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Estimates a slope from the first and last points (about -9.7 gallons per minute), writes V = 182 - 9.7t, and solves 182 - 9.7t = 0 by hand."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that a line of best fit is the one straight line that passes as close as possible to all the data points, and the ~ regression makes Desmos find it and draw it. 'Empty' means 0 gallons, so the answer is where the fitted line crosses the horizontal axis, about t = 19 minutes.",
+  "notes": "Verified: least-squares m = -9.5286, b = 181.476, x-intercept 19.05 (numpy and Desmos v1.11.4, which labels the zero of the regression line itself). A two-endpoint line gives about 18.8, so every reasonable line still picks 19."
+}

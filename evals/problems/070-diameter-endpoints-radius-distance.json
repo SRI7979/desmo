@@ -1,0 +1,46 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "distance between points (radius from a diameter)",
+  "problem": "In the xy-plane, the points (-4, 7) and (8, 2) are the endpoints of a diameter of a circle. What is the radius of the circle?",
+  "choices": null,
+  "correctAnswer": "6.5",
+  "expectedResultType": "numeric",
+  "gold": [
+    "distance-builtin"
+  ],
+  "acceptable": [
+    "midpoint-builtin",
+    "reference-formula"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Recalling the distance formula and squaring the coordinate differences by hand is a memorized formula that the distance() built-in removes."
+    }
+  ],
+  "goldRows": [
+    "\\frac{\\operatorname{distance}((-4,7),(8,2))}{2}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Applies the distance formula sqrt((8 - (-4))^2 + (2 - 7)^2) = sqrt(169) = 13 and halves it."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that a diameter goes all the way across the circle through its center, so the radius is half the diameter's length. distance() gives the length 13 without the distance formula, and half of 13 is 6.5.",
+  "notes": "Verified: distance 13 (a 5-12-13 right triangle), radius 6.5; Desmos v1.11.4 shows 6.5 on the gold row. distance(midpoint((-4,7),(8,2)),(8,2)) also gives 6.5."
+}

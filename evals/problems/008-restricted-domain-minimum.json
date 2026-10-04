@@ -1,8 +1,38 @@
 {
+  "group": "representative",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Minimum of a quadratic on a closed interval",
   "problem": "For 2 <= x <= 8, the function f is defined by f(x) = (x - 1)^2 + 4. What is the minimum value of f on this interval?",
   "choices": null,
   "correctAnswer": "5",
+  "expectedResultType": "numeric",
+  "gold": ["restricted-extremum"],
+  "acceptable": ["function-evaluation"],
+  "bad": [
+    {"technique": "vertex-read", "why": "The vertex (1,4) lies outside 2<=x<=8; clicking it gives the wrong minimum 4."},
+    {
+      "technique": "list-evaluation",
+      "why": "Evaluating f only at x=2,3,...,8 samples a continuous interval at integers and could miss an interior minimum."
+    }
+  ],
+  "goldRows": ["f(x)=(x-1)^{2}+4\\left\\{2\\le x\\le8\\right\\}", "f(2)"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 1,
+      "description": "Reads the vertex x=1 from vertex form, argues f is increasing on [2,8] because the vertex lies left of the interval, and computes f(2)=5."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": true,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the lowest point of the whole parabola (x=1, value 4) is outside 2 <= x <= 8, so on this interval the graph only rises and the minimum is at the left end, f(2)=5. Graphing with the restriction shows exactly the allowed piece; warn that the unrestricted vertex value 4 is a trap.",
   "intendedMethod": "restricted-graph-minimum",
   "acceptableMethods": [],
   "forbiddenMethods": ["integer-sampling-continuous-domain"],

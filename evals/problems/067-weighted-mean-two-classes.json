@@ -1,0 +1,41 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "weighted mean of two groups",
+  "problem": "A teacher has two classes that took the same test. The 24 students in class A had a mean score of 81, and the 16 students in class B had a mean score of 86. What was the mean score of all 40 students?",
+  "choices": null,
+  "correctAnswer": "83",
+  "expectedResultType": "numeric",
+  "gold": [
+    "frequency-repeat",
+    "statistics-builtin"
+  ],
+  "acceptable": [
+    "direct-arithmetic"
+  ],
+  "bad": [],
+  "goldRows": [
+    "\\operatorname{mean}(\\operatorname{repeat}([81,86],[24,16]))"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Computes (24 * 81 + 16 * 86)/40 = 3320/40 = 83 by hand; the trap is averaging the two means to get 83.5."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the larger class counts more, so simply averaging 81 and 86 (83.5) is wrong. Only each class's total matters, so each class can be treated as if every student scored the class mean; repeat() rebuilds that list of 40 scores (81 twenty-four times, 86 sixteen times) and mean() gives 83.",
+  "notes": "Verified: (24*81 + 16*86)/40 = 83; Desmos v1.11.4 mean(repeat([81,86],[24,16])) = 83. Gold lists both ids because library strategy 48 (statistics-builtin) and 66 (frequency-repeat) teach this same row."
+}

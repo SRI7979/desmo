@@ -1,8 +1,33 @@
 {
+  "group": "representative",
+  "source": "original",
   "domain": "Algebra",
+  "topic": "Infinitely many solutions: ratio of coefficients",
   "problem": "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?",
   "choices": null,
   "correctAnswer": "1/6",
+  "expectedResultType": "numeric",
+  "gold": ["direct-arithmetic"],
+  "acceptable": ["bracket-regression", "slider-condition"],
+  "bad": [
+    {
+      "technique": "graph-both-sides",
+      "why": "g and k are unknown, so the lines cannot simply be graphed and intersected; the question is about the lines coinciding, not where they meet."
+    }
+  ],
+  "goldRows": ["m=\\frac{60}{15}", "g=\\frac{8}{m}", "k=3m", "\\frac{g}{k}"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {"manualMath": 2, "hiddenDerivation": 0, "description": "Sets g/8 = 3/k = 15/60, cross-multiplies to get g=2 and k=12, then divides."}
+  },
+  "routing": {
+    "representation": false,
+    "condition": "infinitely-many",
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'infinitely many solutions' as 'the two equations are the same line', so the second equation is the first multiplied by one number. The known constants show that number is 60/15=4, which forces g=8/4=2 and k=3(4)=12, so g/k=1/6.",
   "intendedMethod": "coefficient-ratio-arithmetic",
   "acceptableMethods": [],
   "forbiddenMethods": [],

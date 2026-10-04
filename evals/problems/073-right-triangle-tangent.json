@@ -1,0 +1,51 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "Right-triangle trigonometry: tangent from two given sides",
+  "problem": "In right triangle RST, angle T is the right angle, RT = 20, and RS = 29. What is the value of tan(S)?",
+  "choices": [
+    "20/29",
+    "21/29",
+    "20/21",
+    "21/20"
+  ],
+  "correctAnswer": "20/21",
+  "expectedResultType": "numeric",
+  "gold": [
+    "right-triangle-trig"
+  ],
+  "acceptable": [
+    "reference-formula",
+    "inverse-trig"
+  ],
+  "bad": [
+    {
+      "technique": "trig-evaluation",
+      "why": "No angle measure is given, so there is nothing to type into tan( ) directly; the angle would first have to be found with inverse trig."
+    }
+  ],
+  "goldRows": [
+    "a=\\sqrt{29^{2}-20^{2}}",
+    "\\frac{20}{a}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Computes the missing leg by hand, sqrt(841 - 400) = sqrt(441) = 21, then writes tan(S) = opposite/adjacent = 20/21."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Name the sides from angle S's point of view: RT is across from S (opposite), ST touches S and is not the hypotenuse (adjacent), and RS is across from the right angle (hypotenuse). Desmos finds the missing leg ST = 21 with the Pythagorean theorem from the reference sheet, so tan(S) = opposite/adjacent = 20/21; 21/20 would be the tangent of the other acute angle, R."
+}

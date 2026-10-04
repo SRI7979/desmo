@@ -1,0 +1,49 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Symbolic answer choices: minimum value in terms of k",
+  "problem": "The function f is defined by f(x) = 3x^2 - 12kx + 5, where k is a positive constant. Which of the following gives the minimum value of f(x) in terms of k?",
+  "choices": [
+    "5 - 12k^2",
+    "5 - 12k",
+    "5 - 4k^2",
+    "5 + 12k^2"
+  ],
+  "correctAnswer": "5 - 12k^2",
+  "expectedResultType": "list_entry",
+  "gold": [
+    "strategic-value-test"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "completing-the-square",
+      "why": "Rewriting as 3(x - 2k)^2 + 5 - 12k^2 means factoring out 3 and squaring 2k with a letter in the way, exactly the algebra that produces the 5 - 12k and 5 - 4k^2 slips."
+    }
+  ],
+  "goldRows": [
+    "k=2",
+    "y=3x^{2}-12kx+5",
+    "[5-12k^{2},5-12k,5-4k^{2},5+12k^{2}]"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 2,
+      "description": "Uses the vertex formula x = -b/(2a) = 12k/6 = 2k, then substitutes: f(2k) = 12k^2 - 24k^2 + 5 = 5 - 12k^2."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Because the answer is a formula in k, pick one allowed value of k, let Desmos find the actual minimum (the y-value of the vertex), and see which choice gives the same number. Avoid k = 1, where 5 - 12k^2 and 5 - 12k both equal -7; with k = 2 the vertex is (4, -43) and only 5 - 12k^2 gives -43. This picks the right choice among four; it is not a proof of a general formula."
+}

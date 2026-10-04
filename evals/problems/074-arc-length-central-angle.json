@@ -1,0 +1,46 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "Arc length to central angle in degrees",
+  "problem": "A circle has a radius of 12 centimeters. An arc of the circle has a length of 10pi centimeters. What is the measure, in degrees, of the central angle that intercepts this arc?",
+  "choices": null,
+  "correctAnswer": "150",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides"
+  ],
+  "acceptable": [
+    "reference-formula",
+    "parameter-regression"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Relies on the radian rule s = r*theta (not on the reference sheet) to get 5pi/6, then a separate radian-to-degree conversion: two remembered steps the graph does not need."
+    }
+  ],
+  "goldRows": [
+    "y=2\\pi(12)\\frac{x}{360}",
+    "y=10\\pi"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Sets 10pi = (theta/360)(2pi)(12) and solves theta = 360(10pi)/(24pi) = 150, or uses s = r*theta to get 5pi/6 radians and converts with 180/pi."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "An arc is a fraction of the whole circumference: a central angle of x degrees out of 360 gives an arc of length (x/360)(2pi)(12). Graph that next to y = 10pi and click where they meet, (150, 31.42), so x = 150 degrees with no equation solved by hand and no radian conversion. Zoom out on the x-axis, since the crossing is far to the right."
+}

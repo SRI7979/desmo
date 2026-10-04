@@ -1,8 +1,37 @@
 {
+  "group": "representative",
+  "source": "original",
   "domain": "Problem-Solving and Data Analysis",
+  "topic": "Population standard deviation",
   "problem": "A data set consists of the values 12, 15, 18, 22, 25, and 30. What is the population standard deviation of this data set, rounded to the nearest hundredth?",
   "choices": null,
   "correctAnswer": "6.07",
+  "expectedResultType": "numeric",
+  "gold": ["statistics-builtin"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Computing the mean, squared deviations, their average, and the square root by hand is the memorized standard-deviation formula Desmos replaces."
+    }
+  ],
+  "goldRows": ["L=[12,15,18,22,25,30]", "\\operatorname{stdevp}(L)"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Computes the mean 122/6, each squared deviation, their average, and the square root by hand."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'population' standard deviation is Desmos's stdevp (stdev is the sample version and gives a different number), and that it measures how far the values typically sit from their mean. Round the displayed 6.0736... to the nearest hundredth, 6.07.",
   "intendedMethod": "list-stdev-read",
   "acceptableMethods": [],
   "forbiddenMethods": ["manual-stdev-formula"],

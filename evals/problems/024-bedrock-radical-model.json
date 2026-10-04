@@ -1,8 +1,37 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Square-root model through two points",
   "problem": "For x>=-b, the function f(x)=a sqrt(x+b), where a and b are positive constants. The graph passes through (1,6) and (10,12). What is f(25)?",
   "choices": null,
   "correctAnswer": "18",
+  "expectedResultType": "numeric",
+  "gold": ["parameter-regression"],
+  "acceptable": ["bracket-regression"],
+  "bad": [
+    {
+      "technique": "substitution",
+      "why": "Dividing the two radical equations, squaring, and solving for b and a by hand takes several steps with radicals."
+    }
+  ],
+  "goldRows": ["f(x)=a\\sqrt{x+b}", "x_{1}=[1,10]", "y_{1}=[6,12]", "y_{1}\\sim f(x_{1})", "f(25)"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Writes 6=a sqrt(1+b) and 12=a sqrt(10+b), divides and squares to get (10+b)/(1+b)=4, solves b=2 and a=2sqrt(3), then evaluates f(25)."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the two points act as a tiny table for f, so Desmos can find a and b at once by fitting f's formula to them. a comes out as a messy decimal (2sqrt(3), about 3.464), which is fine: f(25) is evaluated from the fitted function and comes out exactly 18.",
   "intendedMethod": "radical-parameter-regression",
   "acceptableMethods": ["direct-system"],
   "forbiddenMethods": ["ignore-positive-parameter-conditions"],

@@ -1,8 +1,37 @@
 {
+  "group": "representative",
+  "source": "original",
   "domain": "Geometry and Trigonometry",
+  "topic": "Circle radius from an expanded equation",
   "problem": "A circle in the xy-plane is defined by the equation x^2 + y^2 - 6x + 4y - 12 = 0. What is the radius of the circle?",
   "choices": null,
   "correctAnswer": "5",
+  "expectedResultType": "visual_choice",
+  "gold": ["graph-raw"],
+  "acceptable": ["expanded-circle"],
+  "bad": [
+    {
+      "technique": "completing-the-square",
+      "why": "Completing the square in x and y by hand is a memorized procedure; Desmos draws the circle straight from the given equation."
+    }
+  ],
+  "goldRows": ["x^{2}+y^{2}-6x+4y-12=0"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Completes the square in x and y to get (x-3)^2+(y+2)^2=25, then takes the square root."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that Desmos can draw the circle straight from the given equation with no rearranging, and the radius is the distance from the center (3,-2) to the edge, 5 grid units in every direction. Note that the center and edge points such as (8,-2) land on whole-number grid points, which makes the reading trustworthy.",
   "intendedMethod": "implicit-circle-graph-measure",
   "acceptableMethods": ["circle-regression-radius-read"],
   "forbiddenMethods": ["hand-completed-square"],

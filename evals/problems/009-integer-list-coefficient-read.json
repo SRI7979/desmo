@@ -1,8 +1,45 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Quadratic coefficients from x-intercepts with an integer leading coefficient",
   "problem": "A quadratic function f is defined by f(x) = ax^2 + bx + c, where a is an integer greater than 1. The graph of y = f(x) in the xy-plane has x-intercepts at (-2, 0) and (8, 0). Which of the following could be the value of a + b?",
   "choices": ["-11", "-12", "-13", "-15"],
   "correctAnswer": "-15",
+  "expectedResultType": "list_entry",
+  "gold": ["integer-list-filter"],
+  "acceptable": ["list-evaluation"],
+  "bad": [
+    {
+      "technique": "three-point-regression",
+      "why": "Only two points are given for three unknowns; the fit is underdetermined and lands on an arbitrary, usually non-integer a."
+    },
+    {
+      "technique": "parameter-regression",
+      "why": "Restricting a>1 inside a regression is not a constraint; it still returns a non-integer a instead of testing whole numbers."
+    },
+    {
+      "technique": "answer-choice-list",
+      "why": "Testing the choices needs the hand-derived relation a+b=-5a first; the choices cannot be plugged in directly."
+    }
+  ],
+  "goldRows": ["a=[2...10]", "f(x)=a(x+2)(x-8)", "f(1)-f(0)"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Writes f(x)=a(x+2)(x-8), expands to ax^2-6ax-16a so a+b=-5a, then checks which choice is -5 times an integer greater than 1."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": ["a"],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that x-intercepts at -2 and 8 mean f(x)=a(x+2)(x-8), and that f(1)-f(0) equals a+b because f(1)=a+b+c while f(0)=c. Because a must be a whole number bigger than 1, a list of a values shows every possible a+b (-10, -15, -20, ...), and -15 is the only one among the choices.",
   "intendedMethod": "integer-list-coefficient-read",
   "acceptableMethods": ["derivative-coefficient-read", "evaluate-at-1-minus-0"],
   "forbiddenMethods": ["underdetermined-regression"],

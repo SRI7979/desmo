@@ -1,0 +1,52 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Regression on table values of g(x) = f(x)/(x - 3)",
+  "problem": "The function g is defined by g(x) = f(x)/(x - 3), where f is a quadratic function. The table shows three values of x and their corresponding values of g(x).\nx | g(x)\n1 | 5\n2 | 3\n4 | 23\nWhat is the value of f(3)?",
+  "choices": null,
+  "correctAnswer": "8",
+  "expectedResultType": "numeric",
+  "gold": [
+    "parameter-regression"
+  ],
+  "acceptable": [
+    "three-point-regression"
+  ],
+  "bad": [
+    {
+      "technique": "substitution",
+      "why": "Writing f(x) = ax^2 + bx + c, turning each table row into an equation such as (a + b + c)/(-2) = 5, and solving the 3-by-3 system by hand is long algebra."
+    },
+    {
+      "technique": "function-evaluation",
+      "why": "g(3) is undefined (the denominator is zero), so evaluating g at x = 3 cannot answer; the question asks for f(3), which needs f's coefficients first."
+    }
+  ],
+  "goldRows": [
+    "x_{1}=[1,2,4]",
+    "y_{1}=[5,3,23]",
+    "f(x)=ax^{2}+bx+c",
+    "y_{1}\\sim\\frac{f(x_{1})}{x_{1}-3}",
+    "f(3)"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Multiplies each g-value by x - 3 to get f(1) = -10, f(2) = -3, f(4) = 23, sets up three equations in a, b, c, solves to f(x) = 2x^2 + x - 13, and evaluates f(3) = 8."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "g is undefined at x = 3 because its denominator is zero, but f is an ordinary quadratic, so f(3) exists. Regress the table against f(x)/(x - 3) so Desmos finds f's coefficients (a = 2, b = 1, c = -13) without converting the table by hand, then evaluate f(3) = 8. Make clear the table lists g-values, not f-values."
+}

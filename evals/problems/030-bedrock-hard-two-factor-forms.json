@@ -1,8 +1,37 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Two factorizations of a quartic in quadratic form",
   "problem": "The polynomial 10x^4+23x^2+12 can be written both as (5x^2+j)(2x^2+k), with positive integer j and k, and as (5x^2+l)(2x^2+m), with positive noninteger l and m. What is k+l?",
   "choices": null,
   "correctAnswer": "21/2",
+  "expectedResultType": "intersection",
+  "gold": ["graph-both-sides"],
+  "acceptable": ["factoring", "intercept-read"],
+  "bad": [
+    {
+      "technique": "identity-regression",
+      "why": "A single identity fit returns only one of the two factorizations, so it cannot supply both k and l."
+    }
+  ],
+  "goldRows": ["12=xy", "(5+x)(2+y)=10+23+12"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Substitutes u=x^2, factors (5u+4)(2u+3) for j=4, k=3, then must swap the roots (u=-3/2 into 5u+l) to get l=15/2; often assumes l=j instead."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": ["j", "k"],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that multiplying out (5x^2+l)(2x^2+m) means l times m must be 12, and plugging in x^2=1 means (5+l)(2+m) must equal 10+23+12=45. Graphing those two conditions with l as x and m as y gives exactly two points: the whole-number point (4,3) is j and k, the other point (7.5,1.6) is l and m, so k+l=3+7.5=21/2.",
   "intendedMethod": "compare-both-factor-assignments",
   "acceptableMethods": ["integer-and-rational-factor-enumeration"],
   "forbiddenMethods": ["report-first-factorization-only", "assume-l-equals-j"],

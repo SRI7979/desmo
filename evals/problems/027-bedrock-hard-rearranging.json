@@ -1,8 +1,47 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Algebra",
+  "topic": "Rearranging a reciprocal equation",
   "problem": "For nonzero real numbers a, b, c, and d satisfying 6/a=6/b+6/c-6/d, which expression is equivalent to d?",
   "choices": ["abc/(ab+ac+bc)", "abc/(ab+ac-bc)", "abc/(ab-ac+bc)", "abc/(bc-ab-ac)"],
   "correctAnswer": "abc/(ab+ac-bc)",
+  "expectedResultType": "list_entry",
+  "gold": ["strategic-value-test"],
+  "acceptable": ["answer-choice-list"],
+  "bad": [
+    {
+      "technique": "plug-in-choices",
+      "why": "Substituting four rational expressions into the equation by hand is heavy fraction algebra; Desmos evaluates them at once."
+    },
+    {
+      "technique": "translate-the-words",
+      "why": "'Which expression is equivalent to d' is a rearrangement, not a word situation to translate."
+    }
+  ],
+  "goldRows": [
+    "a=2",
+    "b=3",
+    "c=5",
+    "L=[\\frac{abc}{ab+ac+bc},\\frac{abc}{ab+ac-bc},\\frac{abc}{ab-ac+bc},\\frac{abc}{bc-ab-ac}]",
+    "\\frac{6}{a}-(\\frac{6}{b}+\\frac{6}{c}-\\frac{6}{L})"
+  ],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Divides by 6, isolates 1/d=1/b+1/c-1/a, combines over abc to (ab+ac-bc)/(abc), and takes the reciprocal, often without explaining the flip."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the equation must hold for every allowed a, b, c, so picking simple nonzero values (a=2, b=3, c=5) turns each choice into a number; the right choice is the one that makes the original equation balance, showing 0. Pick values that keep every denominator nonzero and give four different results.",
   "intendedMethod": "direct-expression-rearrangement",
   "acceptableMethods": ["choice-substitution"],
   "forbiddenMethods": ["unexplained-numerator-denominator-switch"],

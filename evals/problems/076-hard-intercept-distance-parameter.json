@@ -1,0 +1,49 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Quadratic constant from the distance between x-intercepts",
+  "problem": "The function f is defined by f(x) = 4x^2 - 24x + c, where c is a constant. In the xy-plane, the graph of y = f(x) has two x-intercepts, and the distance between them is 5. What is the value of c?",
+  "choices": null,
+  "correctAnswer": "11",
+  "expectedResultType": "numeric",
+  "gold": [
+    "bracket-regression"
+  ],
+  "acceptable": [
+    "slider-condition"
+  ],
+  "bad": [
+    {
+      "technique": "quadratic-formula",
+      "why": "Needs the root-difference result sqrt(b^2 - 4ac)/|a| = 5, built by subtracting the two quadratic-formula roots, then solving 576 - 16c = 400: a memorized formula plus multi-step algebra."
+    },
+    {
+      "technique": "completing-the-square",
+      "why": "Rewriting f as 4(x - 3)^2 + c - 36 and reasoning that the intercepts sit at 3 +/- 2.5 before solving for c is a multi-step derivation the regression avoids."
+    }
+  ],
+  "goldRows": [
+    "f(x)=4x^{2}-24x+c",
+    "[f(p),f(p+5)]\\sim[0,0]"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 2,
+      "description": "Writes the roots as (24 +/- sqrt(576 - 16c))/8, sets their difference sqrt(576 - 16c)/4 equal to 5, squares, and solves 576 - 16c = 400 to get c = 11."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Two x-intercepts that are 5 apart can be called p and p + 5, and each one is a zero of f, so f(p) = 0 and f(p + 5) = 0. One bracket regression asks Desmos for the p and c that make both true (p = 0.5, c = 11), so the student never needs the quadratic formula or a root-difference formula; graphing f afterward shows intercepts at 0.5 and 5.5."
+}

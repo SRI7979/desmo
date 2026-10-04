@@ -1,8 +1,42 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Least coefficient product over integer factorizations",
   "problem": "For positive integers k, a, b, c, and d, suppose 24x^4+60x^2+24=k(ax^2+b)(cx^2+d). What is the minimum possible value of ab?",
   "choices": null,
   "correctAnswer": "2",
+  "expectedResultType": "numeric",
+  "gold": ["integer-list-filter"],
+  "acceptable": ["shared-zero", "factoring"],
+  "bad": [
+    {
+      "technique": "identity-regression",
+      "why": "One unconstrained fit shows a single factorization and cannot prove that no smaller ab exists."
+    }
+  ],
+  "goldRows": [
+    "f(x)=24x^{2}+60x+24",
+    "L=[ab\\operatorname{for}a=[1...24],b=[1...24]]",
+    "M=[f(-\\frac{b}{a})\\operatorname{for}a=[1...24],b=[1...24]]",
+    "\\operatorname{min}(L[M=0])"
+  ],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 1,
+      "description": "Factors out 12 to get 12(2x^2+1)(x^2+2), reads ab=2, and must argue separately that ab=1 is impossible; often stops after one factorization."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": ["k", "a", "b", "c", "d"],
+    "continuousInterval": false,
+    "integerFactorExtremum": true
+  },
+  "explanationNotes": "Explain that ax^2+b is a factor exactly when its zero (x^2=-b/a) is also a zero of the quartic, and that a and b are at most 24 because each must divide 24. Desmos checks every pair, keeps those that work, and min picks the smallest ab, 2; one regression would show a single factorization, not that nothing smaller exists.",
   "intendedMethod": "integer-factor-optimization",
   "acceptableMethods": ["factor-form-comparison"],
   "forbiddenMethods": ["unconstrained-regression-as-proof-of-minimum"],

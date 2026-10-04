@@ -1,0 +1,49 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "standard deviation comparison of two data sets",
+  "problem": "Data set A consists of the values 40, 42, 44, 60, 76, 78, 80. Data set B consists of the values 40, 52, 58, 60, 62, 68, 80. Which of the following statements about the standard deviations of the two data sets is true?",
+  "choices": [
+    "The standard deviation of data set A is greater than the standard deviation of data set B.",
+    "The standard deviation of data set B is greater than the standard deviation of data set A.",
+    "The standard deviations of data sets A and B are equal.",
+    "The standard deviations cannot be compared because the data sets have the same mean and the same range."
+  ],
+  "correctAnswer": "The standard deviation of data set A is greater than the standard deviation of data set B.",
+  "expectedResultType": "numeric",
+  "gold": [
+    "statistics-builtin"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Computing two standard deviations by hand needs the deviation formula and fourteen squared differences; stdev() gives both values in two rows."
+    }
+  ],
+  "goldRows": [
+    "\\operatorname{stdev}([40,42,44,60,76,78,80])",
+    "\\operatorname{stdev}([40,52,58,60,62,68,80])"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Either reasons that A's values sit farther from the shared mean of 60, or grinds the standard deviation formula for both sets; with equal means and ranges the eyeball comparison is easy to second-guess and the formula is long."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain standard deviation in plain words as how far the values typically sit from the mean. Both sets have mean 60 and range 40, so neither the mean nor the range decides it; A's values bunch near the ends while B's bunch near 60, so A's standard deviation is larger (about 18.1 versus 12.5).",
+  "notes": "Verified: sample stdev A=18.074, B=12.490; population stdev A=16.733, B=11.563 (same n, so the comparison does not depend on sample vs population)."
+}

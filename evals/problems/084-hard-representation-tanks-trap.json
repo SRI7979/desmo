@@ -1,0 +1,53 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Representation: equal-amount equation where solving cannot pick the model",
+  "problem": "Tank A contains 500 liters of water and is being drained at a constant rate of 12 liters per minute. At the same time, tank B, which contains 80 liters of water, is being filled at a constant rate of 20 liters per minute. Which equation can be used to find t, the number of minutes after which the two tanks contain the same amount of water?",
+  "choices": [
+    "500 - 12t = 80 + 20t",
+    "500 - 20t = 80 + 12t",
+    "500 + 12t = 80 - 20t",
+    "500 - 12t + 80 + 20t = 0"
+  ],
+  "correctAnswer": "500 - 12t = 80 + 20t",
+  "expectedResultType": "written",
+  "gold": [
+    "translate-the-words"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "graph-both-sides",
+      "why": "Graphing and finding t = 13.125 answers a question that was not asked, and it cannot pick the model: 500 - 20t = 80 + 12t has the same solution, so two choices would look correct."
+    },
+    {
+      "technique": "answer-choice-list",
+      "why": "Solving every choice and comparing solutions is calculator work on the wrong task; the first two choices share the solution t = 13.125."
+    },
+    {
+      "technique": "story-system",
+      "why": "Building and solving the story's equations goes past the task, which ends once the model matches a choice."
+    }
+  ],
+  "goldRows": [],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Writes 500 - 12t = 80 + 20t, then solves it (t = 13.125) and checks which choices give that value, which cannot separate the first two choices."
+    }
+  },
+  "routing": {
+    "representation": true,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "The task is only to write the model, not solve it. Tank A starts at 500 and loses 12 each minute (500 - 12t), tank B starts at 80 and gains 20 each minute (80 + 20t), and 'contain the same amount' sets these equal. Warn that solving is a trap here: 500 - 20t = 80 + 12t swaps the two rates yet has the same solution, so checking solutions cannot tell which model is right."
+}

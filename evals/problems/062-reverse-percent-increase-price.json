@@ -1,0 +1,52 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Problem-Solving and Data Analysis",
+  "topic": "percent change: original value from the new value",
+  "problem": "After a 15% increase, the price of a bicycle is $391. What was the price of the bicycle before the increase?",
+  "choices": [
+    "$332.35",
+    "$340",
+    "$376",
+    "$449.65"
+  ],
+  "correctAnswer": "$340",
+  "expectedResultType": "intersection",
+  "gold": [
+    "graph-both-sides"
+  ],
+  "acceptable": [
+    "direct-arithmetic",
+    "answer-choice-list"
+  ],
+  "bad": [
+    {
+      "technique": "plug-in-choices",
+      "why": "Multiplying each of four decimal choices by 1.15 by hand is error-prone arithmetic, and it only works because choices are given; graphing the increase against 391 transfers to free-response versions."
+    }
+  ],
+  "goldRows": [
+    "y=x+0.15x",
+    "y=391"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 1,
+      "description": "Divides 391 by 1.15, which requires recognizing the new price is 115% of the unknown original; the classic slip takes 15% off 391 instead (giving $332.35)."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Make clear that the 15% is a percent of the ORIGINAL price, which is unknown, so taking 15% off $391 is wrong. Writing new price = x + 0.15x and graphing it against y = 391 lets Desmos find the original price at the intersection, x = 340.",
+  "notes": "Verified: 340*1.15 = 391; distractors 391*0.85 = 332.35, 391-15 = 376, 391*1.15 = 449.65 are all wrong. Intersection of y=1.15x and y=391 is (340, 391)."
+}

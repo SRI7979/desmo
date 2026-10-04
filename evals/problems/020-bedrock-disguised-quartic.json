@@ -1,8 +1,38 @@
 {
+  "group": "hard",
+  "source": "bedrock-paraphrase",
   "domain": "Advanced Math",
+  "topic": "Quartic in quadratic form (disguised quadratic)",
   "problem": "What is the greatest positive solution to 4x^4 - 13x^2 + 9 = 0?",
   "choices": null,
   "correctAnswer": "3/2",
+  "expectedResultType": "x_intercept",
+  "gold": ["intercept-read"],
+  "acceptable": ["graph-raw", "graph-both-sides"],
+  "bad": [
+    {"technique": "factoring", "why": "Needs spotting u=x^2 and factoring 4u^2-13u+9 by hand; the graph shows all four roots at once."},
+    {
+      "technique": "quadratic-formula",
+      "why": "Applying the quadratic formula in x^2 and then taking square roots is a memorized formula plus several steps."
+    }
+  ],
+  "goldRows": ["y=4x^{4}-13x^{2}+9"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Substitutes u=x^2, factors 4u^2-13u+9=(4u-9)(u-1), solves u=9/4 or 1, takes square roots, and picks 3/2."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the solutions of the equation are where the graph crosses the x-axis; Desmos labels all four crossings (-1.5, -1, 1, 1.5), and the question wants the greatest positive one, 1.5 = 3/2.",
   "intendedMethod": "graph-x-intercepts",
   "acceptableMethods": ["one-variable-in-disguise"],
   "forbiddenMethods": ["read-negative-or-smaller-root"],

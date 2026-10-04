@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Algebra",
+  "topic": "Unknown coefficient from a system's intersection point",
   "problem": "-x - wy = -337 and 2x - wy = 47. The graphs of these two equations intersect at the point (q, 19). What is the value of w?",
   "choices": null,
   "correctAnswer": "11",
+  "expectedResultType": "numeric",
+  "gold": ["bracket-regression"],
+  "acceptable": ["slider-condition"],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Substituting y=19, subtracting to get q, and back-solving for w is several hand steps that one bracket regression replaces."
+    },
+    {
+      "technique": "graph-both-sides",
+      "why": "Graphing -q-19w=-337 and 2q-19w=47 treats q and w as plot axes; Desmos only graphs x and y, so those rows error."
+    }
+  ],
+  "goldRows": ["[-q-19w,2q-19w]\\sim[-337,47]", "w"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Substitute y=19 into both equations, subtract them to get 3q=384, solve q=128, then back-substitute to get w=11."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the meeting point (q, 19) means both equations are true when x=q and y=19, so putting 19 in for y gives two conditions on q and w. Desmos solves them together with ~ (both brackets fitted at once); q is just the unknown x-coordinate, not something to graph as an axis.",
   "intendedMethod": "bracket-constraint-regression",
   "acceptableMethods": [],
   "forbiddenMethods": ["graphing-non-coordinate-unknowns"],

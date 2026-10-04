@@ -1,0 +1,48 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "Line tangent to a circle with an unknown intercept",
+  "problem": "In the xy-plane, the graph of x^2 + y^2 - 6x + 2y - 10 = 0 is a circle. The line y = 2x + b, where b is a positive constant, is tangent to the circle. What is the value of b?",
+  "choices": null,
+  "correctAnswer": "3",
+  "expectedResultType": "slider_condition",
+  "gold": [
+    "slider-condition"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "discriminant",
+      "why": "Substituting 2x + b for y, expanding to 5x^2 + (4b - 2)x + b^2 + 2b - 10 = 0, and setting b^2 - 4ac = 0 is a long derivation plus a memorized rule."
+    },
+    {
+      "technique": "completing-the-square",
+      "why": "Completing the square to get center (3, -1) and radius sqrt(20), then using the point-to-line distance formula, needs a formula that is not on the reference sheet."
+    }
+  ],
+  "goldRows": [
+    "b=1",
+    "x^{2}+y^{2}-6x+2y-10=0",
+    "y=2x+b"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 2,
+      "description": "Completes the square to find center (3, -1) and radius sqrt(20), then sets the distance from the center to 2x - y + b = 0 equal to the radius, |7 + b|/sqrt(5) = sqrt(20), giving b = 3 or b = -17, and keeps the positive value."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "'Tangent' means the line touches the circle at exactly one point without cutting through it. Graph the circle exactly as written (no completing the square) and drag a slider for b from 0 to 10: the line slides up until it just touches the circle at (-1, 1), which happens at b = 3. The other touching position, b = -17, is ruled out because b is positive."
+}

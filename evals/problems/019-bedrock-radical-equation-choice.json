@@ -1,8 +1,46 @@
 {
+  "group": "hard",
+  "source": "user-screenshot",
   "domain": "Advanced Math",
+  "topic": "Radical equation: symbolic solution choice",
   "problem": "Which expression represents one possible solution to 25k^2/sqrt(25k^2+x^2) = 65 - x^2/sqrt(25k^2+x^2), where k is a positive constant?",
   "choices": ["5k", "sqrt(65^2-25k^2)", "sqrt(65^2+25k^2)", "65^2+25k^2"],
   "correctAnswer": "sqrt(65^2-25k^2)",
+  "expectedResultType": "list_entry",
+  "gold": ["strategic-value-test"],
+  "acceptable": ["answer-choice-list", "graph-both-sides"],
+  "bad": [
+    {
+      "technique": "plug-in-choices",
+      "why": "Substituting radical expressions into the equation by hand is heavy algebra; Desmos evaluates every choice at once."
+    },
+    {
+      "technique": "translate-the-words",
+      "why": "Despite the word 'represents', this asks for a solution of an equation, not a model of a situation; the equation must be solved."
+    }
+  ],
+  "goldRows": [
+    "k=1",
+    "y=\\frac{25k^{2}}{\\sqrt{25k^{2}+x^{2}}}",
+    "y=65-\\frac{x^{2}}{\\sqrt{25k^{2}+x^{2}}}",
+    "[5k,\\sqrt{65^{2}-25k^{2}},\\sqrt{65^{2}+25k^{2}},65^{2}+25k^{2}]"
+  ],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Adds x^2/sqrt(25k^2+x^2) to both sides, notices the numerator equals the radicand so the left side is sqrt(25k^2+x^2)=65, squares, and solves for x."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that because the answer choices are formulas in k, any allowed value such as k=1 can stand in: graph both sides, find where they meet (x is about 64.81), and see which choice gives the same number. Mention that k must keep 65^2-25k^2 from going negative (0<k<=13), and that on paper the two fractions share the denominator sqrt(25k^2+x^2), so they combine to sqrt(25k^2+x^2)=65.",
   "intendedMethod": "combine-common-denominator-or-graph",
   "acceptableMethods": ["direct-algebra", "symbolic-calculator-verification"],
   "forbiddenMethods": ["ignore-square-root-domain", "equate-numerators-to-65"],

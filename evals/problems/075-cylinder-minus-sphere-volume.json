@@ -1,0 +1,50 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Geometry and Trigonometry",
+  "topic": "Volume: cylinder minus sphere from reference-sheet formulas",
+  "problem": "A closed cylindrical container has an interior radius of 6 centimeters and an interior height of 15 centimeters. A solid sphere with a radius of 3 centimeters is placed inside the container, and the rest of the container is completely filled with water. What is the volume, in cubic centimeters, of the water in the container?",
+  "choices": [
+    "468pi",
+    "504pi",
+    "540pi",
+    "576pi"
+  ],
+  "correctAnswer": "504pi",
+  "expectedResultType": "numeric",
+  "gold": [
+    "reference-formula"
+  ],
+  "acceptable": [
+    "direct-arithmetic"
+  ],
+  "bad": [
+    {
+      "technique": "graph-both-sides",
+      "why": "Nothing unknown needs solving: the volume is a direct computation from the givens, so graphing adds steps without removing any math."
+    }
+  ],
+  "goldRows": [
+    "V=\\pi(6)^{2}(15)-\\frac{4}{3}\\pi(3)^{3}",
+    "\\frac{V}{\\pi}"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Computes 6^2(15) = 540 and (4/3)(3^3) = 36 by hand, then subtracts: 540pi - 36pi = 504pi."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "The water fills all the space the sphere does not take up, so its volume is the cylinder's volume pi r^2 h minus the sphere's volume (4/3)pi r^3, both printed on the SAT reference sheet. Dividing the result by pi shows 504, which matches the choice written as a multiple of pi; 540pi is the trap of forgetting to subtract the sphere."
+}

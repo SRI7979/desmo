@@ -1,8 +1,41 @@
 {
+  "group": "representative",
+  "source": "original",
   "domain": "Geometry and Trigonometry",
+  "topic": "Trigonometric equation on an interval (degrees)",
   "problem": "For 0 <= x <= 90, where x is measured in degrees, sin(x) = cos(2x). What is the value of x?",
   "choices": null,
   "correctAnswer": "30",
+  "expectedResultType": "intersection",
+  "gold": ["graph-both-sides"],
+  "acceptable": ["intercept-read"],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Needs the memorized double-angle identity cos(2x)=1-2sin^2(x) and factoring a quadratic in sin(x) by hand."
+    },
+    {
+      "technique": "list-evaluation",
+      "why": "Testing only whole-degree x-values samples the continuous interval at integers and could miss a non-integer solution."
+    }
+  ],
+  "goldRows": ["y=\\sin(x)\\left\\{0\\le x\\le90\\right\\}", "y=\\cos(2x)\\left\\{0\\le x\\le90\\right\\}"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Rewrites cos(2x) as 1-2sin^2(x) (a memorized identity), solves 2sin^2(x)+sin(x)-1=0 by factoring, rejects sin(x)=-1, and takes x=30."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": true,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that each side becomes its own graph and the answer is the x-coordinate where they cross between 0 and 90; the calculator must be in degree mode because x is measured in degrees. No double-angle identity is needed.",
   "intendedMethod": "graph-both-sides-intersection",
   "acceptableMethods": [],
   "forbiddenMethods": ["double-angle-identity-by-hand"],

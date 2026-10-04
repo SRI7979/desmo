@@ -1,0 +1,56 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Factor x + 3b with a parameter: shared zero",
+  "problem": "The expression 2x^2 + 7bx + 12, where b is a constant, has a factor of x + 3b. Which of the following could be the value of b?",
+  "choices": [
+    "-6",
+    "-1",
+    "2",
+    "3"
+  ],
+  "correctAnswer": "2",
+  "expectedResultType": "slider_condition",
+  "gold": [
+    "shared-zero"
+  ],
+  "acceptable": [
+    "slider-condition",
+    "answer-choice-list"
+  ],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Factoring 2x^2 + 7bx + 12 with b unknown means guessing the other factor and matching coefficients by hand; the shared x-intercept does that check visually."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "Substituting each choice and then factoring or dividing by x + 3b by hand is four separate polynomial checks."
+    }
+  ],
+  "goldRows": [
+    "b=1",
+    "y=x+3b",
+    "y=2x^{2}+7bx+12"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 2,
+      "description": "Applies the factor theorem: substitutes x = -3b to get 18b^2 - 21b^2 + 12 = 0, so 3b^2 = 12 and b = 2 or b = -2, then picks 2 from the choices."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "A factor x + 3b means the expression equals zero wherever x + 3b does, so the line y = x + 3b and the parabola must cross the x-axis at the same point. With an integer slider for b from -10 to 10, the shared x-intercept appears at b = 2 (both cross at (-6, 0)) and also at b = -2; only 2 is a choice, which is why the question says 'could be'."
+}

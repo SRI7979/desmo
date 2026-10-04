@@ -1,8 +1,41 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Identity with unknown constants (r + s)",
   "problem": "For all real values of x, (12x + 28)/4 - s/13 = r(x - 8), where r and s are positive constants. What is the value of r + s?",
   "choices": ["390", "403", "406", "416"],
   "correctAnswer": "406",
+  "expectedResultType": "numeric",
+  "gold": ["identity-regression"],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Matching coefficients by hand (simplify, r=3 from the x-terms, s=403 from the constants) is multi-step algebra and invites reporting 403 instead of r+s."
+    },
+    {
+      "technique": "answer-choice-list",
+      "why": "The choices are values of r+s, not of r or s, so they cannot be plugged into the identity without first finding r and s."
+    }
+  ],
+  "goldRows": ["x_{1}=[1...5]", "\\frac{12x_{1}+28}{4}-\\frac{s}{13}\\sim r(x_{1}-8)", "r+s"],
+  "burden": {
+    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Simplify (12x+28)/4 to 3x+7, match x-coefficients (r=3), match constants (7-s/13=-24, so s=403), then add."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'for all real values of x' means the two sides are the same expression, so Desmos can find r and s by making the sides match at several sample x-values. Stress that the question asks for r+s, so the last row adds them: s alone is 403, a trap choice.",
   "intendedMethod": "identity-regression-sum-readout",
   "acceptableMethods": [],
   "forbiddenMethods": ["reports-intermediate-parameter-403"],

@@ -1,8 +1,37 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Algebra",
+  "topic": "No-solution linear system with a parameter",
   "problem": "6 + 7r = pw and 7r - 5w = 5w + 11. In this system of equations, p is a constant. If the system has no solution, what is the value of p?",
   "choices": null,
   "correctAnswer": "10",
+  "expectedResultType": "graph_overlap",
+  "gold": ["slider-parallel"],
+  "acceptable": ["slider-condition", "derivative-regression"],
+  "bad": [
+    {
+      "technique": "identity-regression",
+      "why": "Making the two equations identical gives the same line (infinitely many solutions), the opposite of no solution."
+    }
+  ],
+  "goldRows": ["p=1", "6+7x=py", "7x-5y=5y+11"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Solves both equations for w, sets the slopes 7/p and 7/10 equal to get p=10, and often skips checking that the lines are distinct rather than the same line."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": "no-solution",
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'no solution' as 'two parallel lines that never touch'. Rename r as x and w as y so Desmos can graph both equations as written, drag p until the lines are parallel (p=10), and point out they are two separate lines, not one line drawn twice (that would mean infinitely many solutions).",
   "intendedMethod": "slider-until-parallel-both-graphed",
   "acceptableMethods": ["derivative-regression-with-graphed-check"],
   "forbiddenMethods": ["slope-match-only"],

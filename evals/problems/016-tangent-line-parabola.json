@@ -1,8 +1,45 @@
 {
+  "group": "hard",
+  "source": "original",
   "domain": "Advanced Math",
+  "topic": "Line tangent to a parabola",
   "problem": "In the xy-plane, the line y = 6x - k and the parabola y = 3x^2 + 13x + 2 intersect at exactly one point, where k is a constant. What is the value of k?",
   "choices": null,
   "correctAnswer": "25/12",
+  "expectedResultType": "vertex",
+  "gold": ["vertex-of-difference"],
+  "acceptable": ["derivative-regression"],
+  "bad": [
+    {
+      "technique": "discriminant",
+      "why": "Valid on paper, but as the default it needs the memorized discriminant rule plus collecting terms by hand; Desmos finds k without a formula."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "The quadratic formula is a memorized formula and still needs the 'one solution means zero discriminant' idea to find k."
+    },
+    {
+      "technique": "slider-condition",
+      "why": "Tangency at k=25/12 (about 2.083) cannot be pinned exactly by dragging a slider; fine as a visual check, not as the default."
+    }
+  ],
+  "goldRows": ["y=(3x^{2}+13x+2)-6x"],
+  "burden": {
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Sets 3x^2+13x+2=6x-k, collects terms to 3x^2+7x+2+k=0, sets the discriminant 49-12(2+k)=0, and solves k=25/12."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'intersect at exactly one point' as the line just touching the parabola. Graphing the parabola minus 6x shows a lowest value of -25/12; the line's -k shifts that difference up by k, so the graphs touch exactly once when k cancels the lowest value, k=25/12.",
   "intendedMethod": "vertex-of-the-difference",
   "acceptableMethods": ["derivative-regression-scalar", "slider-until-tangent", "discriminant", "quadratic-formula"],
   "forbiddenMethods": ["nested-list-regression", "underdetermined-regression"],
