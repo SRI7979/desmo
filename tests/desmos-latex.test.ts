@@ -378,3 +378,9 @@ test("hand-written forms that error through the Desmos API are repaired (each ve
   assert.equal(normalized("pi*5^{2}"), "\\pi*5^{2}");
   assert.equal(normalized("\\pi r^{2}"), "\\pi r^{2}");
 });
+
+test("a number times a fraction keeps its operator, so it never displays as a mixed number", () => {
+  const normalized = (latex: string) => normalizeDesmosExpressions([{ latex, purpose: "" }])[0].latex;
+  assert.equal(normalized("18\\cdot\\frac{540}{9}"), "18\\cdot\\frac{540}{9}");
+  assert.equal(normalized("a\\cdot\\frac{1}{2}"), "a\\frac{1}{2}", "a letter before a fraction is still implicit multiplication");
+});

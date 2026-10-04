@@ -17,7 +17,7 @@
   ],
   "goldRows": ["m=\\frac{60}{15}", "g=\\frac{8}{m}", "k=3m", "\\frac{g}{k}"],
   "burden": {
-    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
     "algebraFirst": {"manualMath": 2, "hiddenDerivation": 0, "description": "Sets g/8 = 3/k = 15/60, cross-multiplies to get g=2 and k=12, then divides."}
   },
   "routing": {

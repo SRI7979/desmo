@@ -18,7 +18,7 @@
     },
     {
       "technique": "strategic-value-test",
-      "why": "Plugging in x = 0 gives m = 5 quickly, but pinning down a and k still means building and solving equations from other inputs by hand."
+      "why": "There are no answer choices to test and the answer is a number, not an expression in a parameter; plugging in x = 0 gives m = 5 quickly, but a and k still need equations from other inputs solved by hand."
     }
   ],
   "goldRows": [

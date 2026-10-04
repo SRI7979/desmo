@@ -8,8 +8,12 @@
   "correctAnswer": "122",
   "expectedResultType": "x_intercept",
   "gold": ["parameter-regression"],
-  "acceptable": ["bracket-regression", "intercept-read", "factoring"],
+  "acceptable": ["bracket-regression", "intercept-read"],
   "bad": [
+    {
+      "technique": "factoring",
+      "why": "Squaring to get c=366, substituting x=3 to get b=-125, and then factoring x^2-125x+366 is three written steps the regression and graph replace."
+    },
     {
       "technique": "quadratic-formula",
       "why": "Solving x^2-125x+366=0 with the quadratic formula is heavy arithmetic after deriving b by hand; the graph shows the other x-intercept."

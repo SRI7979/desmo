@@ -52,5 +52,5 @@
     "continuousInterval": false,
     "integerFactorExtremum": false
   },
-  "explanationNotes": "A factor x + 3b means the expression equals zero wherever x + 3b does, so the line y = x + 3b and the parabola must cross the x-axis at the same point. With an integer slider for b from -10 to 10, the shared x-intercept appears at b = 2 (both cross at (-6, 0)) and also at b = -2; only 2 is a choice, which is why the question says 'could be'."
+  "explanationNotes": "A factor x + 3b means the expression equals zero wherever x + 3b does, so the line y = x + 3b and the parabola must cross the x-axis at the same point. Every choice is an integer, so an integer-step slider for b from -10 to 10 visits all of them: the shared x-intercept appears at b = 2 (both cross at (-6, 0)) and also at b = -2; only 2 is a choice, which is why the question says 'could be'."
 }

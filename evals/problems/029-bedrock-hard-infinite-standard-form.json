@@ -21,7 +21,7 @@
   ],
   "goldRows": ["m=\\frac{\\frac{7}{6}}{\\frac{3}{4}}", "\\frac{3}{m}"],
   "burden": {
-    "gold": {"manualMath": 1, "hiddenDerivation": 0},
+    "gold": {"manualMath": 1, "hiddenDerivation": 1},
     "algebraFirst": {
       "manualMath": 2,
       "hiddenDerivation": 0,

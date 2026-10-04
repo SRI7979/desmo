@@ -6,7 +6,7 @@
   "problem": "A circle in the xy-plane is defined by the equation x^2 + y^2 - 6x + 4y - 12 = 0. What is the radius of the circle?",
   "choices": null,
   "correctAnswer": "5",
-  "expectedResultType": "visual_choice",
+  "expectedResultType": "vertex",
   "gold": ["graph-raw"],
   "acceptable": ["expanded-circle"],
   "bad": [
@@ -17,7 +17,7 @@
   ],
   "goldRows": ["x^{2}+y^{2}-6x+4y-12=0"],
   "burden": {
-    "gold": {"manualMath": 0, "hiddenDerivation": 0},
+    "gold": {"manualMath": 1, "hiddenDerivation": 0},
     "algebraFirst": {
       "manualMath": 2,
       "hiddenDerivation": 0,
@@ -31,7 +31,7 @@
     "continuousInterval": false,
     "integerFactorExtremum": false
   },
-  "explanationNotes": "Explain that Desmos can draw the circle straight from the given equation with no rearranging, and the radius is the distance from the center (3,-2) to the edge, 5 grid units in every direction. Note that the center and edge points such as (8,-2) land on whole-number grid points, which makes the reading trustworthy.",
+  "explanationNotes": "Explain that Desmos can draw the circle straight from the given equation with no rearranging. Clicking the circle shows its labeled highest point (3, 3) and lowest point (3, -7); those are the ends of a vertical diameter, so the diameter is 3 - (-7) = 10 and the radius is half of that, 5. No completing the square is needed.",
   "intendedMethod": "implicit-circle-graph-measure",
   "acceptableMethods": ["circle-regression-radius-read"],
   "forbiddenMethods": ["hand-completed-square"],

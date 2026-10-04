@@ -12,7 +12,7 @@
   "bad": [
     {"technique": "parameter-regression", "why": "There is nothing to fit; a regression adds machinery to direct probability arithmetic."}
   ],
-  "goldRows": ["m=0.4\\cdot0.6+0.35\\cdot0.4+(1-0.4-0.35)\\cdot0.2", "\\frac{0.4\\cdot0.6}{m}"],
+  "goldRows": ["m=0.4(0.6)+0.35(0.4)+(1-0.4-0.35)(0.2)", "\\frac{0.4(0.6)}{m}"],
   "burden": {
     "gold": {"manualMath": 1, "hiddenDerivation": 0},
     "algebraFirst": {

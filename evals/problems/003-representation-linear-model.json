@@ -1,7 +1,7 @@
 {
   "group": "representative",
   "source": "original",
-  "domain": "Problem-Solving and Data Analysis",
+  "domain": "Algebra",
   "topic": "Linear equation modeling a word problem",
   "problem": "At a certain school, there are n ninth graders and (2n + 18) tenth graders taking Algebra 2. If the total number of ninth and tenth graders taking Algebra 2 is 162, which equation represents this situation?",
   "choices": ["n + (2n + 18) = 162", "2n + 18 = 162", "n(2n + 18) = 162", "n - (2n + 18) = 162"],

@@ -7,8 +7,8 @@
   "choices": null,
   "correctAnswer": "-6",
   "expectedResultType": "numeric",
-  "gold": ["parameter-regression"],
-  "acceptable": ["three-point-regression", "bracket-regression"],
+  "gold": ["parameter-regression", "bracket-regression"],
+  "acceptable": ["three-point-regression"],
   "bad": [
     {
       "technique": "elimination",

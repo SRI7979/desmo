@@ -17,7 +17,7 @@
   "bad": [
     {
       "technique": "direct-arithmetic",
-      "why": "Relies on the radian rule s = r*theta (not on the reference sheet) to get 5pi/6, then a separate radian-to-degree conversion: two remembered steps the graph does not need."
+      "why": "On paper the student must solve the proportion x/360 = 10pi/(24pi) for x by cross-multiplying, or use s = r*theta (not on the reference sheet) and convert 5pi/6 radians to degrees: hand rearrangement the graph replaces."
     }
   ],
   "goldRows": [

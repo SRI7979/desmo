@@ -6,7 +6,7 @@
   "problem": "The graphs of y=x^2+4x+q and y=3x+10 have no points of intersection, where q is an integer. What is the least possible value of q?",
   "choices": null,
   "correctAnswer": "11",
-  "expectedResultType": "graph_overlap",
+  "expectedResultType": "slider_condition",
   "gold": ["slider-condition"],
   "acceptable": ["vertex-of-difference", "count-intersections"],
   "bad": [
@@ -27,7 +27,7 @@
   },
   "routing": {
     "representation": false,
-    "condition": "no-solution",
+    "condition": null,
     "integerParameters": ["q"],
     "continuousInterval": false,
     "integerFactorExtremum": false

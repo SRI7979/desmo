@@ -1468,8 +1468,12 @@ Prefer this when it avoids:
 - decomposing the figure
 - finding base and height manually
 
-Enter the vertices in boundary order so the polygon is traced correctly, then
-read the area Desmos displays for the polygon.
+Enter the vertices in boundary order so the polygon is traced correctly.
+Desmos draws the figure but the embedded calculator does NOT display its area
+(polygon() shows no value and area() is unsupported in API v1.11), so never
+promise an area readout. Use the drawing to read a horizontal or vertical base
+and its height from the coordinates, then type the reference-sheet formula,
+e.g. \frac{1}{2}(7-1)(8-2) for the triangle above.
 
 69. Number-theory built-ins
 [technique: number-theory-builtin | mod/gcd/lcm built-ins]

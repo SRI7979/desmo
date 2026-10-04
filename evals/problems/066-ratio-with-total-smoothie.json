@@ -37,5 +37,5 @@
     "integerFactorExtremum": false
   },
   "explanationNotes": "Explain 'a ratio of 3 to 4' as strawberries divided by bananas equals 3/4, with x for strawberries and y for bananas, and the total as x + y = 35. The graphs cross at (15, 20); make clear the student reads the y-coordinate, 20, because y stands for bananas.",
-  "notes": "Verified: x = 15, y = 20. In Desmos v1.11.4 x/y=3/4 is graphed explicitly (no implicit plot), so the intersection with x+y=35 is a clickable labeled point."
+  "notes": "Verified: x = 15, y = 20. In Desmos v1.11.4 x/y=3/4 is graphed as x = 3y/4 (an explicit curve in y, graphMode 1, not an implicit plot) and x+y=35 as an explicit curve in x; Desmos intersects the two orientations, and selecting either row labels the point (15, 20)."
 }

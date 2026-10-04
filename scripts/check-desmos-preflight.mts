@@ -266,7 +266,11 @@ try {
         const last = (checked.verdict.evaluations ?? {})[String(item.goldRows.length)] as { value?: unknown } | null | undefined;
         const expected = parseNumber(item.correctAnswer);
         const shown = typeof last?.value === "number" ? last.value : null;
-        if (expected !== null && (shown === null || Math.abs(shown - expected) > 1e-6 * Math.max(1, Math.abs(expected)))) {
+        // A rounded answer (6.07) matches to its own precision; a regression
+        // row shows its fit as parameters, not as a value (null), so it is skipped.
+        const decimals = /\.(\d+)/.exec(item.correctAnswer)?.[1].length ?? 0;
+        const tolerance = Math.max(1e-6 * Math.max(1, Math.abs(expected ?? 0)), /^-?\d+(?:\.\d+)?$/.test(item.correctAnswer.trim()) ? 0.5 * 10 ** -decimals : 0);
+        if (expected !== null && /^-?[\d./]+$/.test(item.correctAnswer.trim()) && shown !== null && Math.abs(shown - expected) > tolerance) {
           problems.push(`${item.id}: last row shows ${JSON.stringify(last?.value ?? null)}, answer is ${item.correctAnswer}`);
         }
       }

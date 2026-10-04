@@ -2,7 +2,7 @@
   "group": "hard",
   "source": "original",
   "domain": "Advanced Math",
-  "topic": "Counting integer solutions of a quadratic inequality",
+  "topic": "Counting integer solutions of a quadratic inequality with irrational boundaries",
   "problem": "How many integer values of x satisfy the inequality (x + 3)(2x - 1) <= x + 15?",
   "choices": [
     "5",
@@ -51,5 +51,5 @@
     "continuousInterval": false,
     "integerFactorExtremum": false
   },
-  "explanationNotes": "The inequality holds where the parabola y = (x + 3)(2x - 1) is at or below the line y = x + 15, which is between their two crossings at x of about -4.16 and 2.16. The integers in that stretch are -4, -3, -2, -1, 0, 1, 2, so there are 7. The list version count(X[(X+3)(2X-1) <= X+15]) with X = [-10...10] gives the same 7; that range is safe because outside the crossings the parabola stays above the line."
+  "explanationNotes": "The inequality holds where the parabola y = (x + 3)(2x - 1) is at or below the line y = x + 15, which is between their two crossings at x of about -4.16 and 2.16. The integers in that stretch are -4, -3, -2, -1, 0, 1, 2, so there are 7. The tied list method count(X[(X+3)(2X-1) <= X+15]) with X = [-10...10] also gives 7; that range is safe because an upward parabola is at or below a line on one unbroken stretch, x = 0 works, and x = -10 and x = 10 both fail."
 }

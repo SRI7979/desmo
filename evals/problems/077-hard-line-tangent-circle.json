@@ -44,5 +44,5 @@
     "continuousInterval": false,
     "integerFactorExtremum": false
   },
-  "explanationNotes": "'Tangent' means the line touches the circle at exactly one point without cutting through it. Graph the circle exactly as written (no completing the square) and drag a slider for b from 0 to 10: the line slides up until it just touches the circle at (-1, 1), which happens at b = 3. The other touching position, b = -17, is ruled out because b is positive."
+  "explanationNotes": "'Tangent' means the line touches the circle at exactly one point without cutting through it. Graph the circle exactly as written (no completing the square) and drag a slider for b from 0 to 10 with step 0.1: the line slides up until it just touches the circle at (-1, 1), which happens at b = 3 (at 2.9 it still cuts the circle twice, at 3.1 it misses). The other touching position, b = -17, is ruled out because b is positive."
 }

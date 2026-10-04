@@ -8,8 +8,12 @@
   "correctAnswer": "21/2",
   "expectedResultType": "intersection",
   "gold": ["graph-both-sides"],
-  "acceptable": ["factoring", "intercept-read"],
+  "acceptable": ["intercept-read"],
   "bad": [
+    {
+      "technique": "factoring",
+      "why": "Factoring 10u^2+23u+12 by hand and then reassigning the roots to find the noninteger form is multi-step algebra with a trap (assuming l=j)."
+    },
     {
       "technique": "identity-regression",
       "why": "A single identity fit returns only one of the two factorizations, so it cannot supply both k and l."

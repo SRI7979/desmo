@@ -46,7 +46,7 @@
   },
   "routing": {
     "representation": false,
-    "condition": "no-solution",
+    "condition": null,
     "integerParameters": [],
     "continuousInterval": false,
     "integerFactorExtremum": false

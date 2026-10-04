@@ -206,7 +206,9 @@ function removeRedundantMultiplication(
       /[0-9A-Za-z}\)\]]$/.test(left) &&
       (/^[A-Za-z(\[]/.test(right) || /^\\[A-Za-z]/.test(right)) &&
       // f(3) would call the function f; \operatorname{mean}(L) likewise.
-      !(opensGroup && (left.endsWith("}") || functionNames.has(left.match(trailingIdentifier)?.[0] ?? "")));
+      !(opensGroup && (left.endsWith("}") || functionNames.has(left.match(trailingIdentifier)?.[0] ?? ""))) &&
+      // 18\frac{540}{9} reads as a mixed number to a student; keep the operator.
+      !(/[0-9]$/.test(left) && /^\\frac/.test(right));
     result += left + (implicitIsSafe ? "" : match[0]);
     cursor = at + match[0].length;
     if (implicitIsSafe) cursor += latex.slice(cursor).length - right.length;

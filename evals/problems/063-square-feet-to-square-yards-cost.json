@@ -23,7 +23,7 @@
     }
   ],
   "goldRows": [
-    "18\\cdot\\frac{540}{3^{2}}"
+    "\\frac{540}{3^{2}}\\cdot18"
   ],
   "burden": {
     "gold": {
@@ -44,5 +44,5 @@
     "integerFactorExtremum": false
   },
   "explanationNotes": "The key idea is that a square yard is 3 feet by 3 feet, so 1 square yard = 3^2 = 9 square feet, not 3. Dividing 540 by 3^2 gives 60 square yards, and 60 times $18 is $1,080.",
-  "notes": "Verified: 540/9*18 = 1080; distractors 540/27*18 = 360, 540/3*18 = 3240, 540*18 = 9720."
+  "notes": "Verified: 540/9*18 = 1080; distractors 540/27*18 = 360, 540/3*18 = 3240, 540*18 = 9720. The gold row is written fraction-first: the app's normalizer drops a leading \\cdot, so 18\\cdot\\frac{540}{3^{2}} would display as 18\\frac{540}{3^{2}}, which reads like a mixed number; \\frac{540}{3^{2}}\\cdot18 survives normalization unchanged and shows 1080 in Desmos v1.11.4."
 }
