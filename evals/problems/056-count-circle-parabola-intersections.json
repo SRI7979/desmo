@@ -1,0 +1,54 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Number of intersections of a nonlinear system",
+  "problem": "At how many points do the graphs of x^2 + y^2 = 20 and y = x^2 - 6 intersect in the xy-plane?",
+  "choices": [
+    "1",
+    "2",
+    "3",
+    "4"
+  ],
+  "correctAnswer": "4",
+  "expectedResultType": "intersection",
+  "gold": [
+    "count-intersections"
+  ],
+  "acceptable": [
+    "graph-both-sides"
+  ],
+  "bad": [
+    {
+      "technique": "substitution",
+      "why": "Substituting x^2=y+6 gives y^2+y-14=0, which needs the quadratic formula and then a check that each y gives two real x-values; easy to stop at 2."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "Only reachable after substituting by hand, and counting y-roots instead of points gives the trap answer 2."
+    }
+  ],
+  "goldRows": [
+    "x^2+y^2=20",
+    "y=x^2-6"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 2,
+      "description": "Substitutes x^2=y+6 into the circle to get y^2+y-14=0, uses the quadratic formula to find two y-values, checks each is greater than -6, and concludes each gives two x-values for 4 points."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Each solution of the system is a point where the two graphs cross, so graph both as written and count the crossings: the parabola crosses the circle twice near the bottom and twice near the top, 4 points. Explain that substitution gives only two y-values but each y-value comes with a positive and a negative x, which is why the answer is 4, not 2."
+}

@@ -1,0 +1,48 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Disguised quadratic in sqrt(x): sum of solutions",
+  "problem": "What is the sum of all solutions to the equation 2x - 9sqrt(x) + 4 = 0?",
+  "choices": null,
+  "correctAnswer": "65/4",
+  "expectedResultType": "x_intercept",
+  "gold": [
+    "intercept-read"
+  ],
+  "acceptable": [
+    "graph-both-sides"
+  ],
+  "bad": [
+    {
+      "technique": "factoring",
+      "why": "Substituting u=sqrt(x), factoring 2u^2-9u+4 as (2u-1)(u-4), and squaring back is three hidden steps; adding the u-values instead gives the trap 9/2."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "Applies only after the u=sqrt(x) substitution, and the sum-of-roots shortcut on that quadratic answers for sqrt(x), not x."
+    }
+  ],
+  "goldRows": [
+    "y=2x-9\\sqrt{x}+4"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 2,
+      "description": "Lets u=sqrt(x), solves 2u^2-9u+4=0 to get u=1/2 and u=4, squares to get x=1/4 and x=16, checks both, and adds to get 65/4."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "The graph of y = 2x - 9sqrt(x) + 4 crosses the x-axis at x = 0.25 and x = 16, so the sum is 16.25 = 65/4. Warn that the shortcut 'sum of roots = 9/2' adds the values of sqrt(x), not x, which is why reading the actual x-intercepts is safer."
+}

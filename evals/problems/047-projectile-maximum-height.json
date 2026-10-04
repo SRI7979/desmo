@@ -1,0 +1,48 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Vertex of a quadratic: projectile maximum height",
+  "problem": "A ball is thrown upward from the top of a platform. The height of the ball above the ground, in feet, t seconds after it is thrown is given by h(t) = -16t^2 + 72t + 5. What is the maximum height, in feet, that the ball reaches?",
+  "choices": null,
+  "correctAnswer": "86",
+  "expectedResultType": "vertex",
+  "gold": [
+    "vertex-read"
+  ],
+  "acceptable": [
+    "restricted-extremum"
+  ],
+  "bad": [
+    {
+      "technique": "completing-the-square",
+      "why": "Rewriting -16t^2+72t+5 in vertex form by hand involves factoring out -16 and fractions; clicking the vertex gives (2.25, 86) directly."
+    },
+    {
+      "technique": "quadratic-formula",
+      "why": "Invalid here: the quadratic formula finds when the ball hits the ground (h=0), not its maximum height."
+    }
+  ],
+  "goldRows": [
+    "y=-16x^2+72x+5"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 2,
+      "description": "Recalls the vertex formula t=-b/(2a)=72/32=2.25, then substitutes back to compute h(2.25)=-81+162+5=86."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "The maximum height is the highest point of the parabola, its vertex, (2.25, 86). Make clear that the x-coordinate is the time (2.25 seconds) and the y-coordinate is the height, so the answer is 86, not 2.25."
+}

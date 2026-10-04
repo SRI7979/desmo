@@ -1,0 +1,59 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Function transformation: horizontal and vertical shifts",
+  "problem": "The function f is defined by f(x) = x^2 - 4x + 7. The graph of y = g(x) is the result of shifting the graph of y = f(x) right 3 units and down 2 units. Which of the following defines g?",
+  "choices": [
+    "g(x) = x^2 + 2x + 2",
+    "g(x) = x^2 - 10x + 26",
+    "g(x) = x^2 - 10x + 30",
+    "g(x) = x^2 + 2x + 6"
+  ],
+  "correctAnswer": "g(x) = x^2 - 10x + 26",
+  "expectedResultType": "graph_overlap",
+  "gold": [
+    "graph-each-choice",
+    "identity-regression"
+  ],
+  "acceptable": [
+    "strategic-value-test"
+  ],
+  "bad": [
+    {
+      "technique": "completing-the-square",
+      "why": "Rewriting f and all four choices in vertex form by hand to compare vertices is repeated algebra the overlapping graphs make unnecessary."
+    },
+    {
+      "technique": "translate-the-words",
+      "why": "Not a modeling question: the shift must actually be applied to f, and translating 'right 3' as x+3 is the classic sign trap."
+    }
+  ],
+  "goldRows": [
+    "f(x)=x^2-4x+7",
+    "y=f(x-3)-2",
+    "y=x^2+2x+2",
+    "y=x^2-10x+26",
+    "y=x^2-10x+30",
+    "y=x^2+2x+6"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 1,
+      "description": "Substitutes x-3 into f and subtracts 2, expanding (x-3)^2-4(x-3)+7-2 by hand to x^2-10x+26, then matches the choice."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Shifting right 3 replaces x with x-3 (the sign looks backwards) and shifting down 2 subtracts 2 from the output, so g(x) = f(x-3) - 2. Graphing that next to the choices shows exactly one choice lying on top of it; the vertex moving from (2, 3) to (5, 1) is a quick check of the direction. Identity regression is an equally good default: x_1 = [1...5] and f(x_1-3) - 2 ~ ax_1^2 + bx_1 + c return a = 1, b = -10, c = 26 in three rows, and it works even without answer choices."
+}

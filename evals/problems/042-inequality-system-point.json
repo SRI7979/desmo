@@ -1,0 +1,51 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Systems of linear inequalities",
+  "problem": "y > 3x - 7\n2x + y <= 12\nWhich of the following points (x, y) is a solution to the given system of inequalities?",
+  "choices": [
+    "(1, -5)",
+    "(2, 5)",
+    "(4, 6)",
+    "(6, 0)"
+  ],
+  "correctAnswer": "(2, 5)",
+  "expectedResultType": "visual_choice",
+  "gold": [
+    "graph-inequality"
+  ],
+  "acceptable": [
+    "answer-choice-list"
+  ],
+  "bad": [
+    {
+      "technique": "plug-in-choices",
+      "why": "Substituting four points into two inequalities by hand is eight sign-sensitive checks; the shaded overlap shows the answer at a glance."
+    }
+  ],
+  "goldRows": [
+    "y>3x-7",
+    "2x+y\\le12",
+    "[(1,-5),(2,5),(4,6),(6,0)]"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Substitutes each of the four points into both inequalities by hand, eight sign-sensitive checks."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that a solution must make both inequalities true at once, which on the graph is the region where the two shadings overlap; only (2, 5) lies inside it. Mention that a dashed boundary (from >) is not included while a solid one (from <=) is."
+}

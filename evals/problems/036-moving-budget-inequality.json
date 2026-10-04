@@ -1,0 +1,50 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Linear inequality word problem",
+  "problem": "A moving company charges a flat fee of $95 plus $1.85 for each mile it drives. Dana can spend at most $300 on the move. What is the greatest whole number of miles the company can drive for Dana's move without exceeding her budget?",
+  "choices": null,
+  "correctAnswer": "110",
+  "expectedResultType": "numeric",
+  "gold": [
+    "integer-list-filter",
+    "graph-both-sides"
+  ],
+  "acceptable": [
+    "graph-inequality"
+  ],
+  "bad": [
+    {
+      "technique": "ceil-floor",
+      "why": "floor((300 - 95)/1.85) hides solving the inequality by hand (subtract the fee, divide by the rate) before anything is typed."
+    },
+    {
+      "technique": "direct-arithmetic",
+      "why": "Isolating m by inverse operations and then deciding which way to round is hand algebra the cost list or graph does without derivation."
+    }
+  ],
+  "goldRows": [
+    "M=[0...300]",
+    "\\operatorname{max}(M[95+1.85M\\le300])"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Subtracts 95, divides 205 by 1.85 to get m <= 110.8, and rounds down to 110 by hand."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'at most $300' means the total cost must be less than or equal to 300, and that the filter keeps only the whole-number mileages whose cost fits, so its largest entry, 110, is the answer. Mention that the list 0 to 300 is safe because every mile costs more than $1, and that 110.8 cannot round up because 111 miles costs $300.35."
+}

@@ -20,3 +20,6 @@ next-env.d.ts
 
 # Licensed benchmark problems (e.g. Bedrock Prep) stay local; see evals/private.example
 evals/private/
+
+# Agent worktrees
+.claude/worktrees/

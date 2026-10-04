@@ -1,0 +1,55 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "System with no solution",
+  "problem": "4x - ky = 9\n6x + 15y = 2\nIn the given system of equations, k is a constant. If the system has no solution, what is the value of k?",
+  "choices": null,
+  "correctAnswer": "-10",
+  "expectedResultType": "graph_overlap",
+  "gold": [
+    "slider-parallel"
+  ],
+  "acceptable": [
+    "slider-condition",
+    "count-intersections"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Setting the coefficient ratios 4/6 = -k/15 is a memorized rule plus cross-multiplication, and matching coefficients alone cannot tell no solution from infinitely many."
+    },
+    {
+      "technique": "elimination",
+      "why": "Eliminating x and requiring the y-coefficient to vanish while the constant does not is a multi-step argument most students cannot set up."
+    },
+    {
+      "technique": "derivative-regression",
+      "why": "Needs both lines rearranged into y = form before the slope fit, and a slope match alone does not rule out the two lines being the same line."
+    }
+  ],
+  "goldRows": [
+    "k=1",
+    "4x-ky=9",
+    "6x+15y=2"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Sets the coefficient ratios 4/6 = -k/15 (or rewrites both lines in slope-intercept form) and cross-multiplies to k = -10, often without checking that the constants keep the lines apart."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": "no-solution",
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain 'no solution' as 'the two lines never meet', which happens when they are parallel (same steepness) but not the same line. At k = -10 Desmos shows two separate parallel lines; contrast that with two equations drawing one line, which would mean infinitely many solutions."
+}

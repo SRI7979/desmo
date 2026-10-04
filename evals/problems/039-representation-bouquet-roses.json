@@ -1,0 +1,53 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Representing a situation with a linear equation",
+  "problem": "A florist makes small bouquets that each contain 5 roses and large bouquets that each contain 12 roses. On Friday, she used all 180 of her roses to make s small bouquets and b large bouquets. Which equation represents this situation?",
+  "choices": [
+    "5s + 12b = 180",
+    "12s + 5b = 180",
+    "17(s + b) = 180",
+    "s/5 + b/12 = 180"
+  ],
+  "correctAnswer": "5s + 12b = 180",
+  "expectedResultType": "written",
+  "gold": [
+    "translate-the-words"
+  ],
+  "acceptable": [],
+  "bad": [
+    {
+      "technique": "story-system",
+      "why": "The task is choosing the model, not solving it; one equation in two unknowns has no single intersection to find, and graphing it does not show which choice matches the words."
+    },
+    {
+      "technique": "graph-each-choice",
+      "why": "There is no supplied graph or table to match, so graphing the four equations cannot tell which one describes the roses."
+    },
+    {
+      "technique": "answer-choice-list",
+      "why": "The choices are equations, not numbers; there is no value to test, and the task ends once the translation matches a choice."
+    }
+  ],
+  "goldRows": [],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Translates roses per bouquet into 5s + 12b = 180, but often goes on to graph or solve the equation, which the question never asks for."
+    }
+  },
+  "routing": {
+    "representation": true,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 5s counts the roses in all the small bouquets and 12b counts the roses in all the large ones, and together they use all 180 roses, so 5s + 12b = 180. Stop once the model matches a choice; 17(s + b) would wrongly mean every bouquet used 17 roses."
+}

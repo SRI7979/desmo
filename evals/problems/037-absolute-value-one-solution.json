@@ -1,0 +1,48 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Absolute value equations",
+  "problem": "|2x + 6| = 3k - 12\nIn the given equation, k is a constant. If the equation has exactly one solution, what is the value of k?",
+  "choices": null,
+  "correctAnswer": "4",
+  "expectedResultType": "slider_condition",
+  "gold": [
+    "slider-condition"
+  ],
+  "acceptable": [
+    "vertex-read",
+    "count-intersections",
+    "vertex-of-difference"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Setting 3k - 12 = 0 rests on the memorized fact that |u| = c has exactly one solution only when c = 0; the graph shows that instead of asking the student to recall it."
+    }
+  ],
+  "goldRows": [
+    "k=0",
+    "y=\\left|2x+6\\right|",
+    "y=3k-12"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Recalls that |u| = c has exactly one solution only when c = 0, sets 3k - 12 = 0, and solves k = 4."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the solutions are where the V-shaped graph y = |2x + 6| meets the flat line y = 3k - 12: a line above the V's tip crosses it twice, a line below misses it, and only a line through the tip (height 0) touches it exactly once, which happens at k = 4. Unpack 'exactly one solution' as 'the two graphs touch at just one point.'"
+}

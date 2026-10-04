@@ -1,0 +1,51 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Advanced Math",
+  "topic": "Exponential with unknown base and initial value from two points",
+  "problem": "The function f is defined by f(x) = a(b)^x, where a and b are positive constants. If f(1) = 24 and f(4) = 81, what is the value of f(-1)?",
+  "choices": null,
+  "correctAnswer": "32/3",
+  "expectedResultType": "numeric",
+  "gold": [
+    "bracket-regression",
+    "exponential-regression"
+  ],
+  "acceptable": [
+    "parameter-regression"
+  ],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Dividing ab^4=81 by ab=24 to get b^3=27/8, taking a cube root, then back-solving a=16 is three hidden steps the regression performs."
+    },
+    {
+      "technique": "substitution",
+      "why": "Solving ab=24 for a and substituting into ab^4=81 leads to the same cube-root algebra by hand."
+    }
+  ],
+  "goldRows": [
+    "f(x)=ab^{x}",
+    "[f(1),f(4)]\\sim[24,81]",
+    "f(-1)"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 2,
+      "description": "Divides the two equations to get b^3=81/24=27/8, so b=3/2, back-substitutes to get a=16, then computes f(-1)=16(2/3)=32/3."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "f(1) = 24 and f(4) = 81 are two facts about f, so define f(x) = ab^x and fit [f(1), f(4)] ~ [24, 81]; Desmos finds a = 16 and b = 1.5, and the row f(-1) reads 32/3 (about 10.67). Exponential regression on the points (1, 24) and (4, 81) is the equally good list version. Explain that a negative input means going one step backward from x = 0, dividing the starting value 16 by b once."
+}

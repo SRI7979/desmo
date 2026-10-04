@@ -1,0 +1,57 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Linear growth",
+  "problem": "A gym's number of members increased linearly after it opened. The gym had 186 members 4 months after it opened and 342 members 10 months after it opened. Based on this linear model, how many members did the gym have when it opened?",
+  "choices": [
+    "26",
+    "82",
+    "108",
+    "160"
+  ],
+  "correctAnswer": "82",
+  "expectedResultType": "numeric",
+  "gold": [
+    "linear-regression"
+  ],
+  "acceptable": [
+    "parameter-regression",
+    "bracket-regression"
+  ],
+  "bad": [
+    {
+      "technique": "direct-arithmetic",
+      "why": "Needs the memorized slope formula (342 - 186)/(10 - 4) and then working back 186 - 4(26); regression on the two data points gives the starting value with no formula."
+    },
+    {
+      "technique": "plug-in-choices",
+      "why": "Checking a starting value B means verifying by hand that (186 - B)/4 equals (342 - B)/10 for each choice, a hand-built condition the regression never needs."
+    }
+  ],
+  "goldRows": [
+    "x_{1}=[4,10]",
+    "y_{1}=[186,342]",
+    "y_{1}\\sim mx_{1}+b",
+    "b"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 2,
+      "hiddenDerivation": 0,
+      "description": "Computes the monthly rate (342 - 186)/(10 - 4) = 26 with the slope formula, then works back 186 - 4(26) = 82 by hand."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that 'increased linearly' means (4, 186) and (10, 342) lie on one straight line, and 'when it opened' means month 0, which is that line's starting value b. Linear regression finds the line without the slope formula; warn that 26 is the growth per month, not the starting count."
+}

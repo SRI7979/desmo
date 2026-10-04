@@ -1,0 +1,55 @@
+{
+  "group": "representative",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "Interpreting slope in context",
+  "problem": "The equation W = 1200 - 35t models the volume W, in gallons, of water remaining in a tank t minutes after a pump begins draining the tank. Which of the following is the best interpretation of 35 in this context?",
+  "choices": [
+    "The tank contained 35 gallons of water when the pump began draining it.",
+    "The pump drains 35 gallons of water from the tank each minute.",
+    "The pump takes 35 minutes to drain the tank completely.",
+    "The volume of water in the tank decreases by 35% each minute."
+  ],
+  "correctAnswer": "The pump drains 35 gallons of water from the tank each minute.",
+  "expectedResultType": "written",
+  "gold": [
+    "translate-the-words"
+  ],
+  "acceptable": [
+    "function-evaluation"
+  ],
+  "bad": [
+    {
+      "technique": "graph-raw",
+      "why": "Graphing the line shows its shape but not what 35 means; the interpretation is still left to the student, so the rows add work without answering."
+    },
+    {
+      "technique": "intercept-read",
+      "why": "The intercepts (0, 1200) and (34.3, 0) describe the starting volume and the empty time, not the meaning of 35; they can at best eliminate choices."
+    },
+    {
+      "technique": "linear-regression",
+      "why": "There is no data to fit; the model is already given, and the question asks for meaning, not a number."
+    }
+  ],
+  "goldRows": [],
+  "burden": {
+    "gold": {
+      "manualMath": 0,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 1,
+      "hiddenDerivation": 0,
+      "description": "Identifies 35 as the slope of the linear model and recalls that slope is the change in W per one-minute increase in t; sometimes graphs the line first, which adds nothing."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain in plain words that 35 multiplies t, so every extra minute subtracts another 35 gallons: it is a rate in gallons per minute, not a starting amount (that is 1200), a total time, or a percent."
+}

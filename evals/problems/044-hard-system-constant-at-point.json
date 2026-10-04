@@ -1,0 +1,54 @@
+{
+  "group": "hard",
+  "source": "original",
+  "domain": "Algebra",
+  "topic": "System with unknown constants",
+  "problem": "kx + 3y = 4\n(k - 1)x - 2y = 12\nIn the given system of equations, k is a constant. The graphs of the equations in the xy-plane intersect at the point (2, q), where q is a constant. What is the value of k?",
+  "choices": null,
+  "correctAnswer": "5",
+  "expectedResultType": "numeric",
+  "gold": [
+    "bracket-regression"
+  ],
+  "acceptable": [
+    "slider-condition",
+    "parameter-regression"
+  ],
+  "bad": [
+    {
+      "technique": "elimination",
+      "why": "Substituting the point and eliminating q by hand is a multi-step derivation that one bracket regression replaces."
+    },
+    {
+      "technique": "substitution",
+      "why": "Solving one substituted equation for q and substituting into the other is a multi-step derivation that one bracket regression replaces."
+    },
+    {
+      "technique": "graph-raw",
+      "why": "Typing the equations as written leaves k undefined, and the substituted 2k + 3q = 4 has no x or y to plot; graphing alone cannot find k without a slider (slider-condition) or a regression."
+    }
+  ],
+  "goldRows": [
+    "[2k+3q,2(k-1)-2q]\\sim[4,12]",
+    "k"
+  ],
+  "burden": {
+    "gold": {
+      "manualMath": 1,
+      "hiddenDerivation": 0
+    },
+    "algebraFirst": {
+      "manualMath": 3,
+      "hiddenDerivation": 0,
+      "description": "Substitutes (2, q) to get 2k + 3q = 4 and 2k - 2 - 2q = 12, then eliminates q by hand to reach k = 5."
+    }
+  },
+  "routing": {
+    "representation": false,
+    "condition": null,
+    "integerParameters": [],
+    "continuousInterval": false,
+    "integerFactorExtremum": false
+  },
+  "explanationNotes": "Explain that the intersection point (2, q) lies on both lines, so putting x = 2 and y = q into each equation gives two true statements. The bracket regression asks Desmos for the k and q that make both true at once (k = 5, q = -2); unpack 'regression' as 'Desmos adjusts the unknown letters until both sides match.'"
+}
