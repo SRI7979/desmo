@@ -7,6 +7,7 @@ import { classifyOpenAIError } from "@/lib/openai-errors";
 import { eligibleMethods, preflightRecordSchema, type SolveCache } from "@/lib/solve-cache";
 import { SolveValidationError } from "@/lib/solve-output";
 import {
+  createTrace,
   explainMethod,
   HONEST_FAILURE,
   loadSolveContext,
@@ -22,6 +23,8 @@ import {
   type ReadyEntry,
   type ServiceTierState,
   type SolveResult,
+  type SolveTrace,
+  type StageTiming,
 } from "@/lib/solve-pipeline";
 import {
   createMeter,
@@ -360,13 +363,35 @@ function pipelineFor(
   return { client: openAIClient(), cache, context, tier, diagnosticId, signal, meter, deadline };
 }
 
-function serverTiming(result: SolveResult, startedAt: number): string {
+/**
+ * Every stage that finished so far, summed by name (a retried model call
+ * appears once with its total): request handling before the pipeline
+ * (auth, upload, image checks, the rate-limit reservation) and the
+ * pipeline's own stages (cache, model calls, validation and selection).
+ */
+function stageTimings(route: StageTiming[], trace: SolveTrace | undefined): string[] {
+  const totals = new Map<string, number>();
+  for (const { stage, ms } of [...route, ...(trace?.stages ?? [])]) totals.set(stage, (totals.get(stage) ?? 0) + ms);
+  return [...totals].map(([stage, ms]) => `${stage.replace(/[^A-Za-z0-9_-]/g, "_")};dur=${ms}`);
+}
+
+function serverTiming(result: SolveResult, startedAt: number, route: StageTiming[] = [], trace?: SolveTrace): string {
   const parts = [`methods;dur=${result.timings.methodsMs.toFixed(1)}`, `complete;dur=${result.timings.completeMs.toFixed(1)}`];
   if (result.kind === "solved") {
     parts.push(`cache;desc="${result.hit ?? "miss"}"`, `explanation;desc="${result.explanation}"`);
   }
-  parts.push(`calls;desc="${result.calls.candidates}+${result.calls.explanation}"`, `total;dur=${(performance.now() - startedAt).toFixed(1)}`);
+  parts.push(`calls;desc="${result.calls.candidates}+${result.calls.explanation}"`, ...stageTimings(route, trace), `total;dur=${(performance.now() - startedAt).toFixed(1)}`);
   return parts.join(", ");
+}
+
+/** Times one request-handling step into the route's stage list. */
+async function step<T>(route: StageTiming[], stage: string, work: () => Promise<T>): Promise<T> {
+  const started = performance.now();
+  try {
+    return await work();
+  } finally {
+    route.push({ stage, ms: Math.round(performance.now() - started) });
+  }
 }
 
 function missingKey() {
@@ -382,6 +407,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
     const requestStarted = Date.now();
     const diagnosticId = randomUUID();
     const telemetry = telemetryFor(dependencies);
+    const route: StageTiming[] = [];
     let currentUserId: string | null = null;
     let meter: Meter | null = null;
     let techniqueId: string | null = null;
@@ -420,13 +446,13 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       if (crossSite(request)) return errorResponse("Send uploads from the Desmo website.", 403);
       let user: { id: string } | null;
       try {
-        user = await dependencies.getCurrentUser();
+        user = await step(route, "auth", () => dependencies.getCurrentUser());
       } catch {
         return errorResponse("Sign-in is temporarily unavailable. Please try again shortly.", 503);
       }
       if (!user) return errorResponse("Sign in to solve and save your problems.", 401);
       currentUserId = user.id;
-      const image = await readUpload(request);
+      const image = await step(route, "upload", () => readUpload(request));
       const bytes = Buffer.from(await image.arrayBuffer());
       if (!matchesImageSignature(bytes, image.type)) {
         telemetry.event("upload_rejected", context({ reason: "signature_mismatch", status: 415, mime: image.type, bytes: bytes.length }));
@@ -434,12 +460,12 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       }
       // Fully decode before anything else is spent on it: a damaged or
       // oversized image costs neither a rate-limit slot nor an OpenAI call.
-      await validateImage(bytes, image.type);
+      await step(route, "image_validate", () => validateImage(bytes, image.type));
       if (!process.env.OPENAI_API_KEY?.trim()) return missingKey();
       if (request.signal.aborted) return errorResponse("The solve was canceled.", 408);
       let reservation: { allowed: boolean; retryAfter: number };
       try {
-        reservation = await dependencies.reserveSolve(user.id);
+        reservation = await step(route, "reserve", () => dependencies.reserveSolve(user.id));
       } catch {
         return errorResponse("The solver is temporarily unavailable. Please try again shortly.", 503);
       }
@@ -451,7 +477,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
         );
       }
       // What OpenAI sees: at most 1600 px on the long edge. History keeps the original.
-      const modelImage = await prepareModelImage(bytes, image.type);
+      const modelImage = await step(route, "image_prepare", () => prepareModelImage(bytes, image.type));
       meter = meterFor(dependencies, user.id, diagnosticId);
       telemetry.event("solve_started", context({ mime: image.type, bytes: bytes.length, width: modelImage.width, height: modelImage.height, downscaled: modelImage.resized }));
 
@@ -460,10 +486,11 @@ export function createSolveHandler(dependencies: SolveDependencies) {
         tier,
         diagnosticId,
         request.signal,
-        await loadSolveContext(),
+        await step(route, "context", () => loadSolveContext()),
         meter,
         deadlineFor(dependencies, requestStarted),
       );
+      pipeline.trace = createTrace();
       const input = { kind: "image" as const, bytes, mime: image.type, modelBytes: modelImage.bytes };
       const userId = user.id;
 
@@ -476,7 +503,9 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       // `explanation` says where the prose came from; "fallback" is the
       // generated one-line summary, which the client treats as a failed
       // explanation (with a retry), never as the explanation itself.
-      const finish = async (result: SolveResult) => {
+      // The final, shown solution: the winner unless pre-flight replaced it;
+      // `savable` is false while nothing that could error may be saved.
+      const settle = async (result: SolveResult) => {
         let solution = result.solution;
         let methodId: string | null = null;
         let explanation: "cache" | "model" | "fallback" | null = null;
@@ -484,7 +513,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
           methodId = result.method.id;
           explanation = result.explanation;
           const latest = await resolveEntry(pipeline.cache, result.entry);
-          if (latest.status !== "ready") return { solution, methodId, explanation, problemId: null };
+          if (latest.status !== "ready") return { solution, methodId, explanation, savable: false };
           if (latest.winner.id !== result.method.id || latest.entry.cacheKey !== result.entry.cacheKey) {
             const explained = await explainMethod(pipeline, latest.entry, latest.winner);
             solution = explained.solution;
@@ -492,15 +521,25 @@ export function createSolveHandler(dependencies: SolveDependencies) {
             methodId = latest.winner.id;
           }
         }
-        let problemId: string | null = null;
-        let historyWarning: string | undefined;
+        return { solution, methodId, explanation, savable: true };
+      };
+      type Settled = Awaited<ReturnType<typeof settle>>;
+      const shown = ({ savable, ...rest }: Settled) => {
+        void savable;
+        return rest;
+      };
+      const save = async (settled: Settled): Promise<{ problemId: string | null; historyWarning?: string }> => {
+        if (!settled.savable) return { problemId: null };
         try {
-          problemId = await dependencies.saveProblem({ userId, bytes, mime: image.type, solution });
+          return { problemId: await dependencies.saveProblem({ userId, bytes, mime: image.type, solution: settled.solution }) };
         } catch {
           // Keep a usable answer even when storage is temporarily unavailable.
-          historyWarning = "Your result is ready, but it could not be saved to history. Keep this page open to view it.";
+          return { problemId: null, historyWarning: "Your result is ready, but it could not be saved to history. Keep this page open to view it." };
         }
-        return { solution, methodId, explanation, problemId, ...(historyWarning ? { historyWarning } : {}) };
+      };
+      const finish = async (result: SolveResult) => {
+        const settled = await settle(result);
+        return { ...shown(settled), ...(await save(settled)) };
       };
 
       if (!wantsStream(request)) {
@@ -512,7 +551,7 @@ export function createSolveHandler(dependencies: SolveDependencies) {
             ? { ...methodsPayload(result.resolved, result.cached, saved.methodId ?? result.method.id), ...saved }
             : { cacheKey: null, selectedMethodId: null, cached: false, methods: [], ...saved };
         return Response.json(body, {
-          headers: { "Cache-Control": "no-store", "Server-Timing": serverTiming(result, startedAt) },
+          headers: { "Cache-Control": "no-store", "Server-Timing": serverTiming(result, startedAt, route, pipeline.trace) },
         });
       }
 
@@ -531,19 +570,22 @@ export function createSolveHandler(dependencies: SolveDependencies) {
       });
       const first = await Promise.race([announced, run.then(() => "done" as const, (error: unknown) => ({ error }))]);
       if (typeof first === "object") throw first.error;
+      // The explanation is sent the moment it is settled; saving to history
+      // (an image upload and a row insert) follows in its own "saved" event,
+      // so the student never waits on storage to read the explanation.
+      const deliver = async (result: SolveResult) => {
+        const settled = await settle(result);
+        send({ type: "solution", ...shown(settled) });
+        const saved = await save(settled);
+        succeeded(result, settled.explanation);
+        send({ type: "saved", ...saved });
+      };
       if (first === "done") {
-        const result = await run;
-        const saved = await finish(result);
-        succeeded(result, saved.explanation);
-        send({ type: "solution", ...saved });
+        await deliver(await run);
         controller.close();
       } else {
         void run
-          .then(async (result) => {
-            const saved = await finish(result);
-            succeeded(result, saved.explanation);
-            send({ type: "solution", ...saved });
-          })
+          .then(deliver)
           .catch((error: unknown) => {
             failed(error, "explanation");
             send({ type: "error", error: "The explanation could not be loaded. The calculator steps above are complete." });
@@ -553,7 +595,9 @@ export function createSolveHandler(dependencies: SolveDependencies) {
             void telemetry.flush();
           });
       }
-      return new Response(stream, { headers: { "Content-Type": NDJSON, "Cache-Control": "no-store" } });
+      // Headers leave with the first event, so they time everything up to the calculator rows.
+      const firstEvent = [`methods;dur=${(performance.now() - startedAt).toFixed(1)}`, ...stageTimings(route, pipeline.trace)].join(", ");
+      return new Response(stream, { headers: { "Content-Type": NDJSON, "Cache-Control": "no-store", "Server-Timing": firstEvent } });
     } catch (error) {
       if (error instanceof UploadError || error instanceof InvalidImageError) {
         telemetry.event("upload_rejected", context({ reason: error.message, status: error.status }));

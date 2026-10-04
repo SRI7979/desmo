@@ -43,10 +43,14 @@ import {
 import type { AnswerChoice, Solution } from "./solver-schema";
 import {
   candidatesResponseSchema,
+  desmosRescueTarget,
+  mergeSelections,
+  rescueReason,
   selectMethods,
   StrategySelectionError,
   type CandidatesResponse,
   type Method,
+  type MethodSelection,
 } from "./strategy-selection";
 import { NO_USAGE, timeoutEstimate } from "./model-pricing";
 import { classifyOpenAIError, describeOpenAIError } from "./openai-errors";
@@ -179,9 +183,79 @@ export type PipelineDeps = {
    * the host never kills the function mid-call, whatever the env timeouts.
    */
   deadline?: number;
+  /** Stage timings and raw model outputs, for latency profiling and offline replay. */
+  trace?: SolveTrace;
 };
 
 export type CallCounts = { candidates: number; explanation: number };
+
+export type TokenUsage = { input: number; cached: number; output: number; reasoning: number };
+
+/** Wall-clock time of one pipeline stage; model stages carry their token usage. */
+export type StageTiming = { stage: string; ms: number; usage?: TokenUsage };
+
+/** One call-1 output as the model returned it, before validation, and what rejected it. */
+export type CandidateOutput = {
+  call: "candidates" | "desmos_retry";
+  attempt: number;
+  output: unknown;
+  rejection: { stage: string; reason: string } | null;
+};
+
+/**
+ * Optional instrumentation. Stage timings show where a solve's time goes
+ * (model generation versus validation, cache, and Desmos-retry work); the raw
+ * candidate outputs let the eval harness replay server-side selection after a
+ * scoring or validation change without paying for new model calls.
+ */
+export type SolveTrace = { stages: StageTiming[]; candidateOutputs: CandidateOutput[] };
+
+export function createTrace(): SolveTrace {
+  return { stages: [], candidateOutputs: [] };
+}
+
+async function timed<T>(trace: SolveTrace | undefined, stage: string, work: () => Promise<T>): Promise<T> {
+  if (!trace) return work();
+  const started = performance.now();
+  try {
+    return await work();
+  } finally {
+    trace.stages.push({ stage, ms: Math.round(performance.now() - started) });
+  }
+}
+
+function usageOf(response: OpenAI.Responses.Response): TokenUsage | undefined {
+  const usage = response.usage;
+  if (!usage) return undefined;
+  return {
+    input: usage.input_tokens ?? 0,
+    cached: usage.input_tokens_details?.cached_tokens ?? 0,
+    output: usage.output_tokens ?? 0,
+    reasoning: usage.output_tokens_details?.reasoning_tokens ?? 0,
+  };
+}
+
+function recordCandidateOutput(
+  deps: PipelineDeps,
+  call: CandidateOutput["call"],
+  attempt: number,
+  response: OpenAI.Responses.Response,
+  rejection: SolveValidationError | null,
+) {
+  if (!deps.trace) return;
+  let output: unknown = modelOutputText(response);
+  try {
+    output = JSON.parse(output as string);
+  } catch {
+    // Kept as text: the harness reports it as a JSON failure.
+  }
+  deps.trace.candidateOutputs.push({
+    call,
+    attempt,
+    output,
+    rejection: rejection ? { stage: rejection.stage, reason: rejection.message } : null,
+  });
+}
 
 /**
  * An entry with its cached pre-flight verdicts applied. "ready": the methods
@@ -293,6 +367,7 @@ export async function retryAfterDesmosErrors(
         "answer_consistency",
       );
     }
+    recordCandidateOutput(deps, "desmos_retry", 1, response, null);
     return await deps.cache.putEntry({
       ...base,
       methods: selection.methods,
@@ -302,6 +377,7 @@ export async function retryAfterDesmosErrors(
   } catch (error) {
     const failure = error instanceof StrategySelectionError ? new SolveValidationError(error.stage, error.message) : error;
     if (!(failure instanceof SolveValidationError)) throw error;
+    recordCandidateOutput(deps, "desmos_retry", 1, response, failure);
     await logSolveRejection(`${deps.diagnosticId}-desmos-retry`, 1, response, failure);
     return deps.cache.putEntry({ ...base, methods: [], winnerId: "", modelPreference: null });
   }
@@ -339,7 +415,16 @@ export type SolvedResult = {
   calls: CallCounts;
   timings: { methodsMs: number; completeMs: number };
   repairs: string[];
+  /**
+   * The Desmos rescue for this solve: "applied" when a corrected Desmos
+   * technique became the default, "kept" when the correction ran but the
+   * original default stood, "failed" when the correction call or its
+   * validation failed (the original selection is used), null when none ran.
+   */
+  rescue: RescueOutcome;
 };
+
+export type RescueOutcome = "applied" | "kept" | "failed" | null;
 
 export type SolveResult =
   | { kind: "clarification"; solution: Solution; calls: CallCounts; timings: { methodsMs: number; completeMs: number } }
@@ -418,7 +503,10 @@ async function callModel(
     throw error;
   } finally {
     clearTimeout(timer);
+    deps.trace?.stages.push({ stage: `model_${call}`, ms: Math.round(performance.now() - started) });
   }
+  const stage = deps.trace?.stages.at(-1);
+  if (stage) stage.usage = usageOf(response);
   // The tier OpenAI reports actually applied is what it bills.
   await deps.meter?.record(call, { status: "completed", model: response.model || model, serviceTier: response.service_tier ?? tier, usage: response.usage });
   if (process.env.NODE_ENV === "development" || process.env.DESMO_DIAGNOSTICS === "1") {
@@ -591,6 +679,62 @@ export async function explainMethod(
   };
 }
 
+/** DESMO_DESMOS_RESCUE=off disables the rescue (for A/B benchmarking); it is on by default. */
+export function rescueEnabled(env: Record<string, string | undefined> = process.env): boolean {
+  return env.DESMO_DESMOS_RESCUE?.trim().toLowerCase() !== "off";
+}
+
+/**
+ * One guided correction when a math-heavy default stands only because a
+ * cheaper Desmos technique was rejected for a fixable slip (see
+ * desmosRescueTarget). The corrected candidates are merged with the original
+ * selection, so the result is never worse than without the rescue: a failed
+ * call, a clarification, or a correction that is still rejected keeps the
+ * original selection. Only runs on a first attempt with time left for a
+ * full candidates call and the explanation.
+ */
+async function rescueDesmosCandidate(
+  deps: PipelineDeps,
+  input: SolveInput,
+  response: OpenAI.Responses.Response,
+  selection: MethodSelection,
+  calls: CallCounts,
+): Promise<{ selection: MethodSelection; outcome: RescueOutcome }> {
+  const target = desmosRescueTarget(selection);
+  if (!target || !rescueEnabled()) return { selection, outcome: null };
+  const { candidatesMs, explanationMs } = modelTimeouts();
+  const remaining = deps.deadline ? deps.deadline - Date.now() : Infinity;
+  if (deps.signal?.aborted || remaining < candidatesMs + explanationMs) return { selection, outcome: null };
+  const rejection: Rejection = { stage: "desmos_rescue", reason: rescueReason(target), previous: modelOutputText(response) };
+  let retried: OpenAI.Responses.Response;
+  try {
+    await deps.meter?.authorizeRetry();
+    calls.candidates += 1;
+    retried = await callModel(deps, candidateRequest(deps, input, rejection), "candidates");
+  } catch (error) {
+    // Out of budget, a timeout, or a provider error: the original selection stands.
+    if (deps.signal?.aborted) throw error;
+    console.warn("[desmo:rescue]", JSON.stringify({ id: deps.diagnosticId, outcome: "failed", error: error instanceof Error ? error.name : String(error) }));
+    return { selection, outcome: "failed" };
+  }
+  try {
+    const { parsed } = validateCandidatesResponse(retried);
+    if (parsed.status !== "solved") throw new StrategySelectionError("The rescue asked for clarification instead of candidates.");
+    const corrected = selectMethods(repairIntegerFactorExtremum(repairQuadraticRationalIntercept({ ...parsed, question: selection.question, choices: selection.choices })));
+    recordCandidateOutput(deps, "candidates", 2, retried, null);
+    const merged = mergeSelections(selection, corrected);
+    const outcome = merged.winnerId !== selection.winnerId ? "applied" : "kept";
+    console.info("[desmo:rescue]", JSON.stringify({ id: deps.diagnosticId, outcome, from: target.winner.techniqueId, to: merged.winnerId }));
+    return { selection: merged, outcome };
+  } catch (error) {
+    const failure = error instanceof StrategySelectionError ? new SolveValidationError(error.stage, error.message) : error;
+    if (!(failure instanceof SolveValidationError)) throw error;
+    recordCandidateOutput(deps, "candidates", 2, retried, failure);
+    await logSolveRejection(`${deps.diagnosticId}-rescue`, 2, retried, failure);
+    return { selection, outcome: "failed" };
+  }
+}
+
 /**
  * The whole solve: cache lookup, candidate generation (call 1) with one guided
  * retry, server-side selection, a first-render notification, then the
@@ -611,9 +755,12 @@ export async function solveProblem(
   let hit: SolvedResult["hit"] = null;
   let repairs: string[] = [];
   let timeoutRetryUsed = false;
+  let rescue: RescueOutcome = null;
 
-  const known = await deps.cache.lookupInput(hash, version);
-  entry = known ? await deps.cache.getEntry(known) : null;
+  entry = await timed(deps.trace, "cache_lookup", async () => {
+    const known = await deps.cache.lookupInput(hash, version);
+    return known ? deps.cache.getEntry(known) : null;
+  });
   if (entry) {
     hit = "input";
     deps.meter?.setCacheKey(entry.cacheKey);
@@ -647,23 +794,31 @@ export async function solveProblem(
         response = await send();
       }
       try {
+        const selectStarted = performance.now();
         const { parsed: rawParsed, repairs: metadataRepairs } = validateCandidatesResponse(response);
         const parsed = repairIntegerFactorExtremum(repairQuadraticRationalIntercept(rawParsed));
         if (parsed.status === "needs_clarification") {
+          recordCandidateOutput(deps, "candidates", attempt, response, null);
           const elapsed = performance.now() - started;
           return { kind: "clarification", solution: clarificationSolution(parsed), calls, timings: { methodsMs: elapsed, completeMs: elapsed } };
         }
         const key = cacheKeyFor(problemKey(parsed.question, stableChoices(parsed.choices)), version);
         deps.meter?.setCacheKey(key);
-        const existing = await deps.cache.getEntry(key);
+        const existing = await timed(deps.trace, "cache_lookup_problem", () => deps.cache.getEntry(key));
         if (existing) {
+          recordCandidateOutput(deps, "candidates", attempt, response, null);
           entry = existing;
           hit = "problem";
           break;
         }
-        const selection = selectMethods(parsed);
+        let selection = selectMethods(parsed);
+        deps.trace?.stages.push({ stage: "validate_select", ms: Math.round(performance.now() - selectStarted) });
+        recordCandidateOutput(deps, "candidates", attempt, response, null);
+        if (attempt === 1 && desmosRescueTarget(selection)) {
+          ({ selection, outcome: rescue } = await timed(deps.trace, "desmos_rescue", () => rescueDesmosCandidate(deps, input, response, selection, calls)));
+        }
         repairs = metadataRepairs;
-        entry = await deps.cache.putEntry({
+        entry = await timed(deps.trace, "cache_write", () => deps.cache.putEntry({
           version: CACHE_ENTRY_VERSION,
           cacheKey: key,
           promptConfigVersion: version,
@@ -675,7 +830,7 @@ export async function solveProblem(
           modelPreference: selection.modelPreference,
           retryOf: null,
           createdAt: new Date().toISOString(),
-        });
+        }));
         const winner = eligibleMethods(entry).find((method) => method.id === entry!.winnerId);
         if (selection.modelPreference && winner && selection.modelPreference !== winner.techniqueId) {
           logSelectionDisagreement(deps.diagnosticId, selection.modelPreference, winner.techniqueId);
@@ -683,6 +838,7 @@ export async function solveProblem(
       } catch (error) {
         const failure = error instanceof StrategySelectionError ? new SolveValidationError(error.stage, error.message) : error;
         if (!(failure instanceof SolveValidationError)) throw error;
+        recordCandidateOutput(deps, "candidates", attempt, response, failure);
         await logSolveRejection(deps.diagnosticId, attempt, response, failure);
         if (attempt >= MAX_ATTEMPTS || deps.signal?.aborted) throw failure;
         rejection = { stage: failure.stage, reason: failure.message, previous: modelOutputText(response) };
@@ -692,12 +848,12 @@ export async function solveProblem(
 
   // A fresh entry has no verdicts yet; a cached one may: an erroring winner
   // is replaced, and a problem whose every method errored uses its retry.
-  const resolved = await resolveOrRetry(deps, entry!, calls, { fresh: hit === null });
+  const resolved = await timed(deps.trace, "resolve", () => resolveOrRetry(deps, entry!, calls, { fresh: hit === null }));
   const method = resolved.winner;
   const methodsMs = performance.now() - started;
   await onMethods?.({ resolved, cached: hit !== null });
   const [explained] = await Promise.all([
-    explainMethod(deps, resolved.entry, method, calls),
+    timed(deps.trace, "explanation", () => explainMethod(deps, resolved.entry, method, calls)),
     hit !== "input" ? deps.cache.rememberInput(hash, version, entry!.cacheKey) : undefined,
   ]);
   return {
@@ -713,6 +869,7 @@ export async function solveProblem(
     calls,
     timings: { methodsMs, completeMs: performance.now() - started },
     repairs,
+    rescue,
   };
 }
 

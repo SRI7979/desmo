@@ -463,6 +463,10 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
         } else if (event.type === "solution") {
           sawResult = true;
           handleStreamSolution(event);
+        } else if (event.type === "saved") {
+          // History is written after the explanation is sent, so it never delays it.
+          if (typeof event.problemId === "string") setProblemId(event.problemId);
+          if (typeof event.historyWarning === "string") setHistoryWarning(event.historyWarning);
         } else if (event.type === "error") {
           if (!sawResult) throw new Error(typeof event.error === "string" ? event.error : "The solver could not finish. Please try again.");
           current.current.streamMethodId = null;

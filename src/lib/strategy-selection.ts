@@ -47,7 +47,7 @@ import {
   findListShapeViolations,
   findRegressionDeterminacyViolations,
 } from "./solver-rules";
-import { TECHNIQUE_IDS, techniqueName, type TechniqueId } from "./technique-vocabulary";
+import { getTechnique, TECHNIQUE_IDS, techniqueName, type TechniqueId } from "./technique-vocabulary";
 
 /**
  * Every technique that validly solves the problem, up to six: the dropdown is
@@ -631,5 +631,99 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     ],
     winnerId: ranked[0].id,
     modelPreference: response.preferredTechniqueId,
+  };
+}
+
+/**
+ * Rejections that are contract slips in an otherwise sound Desmos technique:
+ * a mislabeled readout, a row that will not insert, a list shape Desmos
+ * refuses, a missing distinct-lines check. Answering a different question
+ * (a representation question) and duplicates are not slips.
+ */
+export const RESCUABLE_RULES: ReadonlySet<string> = new Set([
+  "answer-consistency",
+  "answer-state",
+  "row-fails-to-insert",
+  "list-shape",
+  "prose-latex",
+  "condition-incomplete",
+  "integer-not-encoded",
+  "hidden-derivation",
+  "underdetermined-regression",
+  "coefficient-lists",
+  "discrete-sampling",
+  "unproven-extremum",
+  "unproven-invariance",
+]);
+
+/** A default at or above this math score asks real algebra or memorization of the student. */
+export const MATH_HEAVY_SCORE = 2;
+
+export type RescueTarget = {
+  /** The math-heavy method that would be the default as things stand. */
+  winner: Method;
+  /** Rejected Desmos techniques that, had they passed, would ask less of the student. */
+  candidates: Method[];
+};
+
+/**
+ * Whether one guided correction is worth a model call: the default asks real
+ * algebra (math score ≥ 2) only because a Desmos technique the model DID
+ * propose, with less student math and a lower total by its own reported cost,
+ * was rejected for a fixable slip. Recorded eval runs show this in 5–10% of
+ * solves (the shared-zero slider on a factor question losing to written
+ * substitution, an expanded-circle fit losing to completing the square).
+ */
+export function desmosRescueTarget(selection: MethodSelection): RescueTarget | null {
+  const winner = selection.methods.find((method) => method.id === selection.winnerId);
+  if (!winner || winner.mathScore < MATH_HEAVY_SCORE) return null;
+  const candidates = selection.methods.filter(
+    (method) =>
+      method.rejected !== null &&
+      RESCUABLE_RULES.has(method.rejected.rule) &&
+      method.rows.length > 0 &&
+      getTechnique(method.techniqueId).source === "library" &&
+      method.mathScore < winner.mathScore &&
+      method.total < winner.total,
+  );
+  return candidates.length ? { winner, candidates } : null;
+}
+
+/** The guided-correction text for a rescue: fix the named Desmos candidates, keep the rest. */
+export function rescueReason(target: RescueTarget): string {
+  const fixes = target.candidates
+    .map((method) => `${method.techniqueId} (${method.name}) was rejected [${method.rejected!.rule}]: ${method.rejected!.reason}`)
+    .join(" | ");
+  return (
+    `the Desmos technique(s) you proposed were rejected, so the default would be ${target.winner.techniqueId} (${target.winner.name}), ` +
+    `which asks the student for ${target.winner.cost.derivationSteps} hand derivation step(s) and ${target.winner.cost.oneOffFacts} memorized fact(s). ${fixes}. ` +
+    "Correct those Desmos candidates so every rule passes (same technique, fixed rows or readout), and keep every candidate that already passed unchanged. " +
+    "If a rejected technique genuinely cannot solve this problem, drop it instead; never invent filler."
+  );
+}
+
+/**
+ * Combines the original selection with a corrected one: every eligible
+ * technique from either (the cheaper version when both have it), re-ranked
+ * and re-badged, so a correction can only add or improve methods, never
+ * lose one that already passed.
+ */
+export function mergeSelections(primary: MethodSelection, secondary: MethodSelection): MethodSelection {
+  const eligible = new Map<string, Method>();
+  for (const method of [...primary.methods, ...secondary.methods]) {
+    if (method.rejected) continue;
+    const current = eligible.get(method.techniqueId);
+    if (!current || compareMethods(method, current) < 0) eligible.set(method.techniqueId, method);
+  }
+  const ranked = [...eligible.values()].sort(compareMethods).slice(0, MAX_CANDIDATES);
+  const badges = assignBadges(ranked);
+  const rejected = new Map<string, Method>();
+  for (const method of [...primary.methods, ...secondary.methods]) {
+    if (method.rejected && !eligible.has(method.techniqueId)) rejected.set(method.id, method);
+  }
+  return {
+    ...primary,
+    methods: [...ranked.map((method) => ({ ...method, badges: badges.get(method.id) ?? [] })), ...rejected.values()],
+    winnerId: ranked[0]?.id ?? primary.winnerId,
   };
 }

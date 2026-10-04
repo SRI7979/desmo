@@ -645,14 +645,32 @@ test("streaming sends the calculator rows and answer before the explanation", as
   const response = await POST(upload(png, "image/png", { Accept: "application/x-ndjson" }));
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("content-type"), "application/x-ndjson");
-  const [methods, solution] = await events(response);
+  assert.match(response.headers.get("server-timing") ?? "", /methods;dur=.*model_candidates;dur=/);
+  const [methods, solution, saved] = await events(response);
   assert.equal(methods.type, "methods");
   assert.equal(methods.selectedMethodId, "intercept-read");
   assert.deepEqual(methods.methods[0].rows, [{ latex: "y=x^2-9", slider: null }]);
   assert.equal(methods.methods[0].answer, "3");
   assert.equal(solution.type, "solution");
   assert.equal(solution.solution.why, explanation().why);
-  assert.equal(solution.problemId, problemId);
+  // The explanation never waits on history storage: the save is its own, later event.
+  assert.equal(solution.problemId, undefined);
+  assert.equal(saved.type, "saved");
+  assert.equal(saved.problemId, problemId);
+});
+
+test("a stream whose history save fails still delivers the explanation first, then the warning", async () => {
+  mockModel({ candidates: candidatesResponse() });
+  dependencies.saveProblem = async () => {
+    throw new Error("storage down");
+  };
+  const response = await POST(upload(png, "image/png", { Accept: "application/x-ndjson" }));
+  const [, solution, saved] = await events(response);
+  assert.equal(solution.type, "solution");
+  assert.equal(solution.solution.answer, "3");
+  assert.equal(saved.type, "saved");
+  assert.equal(saved.problemId, null);
+  assert.match(saved.historyWarning, /could not be saved/);
 });
 
 test("an explanation failure still shows the rows and answer with a generated summary, and is not cached", async () => {
@@ -984,8 +1002,8 @@ test("history saves the method the student sees: a winner reported erroring whil
   const stream = await events(await POST(upload(png, "image/png", { Accept: "application/x-ndjson" })));
   assert.equal(stream[0].type, "methods");
   assert.equal(stream[0].selectedMethodId, "intercept-read");
-  const final = stream.at(-1);
-  assert.equal(final.type, "solution");
+  const final = stream.find((event) => event.type === "solution");
+  assert.equal(stream.at(-1).type, "saved");
   assert.equal(final.methodId, "factoring");
   assert.equal(final.solution.trick, "Factoring");
   assert.equal(save.mock.calls[0].arguments[0].solution.trick, "Factoring", "the saved method is the one that runs");
@@ -1029,9 +1047,9 @@ test("regression test 6: the first solve writes exactly one explanation, for the
   assert.ok(stream[0].methods.every((method: { rows: unknown[] }) => Array.isArray(method.rows)));
   assert.equal(requests.explanation.length, 1);
   assert.match(JSON.stringify(requests.explanation[0].input), /Technique: Vertex of the difference/);
-  assert.equal(stream.at(-1).type, "solution");
-  assert.equal(stream.at(-1).methodId, "vertex-of-difference");
-  assert.equal(stream.at(-1).explanation, "model");
+  const solution = stream.find((event) => event.type === "solution");
+  assert.equal(solution.methodId, "vertex-of-difference");
+  assert.equal(solution.explanation, "model");
 });
 
 test("regression tests 1–3, 5: a non-default technique's explanation is written on first selection, streamed, cached, and its own", async () => {
