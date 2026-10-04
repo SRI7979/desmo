@@ -187,7 +187,9 @@ function nameMismatch(method: Rankable): number {
 }
 
 /**
- * Deterministic order: cheapest total first, then least math, then the lower
+ * Deterministic order: cheapest total first, then least math, then a method
+ * that works without the answer choices (PHILOSOPHY.md: at equal effort the
+ * generalizable method transfers to the next problem), then the lower
  * simplicity-ladder rung, then fewer rows, then the technique its rows
  * visibly use (mean(L) - median(L) is the statistics built-in, not "evaluate
  * over a list"), then the technique id. The same candidate set always sorts
@@ -197,6 +199,7 @@ export function compareMethods(left: Rankable, right: Rankable): number {
   return (
     left.total - right.total ||
     left.mathScore - right.mathScore ||
+    Number(ANSWER_CHOICE_TECHNIQUES.has(left.techniqueId)) - Number(ANSWER_CHOICE_TECHNIQUES.has(right.techniqueId)) ||
     left.rung - right.rung ||
     left.cost.rows - right.cost.rows ||
     nameMismatch(left) - nameMismatch(right) ||

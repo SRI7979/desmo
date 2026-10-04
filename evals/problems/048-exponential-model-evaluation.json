@@ -27,6 +27,10 @@
     {
       "technique": "graph-both-sides",
       "why": "Nothing needs solving: the question asks for the model's output at a known input, not for an input that produces a target value."
+    },
+    {
+      "technique": "graph-raw",
+      "why": "Graphing the model and reading it at x = 10 (y(10) is not an evaluation) is imprecise; N(10) evaluates the model exactly."
     }
   ],
   "goldRows": [

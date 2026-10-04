@@ -17,7 +17,8 @@
   ],
   "acceptable": [
     "graph-each-choice",
-    "answer-choice-list"
+    "answer-choice-list",
+    "vertex-of-difference"
   ],
   "bad": [
     {

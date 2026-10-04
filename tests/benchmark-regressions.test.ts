@@ -306,3 +306,11 @@ test("065: a fitted line graphed and read at its x-intercept is the linear regre
   })], { question: "If 2a + 3b = 19 and a + b = 8, what is a?" }) as CandidatesResponse);
   assert.equal(system.methods[0].techniqueId, "graph-both-sides", "a bracket regression is not a linear fit");
 });
+
+test("050: at equal cost, the method that works without the choices beats a choice list wrapped around it", () => {
+  // A=[-3,-2,1,3] beside f(g(4)) tied the gold function evaluation on every
+  // measure and won on the technique id's alphabetical order.
+  const selection = eligible(selectSecond("050"));
+  assert.equal(selection[0].techniqueId, "function-evaluation");
+  assert.ok(selection.some((method) => method.techniqueId === "answer-choice-list"), "still listed as an alternative");
+});
