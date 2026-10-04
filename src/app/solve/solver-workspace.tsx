@@ -9,6 +9,7 @@ import DesmoLogo from "@/components/desmo-logo";
 import { preflight } from "@/components/preflight-gate";
 import SolutionExplanation from "@/components/solution-explanation";
 import TechniqueSelector from "@/components/technique-selector";
+import { startSolveTiming, type SolveTimer } from "@/lib/client-timing";
 import { calculatorPayload, preflightInRankOrder, reportable, type ReportedVerdict } from "@/lib/desmos-preflight";
 import type { MethodSummary } from "@/lib/method-summary";
 import { retryCountdown } from "@/lib/retry-countdown";
@@ -121,6 +122,8 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   }>({ methods: NO_METHODS, cacheKey: null, selectedId: null, base: null, streamMethodId: null });
   // Explanations that arrived, by method, so switching back is instant.
   const explained = useRef(new Map<string, Solution>());
+  // Where this solve's time goes, as the student experiences it (no UI).
+  const timer = useRef<SolveTimer | null>(null);
   const busy = loading || sampleLoading;
   // Only techniques whose rows ran cleanly in the hidden Desmos instance.
   const listed = useMemo(() => selectorMethods(methods, verdicts), [methods, verdicts]);
@@ -335,6 +338,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
       },
       onPromote: (method) => {
         setLoading(false);
+        timer.current?.mark("rows_shown");
         showMethod(method);
         if (method.verified && !options.distrust && method.rows.length > 0) void confirmCached(method, payload, token);
       },
@@ -411,6 +415,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
     }, 195_000);
     resetResult();
     const token = solveToken.current;
+    timer.current = startSolveTiming();
     setLoading(true);
     setError(null);
     setNotice(null);
@@ -425,6 +430,8 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
         body: form,
         signal: controller.signal,
       });
+      timer.current?.mark("response");
+      timer.current?.serverTiming(response.headers.get("server-timing"));
       if (!response.ok) {
         const data = await response.json().catch(() => null);
         if (response.status === 401) setNeedsSignIn(true);
@@ -456,12 +463,14 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
         if (solveToken.current !== token) break;
         if (!isEvent(event)) continue;
         if (event.type === "methods") {
+          timer.current?.mark("methods");
           const payload = parseMethodsPayload(event);
           if (!payload) throw new Error("The solver returned an invalid response. Please try again.");
           sawResult = true;
           void runPreflight(payload, token);
         } else if (event.type === "solution") {
           sawResult = true;
+          timer.current?.mark("explanation");
           handleStreamSolution(event);
         } else if (event.type === "saved") {
           // History is written after the explanation is sent, so it never delays it.
@@ -475,6 +484,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
         }
       }
       if (!sawResult && solveToken.current === token) throw new Error("The solver returned an invalid response. Please try again.");
+      if (solveToken.current === token) timer.current?.finish();
     } catch (cause) {
       if (!controller.signal.aborted)
         setError(
