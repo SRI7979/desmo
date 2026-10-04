@@ -517,3 +517,19 @@ test("every method carries a family derived from its technique and rows", () => 
     { "intercept-read": "visual", "three-point-regression": "regression", factoring: "traditional" },
   );
 });
+
+test("routing detectors on held-out phrasings (not the benchmark's wording)", async () => {
+  const { isIntegerFactorExtremumQuestion } = await import("../src/lib/strategy-selection");
+  // A solution expressed in a parameter is not a model of a situation.
+  assert.equal(isRepresentationQuestion("Which expression represents the solutions to x^2 = 9m^2, where m > 0?"), false);
+  assert.equal(isRepresentationQuestion("Which of the following represents a possible value of x in terms of p?"), false);
+  assert.equal(isRepresentationQuestion("Which equation represents the total cost c of renting a kayak for h hours?"), true);
+  // Every letter of a listed integer group, never a word that starts the next phrase.
+  assert.deepEqual(questionIntegerParameters("If p, q, and r are positive integers with p < q < r, what is p + q + r?").map((p) => p.name).sort(), ["p", "q", "r"]);
+  assert.deepEqual(questionIntegerParameters("For positive integers m and n, 2^m + 3^n = 17. What is mn?").map((p) => p.name).sort(), ["m", "n"]);
+  assert.deepEqual(questionIntegerParameters("where k is an integer constant greater than 2").map((p) => p.name), ["k"]);
+  assert.deepEqual(questionIntegerParameters("for some positive integer value of t").map((p) => p.name), []);
+  // An integer factorization can be written without the word "factor".
+  assert.equal(isIntegerFactorExtremumQuestion("For integers a and b, x^2 + kx + 6 = (x + a)(x + b). What is the greatest possible value of k?"), true);
+  assert.equal(isIntegerFactorExtremumQuestion("What is the greatest possible value of k if (x + 2)(x + 3) = x^2 + kx + 6?"), false, "no integer restriction");
+});

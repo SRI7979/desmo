@@ -9,6 +9,9 @@
  *
  *   npm run bench:routing [-- --json]
  */
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+
 import { loadCases } from "./benchmark/load-cases";
 import {
   continuousInterval,
@@ -74,11 +77,16 @@ const summary = Object.fromEntries(
 if (process.argv.includes("--json")) {
   console.log(JSON.stringify({ cases: cases.length, detectors: summary }, null, 2));
 } else {
-  console.log(`Routing detectors over ${cases.length} cases\n`);
-  console.log("| Detector | Positives | Precision | Recall | Accuracy |\n|---|---|---|---|---|");
-  for (const [name, row] of Object.entries(summary)) console.log(`| ${name} | ${row.positives} | ${row.precision ?? "—"} | ${row.recall ?? "—"} | ${row.accuracy} |`);
+  const lines = [`Routing detectors over ${cases.length} cases`, "", "| Detector | Positives | Precision | Recall | Accuracy |", "|---|---|---|---|---|"];
+  for (const [name, row] of Object.entries(summary)) lines.push(`| ${name} | ${row.positives} | ${row.precision ?? "—"} | ${row.recall ?? "—"} | ${row.accuracy} |`);
   for (const [name, row] of Object.entries(summary)) {
-    if (row.misses.length) console.log(`\n${name} misses: ${row.misses.join("; ")}`);
-    if (row.falseAlarms.length) console.log(`${name} false alarms: ${row.falseAlarms.join("; ")}`);
+    if (row.misses.length) lines.push("", `${name} misses: ${row.misses.join("; ")}`);
+    if (row.falseAlarms.length) lines.push("", `${name} false alarms: ${row.falseAlarms.join("; ")}`);
+  }
+  console.log(lines.join("\n"));
+  const out = process.argv.find((arg) => arg.startsWith("--out="))?.slice(6);
+  if (out) {
+    await mkdir(path.join(process.cwd(), "evals/reports"), { recursive: true });
+    await writeFile(path.join(process.cwd(), "evals/reports", `routing-${out}.md`), `# Routing benchmark: ${out}\n\n${lines.join("\n")}\n`);
   }
 }

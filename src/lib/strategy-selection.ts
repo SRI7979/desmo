@@ -173,7 +173,9 @@ export function isRepresentationQuestion(question: string): boolean {
   const text = question.replace(/\s+/g, " ");
   return (
     /\bwhich\b[^?]{0,120}?\b(?:equations?|expressions?|inequalit(?:y|ies)|systems?|functions?|models?)\b[^?]{0,120}?\b(?:represents?|models?|could be used|can be used|describes?)\b/i.test(text) &&
-    !/\b(?:graph|table|scatter ?plot|figure|shown|equivalent)\b/i.test(text)
+    !/\b(?:graph|table|scatter ?plot|figure|shown|equivalent)\b/i.test(text) &&
+    // "Which expression represents a solution to <equation>" asks for a solution, not a model.
+    !/\brepresents?\s+(?:(?:one|a|the|all|each)\s+)?(?:possible\s+)?(?:solutions?|roots?|zeros?|values?\s+of)\b/i.test(text)
   );
 }
 
@@ -252,7 +254,10 @@ export function questionIntegerParameters(question: string): Parameter[] {
   const names = new Set<string>();
   const kinds = String.raw`(?:positive |negative |nonnegative |nonzero )?(?:integers?|whole numbers?|counting numbers?)`;
   for (const match of question.matchAll(new RegExp(String.raw`\b([a-z])\s+(?:is|are)\s+(?:an?\s+)?${kinds}`, "gi"))) names.add(match[1]);
-  for (const match of question.matchAll(new RegExp(String.raw`\b${kinds}\s+([a-z])\b`, "gi"))) names.add(match[1]);
+  // "positive integer j and k", "positive integers k, a, b, c, and d"
+  for (const match of question.matchAll(new RegExp(String.raw`\b${kinds}\s+([a-z]\b(?:\s*,\s*[a-z]\b)*(?:\s*,?\s*and\s+[a-z]\b)?)`, "gi"))) {
+    for (const name of match[1].match(/\b[a-z]\b/gi) ?? []) if (name.toLowerCase() !== "and") names.add(name);
+  }
   // "a, b, c, and d are all integer constants" applies to every named
   // coefficient, not just the final d. Continuous regression cannot enforce it.
   const group = /((?:\b[a-z]\b\s*,\s*)+\b[a-z]\b)\s+are\s+(?:all\s+)?(?:positive\s+|negative\s+|nonnegative\s+|nonzero\s+)?(?:integers?\b|whole numbers?\b|counting numbers?\b)/gi;
@@ -266,9 +271,12 @@ export function questionIntegerParameters(question: string): Parameter[] {
 
 /** A single fitted factorization cannot establish an extremum over integer factorizations. */
 export function isIntegerFactorExtremumQuestion(question: string): boolean {
+  // A factorization may be named ("factor") or just written: k(ax^2+b)(cx^2+d).
+  const factorization = /\bfactor(?:s|ed|ization)?\b/i.test(question) ||
+    /\([^()]*[a-z][^()]*[+-][^()]*\)\s*\([^()]*[a-z][^()]*[+-][^()]*\)/i.test(question.replace(/\s+/g, ""));
   return /\b(?:maximum|minimum|greatest|least)\b/i.test(question) &&
-    /\bfactors?\b/i.test(question) &&
-    /\binteger\b/i.test(question);
+    factorization &&
+    /\bintegers?\b/i.test(question);
 }
 
 type Interval = { low: number; high: number };
