@@ -542,3 +542,12 @@ test("REGRESSION 2: answerState null with a static method verifies exactly as be
     message: "Desmos confirms line 3 shows r + s = 406.",
   });
 });
+
+test("a slider answer must be a stop of its slider grid", async () => {
+  const { validateAnswerState } = await import("../src/lib/answer-consistency");
+  const rows = (step: number) => [{ latex: "b=1", slider: { min: 0, max: 10, step } }, { latex: "y=bx" }];
+  assert.doesNotThrow(() => validateAnswerState(rows(0.1), { param: "b", value: 3 }));
+  assert.doesNotThrow(() => validateAnswerState(rows(0.5), { param: "b", value: 2.5 }));
+  assert.throws(() => validateAnswerState(rows(0.5), { param: "b", value: 25 / 12 }), /not a stop of its slider/);
+  assert.doesNotThrow(() => validateAnswerState(rows(0), { param: "b", value: 25 / 12 }), "step 0 is a continuous slider");
+});

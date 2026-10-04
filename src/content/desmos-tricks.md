@@ -41,7 +41,7 @@ variables, unnecessary lists, duplicated rows, overcomplicated regressions,
 numeric checks of what the graph already shows, and rows added only for
 automation. Advanced tricks earn their place only when they materially simplify.
 
-List the 2–4 genuinely distinct techniques that solve the problem, each named
+List every genuinely distinct technique that validly solves the problem (up to six), each named
 by the [technique: id | name] tag of the strategy that teaches it, and report
 each one's cost components honestly. The server scores them; the lowest total
 cost is the default, and the student may switch to any other listed technique.
@@ -173,6 +173,13 @@ y=x^2+4x+1
 y=3x+7
 
 Then click intersection x-values.
+
+Even simpler for one variable: type the equation exactly as written,
+x^2+4x+1=3x+7. Desmos draws a vertical line at each solution, so there is
+nothing to rearrange or split into sides; a one-variable inequality such as
+x^2-5x+6<0 shades the band of solutions. Rename the problem's variable to x
+first (t, n, or w are not graph coordinates), and zoom out before concluding
+there is no solution.
 
 This works for equations involving:
 
@@ -340,9 +347,10 @@ the function WITH the restriction so Desmos shows only the relevant piece:
 
 y=-2x^2+12x+7\left\{0\le x\le 5\right\}
 
-Click the highest/lowest point of the restricted graph; also evaluate the
-endpoints as rows, f(0) and f(5), so the extremum is read numerically rather
-than estimated. For a monotonic exponential the endpoints are the extremes; for
+Click the highest/lowest point of the restricted graph; add the endpoint rows
+f(0) and f(5) only when an endpoint could be the extremum (the restricted
+graph shows whether it is), so the extremum is read numerically rather than
+estimated. For a monotonic exponential the endpoints are the extremes; for
 any other function do NOT assume the extremum sits at an endpoint. If the
 question asks which equation "displays, as a constant or coefficient" the
 minimum or maximum, first determine the actual numerical extremum with Desmos,

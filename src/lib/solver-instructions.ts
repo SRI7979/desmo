@@ -509,6 +509,19 @@ IMPORTANT PATTERNS:
   the requested equation. Solving that equation afterward is irrelevant work.
 
 RELIABILITY:
+Never multiply, divide, or raise clicked decimals (two intercepts read off the
+graph) to build an exact answer: fit the factored form or compute the
+combination in a row from the exact givens. When the choices are exact
+radicals or fractions, list their decimal values (C=[\sqrt{2}/2,...]) and
+compare with the calculator's value instead of converting by hand. A graph row
+that broadcasts a list of answer choices draws every member in one color, so
+when the student must tell WHICH choice shows a feature, use one row per
+choice or a numeric row that singles it out. A slider method is valid only
+when the answer lies on the slider's grid (min + n*step within min..max); for
+an answer between grid points use a regression or one row per choice. For "which
+expression is equivalent" with no unknown constants, evaluate every choice at
+one or two legal test values (strategic-value testing) or overlay the graphs;
+identity regression is for unknown constants.
 Check domain restrictions, extraneous roots, integer/nonnegative constraints,
 units, identifiability, and precision. A narrow viewport or a rounded regression
 cannot prove arbitrary global/exact claims. Verify mathematics internally without

@@ -686,6 +686,15 @@ export function validateAnswerState(
       "answer_state",
     );
   }
+  // A slider only stops at min + n*step: an answer between grid points can
+  // never be shown by dragging (the student would read the nearest stop).
+  const steps = slider.step > 0 ? (answerState.value - slider.min) / slider.step : 0;
+  if (slider.step > 0 && Math.abs(steps - Math.round(steps)) > 1e-6) {
+    throw new AnswerConsistencyError(
+      `${answerState.param}=${answerState.value} is not a stop of its slider (min ${slider.min}, step ${slider.step}); dragging can never land on it. Use a step that reaches the answer, or a regression or one row per choice.`,
+      "answer_state",
+    );
+  }
 }
 
 /**
