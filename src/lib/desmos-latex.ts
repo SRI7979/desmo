@@ -414,13 +414,12 @@ export function findUndefinedVariables(
 }
 
 /**
- * \text{area}=\frac{1}{2}bh or \tan S=20/a on the row whose value is the
- * answer: the left side is a caption Desmos cannot define (prose, an unknown
- * operator, a trig function of a letter), so the row errors although its
- * right side is the whole computation. Returns that right side, or null when
- * the row has no such caption.
+ * \text{area}=\frac{1}{2}bh or \tan S=20/a: the left side is a caption Desmos
+ * cannot define (prose, an unknown operator, a trig function of a letter), so
+ * the row errors although its right side is the whole computation. Returns
+ * that right side, or null when the row has no such caption.
  */
-export function unwrapResultCaption(latex: string): string | null {
+export function unwrapCaption(latex: string): string | null {
   // x and y are graph coordinates: \sin x=0.5 is an equation, never a caption.
   const match = latex.match(
     /^\s*(?:\\(?:text|mathrm)\{[^{}]*\}|\\operatorname\{([A-Za-z]+)\}|\\(?:sin|cos|tan|sec|csc|cot)\s*(?:\\left\s*)?\(?\s*(?![xy](?![A-Za-z]))[A-Za-z](?:_\{[^{}]*\})?\s*(?:\\right\s*)?\)?)\s*=(?!=)\s*([\s\S]+?)\s*$/,

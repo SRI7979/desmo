@@ -16,7 +16,8 @@
     "count-intersections"
   ],
   "acceptable": [
-    "graph-both-sides"
+    "graph-both-sides",
+    "graph-raw"
   ],
   "bad": [
     {

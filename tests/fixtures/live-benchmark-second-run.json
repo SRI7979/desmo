@@ -1,0 +1,431 @@
+{
+  "033-linear-table-x-intercept": {
+    "status": "solved",
+    "question": "The table shows three values of x and their corresponding values of f(x) for the linear function f.\nx | f(x)\n-4 | 11\n1 | 1\n6 | -9\nThe graph of y = f(x) in the xy-plane crosses the x-axis at the point (r, 0). What is the value of r?",
+    "choices": null,
+    "clarification": null,
+    "structure": "three points for a linear function → find the line then its x-intercept",
+    "candidates": [
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "1.5",
+        "result": {
+          "row": null,
+          "value": 1.5,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "paper calculation: slope = (1-11)/(1-(-4)) = -2; b=1+2=3; root r = -b/m = -3/(-2)=1.5",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 3,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "linear-regression",
+        "rung": 4,
+        "rows": [
+          {
+            "latex": "x_{1}=[-4,1,6]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}=[11,1,-9]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}\\sim mx_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(x)=mx+b",
+            "slider": null,
+            "copiesRow": 3
+          },
+          {
+            "latex": "-b/m",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1.5",
+        "result": {
+          "row": 5,
+          "value": 1.5,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": null,
+          "detail": "x-intercept -b/m",
+          "type": "numeric",
+          "relatedRows": [
+            3,
+            4
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "intercept-read",
+        "rung": 1,
+        "rows": [
+          {
+            "latex": "x_{1}=[-4,1,6]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}=[11,1,-9]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "y_{1}\\sim mx_{1}+b",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "f(x)=mx+b",
+            "slider": null,
+            "copiesRow": 3
+          },
+          {
+            "latex": "y=0",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "1.5",
+        "result": {
+          "row": 4,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": null,
+          "detail": "click the intersection of the graphed f(x) (row 4) with y=0 (row 5); x-coordinate = 1.5",
+          "type": "intersection",
+          "relatedRows": [
+            5
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": {
+          "left": -6,
+          "right": 8,
+          "bottom": -12,
+          "top": 12
+        },
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "direct-arithmetic"
+  },
+  "063-square-feet-to-square-yards-cost": {
+    "status": "solved",
+    "question": "A rectangular floor has an area of 540 square feet. Carpet for the floor costs $18 per square yard. If 1 yard = 3 feet, what is the total cost of the carpet needed to cover the floor exactly?\nAnswer choices: A) $360, B) $1,080, C) $3,240, D) $9,720",
+    "choices": [
+      {
+        "label": "A",
+        "text": "$360"
+      },
+      {
+        "label": "B",
+        "text": "$1,080"
+      },
+      {
+        "label": "C",
+        "text": "$3,240"
+      },
+      {
+        "label": "D",
+        "text": "$9,720"
+      }
+    ],
+    "clarification": null,
+    "structure": "unit conversion then multiply cost (area in sq ft → sq yd, then cost per sq yd × quantity).",
+    "candidates": [
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "B) $1,080",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "B",
+          "detail": "Compute 540/9=60 sq yd, cost 60·18=1080",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 2,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 1,
+          "value": 1080,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "B",
+          "detail": "total cost in dollars",
+          "type": "numeric",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "A=[360,1080,3240,9720]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "cost=18(540)/3^2",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "A[cost=A]",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "B) $1,080",
+        "result": {
+          "row": 3,
+          "value": 1080,
+          "listIndex": 1,
+          "answerFrom": "choice_position",
+          "choiceLabel": "B",
+          "detail": "entry of A equal to computed cost (choices in original order)",
+          "type": "list_entry",
+          "relatedRows": [
+            1,
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  },
+  "073-right-triangle-tangent": {
+    "status": "solved",
+    "question": "In right triangle RST, angle T is the right angle, RT = 20, and RS = 29. What is the value of tan(S)?\nAnswer choices: A) 20/29, B) 21/29, C) 20/21, D) 21/20",
+    "choices": [
+      {
+        "label": "A",
+        "text": "20/29"
+      },
+      {
+        "label": "B",
+        "text": "21/29"
+      },
+      {
+        "label": "C",
+        "text": "20/21"
+      },
+      {
+        "label": "D",
+        "text": "21/20"
+      }
+    ],
+    "clarification": null,
+    "structure": "right triangle with right angle at T; hypotenuse RS and one leg RT given; find tangent of angle S (opposite/adjacent)",
+    "candidates": [
+      {
+        "techniqueId": "calculator-arithmetic",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "ST=\\sqrt{29^2-20^2}",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "20/ST",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "C) 20/21",
+        "result": {
+          "row": 2,
+          "value": 0.9523809523809523,
+          "listIndex": null,
+          "answerFrom": "value",
+          "choiceLabel": "C",
+          "detail": "tan(S)=20/ST = 20/21",
+          "type": "numeric",
+          "relatedRows": [
+            1
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "answer-choice-list",
+        "rung": 2,
+        "rows": [
+          {
+            "latex": "A=[20/29,21/29,20/21,21/20]",
+            "slider": null,
+            "copiesRow": null
+          },
+          {
+            "latex": "\\tanS=20/\\sqrt{29^2-20^2}",
+            "slider": null,
+            "copiesRow": null
+          }
+        ],
+        "answer": "C) 20/21",
+        "result": {
+          "row": 1,
+          "value": 0.9523809523809523,
+          "listIndex": 3,
+          "answerFrom": "choice_position",
+          "choiceLabel": "C",
+          "detail": "third entry of A equals tan(S) = 20/21",
+          "type": "list_entry",
+          "relatedRows": [
+            2
+          ]
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 0,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      },
+      {
+        "techniqueId": "direct-arithmetic",
+        "rung": 2,
+        "rows": [],
+        "answer": "C) 20/21",
+        "result": {
+          "row": null,
+          "value": null,
+          "listIndex": null,
+          "answerFrom": "reasoning",
+          "choiceLabel": "C",
+          "detail": "Pythagorean: ST=\\sqrt{29^2-20^2}=21 so tan(S)=RT/ST=20/21",
+          "type": "written",
+          "relatedRows": []
+        },
+        "answerState": null,
+        "parameters": [],
+        "conditionType": null,
+        "distinguishes": null,
+        "graphBounds": null,
+        "cost": {
+          "derivationSteps": 1,
+          "newPrimitives": 0,
+          "oneOffFacts": 0,
+          "setupConstructions": 0,
+          "manualIterations": 0
+        }
+      }
+    ],
+    "preferredTechniqueId": "calculator-arithmetic"
+  }
+}

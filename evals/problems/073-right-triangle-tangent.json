@@ -18,7 +18,8 @@
   "acceptable": [
     "reference-formula",
     "inverse-trig",
-    "calculator-arithmetic"
+    "calculator-arithmetic",
+    "answer-choice-list"
   ],
   "bad": [
     {

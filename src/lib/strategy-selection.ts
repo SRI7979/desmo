@@ -17,7 +17,7 @@ import {
   findProseRows,
   findUndefinedVariables,
   normalizeDesmosExpressions,
-  unwrapResultCaption,
+  unwrapCaption,
   unwrapSyntheticResultAlias,
 } from "./desmos-latex";
 import {
@@ -240,15 +240,20 @@ function derivedReadout(rows: ReadonlyArray<{ latex: string }>, resultRow: numbe
 /** A row that defines a function, f(x)=... or g_{1}(t)=... */
 const FUNCTION_DEFINITION = /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*\([^()]*\)\s*=(?!=)/;
 
+/** A fit with no squared or higher term: y_{1}\sim mx_{1}+b. */
+const isLinearFit = (latex: string) => /\\sim(?![A-Za-z])|~/.test(latex) && !latex.includes("^");
+
 /**
  * Technique names the rows contradict, corrected before validation so the
- * student learns the pattern by its right name and the right definitional
- * cost applies: scalar rows with no function are calculator arithmetic (not
- * function evaluation, and not paper arithmetic), a fit with no squared term
- * is a linear regression however many points it uses, and a paper "direct
+ * student learns the pattern by its right name: scalar rows with no function
+ * are calculator arithmetic (not function evaluation, and not paper
+ * arithmetic); a linear fit is a linear regression however many points it
+ * uses, including one read at its graphed x-intercept; and a paper "direct
  * arithmetic" answer to a representation question is the translation itself.
+ * A relabel may duplicate another candidate's technique; selection keeps the
+ * better of the two.
  */
-function relabel(candidate: Candidate, representation: boolean, taken: Set<TechniqueId>): { candidate: Candidate; repair: string | null } {
+function relabel(candidate: Candidate, representation: boolean): { candidate: Candidate; repair: string | null } {
   const rows = candidate.rows;
   let techniqueId: TechniqueId | null = null;
   if (candidate.techniqueId === "function-evaluation" && rows.length > 0 && !rows.some((row) => FUNCTION_DEFINITION.test(row.latex))) {
@@ -257,13 +262,11 @@ function relabel(candidate: Candidate, representation: boolean, taken: Set<Techn
     techniqueId = "calculator-arithmetic";
   } else if (candidate.techniqueId === "direct-arithmetic" && representation) {
     techniqueId = "translate-the-words";
-  } else if (candidate.techniqueId === "three-point-regression") {
+  } else if (candidate.techniqueId === "three-point-regression" || candidate.techniqueId === "intercept-read") {
     const fits = rows.filter((row) => /\\sim(?![A-Za-z])|~/.test(row.latex));
-    if (fits.length > 0 && fits.every((row) => !row.latex.includes("^"))) techniqueId = "linear-regression";
+    if (fits.length > 0 && fits.every((row) => isLinearFit(row.latex))) techniqueId = "linear-regression";
   }
-  // Never turn a valid candidate into a duplicate of one the model already listed.
-  if (!techniqueId || taken.has(techniqueId)) return { candidate, repair: null };
-  taken.add(techniqueId);
+  if (!techniqueId) return { candidate, repair: null };
   return {
     candidate: { ...candidate, techniqueId },
     repair: `Relabeled ${techniqueName(candidate.techniqueId)} as ${techniqueName(techniqueId)}: that is what its rows do.`,
@@ -432,26 +435,20 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   if (rows.some((row) => !row.latex.trim())) {
     return reject("row-fails-to-insert", "A calculator row normalizes to empty.", "desmos_syntax");
   }
-  // Only a numeric readout's row is a computation; a graphical one may be an equation such as \sin x=0.5.
-  const answerRow = candidate.result.type === "numeric" && candidate.result.row !== null && candidate.result.answerFrom === "value"
-    ? rows[candidate.result.row - 1]
-    : undefined;
-  const uncaptioned = answerRow ? unwrapResultCaption(answerRow.latex) : null;
-  if (answerRow && uncaptioned) {
-    rows[candidate.result.row! - 1] = { ...answerRow, latex: uncaptioned };
-    repairs.push(`Removed the caption on line ${candidate.result.row}, which Desmos cannot define; the line evaluates ${uncaptioned}.`);
-  }
+  // A caption Desmos cannot define (\text{area}=, \tan S=) on a row nothing
+  // else references: the row's computation is its right side.
+  rows.forEach((row, index) => {
+    const uncaptioned = unwrapCaption(row.latex);
+    if (!uncaptioned) return;
+    const caption = row.latex.slice(0, row.latex.indexOf("=")).trim();
+    if (rows.some((other, otherIndex) => otherIndex !== index && other.latex.includes(caption))) return;
+    rows[index] = { ...row, latex: uncaptioned };
+    repairs.push(`Removed the caption on line ${index + 1}, which Desmos cannot define; the line evaluates ${uncaptioned}.`);
+  });
   if (context.representation && rows.length > 0) {
     return reject(
       "answers-different-question",
       "The question asks which equation or expression represents the situation; calculator rows solve or graph it instead of identifying the model.",
-    );
-  }
-  // Without a listed translation, this candidate was relabeled as one above.
-  if (context.representation && candidate.techniqueId === "direct-arithmetic") {
-    return reject(
-      "answers-different-question",
-      "Direct arithmetic computes a value; this question asks which equation represents the situation, which Translate the words already answers.",
     );
   }
   if (context.integerFactorExtremum &&
@@ -746,22 +743,37 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     approximate: isApproximationQuestion(question),
   };
 
-  const seen = new Set<TechniqueId>();
-  const eligible: Omit<Method, "badges" | "rejected">[] = [];
-  const rejected: (Method & { stage: string })[] = [];
-  const taken = new Set(response.candidates.map((candidate) => candidate.techniqueId));
-  response.candidates.forEach((original, index) => {
-    const { candidate, repair } = relabel(original, context.representation, taken);
-    if (seen.has(candidate.techniqueId)) {
-      const rejection = reject("duplicate-technique", `${techniqueName(candidate.techniqueId)} is already listed; each candidate must be a distinct technique.`);
-      rejected.push({ ...rejectedMethod(`${candidate.techniqueId}#${index + 1}`, candidate, rejection), stage: rejection.stage });
-      return;
-    }
-    seen.add(candidate.techniqueId);
+  // Validate every candidate, then keep the best one per technique: two
+  // candidates under one name (the model's, or one relabeled to it) list it
+  // once, at its cheapest, rather than whichever came first.
+  const outcomes = response.candidates.map((original, index) => {
+    const { candidate, repair } = relabel(original, context.representation);
     const outcome = validateCandidate(candidate, context);
-    if ("rule" in outcome) rejected.push({ ...rejectedMethod(candidate.techniqueId, candidate, outcome), stage: outcome.stage });
-    else eligible.push(scored(candidate.techniqueId, repair ? { ...outcome, repairs: [repair, ...outcome.repairs] } : outcome));
+    return "rule" in outcome
+      ? { index, candidate, rejection: outcome }
+      : { index, candidate, method: scored(candidate.techniqueId, repair ? { ...outcome, repairs: [repair, ...outcome.repairs] } : outcome) };
   });
+  const best = new Map<TechniqueId, Omit<Method, "badges" | "rejected">>();
+  for (const { method } of outcomes) {
+    if (!method) continue;
+    const current = best.get(method.techniqueId);
+    if (!current || compareMethods(method, current) < 0) best.set(method.techniqueId, method);
+  }
+  const eligible: Omit<Method, "badges" | "rejected">[] = [...best.values()];
+  const rejected: (Method & { stage: string })[] = [];
+  const named = new Set<TechniqueId>(best.keys());
+  for (const { index, candidate, method, rejection } of outcomes) {
+    if (method && best.get(method.techniqueId) === method) continue;
+    // Ids stay unique: a later candidate under a listed technique's name is #n.
+    const id = named.has(candidate.techniqueId) ? `${candidate.techniqueId}#${index + 1}` : candidate.techniqueId;
+    named.add(candidate.techniqueId);
+    if (method) {
+      const duplicate = reject("duplicate-technique", `${techniqueName(candidate.techniqueId)} is already listed at lower cost; each candidate must be a distinct technique.`);
+      rejected.push({ ...method, id, badges: [], rejected: { rule: duplicate.rule, reason: duplicate.reason }, stage: duplicate.stage });
+    } else {
+      rejected.push({ ...rejectedMethod(id, candidate, rejection!), stage: rejection!.stage });
+    }
+  }
 
   if (eligible.length === 0) {
     throw new StrategySelectionError(

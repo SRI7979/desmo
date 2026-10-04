@@ -15,7 +15,7 @@ import {
   repairProseText,
   sanitizeProse,
 } from "../src/lib/answer-consistency";
-import { unwrapResultCaption } from "../src/lib/desmos-latex";
+import { unwrapCaption } from "../src/lib/desmos-latex";
 import { createMemorySolveCache } from "../src/lib/solve-cache";
 import { validateCandidatesResponse } from "../src/lib/solve-output";
 import { createTrace, solveProblem, type PipelineDeps } from "../src/lib/solve-pipeline";
@@ -154,10 +154,11 @@ test("033: the slope formula typed over the table's numbers is a memorized fact;
   assert.equal(fit.cost.derivationSteps, 1);
 });
 
-test("039: on a representation question, paper direct arithmetic is not a second translation", () => {
+test("039: on a representation question, paper direct arithmetic is the translation, listed once", () => {
   const selection = selectRecorded("039");
-  assert.equal(eligible(selection)[0].techniqueId, "translate-the-words");
-  assert.equal(selection.methods.find((method) => method.techniqueId === "direct-arithmetic")?.rejected?.rule, "answers-different-question");
+  assert.deepEqual(eligible(selection).map((method) => method.techniqueId), ["translate-the-words"]);
+  assert.ok(selection.methods.some((method) => method.id === "translate-the-words#3" && method.rejected?.rule === "duplicate-technique"));
+  assert.ok(!selection.methods.some((method) => method.techniqueId === "direct-arithmetic"));
 });
 
 test("060/061/067: the technique the rows visibly use wins a tie, and scalar rows are calculator arithmetic", () => {
@@ -165,6 +166,7 @@ test("060/061/067: the technique the rows visibly use wins a tie, and scalar row
   assert.equal(winnerOf("061").techniqueId, "statistics-builtin");
   const weighted = eligible(selectRecorded("067"));
   assert.equal(weighted[0].techniqueId, "statistics-builtin");
+  // T=24*81+16*86 then T/40 evaluates no function: it is calculator arithmetic, whose setup is a step.
   const arithmetic = weighted.find((method) => method.techniqueId === "calculator-arithmetic")!;
   assert.equal(arithmetic.cost.derivationSteps, 1, "the student still sets up 24*81+16*86 over 40");
 });
@@ -185,9 +187,9 @@ test("042/061/071/073: contract slips are repaired locally, so no rescue call is
   assert.equal(winnerOf("042").techniqueId, "graph-inequality");
   assert.deepEqual(winnerOf("073").rows.map((row) => row.latex), ["a=\\sqrt{29^{2}-20^{2}}", "20/a"]);
   assert.equal(winnerOf("071").rows[2].latex, "\\frac{1}{2}d_{1}d_{2}");
-  assert.equal(unwrapResultCaption("\\operatorname{mean}=3"), null, "a built-in is not a caption");
-  assert.equal(unwrapResultCaption("\\sin x=0.5"), null, "an equation in a graph coordinate is not a caption");
-  assert.equal(unwrapResultCaption("\\tan(S)=20/a"), "20/a");
+  assert.equal(unwrapCaption("\\operatorname{mean}=3"), null, "a built-in is not a caption");
+  assert.equal(unwrapCaption("\\sin x=0.5"), null, "an equation in a graph coordinate is not a caption");
+  assert.equal(unwrapCaption("\\tan(S)=20/a"), "20/a");
 });
 
 test("010/040: the recorded first attempts solve with a single candidates call", async () => {
@@ -203,4 +205,56 @@ test("010/040: the recorded first attempts solve with a single candidates call",
     assert.equal(requests.candidates.length, 1, `${prefix}: no validation retry`);
     assert.equal(result.method.techniqueId, winner.techniqueId);
   }
+});
+
+// --- From the run after the first round of fixes ------------------------------
+
+const secondRun: Record<string, CandidatesResponseInput> = fixture("live-benchmark-second-run.json");
+const secondOutput = (prefix: string) => secondRun[Object.keys(secondRun).find((id) => id.startsWith(prefix))!];
+const selectSecond = (prefix: string) => selectMethods(validateCandidatesResponse(providerBody(secondOutput(prefix))).parsed);
+
+test("063: a filtered choice list's entry 1 is the value it shows, not choice A", () => {
+  // A[cost=A] displays [1080]; the model reported entry 1 as a choice position,
+  // which read as A) $360 although the value and its own label both said B.
+  const listing = selectSecond("063").methods.find((method) => method.techniqueId === "answer-choice-list")!;
+  assert.equal(listing.rejected, null);
+  assert.equal(listing.answer, "B) $1,080");
+  assert.equal(listing.result.answerFrom, "value");
+  assert.equal(listing.result.listIndex, 1, "entry 1 of the filtered list is what Desmos shows");
+});
+
+test("063: an aligned choice list still selects by position when its value is not a choice", () => {
+  const response = candidatesResponse([
+    graphCandidate({
+      techniqueId: "answer-choice-list",
+      rows: [{ latex: "A=[2,4,6,8]", slider: null, copiesRow: null }, { latex: "A^{2}-36", slider: null, copiesRow: null }],
+      answer: "C) 6",
+      result: { type: "list_entry", row: 2, relatedRows: [1], value: 0, listIndex: 3, answerFrom: "choice_position", choiceLabel: "C", detail: "the entry that is zero" },
+    }),
+  ], { question: "What is the positive solution to x^2 = 36?", choices: ["2", "4", "6", "8"].map((text, index) => ({ label: "ABCD"[index], text })) });
+  const method = eligible(selectMethods(response as CandidatesResponse))[0];
+  assert.equal(method.answer, "C) 6");
+  assert.equal(method.result.answerFrom, "choice_position");
+});
+
+test("033: a fit read at its graphed x-intercept is the linear regression, kept over a costlier -b/m listing", () => {
+  const selection = selectSecond("033");
+  const fits = eligible(selection).filter((method) => method.techniqueId === "linear-regression");
+  assert.equal(fits.length, 1);
+  assert.equal(eligible(selection)[0].techniqueId, "linear-regression");
+  assert.equal(fits[0].result.type, "intersection", "the clicked-intercept version, not -b/m");
+  assert.ok(selection.methods.some((method) => method.rejected?.rule === "duplicate-technique"));
+});
+
+test("073: a caption Desmos cannot define is removed from any row nothing references", () => {
+  const listing = eligible(selectSecond("073")).find((method) => method.techniqueId === "answer-choice-list")!;
+  assert.equal(listing.rows[1].latex, "20/\\sqrt{29^2-20^2}");
+  // A caption another row uses is a name, so it is left for the undefined-name check.
+  const named = selectMethods(candidatesResponse([graphCandidate({
+    techniqueId: "integer-list-filter",
+    rows: [{ latex: "M=[0...300]", slider: null, copiesRow: null }, { latex: "\\operatorname{ok}=M[95+1.85M\\le300]", slider: null, copiesRow: null }, { latex: "\\operatorname{max}(\\operatorname{ok})", slider: null, copiesRow: null }],
+    answer: "110",
+    result: { type: "numeric", row: 3, relatedRows: [], value: 110, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the greatest allowed m" },
+  })], { question: "A move costs $95 plus $1.85 per mile, with at most $300 to spend. What is the greatest whole number of miles?" }) as CandidatesResponse);
+  assert.equal(named.methods[0].rows[1].latex, "\\operatorname{ok}=M[95+1.85M\\le300]");
 });

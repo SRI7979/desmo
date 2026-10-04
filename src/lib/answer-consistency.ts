@@ -598,6 +598,25 @@ export function deriveConsistentSolution(input: {
     repairs.push(
       `Entry ${result.listIndex} of line ${result.row} selects the answer by position, so the result was read as a choice position.`,
     );
+  } else if (
+    // The reverse slip: a filter such as A[c=A] shows only the matching
+    // choices, so its entry 1 is not choice A. When the displayed value is the
+    // claimed choice's own value, the entry shows that value, not a position.
+    result.answerFrom === "choice_position" &&
+    result.listIndex !== null &&
+    result.value !== null &&
+    choices
+  ) {
+    const byValue = matchChoice(result.value, choices);
+    const atPosition = choices[result.listIndex - 1];
+    const claimed = findChoice(result.choiceLabel, choices);
+    if (byValue && claimed?.label === byValue.label && atPosition?.label !== byValue.label &&
+        (atPosition?.value === null || atPosition?.value === undefined || !numbersMatch(atPosition.value, result.value))) {
+      result = { ...result, answerFrom: "value" };
+      repairs.push(
+        `Entry ${result.listIndex} of line ${result.row} shows ${formatNumber(result.value!)}, choice ${byValue.label}'s own value, so it was read as a value, not a choice position.`,
+      );
+    }
   }
   if (!("type" in result) && result.row === input.expressionCount + 1 && input.expressionCount > 0) {
     // A one-past-the-end reference is the model miscounting its own rows.

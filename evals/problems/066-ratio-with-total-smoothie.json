@@ -14,7 +14,8 @@
     "direct-arithmetic",
     "calculator-arithmetic",
     "function-evaluation",
-    "list-evaluation"
+    "list-evaluation",
+    "intercept-read"
   ],
   "bad": [],
   "goldRows": [

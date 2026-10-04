@@ -27,6 +27,10 @@
     {
       "technique": "quadratic-formula",
       "why": "Needs the same rearrangement and then reasoning about when the square root is zero, which is the discriminant idea in disguise."
+    },
+    {
+      "technique": "parameter-regression",
+      "why": "Fitting [a^2+3,2a]~[ka-1,k] needs the tangency slopes 2a and k differentiated by hand; dragging k until the line touches the parabola needs no calculus."
     }
   ],
   "goldRows": [

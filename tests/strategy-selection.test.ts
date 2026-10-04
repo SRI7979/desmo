@@ -74,13 +74,20 @@ test("selection is identical whatever order the candidates arrive in", () => {
   assert.equal(forward.winnerId, backward.winnerId);
 });
 
-test("regression test 5: two candidates with the same techniqueId → the later one is rejected", () => {
-  const selection = select(candidatesResponse([graphCandidate(), graphCandidate({ rows: [{ latex: "y=x^2", slider: null, copiesRow: null }, { latex: "y=9", slider: null, copiesRow: null }], result: { ...graphCandidate().result, type: "intersection", relatedRows: [2] } })]));
+test("regression test 5: two candidates with the same techniqueId → the costlier one is rejected", () => {
+  const twoRows = graphCandidate({ rows: [{ latex: "y=x^2", slider: null, copiesRow: null }, { latex: "y=9", slider: null, copiesRow: null }], result: { ...graphCandidate().result, type: "intersection", relatedRows: [2] } });
+  const selection = select(candidatesResponse([graphCandidate(), twoRows]));
   const eligibleIds = selection.methods.filter((method) => !method.rejected).map((method) => method.id);
   assert.deepEqual(eligibleIds, ["intercept-read"]);
   const duplicate = selection.methods.find((method) => method.rejected);
   assert.equal(duplicate?.rejected?.rule, "duplicate-technique");
   assert.equal(duplicate?.id, "intercept-read#2");
+  // Emission order does not decide: the cheaper listing is kept even when it comes second.
+  const reversed = select(candidatesResponse([twoRows, graphCandidate()]));
+  const kept = reversed.methods.filter((method) => !method.rejected);
+  assert.deepEqual(kept.map((method) => method.rows.length), [1]);
+  assert.equal(kept[0].id, "intercept-read");
+  assert.equal(reversed.methods.find((method) => method.rejected)?.id, "intercept-read#1");
 });
 
 test("regression test 6: a problem with only one real technique returns one method, not padded to two", () => {
