@@ -41,17 +41,23 @@ async function main() {
       auth: { persistSession: false, autoRefreshToken: false },
       global: { fetch: (input, init) => fetch(input, { ...init, signal: AbortSignal.timeout(10_000) }) },
     });
-    const [history, images, limiter] = await Promise.all([
+    const [history, images, limiter, savedTricks, tutorLimiter] = await Promise.all([
       admin.from("problems").select("id").limit(0),
       admin.storage.getBucket("problem-images"),
       // A null account violates NOT NULL before any write can occur. This checks
       // RPC presence/permissions without creating a user or consuming a slot.
       admin.rpc("reserve_solve", { p_user_id: null }),
+      admin.from("saved_tricks").select("id").limit(0),
+      // A zero limit takes the read-only branch of this RPC; no question is reserved.
+      admin.rpc("reserve_daily_tutor", { p_user_id: null, p_limit: 0 }),
     ]);
     const migrationHelp = "Run supabase/migrations/202609210001_accounts_history_limits.sql in SQL Editor; verify the server key if it is already applied.";
     check("History table", !history.error, migrationHelp);
     check("Private screenshot bucket", !images.error && images.data?.public === false, migrationHelp);
     check("Rate-limit function", limiter.error?.code === "23502", migrationHelp);
+    const tutorMigrationHelp = "Run supabase/migrations/202610040001_tutor_and_saved_tricks.sql in the Supabase SQL Editor after the earlier migrations.";
+    check("Saved tricks table", !savedTricks.error, tutorMigrationHelp);
+    check("Tutor question-limit function", !tutorLimiter.error && Array.isArray(tutorLimiter.data), tutorMigrationHelp);
     const host = new URL(config.url).hostname;
     if (failures && /^[a-z0-9]+\.supabase\.co$/.test(host)) {
       console.log(`SQL Editor: https://supabase.com/dashboard/project/${host.split(".")[0]}/sql/new`);

@@ -506,6 +506,18 @@ test("an unreadable tutor allowance refuses the call instead of leaving it unlim
   assert.ok(error.mock.callCount() >= 1);
 });
 
+test("a missing tutor migration gives a setup error without making a model call", async () => {
+  const { fetchMock } = mockTutor();
+  usage.reserveDailyTutor = async () => {
+    throw new Error("daily tutor reservation failed: PGRST202 Could not find the function public.reserve_daily_tutor in the schema cache");
+  };
+  mock.method(console, "error", () => undefined);
+  const response = await TUTOR(ask({ source: solveSource, selection: { kind: "row", row: 1 }, practice: false }));
+  assert.equal(response.status, 503);
+  assert.equal((await response.json()).kind, "setup_required");
+  assert.equal(fetchMock.mock.callCount(), 0);
+});
+
 // Saved tricks.
 
 function trickDependencies() {
@@ -578,4 +590,26 @@ test("listing and removing saved tricks require sign-in and a valid id", async (
   assert.equal((await signedOut.GET()).status, 401);
   assert.equal((await signedOut.POST(tricksRequest("POST", { source: solveSource }))).status, 401);
   assert.equal((await signedOut.DELETE(tricksRequest("DELETE", { id: "33333333-3333-4333-8333-333333333333" }))).status, 401);
+});
+
+test("missing saved-tricks table is reported as pending setup for every trick action", async () => {
+  const { deps } = trickDependencies();
+  const missing = () => new Error("Could not save this trick.", {
+    cause: { code: "PGRST205", message: "Could not find the table 'public.saved_tricks' in the schema cache" },
+  });
+  deps.saveTrick = async () => { throw missing(); };
+  deps.listTricks = async () => { throw missing(); };
+  deps.removeTrick = async () => { throw missing(); };
+  const tricks = createTricksHandler(deps);
+  const responses = [
+    await tricks.GET(),
+    await tricks.POST(tricksRequest("POST", { source: solveSource })),
+    await tricks.DELETE(tricksRequest("DELETE", { id: "33333333-3333-4333-8333-333333333333" })),
+  ];
+  for (const response of responses) {
+    assert.equal(response.status, 503);
+    const body = await response.json();
+    assert.equal(body.kind, "setup_required");
+    assert.match(body.error, /database setup/i);
+  }
 });

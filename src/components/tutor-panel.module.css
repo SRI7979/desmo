@@ -2,9 +2,10 @@
 .panel {
   margin: var(--space-4) 0;
   padding: var(--space-3) var(--space-4) var(--space-4);
-  border: 1px solid var(--border-accent);
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--accent);
   border-radius: var(--radius-md);
-  background: var(--surface-raised);
+  background: var(--surface-muted);
 }
 .heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
 .heading h3 { margin: 0; color: var(--foreground); font-size: var(--text-sm); font-weight: 700; letter-spacing: -.01em; }
@@ -20,9 +21,28 @@
 button.selectionButton {
   position: absolute;
   z-index: 5;
-  min-height: 36px;
-  border-color: var(--border);
-  background: var(--surface-raised);
+  min-height: 40px;
+  padding-inline: var(--space-3);
+  border-color: var(--border-accent);
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
   box-shadow: var(--shadow-float);
   white-space: nowrap;
 }
+button.selectionButton:hover { border-color: var(--accent); background: #cef3ff; color: var(--accent-ink); }
+button.selectionButton:active { background: #bcecff; box-shadow: none; }
+button.selectionButton:focus-visible, .saveControl button:focus-visible { outline: 2px solid var(--accent-pressed); outline-offset: 3px; }
+.saveControl { display: inline-flex; flex-direction: column; align-items: flex-end; gap: var(--space-1); max-width: min(100%, 34ch); }
+.saveControl button {
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  white-space: nowrap;
+}
+.saveControl button:hover { border-color: var(--accent); background: #cef3ff; color: var(--accent-ink); }
+.saveControl button:active { background: #bcecff; }
+.saveControl button[aria-pressed="true"] { border-color: var(--accent); background: #d5f4fd; color: var(--accent-ink); }
+.saveControl button:disabled { opacity: .65; cursor: progress; }
+.saveError { color: var(--danger); font-size: var(--text-xs); line-height: 1.4; text-align: right; overflow-wrap: anywhere; }

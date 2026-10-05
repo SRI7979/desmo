@@ -6,6 +6,7 @@ import MathText from "@/components/math-text";
 import {
   expressionsKey,
   useCalculatorRows,
+  useCalculatorTrace,
 } from "@/components/calculator-verification";
 import { reconcileWithCalculator, type CalculatorCheck } from "@/lib/answer-consistency";
 import type { Solution } from "@/lib/solver-schema";
@@ -42,6 +43,8 @@ export default function SolutionExplanation({
   const failed = explanationStatus === "failed";
   const techniqueName = solution.trick || "this technique";
   const calculatorRows = useCalculatorRows();
+  const { selection, traceId } = useCalculatorTrace();
+  const tracedRow = selection?.key === expressionsKey(solution.expressions) ? selection.row : null;
   // The copyable lines are calculator rows too: they are shown only for a
   // batch the hidden Desmos instance reported clean, like the calculator.
   const { gate } = usePreflightGate(solution.expressions, solution.answerState);
@@ -169,12 +172,12 @@ export default function SolutionExplanation({
           <div className={styles.sectionHeading}><h3>In Desmos</h3><span>{solution.expressions.length} {solution.expressions.length === 1 ? "line" : "lines"}</span></div>
           <ol className={styles.expressionSteps} aria-label="Desmos line explanations">
             {solution.expressions.map((expression, index) => (
-              <li key={index} data-testid="explanation-line">
+              <li key={index} id={`${traceId}-row-${index + 1}`} tabIndex={-1} data-active={tracedRow === index + 1 || undefined} data-testid="explanation-line">
                 <div className={styles.lineHeading} data-tutor-ignore>
-                  <span className={styles.lineLabel}><span>{index + 1}</span>Line {index + 1}</span>
+                  <span className={styles.lineLabel}><span>{String(index + 1).padStart(2, "0")}</span>{tracedRow === index + 1 ? "Linked to calculator" : `Line ${index + 1}`}</span>
                   <span className={styles.lineActions}>
                     {tutorSource && (
-                      <button type="button" className={styles.copyButton} onClick={() => tutor.ask({ kind: "row", row: index + 1 }, `line ${index + 1}`)} aria-label={`Explain line ${index + 1}`}>
+                      <button type="button" className={`${styles.copyButton} ${styles.explainButton}`} onClick={() => tutor.ask({ kind: "row", row: index + 1 }, `line ${index + 1}`)} aria-label={`Explain line ${index + 1}`}>
                         <ExplainIcon />
                         Explain
                       </button>

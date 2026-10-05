@@ -333,7 +333,7 @@ function PracticeSection({ practice, onRequest }: { practice: Practice; onReques
 /** "Save this trick" ⇄ "Saved": bookmarks the technique of this solution (the server resolves what is saved). */
 export function SaveTrickButton({ source }: { source: TutorSource }) {
   const key = sourceKey(source);
-  type SaveState = { key: string; status: "idle" | "saving" | "saved" | "removing" | "error"; id: string | null };
+  type SaveState = { key: string; status: "idle" | "saving" | "saved" | "removing" | "error"; id: string | null; message?: string };
   const [state, setState] = useState<SaveState>({ key, status: "idle", id: null });
   const current: SaveState = state.key === key ? state : { key, status: "idle", id: null };
   const busy = current.status === "saving" || current.status === "removing";
@@ -350,10 +350,18 @@ export function SaveTrickButton({ source }: { source: TutorSource }) {
       });
       const data = await response.json().catch(() => null);
       // Removing a trick that is already gone is still removed.
-      if (!response.ok && !(remove && response.status === 404)) throw new Error("request failed");
-      setState(remove ? { key, status: "idle", id: null } : { key, status: "saved", id: typeof data?.trick?.id === "string" ? data.trick.id : null });
-    } catch {
-      setState({ key, status: remove ? "saved" : "error", id: current.id });
+      if (!response.ok && !(remove && response.status === 404)) {
+        throw new Error(typeof data?.error === "string" ? data.error : remove ? "Could not remove this trick. Please try again." : "Could not save this trick. Please try again.");
+      }
+      if (!remove && typeof data?.trick?.id !== "string") throw new Error("The trick was not saved. Please try again.");
+      setState(remove ? { key, status: "idle", id: null } : { key, status: "saved", id: data.trick.id });
+    } catch (error) {
+      setState({
+        key,
+        status: remove ? "saved" : "error",
+        id: current.id,
+        message: error instanceof Error ? error.message : remove ? "Could not remove this trick. Please try again." : "Could not save this trick. Please try again.",
+      });
     }
   }
 
@@ -365,19 +373,22 @@ export function SaveTrickButton({ source }: { source: TutorSource }) {
     error: "Not saved. Retry",
   }[current.status];
   return (
-    <button
-      type="button"
-      className={shared.copyButton}
-      onClick={toggle}
-      disabled={busy}
-      aria-pressed={current.status === "saved"}
-      title={current.status === "saved" ? "Saved to History. Click to remove." : "Keep this technique in your saved tricks on the History page."}
-      data-testid="save-trick"
-    >
-      <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
-        <path d="M6 3.5h8a1 1 0 0 1 1 1v12l-5-3.2-5 3.2v-12a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill={current.status === "saved" ? "currentColor" : "none"} />
-      </svg>
-      {label}
-    </button>
+    <span className={styles.saveControl}>
+      <button
+        type="button"
+        className={shared.copyButton}
+        onClick={toggle}
+        disabled={busy}
+        aria-pressed={current.status === "saved"}
+        title={current.status === "saved" ? "Saved to History. Click to remove." : "Keep this technique in your saved tricks on the History page."}
+        data-testid="save-trick"
+      >
+        <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">
+          <path d="M6 3.5h8a1 1 0 0 1 1 1v12l-5-3.2-5 3.2v-12a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" fill={current.status === "saved" ? "currentColor" : "none"} />
+        </svg>
+        {label}
+      </button>
+      {current.message && <span className={styles.saveError} role="alert">{current.message}</span>}
+    </span>
   );
 }

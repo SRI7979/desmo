@@ -2,18 +2,18 @@
 .solution { position: relative; color: var(--foreground); }
 
 .answerBox {
-  padding: var(--space-4) var(--space-5);
-  border-left: 3px solid var(--accent);
-  border-radius: var(--radius-sm);
-  background: var(--accent-soft);
+  padding: var(--space-5);
+  border: 1px solid var(--border-accent);
+  border-radius: var(--radius-lg);
+  background: #edfaff;
 }
 .answerHeading { display: flex; align-items: center; gap: var(--space-3); }
-.eyebrow { color: var(--accent-ink); font-size: var(--text-xs); font-weight: 700; letter-spacing: .02em; }
+.eyebrow { color: var(--accent-ink); font-size: var(--text-xs); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .answerChoice { color: var(--muted); font-size: var(--text-xs); font-weight: 600; }
 .answerValue {
   margin-top: var(--space-2);
   color: var(--foreground);
-  font-size: clamp(1.4rem, 2vw, 1.75rem);
+  font-size: clamp(1.75rem, 2.4vw, 2.1rem);
   font-weight: 650;
   line-height: 1.4;
   letter-spacing: -.025em;
@@ -23,8 +23,7 @@
 
 .structureNote {
   margin: var(--space-6) 0;
-  padding: 0 0 0 var(--space-4);
-  border-left: 2px solid var(--accent);
+  padding: 0;
 }
 .structureNote h3, .sectionHeading h3, .readAnswer h3 {
   margin: 0;
@@ -50,8 +49,8 @@
 }
 .sectionHeading > span { color: var(--subtle); font-size: var(--text-xs); white-space: nowrap; }
 .expressionSteps, .steps { display: grid; list-style: none; padding: 0; margin: 0; }
-.expressionSteps { gap: 0; }
-.expressionSteps li { min-width: 0; padding: var(--space-4) 0; border-top: 1px solid var(--border-subtle); }
+.expressionSteps { gap: 0; border-left: 1px solid var(--trace-line); margin-left: 11px; }
+.expressionSteps li { position: relative; min-width: 0; padding: var(--space-4) 0 var(--space-5) var(--space-5); border-top: 1px solid var(--border-subtle); transition: background var(--ease-ui), box-shadow var(--ease-ui); scroll-margin-top: 24px; }
 .lineHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
 .lineActions, .ideaHeading { display: flex; align-items: center; gap: var(--space-1); }
 .ideaHeading { justify-content: space-between; gap: var(--space-3); }
@@ -64,9 +63,10 @@
   width: 24px;
   height: 24px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  border-radius: 8px;
+  background: var(--surface-raised);
   color: var(--muted);
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 700;
 }
@@ -87,11 +87,14 @@
 }
 .copyButton:hover { color: var(--accent-text); background: var(--accent-soft); border-color: #cde9f2; }
 .copyButton:active { background: #d9f0f8; }
+.explainButton { border-color: var(--border-accent); background: var(--accent-soft); color: var(--accent-ink); }
+.explainButton:hover { border-color: var(--accent); background: #cef3ff; color: var(--accent-ink); }
 .equation {
   min-width: 0;
   overflow-x: auto;
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
   background: var(--surface-muted);
   color: var(--foreground);
   font-size: var(--text-base);
@@ -188,3 +191,16 @@
 @media (max-width: 768px) {
   .copyButton, .retryButton, .transcription summary { min-height: 44px; }
 }
+
+.expressionSteps li::before { content: ""; position: absolute; left: -4px; top: 33px; width: 7px; height: 7px; border: 1px solid var(--trace-line); border-radius: 50%; background: var(--surface-raised); }
+.expressionSteps li[data-active] { background: #f1faff; box-shadow: -2px 0 0 var(--accent); }
+.expressionSteps li[data-active]::before { background: var(--accent); border-color: var(--accent); }
+.expressionSteps li[data-active] .lineLabel { color: var(--accent-ink); }
+.expressionSteps li[data-active] .equation { border-color: var(--border-accent); background: #fff; }
+.expressionSteps li:focus-visible { outline: 2px solid var(--accent-pressed); outline-offset: 3px; }
+.answerHeading { flex-wrap: wrap; }
+.verifiedBadge { font-size: var(--text-xs); }
+.steps { border-left: 1px solid var(--trace-line); margin-left: 11px; }
+.steps li { margin-left: -12px; }
+.steps .stepNumber { background: white; }
+@media (max-width: 480px) { .answerBox { padding: var(--space-4); } .lineHeading { flex-wrap: wrap; gap: 0; } .lineActions { margin-left: auto; } }

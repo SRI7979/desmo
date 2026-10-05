@@ -94,6 +94,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   const [loading, setLoading] = useState(false);
   const [sampleLoading, setSampleLoading] = useState(false);
   const [dragging, setDragging] = useState(false);
+  const [imageZoomed, setImageZoomed] = useState(false);
   const [revision, setRevision] = useState(0);
   const [problemId, setProblemId] = useState<string | null>(null);
   // The solve the shown methods come from, for the tutor ("Explain this", "Save this trick").
@@ -105,6 +106,8 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   const [cooldownUntil, setCooldownUntil] = useState<number | null>(null);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const fileInput = useRef<HTMLInputElement>(null);
+  const imageDialog = useRef<HTMLDialogElement>(null);
+  const viewImageButton = useRef<HTMLButtonElement>(null);
   const request = useRef<AbortController | null>(null);
   const switchRequest = useRef<AbortController | null>(null);
   // Invalidates a switch's in-flight explanation if a newer switch or a fresh
@@ -531,7 +534,18 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
         {accountNav}
       </header>
       <main className={styles.main}>
-        <h1 className={styles.srOnly}>Solver</h1>
+        <div className={styles.intro}>
+          <div>
+            <p className={styles.introEyebrow}>DESMO / YOUR MATH SPACE</p>
+            <h1>Make the math click<span>.</span></h1>
+            <p className={styles.introCopy}>Drop in a problem. Follow the reasoning. Try it in the calculator.</p>
+          </div>
+          <span className={styles.introPath} aria-hidden="true"><span>01</span><i /><span>02</span><i /><span>03</span></span>
+        </div>
+        <div className={styles.workspaceBar}>
+          <span>Math workspace</span>
+          <span>Question <span aria-hidden="true">→</span> Method <span aria-hidden="true">→</span> Result</span>
+        </div>
         <CalculatorVerificationProvider>
         <div className={styles.workspace}>
           <section
@@ -539,7 +553,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             aria-labelledby="upload-title"
           >
             <div className={styles.cardHeading}>
-              <h2 id="upload-title">Question</h2>
+              <h2 id="upload-title"><span className={styles.sectionIndex} aria-hidden="true">01</span>Question</h2>
               <button
                 type="button"
                 className={styles.sampleButton}
@@ -616,12 +630,49 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
               )}
             </label>
             {image && (
-              <div className={styles.fileDetails}>
-                <span title={image.file.name}>{image.file.name}</span>
-                <button type="button" onClick={clearImage} disabled={busy}>
-                  Remove
-                </button>
-              </div>
+              <>
+                <div className={styles.fileDetails}>
+                  <span title={image.file.name}>{image.file.name}</span>
+                  <div className={styles.fileActions}>
+                    <button ref={viewImageButton} type="button" onClick={() => imageDialog.current?.showModal()}>
+                      View larger
+                    </button>
+                    <button type="button" onClick={clearImage} disabled={busy}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+                <dialog
+                  ref={imageDialog}
+                  className={styles.imageDialog}
+                  aria-labelledby="question-preview-title"
+                  onClose={() => {
+                    setImageZoomed(false);
+                    viewImageButton.current?.focus();
+                  }}
+                  onClick={(event) => {
+                    if (event.target === imageDialog.current) imageDialog.current?.close();
+                  }}
+                >
+                  <div className={styles.imageDialogHeading}>
+                    <h2 id="question-preview-title">Your question</h2>
+                    <div className={styles.imageDialogActions}>
+                      <button type="button" aria-pressed={imageZoomed} onClick={() => setImageZoomed((value) => !value)}>{imageZoomed ? "Fit to screen" : "Zoom in"}</button>
+                      <button type="button" onClick={() => imageDialog.current?.close()}>Close</button>
+                    </div>
+                  </div>
+                  <div className={styles.imageDialogBody}>
+                    <Image
+                      src={image.url}
+                      width={1200}
+                      height={900}
+                      unoptimized
+                      alt="Your uploaded math question, enlarged"
+                      className={`${styles.largePreview} ${imageZoomed ? styles.zoomedPreview : ""}`}
+                    />
+                  </div>
+                </dialog>
+              </>
             )}
             <button
               className={styles.solveButton}
@@ -670,34 +721,12 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             </p>
           </section>
           <section
-            className={`${styles.card} ${styles.calculatorCard}`}
-            aria-labelledby="calculator-title"
-          >
-            <div className={styles.calculatorHeading}>
-              <h2 id="calculator-title">Calculator</h2>
-            </div>
-            <DesmosCalculator
-              expressions={
-                solution?.status === "solved"
-                  ? solution.expressions
-                  : NO_EXPRESSIONS
-              }
-              bounds={
-                solution?.status === "solved" ? solution.graphBounds : null
-              }
-              answerState={
-                solution?.status === "solved" ? solution.answerState : null
-              }
-              revision={revision}
-            />
-          </section>
-          <section
             className={`${styles.card} ${styles.resultCard}`}
             aria-labelledby="result-title"
             aria-busy={loading}
           >
             <div className={styles.resultHeading}>
-              <h2 id="result-title">Explanation</h2>
+              <h2 id="result-title"><span className={styles.sectionIndex} aria-hidden="true">02</span>Reasoning</h2>
               {solution?.status === "solved" && listed.length > 0 && selectedMethodId && (
                 <TechniqueSelector methods={listed} selectedId={selectedMethodId} onSelect={switchTechnique} />
               )}
@@ -705,7 +734,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             <div className={styles.resultBody}>
               {loading ? (
                 <div className={styles.loadingState} role="status">
-                  <p className={styles.loadingLabel}><span className={styles.spinner} aria-hidden="true" /> Reading the question and checking a method…</p>
+                  <p className={styles.loadingLabel}><span className={styles.spinner} aria-hidden="true" /> Interpreting the question and checking a method…</p>
                   <div className={styles.loadingSkeleton} aria-hidden="true">
                     <span className={styles.skeletonAnswer} />
                     <span className={styles.skeletonLine} />
@@ -731,10 +760,35 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                 </>
               ) : (
                 <div className={styles.emptyResult}>
-                  <p>Upload a question to see the method and each Desmos line explained.</p>
+                  <span className={styles.emptyPath} aria-hidden="true">01 ── 02 ── 03</span>
+                  <p>Your reasoning starts here.</p>
+                  <p>Upload a question. Follow the method, then trace each calculator line back to its explanation.</p>
                 </div>
               )}
             </div>
+          </section>
+          <section
+            className={`${styles.card} ${styles.calculatorCard}`}
+            aria-labelledby="calculator-title"
+          >
+            <div className={styles.calculatorHeading}>
+              <h2 id="calculator-title"><span className={styles.sectionIndex} aria-hidden="true">03</span>Calculator</h2>
+              <span className={styles.instrumentLabel}>Desmos / graphing</span>
+            </div>
+            <DesmosCalculator
+              expressions={
+                solution?.status === "solved"
+                  ? solution.expressions
+                  : NO_EXPRESSIONS
+              }
+              bounds={
+                solution?.status === "solved" ? solution.graphBounds : null
+              }
+              answerState={
+                solution?.status === "solved" ? solution.answerState : null
+              }
+              revision={revision}
+            />
           </section>
         </div>
         </CalculatorVerificationProvider>

@@ -5,6 +5,7 @@ import {
   useCallback,
   useContext,
   useMemo,
+  useId,
   useState,
   type ReactNode,
 } from "react";
@@ -25,11 +26,17 @@ export type CalculatorRows = {
 type ContextValue = {
   rows: CalculatorRows | null;
   publish: (rows: CalculatorRows | null) => void;
+  selection: { key: string; row: number } | null;
+  select: (selection: { key: string; row: number } | null) => void;
+  traceId: string;
 };
 
 const CalculatorVerificationContext = createContext<ContextValue>({
   rows: null,
   publish: () => undefined,
+  selection: null,
+  select: () => undefined,
+  traceId: "desmo-trace",
 });
 
 export function expressionsKey(
@@ -47,10 +54,15 @@ function sameRows(left: CalculatorRows | null, right: CalculatorRows | null) {
 /** Shares Desmos row evaluations between the calculator and the explanation. */
 export function CalculatorVerificationProvider({ children }: { children: ReactNode }) {
   const [rows, setRows] = useState<CalculatorRows | null>(null);
+  const [selection, setSelection] = useState<{ key: string; row: number } | null>(null);
+  const traceId = useId();
+  const select = useCallback((next: { key: string; row: number } | null) => {
+    setSelection((previous) => previous?.key === next?.key && previous?.row === next?.row ? previous : next);
+  }, []);
   const publish = useCallback((next: CalculatorRows | null) => {
     setRows((previous) => (sameRows(previous, next) ? previous : next));
   }, []);
-  const value = useMemo(() => ({ rows, publish }), [rows, publish]);
+  const value = useMemo(() => ({ rows, publish, selection, select, traceId }), [rows, publish, selection, select, traceId]);
   return (
     <CalculatorVerificationContext.Provider value={value}>
       {children}
@@ -64,4 +76,10 @@ export function useCalculatorRows(): CalculatorRows | null {
 
 export function usePublishCalculatorRows() {
   return useContext(CalculatorVerificationContext).publish;
+}
+
+/** Selection is tied to the expression batch, just like verification. */
+export function useCalculatorTrace() {
+  const { selection, select, traceId } = useContext(CalculatorVerificationContext);
+  return { selection, select, traceId };
 }

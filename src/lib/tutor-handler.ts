@@ -57,6 +57,24 @@ function unavailable() {
   return errorResponse("The tutor is temporarily unavailable. Please try again later.", 503, { kind: "unavailable" });
 }
 
+/** Recognize only the tables and function supplied by the tutor migration. */
+function tutorSetupMissing(error: unknown): boolean {
+  let current = error;
+  for (let depth = 0; depth < 4 && current && typeof current === "object"; depth++) {
+    const detail = current as { code?: unknown; message?: unknown; cause?: unknown };
+    const code = typeof detail.code === "string" ? detail.code : "";
+    const message = typeof detail.message === "string" ? detail.message : "";
+    if (/\b(PGRST205|42P01)\b/.test(`${code} ${message}`) && /\bsaved_tricks\b/.test(message)) return true;
+    if (/\b(PGRST202|42883)\b/.test(`${code} ${message}`) && /\breserve_daily_tutor\b/.test(message)) return true;
+    current = detail.cause;
+  }
+  return false;
+}
+
+function setupRequired() {
+  return errorResponse("The tutor and saved tricks are waiting for database setup. Please try again after the update is complete.", 503, { kind: "setup_required" });
+}
+
 function crossSite(request: Request): boolean {
   const origin = request.headers.get("origin");
   return request.headers.get("sec-fetch-site") === "cross-site" || Boolean(origin && origin !== new URL(request.url).origin);
@@ -112,6 +130,7 @@ function tutorErrorFor(error: unknown): Response {
   }
   if (error instanceof UsageUnavailableError) {
     console.error("[desmo:ALERT] usage limits unavailable; refusing tutor model work", error.cause instanceof Error ? error.cause.message : error.cause);
+    if (tutorSetupMissing(error)) return setupRequired();
     return unavailable();
   }
   if (error instanceof ModelTimeoutError || error instanceof OpenAI.APIConnectionTimeoutError) {
@@ -264,7 +283,8 @@ export function createTricksHandler(dependencies: TricksDependencies) {
       if (!auth.user) return auth.failure!;
       try {
         return Response.json({ tricks: await dependencies.listTricks(auth.user.id) }, noStore);
-      } catch {
+      } catch (error) {
+        if (tutorSetupMissing(error)) return setupRequired();
         return errorResponse("Your saved tricks could not be loaded. Please try again.", 503);
       }
     },
@@ -281,7 +301,8 @@ export function createTricksHandler(dependencies: TricksDependencies) {
       try {
         const trick = await dependencies.saveTrick(auth.user.id, savedTrickFrom(resolved.context, selection));
         return Response.json({ trick }, noStore);
-      } catch {
+      } catch (error) {
+        if (tutorSetupMissing(error)) return setupRequired();
         return errorResponse("This trick could not be saved. Please try again.", 503);
       }
     },
@@ -294,7 +315,8 @@ export function createTricksHandler(dependencies: TricksDependencies) {
       try {
         const removed = await dependencies.removeTrick(auth.user.id, body.data.id);
         return removed ? Response.json({ removed: true }, noStore) : errorResponse("That saved trick was not found.", 404);
-      } catch {
+      } catch (error) {
+        if (tutorSetupMissing(error)) return setupRequired();
         return errorResponse("This trick could not be removed. Please try again.", 503);
       }
     },

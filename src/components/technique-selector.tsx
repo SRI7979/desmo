@@ -138,9 +138,10 @@ export default function TechniqueSelector({
         onClick={() => setNav((value) => ({ open: !value.open, activeIndex: value.open ? value.activeIndex : selectedIndex }))}
         onKeyDown={handleKeyDown}
       >
+        <svg className={styles.strategyMark} width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 15h4l6-10h4" stroke="currentColor" strokeWidth="1.5"/><circle cx="3" cy="15" r="2" fill="currentColor"/><circle cx="17" cy="5" r="2" fill="currentColor"/></svg>
         <span className={styles.srOnly}>Solving technique:</span>
         <span className={styles.name}>{current.name}</span>
-        <BadgeRow badges={current.badges} />
+        <span className={styles.methodCount}>{methods.length > 1 ? `${selectedIndex + 1} / ${methods.length}` : "Details"}</span>
         <ChevronIcon open={nav.open} />
       </button>
       {nav.open && (
@@ -151,7 +152,7 @@ export default function TechniqueSelector({
           aria-label={mode === "single" ? `${current.name} method details` : undefined}
         >
           <div className={styles.details}>
-            <p className={styles.detailsHeading}>Method details</p>
+            <p className={styles.detailsHeading}>Solving strategy <span>{current.badges.includes("Recommended") ? "Recommended" : "Selected"}</span></p>
             <dl className={styles.stats}>
               <div className={styles.stat}>
                 <dt>Desmos rows</dt>

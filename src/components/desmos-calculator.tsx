@@ -9,6 +9,7 @@ import type { AnswerState } from "@/lib/solver-schema";
 import {
   expressionsKey,
   usePublishCalculatorRows,
+  useCalculatorTrace,
   type CalculatorRows,
 } from "./calculator-verification";
 import { recordVisibleError, usePreflightGate } from "./preflight-gate";
@@ -16,7 +17,7 @@ import styles from "./desmos-calculator.module.css";
 
 type Bounds = { left: number; right: number; bottom: number; top: number };
 
-type DesmosInstance = DesmosCalculatorInstance;
+type DesmosInstance = DesmosCalculatorInstance & { selectedExpressionId?: string };
 
 type Props = {
   expressions: Array<{
@@ -90,6 +91,7 @@ export default function DesmosCalculator({
   const [blockedKey, setBlockedKey] = useState<string | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_DESMOS_API_KEY?.trim();
   const publishRows = usePublishCalculatorRows();
+  const { selection, select, traceId } = useCalculatorTrace();
   // The batch is built exactly as the hidden pre-flight instance received it
   // (normalized LaTeX, the slider at the answer state), and it is inserted
   // only once that instance reported every row clean. Nothing that errors in
@@ -129,9 +131,19 @@ export default function DesmosCalculator({
         expressionsCollapsed: false,
         settingsMenu: true,
         keypad: true,
-        fontSize: 15,
+        fontSize: 17,
       });
       calculatorRef.current = instance;
+      instance.observe("selectedExpressionId.trace", () => {
+        const batch = loaded.current;
+        // Keep the last traced row when focus moves into its explanation.
+        // A different/user-created row still clears the link below.
+        if (!instance?.selectedExpressionId) return;
+        const match = instance?.selectedExpressionId?.match(rowIdPattern);
+        select(batch && instance && loadedRows(instance) === batch.rows && match
+          ? { key: batch.key, row: Number(match[1]) }
+          : null);
+      });
       let tripwire: ReturnType<typeof setTimeout> | undefined;
       instance.observe("expressionAnalysis", () => {
         if (!active || !instance) return;
@@ -170,7 +182,7 @@ export default function DesmosCalculator({
         if (!batch) return;
         const changed = loadedRows(instance) !== batch.rows;
         setEntriesEdited(changed);
-        if (changed) publishRows(null);
+        if (changed) { publishRows(null); select(null); }
       });
       observer = new ResizeObserver(() => {
         if (active) instance?.resize();
@@ -191,12 +203,14 @@ export default function DesmosCalculator({
       observer?.disconnect();
       calculatorRef.current = null;
       instance?.unobserve("expressionAnalysis");
+      instance?.unobserve("selectedExpressionId.trace");
       instance?.unobserveEvent("change.desmo");
       instance?.destroy();
       loaded.current = null;
       publishRows(null);
+      select(null);
     };
-  }, [scriptReady, publishRows]);
+  }, [scriptReady, publishRows, select]);
 
   useEffect(() => {
     const calculator = calculatorRef.current;
@@ -214,6 +228,7 @@ export default function DesmosCalculator({
         setLineCount(0);
         loaded.current = null;
         publishRows(null);
+        select(null);
         calculator.setBlank();
         calculator.setMathBounds(defaultBounds);
       } catch {
@@ -244,7 +259,7 @@ export default function DesmosCalculator({
     return () => {
       active = false;
     };
-  }, [scriptReady, expressions, payload, insertable, bounds, revision, replay, publishRows]);
+  }, [scriptReady, expressions, payload, insertable, bounds, revision, replay, publishRows, select]);
 
   const unavailableMessage = !apiKey
     ? "Add NEXT_PUBLIC_DESMOS_API_KEY to .env.local, then restart the dev server to load the calculator."
@@ -266,6 +281,16 @@ export default function DesmosCalculator({
 
   return (
     <div className={styles.shell} data-testid="desmos-calculator">
+      <div className={styles.traceBar}>
+        <span className={styles.traceMark} aria-hidden="true">↳</span>
+        {selection && selection.key === expressionsKey(expressions) && !entriesEdited && insertable && lineCount > 0 ? (
+          <button type="button" onClick={() => {
+            const row = document.getElementById(`${traceId}-row-${selection.row}`);
+            row?.scrollIntoView({ block: "center", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+            row?.focus({ preventScroll: true });
+          }}>Line {String(selection.row).padStart(2, "0")} <span>View its explanation</span> <span aria-hidden="true">↗</span></button>
+        ) : <span>Select a calculator line to trace its reasoning</span>}
+      </div>
       {apiKey && (
         <Script
           id="desmo-desmos-api"

@@ -3,10 +3,12 @@
 
   /* Shared foundations for the landing page, solver, account, and history. */
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
+  --font-display: Georgia, "Times New Roman", serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
   --text-xl: 1.375rem;
   --text-2xl: 1.75rem;
 
@@ -20,15 +22,15 @@
   --space-10: 40px;
   --space-12: 48px;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
 
-  --background: #ffffff;
+  --background: #f1f8fc;
   --foreground: #1b2d37;
   --muted: #5e717d;
-  --subtle: #7b8d97;
+  --subtle: #657782;
   /* The original Desmo cyan: shared by the logo, buttons, links, and states. */
   --accent: #17b6ee;
   --accent-hover: #12a9df;
@@ -47,12 +49,14 @@
   --danger-soft: #fff5f5;
   --success: #26704a;
   --success-soft: #f2faf5;
-  --shadow-card: 0 1px 2px rgb(21 48 63 / 6%);
+  --shadow-card: 0 4px 18px rgb(21 80 110 / 5%);
   --shadow-float: 0 8px 28px rgb(21 48 63 / 8%);
-  --shadow-button: 0 2px 0 var(--accent-pressed);
+  --shadow-button: inset 0 1px 0 rgb(255 255 255 / 25%);
   --control-height: 42px;
-  --primary-height: 48px;
-  --ease-ui: 160ms ease;
+  --primary-height: 52px;
+  --ease-ui: 140ms cubic-bezier(.2, .7, .2, 1);
+  --panel-header: #f5fbff;
+  --trace-line: #b8dce8;
 }
 
 * { box-sizing: border-box; }

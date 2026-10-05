@@ -67,12 +67,12 @@ export async function saveTrick(userId: string, trick: SavedTrickInput): Promise
     .single();
   if (!error && data) return fromRow(data as Row);
   // 23505: already saved (a unique constraint); return the row that exists.
-  if ((error as { code?: string } | null)?.code !== "23505") throw new Error("Could not save this trick.");
+  if ((error as { code?: string } | null)?.code !== "23505") throw new Error("Could not save this trick.", { cause: error });
   let existing = db.from("saved_tricks").select(COLUMNS).eq("user_id", userId);
   existing = trick.cacheKey ? existing.eq("cache_key", trick.cacheKey) : existing.eq("problem_id", trick.problemId ?? "").is("cache_key", null);
   existing = trick.techniqueId ? existing.eq("technique_id", trick.techniqueId) : existing.is("technique_id", null);
   const { data: found, error: readError } = await existing.limit(1).maybeSingle();
-  if (readError || !found) throw new Error("Could not save this trick.");
+  if (readError || !found) throw new Error("Could not save this trick.", { cause: readError });
   return fromRow(found as Row);
 }
 
@@ -85,7 +85,7 @@ export async function listTricks(userId: string): Promise<SavedTrick[]> {
     .order("created_at", { ascending: false })
     .order("id", { ascending: false })
     .limit(SAVED_TRICKS_LIMIT);
-  if (error) throw new Error("Could not load your saved tricks.");
+  if (error) throw new Error("Could not load your saved tricks.", { cause: error });
   return ((data ?? []) as Row[]).map(fromRow);
 }
 
@@ -93,6 +93,6 @@ export async function listTricks(userId: string): Promise<SavedTrick[]> {
 export async function removeTrick(userId: string, id: string): Promise<boolean> {
   const db = await createClient();
   const { data, error } = await db.from("saved_tricks").delete().eq("user_id", userId).eq("id", id).select("id");
-  if (error) throw new Error("Could not remove this saved trick.");
+  if (error) throw new Error("Could not remove this saved trick.", { cause: error });
   return (data?.length ?? 0) > 0;
 }
