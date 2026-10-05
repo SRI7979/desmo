@@ -536,15 +536,9 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
       <main className={styles.main}>
         <div className={styles.intro}>
           <div>
-            <p className={styles.introEyebrow}>DESMO / YOUR MATH SPACE</p>
-            <h1>Make the math click<span>.</span></h1>
-            <p className={styles.introCopy}>Drop in a problem. Follow the reasoning. Try it in the calculator.</p>
+            <h1>Make the math click.</h1>
+            <p className={styles.introCopy}>Upload a question, follow the method, and check every step in Desmos.</p>
           </div>
-          <span className={styles.introPath} aria-hidden="true"><span>01</span><i /><span>02</span><i /><span>03</span></span>
-        </div>
-        <div className={styles.workspaceBar}>
-          <span>Math workspace</span>
-          <span>Question <span aria-hidden="true">→</span> Method <span aria-hidden="true">→</span> Result</span>
         </div>
         <CalculatorVerificationProvider>
         <div className={styles.workspace}>
@@ -726,7 +720,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             aria-busy={loading}
           >
             <div className={styles.resultHeading}>
-              <h2 id="result-title"><span className={styles.sectionIndex} aria-hidden="true">02</span>Reasoning</h2>
+              <h2 id="result-title"><span className={styles.sectionIndex} aria-hidden="true">02</span>Explanation</h2>
               {solution?.status === "solved" && listed.length > 0 && selectedMethodId && (
                 <TechniqueSelector methods={listed} selectedId={selectedMethodId} onSelect={switchTechnique} />
               )}
@@ -760,9 +754,8 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                 </>
               ) : (
                 <div className={styles.emptyResult}>
-                  <span className={styles.emptyPath} aria-hidden="true">01 ── 02 ── 03</span>
-                  <p>Your reasoning starts here.</p>
-                  <p>Upload a question. Follow the method, then trace each calculator line back to its explanation.</p>
+                  <p>Understand every step.</p>
+                  <p>After you solve, you’ll see the method beside the calculator lines that use it.</p>
                 </div>
               )}
             </div>
@@ -773,7 +766,6 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
           >
             <div className={styles.calculatorHeading}>
               <h2 id="calculator-title"><span className={styles.sectionIndex} aria-hidden="true">03</span>Calculator</h2>
-              <span className={styles.instrumentLabel}>Desmos / graphing</span>
             </div>
             <DesmosCalculator
               expressions={
