@@ -12,7 +12,7 @@ import { costUsd, rateFor, usageFrom, type Usage } from "./model-pricing";
  * so reaching a limit never locks a student out of work they already have.
  */
 
-/** "tutor": an "Explain this" answer about a solution the student already has. */
+/** "tutor": an answer about a verified selection in a solution the student already has. */
 export type ModelCall = "candidates" | "explanation" | "desmos_retry" | "tutor";
 
 export type UsageRecord = {
@@ -292,4 +292,3 @@ export function createSupabaseUsageStore(client: unknown): UsageStore {
     },
   };
 }
-

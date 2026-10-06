@@ -18,7 +18,7 @@ export default async function SolverPage() {
   return (
     <div className={solverFont.variable}>
       <SolverWorkspace
-        accountNav={<AccountNav email={user.email} active="solve" />}
+        accountNav={<AccountNav email={user.email} avatarUrl={user.avatarUrl} active="solve" />}
       />
     </div>
   );

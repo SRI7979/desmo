@@ -1,8 +1,9 @@
 /**
- * Grounding for "Explain this". A highlighted passage is explained only when
+ * Grounding for Ask AI Tutor. A highlighted passage is explained only when
  * it actually appears in the solution the server resolved for itself (the
  * question, an answer choice, the answer, the prose, or a calculator row), so
- * the tutor cannot be used as a free-form chatbot or fed injected text.
+ * the tutor cannot be invoked without a verified selection. An optional
+ * student question is separately bounded and treated as quoted data.
  *
  * What a student can select in rendered math is not the LaTeX that produced
  * it: KaTeX draws y_{1}\sim ax_{1}^{2} as "y1 ∼ ax12", and a student may type

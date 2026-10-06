@@ -13,7 +13,7 @@ import type { Solution } from "@/lib/solver-schema";
 import { splitAnswerLabel } from "@/lib/math-text";
 import type { ExplanationStatus } from "@/lib/technique-selection-ui";
 import { usePreflightGate } from "./preflight-gate";
-import { ExplainIcon, SaveTrickButton, SelectionExplain, TutorPanel, useTutor, type TutorSource } from "./tutor-panel";
+import { SaveTrickButton, SelectionAskTutor, TutorPanel, useTutor, type TutorSource } from "./tutor-panel";
 import styles from "./solution-explanation.module.css";
 
 // "unverified" renders nothing; only "contradicted" gets a banner treatment.
@@ -36,7 +36,7 @@ export default function SolutionExplanation({
    */
   explanationStatus?: ExplanationStatus;
   onRetryExplanation?: () => void;
-  /** Which solve or saved problem this is, for "Explain this" and "Save this trick"; without it neither appears. */
+  /** Which solve or saved problem this is, for "Ask AI Tutor" and "Save this trick"; without it neither appears. */
   tutorSource?: TutorSource;
 }) {
   const pending = explanationStatus === "pending";
@@ -176,12 +176,6 @@ export default function SolutionExplanation({
                 <div className={styles.lineHeading} data-tutor-ignore>
                   <span className={styles.lineLabel}><span>{String(index + 1).padStart(2, "0")}</span>{tracedRow === index + 1 ? "Linked to calculator" : `Line ${index + 1}`}</span>
                   <span className={styles.lineActions}>
-                    {tutorSource && (
-                      <button type="button" className={`${styles.copyButton} ${styles.explainButton}`} onClick={() => tutor.ask({ kind: "row", row: index + 1 }, `line ${index + 1}`)} aria-label={`Explain line ${index + 1}`}>
-                        <ExplainIcon />
-                        Explain
-                      </button>
-                    )}
                     <button type="button" className={styles.copyButton} onClick={() => copyLine(expression.latex, index)} aria-label={`Copy line ${index + 1}`}>
                       <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true"><rect x="7" y="7" width="9" height="10" rx="2" stroke="currentColor" strokeWidth="1.5"/><path d="M11 4V3H5a2 2 0 0 0-2 2v7h1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
                       {copyStatus?.row === index ? copyStatus.ok ? "Copied" : "Select to copy" : "Copy"}
@@ -194,7 +188,6 @@ export default function SolutionExplanation({
                 ) : pending ? (
                   <span className={styles.purposeShimmer} aria-hidden="true" />
                 ) : null}
-                {tutor.openAt === index + 1 && <TutorPanel tutor={tutor} />}
               </li>
             ))}
           </ol>
@@ -248,7 +241,7 @@ export default function SolutionExplanation({
         <p><MathText>{solution.question}</MathText></p>
       </details>
       <span className={styles.srOnly} role="status">{copyStatus ? copyStatus.ok ? `Line ${copyStatus.row + 1} copied.` : "Clipboard is unavailable. Select the equation to copy it." : ""}</span>
-      {tutorSource && <SelectionExplain tutor={tutor} containerRef={card} />}
+      {tutorSource && <SelectionAskTutor tutor={tutor} containerRef={card} />}
     </div>
   );
 }

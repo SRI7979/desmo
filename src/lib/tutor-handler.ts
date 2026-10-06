@@ -167,7 +167,7 @@ function failureKind(error: unknown): string {
 }
 
 /**
- * POST /api/tutor: { source, selection, practice } → { title, meaning,
+ * POST /api/tutor: { source, selection, practice, question? } → { title, meaning,
  * whyHere, example, practice }. The model sees only the server-resolved
  * context and the verified selection. The call is metered as "tutor" and
  * checked against the global spend ceiling and the student's own tutor
@@ -188,8 +188,8 @@ export function createTutorHandler(dependencies: TutorDependencies) {
       if (!auth.user) return auth.failure!;
       userId = auth.user.id;
       const body = tutorRequestSchema.safeParse(await request.json().catch(() => null));
-      if (!body.success) return errorResponse("Choose a line or highlight part of this solution to ask about.", 400);
-      const { source, selection, practice } = body.data;
+      if (!body.success) return errorResponse("Highlight part of this solution to ask about.", 400);
+      const { source, selection, practice, question } = body.data;
       const resolved = await resolveContext(source, auth.user.id, dependencies);
       if (!resolved.context) return resolved.failure!;
       const context = resolved.context;
@@ -224,7 +224,7 @@ export function createTutorHandler(dependencies: TutorDependencies) {
           signal: request.signal,
           deadline: startedAt + dependencies.maxDurationSeconds * 1000 - DEADLINE_MARGIN_MS,
         },
-        tutorRequest(tutorInput(context, verified, practice), practice),
+        tutorRequest(tutorInput(context, verified, practice, question), practice),
       );
       const answer = parseTutorResponse(response, practice);
       // Ids and counts only: never the question, the selection, or the answer.

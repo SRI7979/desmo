@@ -11,13 +11,13 @@ import styles from "./tutor-panel.module.css";
 export type { TutorSource };
 
 /**
- * "Explain this" and "Save this trick": small additions to the solution card.
- * The browser sends only where to look (the solve or saved problem) and what
- * the student pointed at; the server resolves and verifies everything else.
+ * "Ask AI Tutor" and "Save this trick": small additions to the solution card.
+ * The browser sends where to look, what the student pointed at, and their
+ * optional question; the server resolves and verifies the solution context.
  */
 
 type TutorSelection = { kind: "row"; row: number } | { kind: "text"; text: string };
-type Ask = { selection: TutorSelection; label: string };
+type Ask = { selection: TutorSelection; label: string; question: string | null };
 type Practice =
   | { status: "idle" }
   | { status: "loading" }
@@ -25,6 +25,7 @@ type Practice =
   | { status: "error"; message: string };
 type TutorView =
   | { status: "idle" }
+  | { status: "draft"; ask: Ask }
   | { status: "loading"; ask: Ask }
   | { status: "ready"; ask: Ask; answer: TutorAnswer; practice: Practice }
   | { status: "error"; ask: Ask; message: string };
@@ -36,11 +37,11 @@ function sourceKey(source: TutorSource | null): string {
   return source ? JSON.stringify(source) : "";
 }
 
-async function askTutor(source: TutorSource, selection: TutorSelection, practice: boolean, signal: AbortSignal): Promise<TutorAnswer> {
+async function askTutor(source: TutorSource, selection: TutorSelection, question: string | null, practice: boolean, signal: AbortSignal): Promise<TutorAnswer> {
   const response = await fetch("/api/tutor", {
     method: "POST",
     headers: JSON_HEADERS,
-    body: JSON.stringify({ source, selection, practice }),
+    body: JSON.stringify({ source, selection, practice, ...(question ? { question } : {}) }),
     signal,
   });
   const data = await response.json().catch(() => null);
@@ -53,9 +54,11 @@ async function askTutor(source: TutorSource, selection: TutorSelection, practice
 export type Tutor = {
   enabled: boolean;
   view: TutorView;
-  /** Where the panel opens: under a calculator line, or at the top of the solution for highlighted text. */
-  openAt: number | "top" | null;
-  ask(selection: TutorSelection, label: string): void;
+  openAt: "top" | null;
+  open(selection: TutorSelection, label: string): void;
+  submit(question: string): void;
+  retry(): void;
+  edit(preserveQuestion?: boolean): void;
   requestPractice(): void;
   close(): void;
 };
@@ -78,14 +81,20 @@ export function useTutor(source: TutorSource | null): Tutor {
     return controller;
   }
 
-  function ask(selection: TutorSelection, label: string) {
+  function open(selection: TutorSelection, label: string) {
     if (!source) return;
     const active = document.activeElement;
     if (active instanceof HTMLElement && active !== document.body && !active.closest("[data-tutor-panel]")) opener.current = active;
+    request.current?.abort();
+    request.current = null;
+    setState({ key, view: { status: "draft", ask: { selection, label, question: null } } });
+  }
+
+  function send(current: Ask) {
+    if (!source) return;
     const controller = start();
-    const current: Ask = { selection, label };
     setState({ key, view: { status: "loading", ask: current } });
-    askTutor(source, selection, false, controller.signal).then(
+    askTutor(source, current.selection, current.question, false, controller.signal).then(
       (answer) => {
         if (request.current === controller) setState({ key, view: { status: "ready", ask: current, answer, practice: { status: "idle" } } });
       },
@@ -96,12 +105,28 @@ export function useTutor(source: TutorSource | null): Tutor {
     );
   }
 
+  function submit(question: string) {
+    if (view.status !== "draft") return;
+    send({ ...view.ask, question: question.trim() || null });
+  }
+
+  function retry() {
+    if (view.status === "error") send(view.ask);
+  }
+
+  function edit(preserveQuestion = false) {
+    if (view.status !== "ready" && view.status !== "error") return;
+    request.current?.abort();
+    request.current = null;
+    setState({ key, view: { status: "draft", ask: { ...view.ask, question: preserveQuestion ? view.ask.question : null } } });
+  }
+
   function requestPractice() {
     if (!source || view.status !== "ready") return;
     const ready = view;
     const controller = start();
     setState({ key, view: { ...ready, practice: { status: "loading" } } });
-    askTutor(source, ready.ask.selection, true, controller.signal).then(
+    askTutor(source, ready.ask.selection, ready.ask.question, true, controller.signal).then(
       (answer) => {
         if (request.current !== controller) return;
         const practice: Practice = answer.practice
@@ -118,14 +143,15 @@ export function useTutor(source: TutorSource | null): Tutor {
 
   function close() {
     request.current?.abort();
+    request.current = null;
     setState({ key, view: IDLE });
     const target = opener.current;
     opener.current = null;
     if (target?.isConnected) target.focus({ preventScroll: true });
   }
 
-  const openAt = view.status === "idle" ? null : view.ask.selection.kind === "row" ? view.ask.selection.row : "top";
-  return { enabled: source !== null, view, openAt, ask, requestPractice, close };
+  const openAt = view.status === "idle" ? null : "top";
+  return { enabled: source !== null, view, openAt, open, submit, retry, edit, requestPractice, close };
 }
 
 /** Never part of what a student is asking about. */
@@ -174,7 +200,7 @@ function readOffer(container: HTMLElement | null): Offer | null {
     text: query,
     display: display || query,
     top: rect.bottom - box.top + 6,
-    left: Math.max(0, Math.min(rect.left - box.left, box.width - 132)),
+    left: Math.max(0, Math.min(rect.left - box.left, box.width - 160)),
   };
 }
 
@@ -182,8 +208,8 @@ function shorten(text: string, length = 60): string {
   return text.length > length ? `${text.slice(0, length - 1).trimEnd()}…` : text;
 }
 
-/** A small "Explain this" button under any text selected inside the solution card. */
-export function SelectionExplain({ tutor, containerRef }: { tutor: Tutor; containerRef: RefObject<HTMLElement | null> }) {
+/** Offers the tutor beside text selected inside the solution card. */
+export function SelectionAskTutor({ tutor, containerRef }: { tutor: Tutor; containerRef: RefObject<HTMLElement | null> }) {
   const [offer, setOffer] = useState<Offer | null>(null);
   const enabled = tutor.enabled;
   useEffect(() => {
@@ -214,25 +240,23 @@ export function SelectionExplain({ tutor, containerRef }: { tutor: Tutor; contai
       // Keep the selection while the button is pressed.
       onMouseDown={(event) => event.preventDefault()}
       onClick={() => {
-        tutor.ask({ kind: "text", text: offer.text }, `“${shorten(offer.display)}”`);
+        tutor.open({ kind: "text", text: offer.text }, `“${shorten(offer.display)}”`);
         setOffer(null);
         window.getSelection()?.removeAllRanges();
       }}
-      aria-label={`Explain the selected text: ${shorten(offer.display, 80)}`}
-      data-testid="explain-selection"
+      aria-label={`Ask AI Tutor about the selected text: ${shorten(offer.display, 80)}`}
+      data-testid="ask-ai-tutor-selection"
     >
-      <ExplainIcon />
-      Explain this
+      <TutorIcon />
+      Ask AI Tutor
     </button>
   );
 }
 
-export function ExplainIcon() {
+export function TutorIcon() {
   return (
-    <svg viewBox="0 0 20 20" width="15" height="15" fill="none" aria-hidden="true">
-      <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
-      <path d="M8.2 8a1.9 1.9 0 1 1 2.6 1.8c-.5.2-.8.6-.8 1.1v.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      <circle cx="10" cy="13.8" r=".9" fill="currentColor" />
+    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" aria-hidden="true">
+      <path d="M3 17c5 0 4-10 9-10s4 10 9 10M3 12h18" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
     </svg>
   );
 }
@@ -247,33 +271,63 @@ function Loading({ label }: { label: string }) {
   );
 }
 
-/** The tutor's answer, inline in the solution card. */
+function TutorComposer({ initialQuestion, onSubmit }: { initialQuestion: string; onSubmit: (question: string) => void }) {
+  const [question, setQuestion] = useState(initialQuestion);
+  const input = useRef<HTMLTextAreaElement>(null);
+  const inputId = useId();
+  useEffect(() => input.current?.focus({ preventScroll: true }), []);
+  return (
+    <form className={styles.composer} onSubmit={(event) => { event.preventDefault(); onSubmit(question); }}>
+      <label htmlFor={inputId}>Add a question <span>(optional)</span></label>
+      <textarea
+        ref={input}
+        id={inputId}
+        value={question}
+        onChange={(event) => setQuestion(event.target.value)}
+        maxLength={500}
+        rows={2}
+        placeholder="What would you like to understand?"
+      />
+      <div className={styles.composerActions}>
+        <span>Leave blank for an explanation of the highlighted text</span>
+        <button type="submit" className={styles.askButton}><TutorIcon /> Ask AI Tutor</button>
+      </div>
+    </form>
+  );
+}
+
+/** The tutor's question and answer, inline in the solution card. */
 export function TutorPanel({ tutor }: { tutor: Tutor }) {
   const { view } = tutor;
   const titleId = useId();
   const heading = useRef<HTMLHeadingElement>(null);
   const ask = view.status === "idle" ? null : view.ask;
-  // A new question moves focus (and the view) to the panel, for keyboard and screen-reader users.
+  // The composer focuses its input; a submitted question focuses its answer.
   useEffect(() => {
-    if (!ask) return;
+    if (!ask || view.status === "draft") return;
     heading.current?.focus({ preventScroll: true });
     heading.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
-  }, [ask]);
+  }, [ask, view.status]);
   if (view.status === "idle") return null;
   return (
     <section className={styles.panel} aria-labelledby={titleId} data-tutor-panel data-testid="tutor-panel">
       <div className={styles.heading}>
-        <h3 id={titleId} ref={heading} tabIndex={-1}>{view.status === "ready" ? view.answer.title : "Tutor"}</h3>
+        <h3 id={titleId} ref={heading} tabIndex={-1}>{view.status === "ready" ? view.answer.title : "Ask AI Tutor"}</h3>
         <button type="button" className={shared.copyButton} onClick={tutor.close} aria-label="Close the tutor">Close</button>
       </div>
       <p className={styles.about}>About {view.ask.label}</p>
       <div aria-live="polite">
-        {view.status === "loading" ? (
+        {view.status === "draft" ? (
+          <TutorComposer key={`${view.ask.selection.kind}:${view.ask.selection.kind === "text" ? view.ask.selection.text : view.ask.selection.row}`} initialQuestion={view.ask.question ?? ""} onSubmit={tutor.submit} />
+        ) : view.status === "loading" ? (
           <Loading label="The tutor is writing an answer…" />
         ) : view.status === "error" ? (
           <div className={styles.actions}>
             <p className={styles.error} role="alert">{view.message}</p>
-            <button type="button" className={shared.retryButton} onClick={() => tutor.ask(view.ask.selection, view.ask.label)}>Try again</button>
+            <div className={styles.actionButtons}>
+              <button type="button" className={shared.retryButton} onClick={() => tutor.edit(true)}>Edit question</button>
+              <button type="button" className={shared.retryButton} onClick={tutor.retry}>Try again</button>
+            </div>
           </div>
         ) : (
           <>
@@ -290,6 +344,7 @@ export function TutorPanel({ tutor }: { tutor: Tutor }) {
               </>
             )}
             <PracticeSection practice={view.practice} onRequest={tutor.requestPractice} />
+            <button type="button" className={styles.anotherButton} onClick={() => tutor.edit()}>Ask another question about this text</button>
           </>
         )}
       </div>
@@ -380,7 +435,7 @@ export function SaveTrickButton({ source }: { source: TutorSource }) {
         onClick={toggle}
         disabled={busy}
         aria-pressed={current.status === "saved"}
-        title={current.status === "saved" ? "Saved to History. Click to remove." : "Keep this technique in your saved tricks on the History page."}
+        title={current.status === "saved" ? "Saved to your tricks · click to remove" : "Keep this technique in Saved tricks"}
         data-testid="save-trick"
       >
         <svg viewBox="0 0 20 20" width="15" height="15" aria-hidden="true">

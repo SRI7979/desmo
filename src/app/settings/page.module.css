@@ -1,0 +1,17 @@
+.page { width: min(100%, 640px); margin: 0 auto; }
+.page h1 { margin: 0 0 var(--space-5); font-size: clamp(1.5rem, 3vw, 1.8rem); font-weight: 720; letter-spacing: -.04em; }
+.card { margin-bottom: var(--space-3); padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius-lg); background: #fff; box-shadow: var(--shadow-card); }
+.card h2 { margin: 0; font-size: var(--text-base); font-weight: 700; }
+.card > p { margin: var(--space-1) 0 var(--space-4); color: var(--muted); font-size: var(--text-sm); }
+.accountRow { display: flex; justify-content: space-between; gap: var(--space-4); margin-top: var(--space-4); color: var(--muted); font-size: var(--text-sm); }
+.accountRow strong { color: var(--foreground); font-weight: 650; overflow-wrap: anywhere; }
+.form { display: grid; gap: var(--space-3); }
+.form label { display: grid; gap: var(--space-2); font-size: var(--text-sm); font-weight: 650; }
+.form input { width: 100%; min-height: 44px; padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: #fff; color: var(--foreground); }
+.form button { justify-self: start; min-height: 42px; padding: 0 var(--space-4); border: 1px solid var(--accent-hover); border-radius: var(--radius-md); background: var(--accent); color: #082f43; font-size: var(--text-sm); font-weight: 700; }
+.form button:hover:not(:disabled) { background: var(--accent-hover); }
+.form button:disabled { opacity: .6; }
+.error, .success { margin: 0; padding: var(--space-3); border-radius: var(--radius-sm); font-size: var(--text-sm); }
+.error { border: 1px solid #edcece; background: var(--danger-soft); color: var(--danger); }
+.success { border: 1px solid #b9e5ca; background: var(--success-soft); color: var(--success); }
+@media (max-width: 520px) { .card { padding: var(--space-4); } .accountRow { flex-direction: column; gap: var(--space-1); } }

@@ -1,8 +1,8 @@
-/* Positioned so the tutor's "Explain this" button can sit under a selection. */
+/* The selection tutor action is anchored within this explanation. */
 .solution { position: relative; color: var(--foreground); }
 
 .answerBox {
-  padding: var(--space-5);
+  padding: var(--space-4);
   border: 1px solid var(--border-accent);
   border-radius: var(--radius-lg);
   background: #edfaff;
@@ -22,7 +22,7 @@
 .answerValue :global(.katex) { font-size: 1em; }
 
 .structureNote {
-  margin: var(--space-6) 0;
+  margin: var(--space-5) 0;
   padding: 0;
 }
 .structureNote h3, .sectionHeading h3, .readAnswer h3 {
@@ -45,12 +45,12 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
-  margin: var(--space-6) 0 var(--space-4);
+  margin: var(--space-5) 0 var(--space-3);
 }
 .sectionHeading > span { color: var(--subtle); font-size: var(--text-xs); white-space: nowrap; }
 .expressionSteps, .steps { display: grid; list-style: none; padding: 0; margin: 0; }
 .expressionSteps { gap: 0; border-left: 1px solid var(--trace-line); margin-left: 11px; }
-.expressionSteps li { position: relative; min-width: 0; padding: var(--space-4) 0 var(--space-5) var(--space-5); border-top: 1px solid var(--border-subtle); transition: background var(--ease-ui), box-shadow var(--ease-ui); scroll-margin-top: 24px; }
+.expressionSteps li { position: relative; min-width: 0; padding: var(--space-3) 0 var(--space-4) var(--space-4); border-top: 1px solid var(--border-subtle); transition: background var(--ease-ui), box-shadow var(--ease-ui); scroll-margin-top: 24px; }
 .lineHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin-bottom: var(--space-2); }
 .lineActions, .ideaHeading { display: flex; align-items: center; gap: var(--space-1); }
 .ideaHeading { justify-content: space-between; gap: var(--space-3); }
@@ -87,12 +87,10 @@
 }
 .copyButton:hover { color: var(--accent-text); background: var(--accent-soft); border-color: #cde9f2; }
 .copyButton:active { background: #d9f0f8; }
-.explainButton { border-color: var(--border-accent); background: var(--accent-soft); color: var(--accent-ink); }
-.explainButton:hover { border-color: var(--accent); background: #cef3ff; color: var(--accent-ink); }
 .equation {
   min-width: 0;
   overflow-x: auto;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-3);
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
   background: var(--surface-muted);
@@ -118,8 +116,8 @@
   display: flex;
   align-items: flex-start;
   gap: var(--space-3);
-  margin: var(--space-3) 0 var(--space-6);
-  padding: var(--space-4) 0;
+  margin: var(--space-2) 0 var(--space-4);
+  padding: var(--space-3) 0;
   border-top: 1px solid var(--border-subtle);
 }
 .readIcon { color: var(--accent-text); font-size: 1.25rem; line-height: 1; }

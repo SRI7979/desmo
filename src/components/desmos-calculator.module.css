@@ -1,5 +1,5 @@
 .shell { min-width: 0; overflow: hidden; background: #fff; }
-.calculatorFrame { position: relative; width: 100%; height: min(72svh, 720px); min-height: 590px; }
+.calculatorFrame { position: relative; width: 100%; height: clamp(480px, 55svh, 560px); }
 .calculator { width: 100%; height: 100%; }
 .placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-4); padding: var(--space-8); background: #fbfcfd; color: var(--muted); text-align: center; }
 .placeholder p { max-width: 340px; margin: 0; font-size: var(--text-sm); line-height: 1.6; }

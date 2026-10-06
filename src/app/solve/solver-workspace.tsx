@@ -97,7 +97,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   const [imageZoomed, setImageZoomed] = useState(false);
   const [revision, setRevision] = useState(0);
   const [problemId, setProblemId] = useState<string | null>(null);
-  // The solve the shown methods come from, for the tutor ("Explain this", "Save this trick").
+  // The solve the shown methods come from, for the tutor and saved tricks.
   const [cacheKey, setCacheKey] = useState<string | null>(null);
   const [historyWarning, setHistoryWarning] = useState<string | null>(null);
   const [needsSignIn, setNeedsSignIn] = useState(false);
@@ -534,12 +534,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
         {accountNav}
       </header>
       <main className={styles.main}>
-        <div className={styles.intro}>
-          <div>
-            <h1>Make the math click.</h1>
-            <p className={styles.introCopy}>Upload a question, follow the method, and check every step in Desmos.</p>
-          </div>
-        </div>
+        <h1 className={styles.srOnly}>SAT Math solver</h1>
         <CalculatorVerificationProvider>
         <div className={styles.workspace}>
           <section
@@ -547,7 +542,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             aria-labelledby="upload-title"
           >
             <div className={styles.cardHeading}>
-              <h2 id="upload-title"><span className={styles.sectionIndex} aria-hidden="true">01</span>Question</h2>
+              <h2 id="upload-title">Question</h2>
               <button
                 type="button"
                 className={styles.sampleButton}
@@ -699,20 +694,17 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             )}
             {notice && (
               <p className={styles.limitNotice} role="status" data-testid="limit-notice">
-                {notice} <Link href="/history">Open your history</Link>.
+                {notice} <Link href="/history">Open your history</Link>
               </p>
             )}
             {(error || needsSignIn) && (
               <div className={styles.error} role="alert">
-                {error || "Your session expired."}
+                {error || "Your session expired"}
                 {needsSignIn && (
-                  <> <Link href="/login?next=%2Fsolve">Sign in to continue</Link>.</>
+                  <> <Link href="/login?next=%2Fsolve">Sign in to continue</Link></>
                 )}
               </div>
             )}
-            <p className={styles.privacyNote}>
-              Images are sent to OpenAI. Results are saved to your private history.
-            </p>
           </section>
           <section
             className={`${styles.card} ${styles.resultCard}`}
@@ -720,7 +712,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             aria-busy={loading}
           >
             <div className={styles.resultHeading}>
-              <h2 id="result-title"><span className={styles.sectionIndex} aria-hidden="true">02</span>Explanation</h2>
+              <h2 id="result-title">Explanation</h2>
               {solution?.status === "solved" && listed.length > 0 && selectedMethodId && (
                 <TechniqueSelector methods={listed} selectedId={selectedMethodId} onSelect={switchTechnique} />
               )}
@@ -747,14 +739,14 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                   />
                   {problemId && (
                     <p className={styles.savedNotice} role="status">
-                      Saved to <Link href={`/history/${encodeURIComponent(problemId)}`}>your history</Link>.
+                      Saved to <Link href={`/history/${encodeURIComponent(problemId)}`}>your history</Link>
                     </p>
                   )}
                   {historyWarning && <p className={styles.error} role="status">{historyWarning}</p>}
                 </>
               ) : (
                 <div className={styles.emptyResult}>
-                  <p>Understand every step.</p>
+                  <p>Understand every step</p>
                   <p>After you solve, you’ll see the method beside the calculator lines that use it.</p>
                 </div>
               )}
@@ -765,7 +757,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             aria-labelledby="calculator-title"
           >
             <div className={styles.calculatorHeading}>
-              <h2 id="calculator-title"><span className={styles.sectionIndex} aria-hidden="true">03</span>Calculator</h2>
+              <h2 id="calculator-title">Calculator</h2>
             </div>
             <DesmosCalculator
               expressions={
