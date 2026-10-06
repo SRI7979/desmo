@@ -33,6 +33,7 @@ const method = selectMethods(candidatesResponseSchema.parse(candidatesResponse([
 
 const good = {
   why: "The graph has no x-intercepts only when its lowest point is above the x-axis. Use the slider to find the first whole-number q that achieves this.",
+  handMath: null,
   purposes: [
     "The first row makes q a whole-number slider so you can compare neighboring values.",
     "The second row draws the given parabola, making its lowest point and x-intercepts visible at each q.",

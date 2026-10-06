@@ -113,6 +113,8 @@ export const solutionSchema = z.object({
   answer: z.string().max(500),
   method: z.enum(SOLUTION_METHODS),
   why: z.string().max(1200),
+  // "Math you do by hand": named and explained, null when Desmos does all of it.
+  handMath: z.string().max(600).nullable().default(null),
   steps: z.array(z.string().max(800)).max(5),
   readAnswer: z.string().max(1000).nullable(),
   expressions: z

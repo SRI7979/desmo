@@ -86,6 +86,7 @@ export function candidatesResponse(
 export function explanation(rowCount = 1, overrides: Partial<Explanation> = {}): Explanation {
   return {
     why: "Graphing the equation shows its solutions as x-intercepts, so no rearranging is needed.",
+    handMath: null,
     readAnswer: "Click the positive x-intercept of line 1 and read x = 3.",
     steps: rowCount === 0 ? ["Factor x² − 9 as (x − 3)(x + 3) and take the positive root, 3."] : [],
     purposes: Array.from({ length: rowCount }, (_, index) =>
@@ -303,7 +304,10 @@ export function tangentExplanations(): Record<string, Explanation> {
   return {
     "Vertex of the difference": explanation(1, { why: "Where the line touches the parabola, the parabola minus the line has a double root, so k cancels that difference's lowest value." }),
     "Slider until it fits": explanation(3, { why: "Dragging k slides the line up and down until it just touches the parabola." }),
-    "Derivative regression": explanation(3, { why: "Touching means the line and the parabola share both a value and a slope at one point, so Desmos fits both at once." }),
+    "Derivative regression": explanation(3, {
+      why: "Touching means the line and the parabola share both a value and a slope at one point, so Desmos fits both at once.",
+      handMath: "The one fact you bring: where a line touches a parabola, both have the same slope there.",
+    }),
     Discriminant: explanation(0, {
       why: "A quadratic has exactly one solution when its discriminant is zero, so set the two equations equal and make b^2 - 4ac vanish.",
       steps: ["Set 3x^2 + 13x + 2 = 6x - k and collect terms: 3x^2 + 7x + (2 + k) = 0.", "Exactly one solution means 49 - 12(2 + k) = 0.", "So 12k = 25 and k = 25/12."],

@@ -60,6 +60,7 @@ function historySolution(overrides: Partial<Solution> = {}): Solution {
     answer: "2",
     method: "desmos",
     why: "Desmos fits the line through both points, so the slope is read directly.",
+    handMath: null,
     steps: [],
     readAnswer: "Read m under the regression results: m = 2.",
     expressions: [

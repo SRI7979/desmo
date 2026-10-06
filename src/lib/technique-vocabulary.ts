@@ -164,6 +164,13 @@ export function techniqueName(id: TechniqueId): string {
 /** The annotation form used in desmos-tricks.md: [technique: id | Display name]. */
 export const TECHNIQUE_ANNOTATION = /^\[technique: ([a-z0-9-]+) \| ([^\]]+)\]$/;
 
+/**
+ * The numbered strategies in desmos-tricks.md. Call 1 cites them by number
+ * (the strategies it matched, the one each candidate applies), so the schema
+ * bounds the numbers; tests/technique-vocabulary.test.ts keeps this in sync.
+ */
+export const LIBRARY_STRATEGY_COUNT = 78;
+
 /** Prompt text: the standard techniques the library does not cover. */
 export function standardTechniqueGuide(): string {
   return TECHNIQUES.filter((technique) => technique.source === "standard")

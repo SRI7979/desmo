@@ -2,7 +2,8 @@ import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-import { benchmarkCaseSchema, type CaseGroup, type LoadedCase } from "./case-schema";
+import { loadGoldSolutions, type GoldSolution } from "../../src/lib/gold-solutions";
+import { benchmarkCaseSchema, type CaseGroup, type LoadedCase, type ScorableCase } from "./case-schema";
 
 /** Committed cases. */
 export const PUBLIC_CASES_DIR = path.join(process.cwd(), "evals/problems");
@@ -39,7 +40,7 @@ async function loadDirectory(directory: string, isPrivate: boolean): Promise<Loa
   return cases;
 }
 
-export type CaseFilter = { only?: string[]; group?: CaseGroup | "all"; includePrivate?: boolean };
+export type CaseFilter = { only?: string[]; group?: Exclude<CaseGroup, "gold"> | "all"; includePrivate?: boolean };
 
 /** Every valid case, public then private, filtered; throws listing every invalid file. */
 export async function loadCases(filter: CaseFilter = {}): Promise<LoadedCase[]> {
@@ -57,4 +58,37 @@ export async function loadCases(filter: CaseFilter = {}): Promise<LoadedCase[]> 
       (!filter.group || filter.group === "all" || item.group === filter.group) &&
       (!filter.only?.length || filter.only.some((prefix) => item.id.startsWith(prefix) || item.id.startsWith(`private/${prefix}`))),
   );
+}
+
+/**
+ * One gold solution as a scored case: its technique is the gold label and its
+ * answer the expected one. A lettered answer is scored as that choice's text.
+ */
+export function goldCase(solution: GoldSolution): ScorableCase {
+  const entries = Object.entries(solution.answer_choices);
+  const choices = entries.length ? entries.map(([, text]) => text) : null;
+  const lettered = solution.answer_choices[solution.correct_answer];
+  return {
+    id: `gold/${solution.id}`,
+    group: "gold",
+    labelProvenance: "human_verified_gold",
+    problem: solution.question,
+    choices,
+    correctAnswer: lettered ?? solution.correct_answer,
+    gold: [solution.techniqueId],
+    acceptable: [],
+    bad: [],
+  };
+}
+
+/**
+ * The gold solutions as benchmark cases (npm run bench:solver -- <label>
+ * --group=gold). Never mixed into the default run: the solver sees them in its
+ * prompt, so they show the standard is followed, not that it generalizes.
+ */
+export async function loadGoldCases(only: string[] = []): Promise<ScorableCase[]> {
+  const { solutions } = await loadGoldSolutions();
+  return solutions
+    .map(goldCase)
+    .filter((item) => !only.length || only.some((prefix) => item.id.startsWith(prefix) || item.id.startsWith(`gold/${prefix}`)));
 }

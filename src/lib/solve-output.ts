@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { parseNumber } from "./answer-consistency";
+import type { LibraryTrace } from "./library-trace";
 import { explanationSchema, type Explanation } from "./solve-cache";
 import { candidatesResponseSchema, type CandidatesResponse } from "./strategy-selection";
 
@@ -223,4 +224,10 @@ export async function logSolveRejection(id: string, attempt: number, raw: unknow
 export function logSelectionDisagreement(id: string, preferred: string, winner: string) {
   if (!diagnosticsEnabled()) return;
   console.info("[desmo:selection]", JSON.stringify({ id, modelPreferred: preferred, serverSelected: winner }));
+}
+
+/** Which library strategies the solve matched and used, and whether it fell back to generic math. */
+export function logLibraryTrace(id: string, trace: LibraryTrace) {
+  if (!diagnosticsEnabled()) return;
+  console.info("[desmo:library]", JSON.stringify({ id, ...trace }));
 }

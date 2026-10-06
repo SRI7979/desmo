@@ -21,12 +21,19 @@ export const SAT_DOMAINS = [
   "Geometry and Trigonometry",
 ] as const;
 
-export const CASE_GROUPS = ["representative", "hard"] as const;
+export const CASE_GROUPS = ["representative", "hard", "gold"] as const;
 export type CaseGroup = (typeof CASE_GROUPS)[number];
 
 export const CASE_SOURCES = ["original", "bedrock-paraphrase", "user-screenshot", "bedrock-private"] as const;
 
 const techniqueId = z.enum(TECHNIQUE_IDS);
+
+/**
+ * Who vouches for a case's labels: a human who checked the answer and the
+ * method to teach (the gold solutions), or an agent (every case file here).
+ */
+export const LABEL_PROVENANCES = ["human_verified_gold", "agent_generated_silver"] as const;
+export type LabelProvenance = (typeof LABEL_PROVENANCES)[number];
 /** 0 none, 1 one trivial Algebra-1 step, 2 a few steps or one formula, 3 multi-step derivation. */
 const burdenScale = z.number().int().min(0).max(3);
 
@@ -75,6 +82,12 @@ export const benchmarkCaseSchema = z
       .strict(),
     routing: routingSchema,
     explanationNotes: z.string().min(5).max(800),
+    /**
+     * Who vouches for the gold label: a human who checked the answer and the
+     * method to teach, or an agent (every case written before this field).
+     * Reported separately, so agent labels are never read as ground truth.
+     */
+    labelProvenance: z.enum(LABEL_PROVENANCES).default("agent_generated_silver"),
     // Legacy fields used by evals/classifiers.ts; optional on new cases.
     intendedMethod: z.string().max(120).optional(),
     acceptableMethods: z.array(z.string().max(120)).optional(),
@@ -104,3 +117,9 @@ export const benchmarkCaseSchema = z
 
 export type BenchmarkCase = z.infer<typeof benchmarkCaseSchema>;
 export type LoadedCase = BenchmarkCase & { id: string; private: boolean };
+
+/**
+ * What a run is scored against: a case file, or a gold solution, which
+ * carries no domain, burden, or routing labels and is never given made-up ones.
+ */
+export type ScorableCase = Pick<LoadedCase, "id" | "group" | "labelProvenance" | "problem" | "choices" | "correctAnswer" | "gold" | "acceptable" | "bad">;

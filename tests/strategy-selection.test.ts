@@ -517,7 +517,8 @@ test("every method carries a family derived from its technique and rows", () => 
         result: { type: "x_intercept", row: 3, relatedRows: [], value: 3, listIndex: null, answerFrom: "value", choiceLabel: null, detail: "the positive zero of the fitted parabola" },
       }),
       paperCandidate(),
-    ]),
+    // A data list must hold the question's numbers, so the points are in the question.
+    ], { question: "A parabola passes through (1, -8), (2, -5), and (4, 7). What is its positive x-intercept?" }),
   );
   assert.deepEqual(
     Object.fromEntries(methods.map((method) => [method.techniqueId, method.family])),

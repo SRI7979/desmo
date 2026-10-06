@@ -13,6 +13,7 @@ import {
 import {
   findDerivedConstants,
   findDerivedDefinitions,
+  findUntranscribedListValues,
   findProseRows,
   findUndefinedVariables,
   normalizeDesmosExpressions,
@@ -26,11 +27,14 @@ import {
   describeShape,
   mathLevel,
   mathScore,
+  methodApproach,
   methodFamily,
   rowSignature,
   totalCost,
+  APPROACHES,
   BADGES,
   METHOD_FAMILIES,
+  type Approach,
 } from "./method-scoring";
 import { hasUnnecessaryCoefficientLists } from "./regression-workflow";
 import {
@@ -53,7 +57,7 @@ import {
   findListShapeViolations,
   findRegressionDeterminacyViolations,
 } from "./solver-rules";
-import { getTechnique, TECHNIQUE_IDS, techniqueName, type TechniqueId } from "./technique-vocabulary";
+import { getTechnique, LIBRARY_STRATEGY_COUNT, TECHNIQUE_IDS, techniqueName, type TechniqueId } from "./technique-vocabulary";
 
 /**
  * Every technique that validly solves the problem, up to six: the dropdown is
@@ -86,10 +90,28 @@ const candidateRowSchema = z
   })
   .strict();
 
+const strategyNumber = z.number().int().min(1).max(LIBRARY_STRATEGY_COUNT);
+
+/**
+ * The library search, written after the structure and before any candidate
+ * (the schema's field order makes it come first): the numbered strategies
+ * whose trigger fits, and why a matched strategy did not become a candidate.
+ * Logged for development and evals only; it never selects.
+ */
+export const libraryReportSchema = z
+  .object({
+    matched: z.array(strategyNumber).max(12),
+    skipped: z.array(z.object({ strategy: strategyNumber, reason: z.string().max(160) }).strict()).max(8),
+  })
+  .strict();
+export type LibraryReport = z.infer<typeof libraryReportSchema>;
+
 /** One terse candidate technique: rows, readout, and cost components. No prose. */
 export const candidateSchema = z
   .object({
     techniqueId: z.enum(TECHNIQUE_IDS),
+    // The numbered library strategy this candidate applies; null for a paper technique.
+    strategy: strategyNumber.nullable().default(null),
     rung: z.number().int().min(0).max(4),
     rows: z.array(candidateRowSchema).max(MAX_EXPRESSIONS),
     answer: z.string().max(500),
@@ -110,6 +132,7 @@ export const candidatesResponseSchema = z.object({
   choices: z.array(answerChoiceSchema).max(8).nullable().default(null),
   clarification: z.string().max(1000).nullable(),
   structure: z.string().max(240).default(""),
+  library: libraryReportSchema.default({ matched: [], skipped: [] }),
   candidates: z.array(candidateSchema).max(MAX_CANDIDATES),
   // Logged when it disagrees with the server's argmin; never used to select.
   preferredTechniqueId: z.enum(TECHNIQUE_IDS).nullable(),
@@ -142,6 +165,8 @@ export const methodSchema = z.object({
   shape: z.string(),
   // Optional: entries cached before families existed still load.
   family: z.enum(METHOD_FAMILIES).optional(),
+  // Desmos way or math way; optional for entries cached before it existed.
+  approach: z.enum(APPROACHES).optional(),
   badges: z.array(z.enum(BADGES)),
   rejected: z.object({ rule: z.string(), reason: z.string() }).nullable(),
   repairs: z.array(z.string()),
@@ -220,6 +245,15 @@ const SLOPE_QUOTIENT = new RegExp(
 );
 
 /**
+ * 16^{2}-4(3)(2), (-16)^{2}-4\cdot3\cdot2, or b^{2}-4ac: the quadratic
+ * formula's discriminant typed into a row (whitespace removed). Desmos does
+ * the arithmetic; the student still recalled the formula, where clicking the
+ * graph's root would not need it. The squared base must be a literal number,
+ * so x^{2}-4x and (x-2)^{2}-4(x+1) never match.
+ */
+const TYPED_DISCRIMINANT = /(?:\(-?\d+(?:\.\d+)?\)|(?<![\w.)])\d+(?:\.\d+)?)\^\{?2\}?-4(?:\(|\*?\d|\\cdot)|\bb\^\{?2\}?-4ac\b/;
+
+/**
  * 18(540)/3^{2} or cost=391/1.15: a row computing a number from the
  * question's numbers alone. Lists, points, equations, and rows with a
  * variable or a built-in such as distance() are not this.
@@ -234,6 +268,23 @@ export function isLiteralArithmetic(latex: string): boolean {
     .replace(/\\operatorname\{(?:round|floor|ceil|abs)\}/g, " ");
   if (/[A-Za-z\\]/.test(bare)) return false;
   return (bare.match(/\d+(?:\.\d+)?/g) ?? []).length >= 2;
+}
+
+const LITERAL_LIST = /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*=\s*(?:\\left)?\[[^[\]A-Za-z]*\](?:\\right)?\s*$/;
+const LIST_LOOKUP = /^\s*[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?\s*(?:\\left)?\[[^[\]]*\](?:\\right)?\s*$/;
+
+/**
+ * Desmos way or math way. Paper and calculator-only techniques are the math
+ * way; so is any plan whose rows only do arithmetic on the question's numbers,
+ * list literals, or look a computed value up in that list (a choice list
+ * wrapped around 18(540)/3^2): Desmos is a calculator there, whatever the
+ * technique is called.
+ */
+export function planApproach(techniqueId: TechniqueId, rows: readonly { latex: string }[]): Approach {
+  if (methodApproach({ techniqueId }) === "math") return "math";
+  const arithmeticOnly = rows.length > 0 && rows.some((row) => isLiteralArithmetic(row.latex)) &&
+    rows.every((row) => isLiteralArithmetic(row.latex) || LITERAL_LIST.test(row.latex) || LIST_LOOKUP.test(row.latex));
+  return arithmeticOnly ? "math" : "desmos";
 }
 
 /** A row that defines a function, f(x)=... or g_{1}(t)=... */
@@ -343,6 +394,51 @@ export function questionIntegerParameters(question: string): Parameter[] {
   }
   // x and y are graph coordinates, never parameters a row introduces.
   return [...names].filter((name) => !/^[xyt]$/i.test(name)).map((name) => ({ name, integer: true, min: -1000, max: 1000 }));
+}
+
+const NUMBER = String.raw`(-?\d+(?:\.\d+)?)`;
+/** g(1)=5 */
+// A value ends at the end of the text, punctuation, or a space: not inside 4.5, 3f(1), or 3(x+1). A full stop ends a sentence.
+const VALUE_END = String.raw`(?=$|[^\d.A-Za-z(]|\.(?!\d))`;
+const FUNCTION_VALUE = new RegExp(String.raw`\b([a-z])\s*\(\s*${NUMBER}\s*\)\s*=\s*${NUMBER}${VALUE_END}`, "gi");
+/** x: 1 → g(x)=5, x = 1, g(x) = 5 */
+const TABLE_ROW_VALUE = new RegExp(String.raw`\bx\s*[:=]\s*${NUMBER}\s*(?:→|->|,|;|\|)\s*([a-z])\s*\(\s*x\s*\)\s*=\s*${NUMBER}${VALUE_END}`, "gi");
+
+export type TranscriptionConflict = { name: string; input: number; values: number[] };
+
+/**
+ * The same function value transcribed twice with different numbers: the model
+ * read the table, then added values it computed itself under the table's name
+ * ("x: 1 → g(x)=5" and "Table values: g(1)=15", which is f(1)). Any repair or
+ * regression that trusts one of them may be fitting computed numbers.
+ */
+export function findTranscriptionConflicts(question: string): TranscriptionConflict[] {
+  const seen = new Map<string, { name: string; input: number; values: Set<number> }>();
+  const record = (name: string, input: number, value: number) => {
+    const key = `${name.toLowerCase()}(${input})`;
+    const entry = seen.get(key) ?? { name: name.toLowerCase(), input, values: new Set<number>() };
+    entry.values.add(value);
+    seen.set(key, entry);
+  };
+  for (const match of question.matchAll(FUNCTION_VALUE)) record(match[1], Number(match[2]), Number(match[3]));
+  for (const match of question.matchAll(TABLE_ROW_VALUE)) record(match[2], Number(match[1]), Number(match[3]));
+  return [...seen.values()].filter((entry) => entry.values.size > 1).map(({ name, input, values }) => ({ name, input, values: [...values].sort((a, b) => a - b) }));
+}
+
+/** Techniques whose slider the student drags: a step-1 slider keeps every stop an integer. */
+const DRAGGED_SLIDER_TECHNIQUES: ReadonlySet<TechniqueId> = new Set(["slider-condition", "slider-parallel", "shared-zero"]);
+
+/**
+ * "What is the value of a + b?" asks for one determined value. "Which could be",
+ * "possible values", greatest/least, "how many", and NOT/EXCEPT do not: there a
+ * continuous fit can land on any one of several answers.
+ */
+export function asksForDeterminedValue(question: string): boolean {
+  return (
+    !/\b(?:could|possible|greatest|least|maximum|minimum|largest|smallest|how many)\b/i.test(question) &&
+    !/\b(?:NOT|EXCEPT)\b/.test(question) &&
+    !isIntegerFactorExtremumQuestion(question)
+  );
 }
 
 /** A single fitted factorization cannot establish an extremum over integer factorizations. */
@@ -502,6 +598,13 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
       `Line ${derived.map((item) => `${item.row} uses ${item.constants.join(", ")}`).join("; ")}: those numbers are not in the question, so the plan was derived by hand.`,
     );
   }
+  const untranscribed = findUntranscribedListValues(rows, question, choices);
+  if (untranscribed.length) {
+    return reject(
+      "hidden-derivation",
+      `Line ${untranscribed.map((item) => `${item.row} lists ${item.constants.join(", ")}`).join("; ")}: a data list must hold the question's numbers exactly as printed; let a Desmos row compute anything derived from them.`,
+    );
+  }
   let derivedDefinitions = findDerivedDefinitions(rows, question);
   const resultRow = candidate.result.row;
   if (resultRow !== null && candidate.result.answerFrom === "value" && derivedDefinitions.some(({ row }) => row === resultRow)) {
@@ -526,12 +629,15 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
       "desmos_syntax",
     );
   }
-  const integerViolations = findIntegerParameterViolations(rows, parameters);
+  const integerViolations = findIntegerParameterViolations(rows, parameters, {
+    fixedValuesAllowed: !DRAGGED_SLIDER_TECHNIQUES.has(candidate.techniqueId) && candidate.cost.manualIterations === 0,
+    determinedValue: asksForDeterminedValue(question),
+  });
   if (integerViolations.length) {
     return reject(
       "integer-not-encoded",
       integerViolations
-        .map(({ row, param }) => `Line ${row} constrains ${param} with only an inequality, but ${param} must be an integer; use an integer list or an integer-step slider.`)
+        .map(({ row, param }) => `Line ${row} fits or drags ${param} as a continuous value, but ${param} must be an integer and the question asks which values could work or for an extreme one; use an integer list or an integer-step slider.`)
         .join("; "),
     );
   }
@@ -619,6 +725,9 @@ function validateCandidate(candidate: Candidate, context: CandidateContext): Val
   } else if (rows.some((row) => SLOPE_QUOTIENT.test(row.latex.replace(/\\left|\\right/g, "")))) {
     factFloor = 1;
     repairs.push("Counted one memorized fact: a row types the two-point slope formula over the given numbers.");
+  } else if (rows.some((row) => TYPED_DISCRIMINANT.test(row.latex.replace(/\\left|\\right|\s/g, "")))) {
+    factFloor = 1;
+    repairs.push("Counted one memorized fact: a row types the quadratic formula's b^2-4ac over the given coefficients.");
   }
   let derivationFloor = 0;
   if (candidate.techniqueId === "answer-choice-list" && rows.some((row) => isLiteralArithmetic(row.latex))) {
@@ -668,6 +777,7 @@ function scored(id: string, validated: Validated): Omit<Method, "badges" | "reje
     mathLevel: mathLevel(score),
     shape: describeShape({ techniqueId: validated.techniqueId, rows: validated.rows, cost }),
     family: methodFamily(validated.techniqueId, validated.rows),
+    approach: planApproach(validated.techniqueId, validated.rows),
   };
 }
 
@@ -694,10 +804,19 @@ function rejectedMethod(id: string, candidate: Candidate, rejection: Rejection):
     mathLevel: mathLevel(score),
     shape: describeShape({ techniqueId: candidate.techniqueId, rows, cost }),
     family: methodFamily(candidate.techniqueId, rows),
+    approach: planApproach(candidate.techniqueId, rows),
     badges: [],
     rejected: { rule: rejection.rule, reason: rejection.reason },
     repairs: [],
   };
+}
+
+/**
+ * Every math way after the first, in rank order: the list offers the Desmos
+ * ways and ONE math way, never several algebra variants of the same idea.
+ */
+function extraMathWays<T extends Pick<Method, "techniqueId" | "approach">>(ranked: readonly T[]): T[] {
+  return ranked.filter((method) => methodApproach(method) === "math").slice(1);
 }
 
 /**
@@ -734,6 +853,14 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
   } catch (error) {
     if (error instanceof ProseLatexError) throw new StrategySelectionError(error.message, "prose_text");
     throw error;
+  }
+  const conflicts = findTranscriptionConflicts(question);
+  if (conflicts.length) {
+    throw new StrategySelectionError(
+      `The transcription gives two different values for ${conflicts.map(({ name, input, values }) => `${name}(${input}) (${values.join(" and ")})`).join(", ")}. ` +
+        "Transcribe each table cell once, exactly as printed under its header, and never add values you computed to the question text.",
+      "transcription_conflict",
+    );
   }
   const context: CandidateContext = {
     question,
@@ -803,6 +930,11 @@ export function selectMethods(response: CandidatesResponse): MethodSelection {
     if (signature) signatures.set(signature, method.name);
     ranked.push(method);
   }
+  for (const extra of extraMathWays(ranked)) {
+    ranked.splice(ranked.indexOf(extra), 1);
+    const rejection = reject("extra-math-way", `${extra.name} is a second math way; one math way is listed as the alternative to the Desmos ways.`);
+    rejected.push({ ...extra, badges: [], rejected: { rule: rejection.rule, reason: rejection.reason }, stage: rejection.stage });
+  }
   const badges = assignBadges(ranked);
   return {
     question,
@@ -846,46 +978,46 @@ export const RESCUABLE_RULES: ReadonlySet<string> = new Set([
 export const MATH_HEAVY_SCORE = 2;
 
 export type RescueTarget = {
-  /** The math-heavy method that would be the default as things stand. */
+  /** The math way that would be the default as things stand. */
   winner: Method;
-  /** Rejected Desmos techniques that, had they passed, would ask less of the student. */
+  /** Rejected Desmos techniques that would rank ahead of it had they passed (may be empty). */
   candidates: Method[];
 };
 
 /**
- * Whether one guided correction is worth a model call: the default asks real
- * algebra (math score ≥ 2) only because a Desmos technique the model DID
- * propose, with less student math and a lower total by its own reported cost,
- * was rejected for a fixable slip. Recorded eval runs show this in 5–10% of
- * solves (the shared-zero slider on a factor question losing to written
- * substitution, an expanded-circle fit losing to completing the square).
+ * Whether one guided correction is worth a model call: the default is a math
+ * way, so no Desmos way survived. Either the model proposed Desmos techniques
+ * that were rejected for a fixable slip (the shared-zero slider on a factor
+ * question, the clicked-root regression on an integer form), or it proposed
+ * none. Translating the words is exempt: a representation or interpretation
+ * question has no Desmos way to find.
  */
 export function desmosRescueTarget(selection: MethodSelection): RescueTarget | null {
   const winner = selection.methods.find((method) => method.id === selection.winnerId);
-  if (!winner || winner.mathScore < MATH_HEAVY_SCORE) return null;
+  if (!winner || methodApproach(winner) === "desmos" || winner.techniqueId === "translate-the-words") return null;
+  if (isRepresentationQuestion(selection.question)) return null;
   const candidates = selection.methods.filter(
     (method) =>
       method.rejected !== null &&
       RESCUABLE_RULES.has(method.rejected.rule) &&
       method.rows.length > 0 &&
       getTechnique(method.techniqueId).source === "library" &&
-      method.mathScore < winner.mathScore &&
-      method.total < winner.total,
+      methodApproach(method) === "desmos",
   );
-  return candidates.length ? { winner, candidates } : null;
+  return { winner, candidates };
 }
 
-/** The guided-correction text for a rescue: fix the named Desmos candidates, keep the rest. */
-export function rescueReason(target: RescueTarget): string {
-  const fixes = target.candidates
-    .map((method) => `${method.techniqueId} (${method.name}) was rejected [${method.rejected!.rule}]: ${method.rejected!.reason}`)
-    .join(" | ");
-  return (
-    `the Desmos technique(s) you proposed were rejected, so the default would be ${target.winner.techniqueId} (${target.winner.name}), ` +
-    `which asks the student for ${target.winner.cost.derivationSteps} hand derivation step(s) and ${target.winner.cost.oneOffFacts} memorized fact(s). ${fixes}. ` +
-    "Correct those Desmos candidates so every rule passes (same technique, fixed rows or readout), and keep every candidate that already passed unchanged. " +
-    "If a rejected technique genuinely cannot solve this problem, drop it instead; never invent filler."
-  );
+/**
+ * The guided-correction text: fix the rejected Desmos candidates, or, when the
+ * model listed none, find one (`hints` names the library strategies the
+ * question's wording points to). Every passing candidate is kept.
+ */
+export function rescueReason(target: RescueTarget, hints = ""): string {
+  const problem = `the default would be ${target.winner.techniqueId} (${target.winner.name}), a math way that asks the student for ${target.winner.cost.derivationSteps} hand step(s) and ${target.winner.cost.oneOffFacts} memorized fact(s), because no Desmos way passed. `;
+  const fix = target.candidates.length
+    ? `${target.candidates.map((method) => `${method.techniqueId} (${method.name}) was rejected [${method.rejected!.rule}]: ${method.rejected!.reason}`).join(" | ")}. Correct those Desmos candidates so every rule passes (same technique, fixed rows or readout). If a rejected technique genuinely cannot solve this problem, drop it instead; never invent filler. `
+    : `You listed no Desmos way. Search <gold_solutions> and the numbered library strategies for the Desmos angle on this structure${hints ? ` (${hints})` : ""}: graph the given relation and click a feature, regress an unknown against the givens or a clicked value, drag a slider until a condition appears, or filter a list. If the math way plugs the givens into a formula or rearranges one, graph that relationship with the unknown as x against the given value as a horizontal line and click where they meet. Add every Desmos way that genuinely solves it. `;
+  return `${problem}${fix}Keep every candidate that already passed unchanged, including the math way.`;
 }
 
 /**
@@ -901,7 +1033,9 @@ export function mergeSelections(primary: MethodSelection, secondary: MethodSelec
     const current = eligible.get(method.techniqueId);
     if (!current || compareMethods(method, current) < 0) eligible.set(method.techniqueId, method);
   }
-  const ranked = [...eligible.values()].sort(compareMethods).slice(0, MAX_CANDIDATES);
+  const sorted = [...eligible.values()].sort(compareMethods);
+  const extras = new Set<Method>(extraMathWays(sorted));
+  const ranked = sorted.filter((method) => !extras.has(method)).slice(0, MAX_CANDIDATES);
   const badges = assignBadges(ranked);
   const rejected = new Map<string, Method>();
   for (const method of [...primary.methods, ...secondary.methods]) {

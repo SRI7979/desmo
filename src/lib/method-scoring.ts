@@ -162,6 +162,8 @@ export type Rankable = {
   total: number;
   mathScore: number;
   rows?: readonly Row[];
+  /** Set by selection, which can see that a plan only does arithmetic; derived from the technique otherwise. */
+  approach?: Approach;
 };
 
 /** The technique a distinctive primitive teaches by name; generic graphs and lists name none. */
@@ -195,8 +197,30 @@ function nameMismatch(method: Rankable): number {
  * over a list"), then the technique id. The same candidate set always sorts
  * the same way regardless of emission order.
  */
+export const APPROACHES = ["desmos", "math"] as const;
+export type Approach = (typeof APPROACHES)[number];
+
+/** Desmos only evaluates a formula the student recalls or sets up: the math way, typed. */
+const CALCULATOR_ONLY_TECHNIQUES: ReadonlySet<TechniqueId> = new Set<TechniqueId>(["calculator-arithmetic", "reference-formula"]);
+
+/**
+ * The Desmos way lets Desmos do the math (a graph feature, a regression, a
+ * slider, a list); the math way is paper work, or Desmos as a calculator over
+ * a formula the student recalls (a typed discriminant is calculator
+ * arithmetic). Desmos ways always rank ahead of math ways. A Desmos way may
+ * still rest on a small fact or step ("tangent means equal slopes"): its cost
+ * counts it and its explanation names it, but it stays a Desmos way.
+ */
+export function methodApproach(method: { techniqueId: TechniqueId; approach?: Approach }): Approach {
+  if (method.approach) return method.approach;
+  return getTechnique(method.techniqueId).source === "standard" || CALCULATOR_ONLY_TECHNIQUES.has(method.techniqueId) ? "math" : "desmos";
+}
+
+const approachRank = (method: Rankable) => Number(methodApproach(method) === "math");
+
 export function compareMethods(left: Rankable, right: Rankable): number {
   return (
+    approachRank(left) - approachRank(right) ||
     left.total - right.total ||
     left.mathScore - right.mathScore ||
     Number(ANSWER_CHOICE_TECHNIQUES.has(left.techniqueId)) - Number(ANSWER_CHOICE_TECHNIQUES.has(right.techniqueId)) ||

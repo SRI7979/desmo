@@ -57,6 +57,7 @@ const baseSolution: Solution = {
   answer: "3",
   method: "desmos",
   why: "Graphing the equation shows its solutions as x-intercepts.",
+  handMath: null,
   steps: [],
   readAnswer: "Click the positive x-intercept of line 1 and read x = 3.",
   expressions: [{ latex: "y=x^2-9", purpose: "Graphs the equation so its solutions are x-intercepts." }],

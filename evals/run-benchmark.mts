@@ -6,7 +6,7 @@
  * OpenAI credits.
  *
  *   npm run bench:solver -- <label> [--runs=3] [--concurrency=4]
- *       [--group=representative|hard|all] [--cases=001,032] [--compare=<label>]
+ *       [--group=representative|hard|gold|all] [--cases=001,032] [--compare=<label>]
  *       [--no-private]
  *
  * Each run gets a fresh, empty cache so it is an independent generation. The
@@ -22,8 +22,8 @@ import { randomUUID } from "node:crypto";
 
 import { createMemorySolveCache } from "../src/lib/solve-cache";
 import { configuredReasoningEffort, createTrace, loadSolveContext, solveProblem, type SolveContext } from "../src/lib/solve-pipeline";
-import type { LoadedCase } from "./benchmark/case-schema";
-import { loadCases } from "./benchmark/load-cases";
+import type { ScorableCase } from "./benchmark/case-schema";
+import { loadCases, loadGoldCases } from "./benchmark/load-cases";
 import { recordRun } from "./benchmark/record";
 import { metricsTable, perCaseTable, rejectionTable, stageTable } from "./benchmark/report";
 import { summarizeByGroup, type RunRecord } from "./benchmark/score";
@@ -35,7 +35,7 @@ function parseArgs() {
     label: args.find((arg) => !arg.startsWith("--")) ?? "run",
     runs: Number(flag("runs", "3")),
     concurrency: Number(flag("concurrency", "4")),
-    group: flag("group", "all") as "all" | "representative" | "hard",
+    group: flag("group", "all") as "all" | "representative" | "hard" | "gold",
     only: flag("cases", "").split(",").map((value) => value.trim()).filter(Boolean),
     compare: flag("compare", ""),
     includePrivate: !args.includes("--no-private"),
@@ -62,7 +62,7 @@ async function pooled<T, R>(items: T[], concurrency: number, work: (item: T) => 
   return results;
 }
 
-async function runOnce(client: OpenAI, context: SolveContext, item: LoadedCase, runIndex: number): Promise<RunRecord> {
+async function runOnce(client: OpenAI, context: SolveContext, item: ScorableCase, runIndex: number): Promise<RunRecord> {
   const trace = createTrace();
   const deps = { client, cache: createMemorySolveCache(), context, tier: { priorityUnavailable: false }, diagnosticId: randomUUID(), trace };
   const started = performance.now();
@@ -76,7 +76,9 @@ async function runOnce(client: OpenAI, context: SolveContext, item: LoadedCase, 
 
 async function main() {
   const options = parseArgs();
-  const cases = await loadCases({ only: options.only, group: options.group, includePrivate: options.includePrivate });
+  const cases: ScorableCase[] = options.group === "gold"
+    ? await loadGoldCases(options.only)
+    : await loadCases({ only: options.only, group: options.group, includePrivate: options.includePrivate });
   if (!cases.length) throw new Error("No cases matched.");
   const context = await loadSolveContext();
   const client = new OpenAI({ apiKey: await apiKey(), timeout: 170_000, maxRetries: 0 });

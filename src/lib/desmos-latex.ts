@@ -504,6 +504,49 @@ function numbersIn(text: string, prose: boolean): number[] {
 
 export type DerivedConstantReport = { row: number; constants: number[] };
 
+/**
+ * A data list holding a number the question never states, at any size
+ * (findDerivedConstants only checks numbers above 12): y_{1}=[15,42] when the
+ * table says g(1)=5 and g(4)=7 holds values computed by hand. Consecutive
+ * integers (x_{1}=[1,2,3,4,5], k=[2,3,4,5]) are sample inputs or candidates,
+ * not data, and a list of expressions is not checked here.
+ */
+export function findUntranscribedListValues(
+  expressions: ReadonlyArray<{ latex: string }>,
+  question: string,
+  choices: ReadonlyArray<{ label?: string; text: string }> | null | undefined,
+): DerivedConstantReport[] {
+  const given = new Set(
+    [question, ...(choices ?? []).map((choice) => choice.text)]
+      .flatMap((text) => numbersIn(text, true))
+      .map(Math.abs),
+  );
+  // Only observed data: a list that stands alone on one side of a regression
+  // (y_{1}\sim f(x_{1})). Sample inputs plugged into both sides of an identity
+  // (x_{1}=[0,1,0,2,-1,3]) are free choices, not numbers from the question.
+  const observed = new Set<string>();
+  for (const { latex } of expressions) {
+    const sides = latex.replace(/\\left|\\right|\s+/g, "").split(/\\sim(?![A-Za-z])|~/);
+    if (sides.length !== 2) continue;
+    for (const side of sides) if (/^[A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?$/.test(side)) observed.add(side);
+  }
+  const reports: DerivedConstantReport[] = [];
+  expressions.forEach((expression, index) => {
+    const list = expression.latex.replace(/\\left|\\right/g, "").match(/^\s*([A-Za-z](?:_\{[^{}]*\}|_[A-Za-z0-9])?)\s*=\s*\[([^[\]]*)\]\s*$/);
+    if (!list) return;
+    const [, name, body] = list;
+    if (!observed.has(name.replace(/\s+/g, "")) || body.includes("...")) return;
+    const items = body.split(",").map((item) => item.trim());
+    if (!items.every((item) => /^-?\d+(?:\.\d+)?$/.test(item))) return;
+    const values = items.map(Number);
+    const consecutive = values.length >= 2 && values.every((value, i) => Number.isInteger(value) && (i === 0 || value - values[i - 1] === 1));
+    if (consecutive) return;
+    const missing = [...new Set(values.map(Math.abs))].filter((value) => !given.has(value) && !STANDARD_CONSTANTS.has(value));
+    if (missing.length) reports.push({ row: index + 1, constants: missing.sort((a, b) => a - b) });
+  });
+  return reports;
+}
+
 export function findDerivedConstants(
   expressions: ReadonlyArray<{ latex: string; purpose: string }>,
   question: string,

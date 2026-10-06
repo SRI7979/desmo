@@ -16,6 +16,7 @@ function solution(overrides: Partial<Solution>): Solution {
     answer: "5",
     method: "desmos",
     why: "",
+    handMath: null,
     steps: [],
     readAnswer: null,
     expressions: [],

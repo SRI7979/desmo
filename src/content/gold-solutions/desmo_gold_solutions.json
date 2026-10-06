@@ -278,5 +278,30 @@
     "why_preferred": "The condition is visual and the parameter range is small, so the student never reasons about the vertex (3, k) algebraically. The slider starts at 0, not at the answer, and the read instruction names the condition to watch for.",
     "needs_review": false,
     "techniqueId": "slider-condition"
+  },
+  {
+    "id": "015",
+    "question": "3x^2 - 16x + 2 = 0. One solution to the given equation can be written as (a + sqrt(b))/6, where a and b are integers. What is the value of a + b?",
+    "answer_choices": {
+      "A": "66",
+      "B": "132",
+      "C": "248",
+      "D": "296"
+    },
+    "correct_answer": "C",
+    "strategy_name": "Root in a given radical form - click the root, slider for the visible number, regression for the hidden one",
+    "trigger_pattern": "An equation is given and the question says one solution can be written in a form with unknown constants, such as (a + sqrt(b))/c, then asks for a, b, or a combination of them. Graph the equation, click its root, and let a regression fit the unknown inside the root to that clicked value.",
+    "desmos_steps": [
+      "3x^2-16x+2",
+      "Click both x-intercepts of the graph: (0.12808, 0) and (5.20526, 0). The form (a+sqrt(b))/6 with a plus sign is the larger one, 5.20526.",
+      "(a+\\sqrt{b})/6~5.20526",
+      "a=16",
+      "Keep a as a slider at 16, the number already in the equation outside any root.",
+      "a+b",
+      "Read b = 232.00042 under the regression and a+b = 248.0004 on the last row. a and b are integers, so b = 232 and a + b = 248: choice C."
+    ],
+    "why_preferred": "Desmos does all of the math: the graph finds the root, and the regression finds b by matching the given form to that root. The student never recalls the quadratic formula, computes a discriminant, or simplifies a radical; the only thing read off the equation is a = 16, a number already printed in it. Typing the discriminant 16^2-4(3)(2) into Desmos would be the quadratic formula with a calculator, the math-first approach this replaces.",
+    "needs_review": false,
+    "techniqueId": "parameter-regression"
   }
 ]

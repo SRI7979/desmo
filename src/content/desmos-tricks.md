@@ -43,10 +43,10 @@ automation. Advanced tricks earn their place only when they materially simplify.
 
 List every genuinely distinct technique that validly solves the problem (up to six), each named
 by the [technique: id | name] tag of the strategy that teaches it, and report
-each one's cost components honestly. The server scores them; the lowest total
-cost is the default, and the student may switch to any other listed technique.
-Always include the lowest simplicity-ladder rung that works, and a paper
-technique when one genuinely exists. Never pad the list with a technique that
+each one's cost components honestly. The server scores them; the cheapest
+Desmos way is the default, and the student may switch to any other listed
+technique. Always include the lowest simplicity-ladder rung that works, and the
+one math way (a paper technique) when one genuinely exists. Never pad the list with a technique that
 does not solve the problem: two real techniques beat four with filler. Before
 choosing, ask "what is the shortest,
 clearest Desmos workflow a student could realistically reproduce?", never "how
@@ -126,7 +126,7 @@ distinguishes them.
 
 Each listed technique is one canonical method: its ordered calculator
 entries, their purposes, and the final answer instruction describe exactly
-that method. The routing policy at the end applies across all 76 strategies.
+that method. The routing policy at the end applies across all 78 strategies.
 
 1. Graph two equations and click the intersection
 [technique: graph-both-sides | Graph both sides]
@@ -1702,6 +1702,35 @@ lets Desmos do the setup too: graph both sides of the relationship instead of
 inverting it by hand, mean(repeat(...)) instead of a weighted-mean formula.
 Scalar rows with no function are this technique, not function evaluation.
 
+78. Root in a given radical form → click the root, slider the visible number, regress the hidden one
+[technique: parameter-regression | Parameter regression]
+
+Use when: an equation is given and the question says one solution can be
+written in a form with unknown constants, such as (a+√b)/6 or a+b√3, then asks
+for a, b, or a combination of them. This is the model Desmos way: the graph
+finds the root and a regression finds the hidden number, so the student does
+no algebra at all.
+
+3x^2-16x+2=0 has a solution (a+√b)/6, where a and b are integers; find a+b:
+3x^{2}-16x+2
+(a+\sqrt{b})/6\sim5.20526
+a=16
+a+b
+
+Graph the expression and click both x-intercepts, (0.12808, 0) and
+(5.20526, 0); the form with a plus sign is the larger root. Keep a as a slider
+at 16, the number already printed in the equation outside any root. The
+regression shows b=232.00042 and the last row 248.0004: a and b are integers,
+so b=232 and a+b=248. A regression fits a continuous value, so read the
+integer it rounds to; that is the integer the question asks for.
+If the outside number is not evident, click both x-intercepts and fit both
+conjugates at once: [(a+\sqrt{b})/6,(a-\sqrt{b})/6]\sim[5.20526,0.12808].
+
+BAD, the math way dressed up as Desmos: typing (16+\sqrt{16^{2}-4(3)(2)})/6
+or 16^{2}-4(3)(2) is the quadratic formula and its discriminant with a
+calculator. The student still recalls and sets up the formula; Desmos only does
+the arithmetic. It is listed, at most, as the math way.
+
 REGRESSION SAFETY
 
 Regression is the highest-value tool in this library and the easiest to abuse.
@@ -1736,7 +1765,9 @@ inapplicable approaches rather than inventing data or a fake executable plan. St
 1. Condition translation: convert every given fact (root, point, intercept,
    hole, factor, equivalent form, several equations, bounded domain) into a
    numerical condition, then regression, parameter regression, or derivative
-   regression that lets Desmos infer the unknowns from those conditions.
+   regression that lets Desmos infer the unknowns from those conditions. A
+   root stated in a form such as (a+√b)/6 is a clicked root fitted to that
+   form (78), never the quadratic formula.
 2. Lists/tables and answer-choice testing that compare possibilities together,
    including strategic-value testing for symbolic choices.
 3. Direct graphing of the original equations: intersections, zeros, intercepts,
@@ -1747,7 +1778,7 @@ inapplicable approaches rather than inventing data or a fake executable plan. St
 6. Direct evaluation: function evaluation, integer-list filtering, frequency
    expansion, polygon area, number-theory functions, repeated sums/products,
    statistics, or direct calculations from the givens.
-7. A written alternative only when its human reasoning can genuinely compete.
+7. The one math way (a paper technique) as the listed alternative.
 
 Do not ask only "how can Desmos calculate the answer?" Ask "how can Desmos make
 the answer easiest for the student to obtain: by calculation, graph, slider, or
@@ -1794,9 +1825,9 @@ such as NOT or EXCEPT. Do not show the internal verification as another strategy
 
 WRITTEN FALLBACKS
 
-List a paper technique as an alternative whenever one genuinely solves the
-problem; it becomes the default only when its total cost is genuinely lowest.
-Consider every relevant calculator category above first. An easy problem, an
+List one paper technique (the math way) as an alternative whenever one
+genuinely solves the problem; it becomes the default only when no Desmos way
+passes validation. Consider every relevant calculator category above first. An easy problem, an
 exact answer, a familiar formula, or fewer written steps does not by itself
 justify a fallback. A necessary conceptual instruction can accompany useful
 calculator rows without replacing the selected calculator method.

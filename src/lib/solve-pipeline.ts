@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 
 import { normalizeChoices, parseNumber } from "./answer-consistency";
+import { detectStructures, libraryTrace, parseLibraryIndex, type LibraryStrategy, type LibraryTrace } from "./library-trace";
 import {
   ExplanationError,
   explanationInput,
@@ -27,6 +28,7 @@ import {
   type SolveCache,
 } from "./solve-cache";
 import {
+  logLibraryTrace,
   logSelectionDisagreement,
   logSolveRejection,
   modelOutputText,
@@ -38,7 +40,7 @@ import {
   buildCandidatePrompt,
   CANDIDATE_INSTRUCTIONS,
   EXPLANATION_INSTRUCTIONS,
-  TRAINING_EXAMPLE_INSTRUCTIONS,
+  GOLD_SOLUTION_INSTRUCTIONS,
 } from "./solver-instructions";
 import type { AnswerChoice, Solution } from "./solver-schema";
 import {
@@ -56,7 +58,7 @@ import { NO_USAGE, timeoutEstimate } from "./model-pricing";
 import { classifyOpenAIError, describeOpenAIError } from "./openai-errors";
 import type { Meter, ModelCall } from "./spend";
 import { TECHNIQUES } from "./technique-vocabulary";
-import { loadTrainingExamples } from "./training-examples";
+import { loadGoldSolutions } from "./gold-solutions";
 import { expectedIntegerFactorExtremumAnswer, repairIntegerFactorExtremum, repairQuadraticRationalIntercept } from "./semantic-repairs";
 
 /** One guided correction per call, shared by both calls. */
@@ -139,28 +141,34 @@ export type SolveContext = {
   model: string;
   candidateInstructions: string;
   version: string;
+  /** The numbered library strategies, for the development/eval library trace. */
+  libraryIndex?: LibraryStrategy[];
 };
 
-/** Reads the library and training examples and fixes the prompt configuration version. */
+/**
+ * Reads the library and the gold solutions and fixes the prompt configuration
+ * version. The gold solutions come before the library: they are the standard
+ * a Desmos way is held to, and the library is where the model searches for one.
+ */
 export async function loadSolveContext(): Promise<SolveContext> {
   const model = process.env.OPENAI_MODEL?.trim() || "gpt-5-mini";
-  const [library, training] = await Promise.all([
+  const [library, gold] = await Promise.all([
     readFile(path.join(process.cwd(), "src/content/desmos-tricks.md"), "utf8"),
-    loadTrainingExamples(),
+    loadGoldSolutions(),
   ]);
-  const candidateInstructions = `${CANDIDATE_INSTRUCTIONS}\n\n<strategy_library>\n${library}\n</strategy_library>\n\n${TRAINING_EXAMPLE_INSTRUCTIONS}\n\n<training_examples>\n${training.prompt}\n</training_examples>`;
+  const candidateInstructions = `${CANDIDATE_INSTRUCTIONS}\n\n${GOLD_SOLUTION_INSTRUCTIONS}\n\n<gold_solutions>\n${gold.prompt}\n</gold_solutions>\n\n<strategy_library>\n${library}\n</strategy_library>`;
   const version = promptConfigVersion({
-    candidateInstructions: `${CANDIDATE_INSTRUCTIONS}\n${TRAINING_EXAMPLE_INSTRUCTIONS}`,
+    candidateInstructions: `${CANDIDATE_INSTRUCTIONS}\n${GOLD_SOLUTION_INSTRUCTIONS}`,
     explanationInstructions: EXPLANATION_INSTRUCTIONS,
     strategyLibrary: library,
-    trainingExamples: training.prompt,
+    goldSolutions: gold.prompt,
     candidatePrompt: buildCandidatePrompt(),
     costWeights: COST_WEIGHTS,
     vocabulary: TECHNIQUES,
     schemas: [candidateFormat, explanationFormat],
     model,
   });
-  return { model, candidateInstructions, version };
+  return { model, candidateInstructions, version, libraryIndex: parseLibraryIndex(library) };
 }
 
 export type SolveInput =
@@ -206,9 +214,11 @@ export type CandidateOutput = {
  * Optional instrumentation. Stage timings show where a solve's time goes
  * (model generation versus validation, cache, and Desmos-retry work); the raw
  * candidate outputs let the eval harness replay server-side selection after a
- * scoring or validation change without paying for new model calls.
+ * scoring or validation change without paying for new model calls. The
+ * library trace records which curated strategies a fresh solve matched and
+ * used (absent on a cache hit, which searched nothing).
  */
-export type SolveTrace = { stages: StageTiming[]; candidateOutputs: CandidateOutput[] };
+export type SolveTrace = { stages: StageTiming[]; candidateOutputs: CandidateOutput[]; library?: LibraryTrace };
 
 export function createTrace(): SolveTrace {
   return { stages: [], candidateOutputs: [] };
@@ -618,6 +628,7 @@ function clarificationSolution(parsed: CandidatesResponse): Solution {
     answer: "",
     method: "shortcut",
     why: "",
+    handMath: null,
     steps: [],
     readAnswer: null,
     expressions: [],
@@ -700,10 +711,21 @@ export function rescueEnabled(env: Record<string, string | undefined> = process.
   return env.DESMO_DESMOS_RESCUE?.trim().toLowerCase() !== "off";
 }
 
+/** "strategies 61, 78 teach parameter-regression": the library tricks the question's wording points to. */
+function libraryHints(selection: MethodSelection, index: readonly LibraryStrategy[] = []): string {
+  const techniques = [...new Set(detectStructures(selection.question, selection.choices).flatMap((item) => item.techniques))];
+  return techniques
+    .map((technique) => {
+      const numbers = index.filter((strategy) => strategy.techniques.includes(technique)).map((strategy) => strategy.number);
+      return numbers.length ? `strategies ${numbers.join(", ")} teach ${technique}` : technique;
+    })
+    .join("; ");
+}
+
 /**
- * One guided correction when a math-heavy default stands only because a
- * cheaper Desmos technique was rejected for a fixable slip (see
- * desmosRescueTarget). The corrected candidates are merged with the original
+ * One guided correction when the default is a math way because no Desmos way
+ * survived: the model's Desmos techniques were rejected for a fixable slip,
+ * or it proposed none (see desmosRescueTarget). The corrected candidates are merged with the original
  * selection, so the result is never worse than without the rescue: a failed
  * call, a clarification, or a correction that is still rejected keeps the
  * original selection. Only runs on a first attempt with time left for a
@@ -721,7 +743,7 @@ async function rescueDesmosCandidate(
   const { candidatesMs, explanationMs } = modelTimeouts();
   const remaining = deps.deadline ? deps.deadline - Date.now() : Infinity;
   if (deps.signal?.aborted || remaining < candidatesMs + explanationMs) return { selection, outcome: null };
-  const rejection: Rejection = { stage: "desmos_rescue", reason: rescueReason(target), previous: modelOutputText(response) };
+  const rejection: Rejection = { stage: "desmos_rescue", reason: rescueReason(target, libraryHints(selection, deps.context.libraryIndex)), previous: modelOutputText(response) };
   let retried: OpenAI.Responses.Response;
   try {
     await deps.meter?.authorizeRetry();
@@ -851,6 +873,9 @@ export async function solveProblem(
         if (selection.modelPreference && winner && selection.modelPreference !== winner.techniqueId) {
           logSelectionDisagreement(deps.diagnosticId, selection.modelPreference, winner.techniqueId);
         }
+        const library = libraryTrace(parsed, selection, deps.context.libraryIndex);
+        if (deps.trace) deps.trace.library = library;
+        logLibraryTrace(deps.diagnosticId, library);
       } catch (error) {
         const failure = error instanceof StrategySelectionError ? new SolveValidationError(error.stage, error.message) : error;
         if (!(failure instanceof SolveValidationError)) throw error;

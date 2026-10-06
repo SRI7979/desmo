@@ -149,6 +149,12 @@ export default function SolutionExplanation({
         <section className={styles.structureNote} aria-labelledby="idea-title" data-testid="structure">
           <div className={styles.ideaHeading}><h3 id="idea-title">The idea</h3>{tutorSource && <SaveTrickButton source={tutorSource} />}</div>
           <p><MathText>{solution.why}</MathText></p>
+          {solution.handMath && (
+            <div className={styles.handMath} data-testid="hand-math">
+              <h4>Math you do by hand</h4>
+              <p><MathText>{solution.handMath}</MathText></p>
+            </div>
+          )}
         </section>
       ) : tutorSource ? (
         <div className={`${styles.ideaHeading} ${styles.saveRow}`}><SaveTrickButton source={tutorSource} /></div>

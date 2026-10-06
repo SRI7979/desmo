@@ -38,7 +38,7 @@ import {
 } from "@/lib/spend";
 import { MAX_CANDIDATES } from "@/lib/strategy-selection";
 import { consoleSink, createTelemetry, type Telemetry, type TelemetryContext } from "@/lib/telemetry";
-import { TrainingBatchError } from "@/lib/training-examples";
+import { GoldSolutionError } from "@/lib/gold-solutions";
 import {
   InvalidImageError,
   maxImageBytes,
@@ -283,8 +283,8 @@ function errorFor(error: unknown, diagnosticId: string): Response {
   if (error instanceof RefusalError) {
     return errorResponse("The AI could not process that image. Try a clear crop of just the math question.", 422);
   }
-  if (error instanceof TrainingBatchError) {
-    return errorResponse("The strategy training data is invalid. Check the JSON batches and try again.", 500);
+  if (error instanceof GoldSolutionError) {
+    return errorResponse("The gold solutions file is invalid. Check src/content/gold-solutions and try again.", 500);
   }
   if (error instanceof ModelTimeoutError || error instanceof OpenAI.APIConnectionTimeoutError) {
     return Response.json(

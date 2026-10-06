@@ -152,12 +152,15 @@ test("regression test 6: an unbreakable tie awards no one, and a method leading 
   assert.deepEqual(tiedBadges.get("elimination"), []);
   assert.deepEqual(tiedBadges.get("substitution"), []);
 
-  // The formula method wins on total; the graph method leads both Least math and Most Desmos but shows one badge.
-  const formula = rankable("quadratic-formula", { rows: 1, ...none, oneOffFacts: 1 }, 2);
+  // The short fit wins on total; the graph method leads both Least math and Most Desmos but shows one badge.
+  const formula = rankable("derivative-regression", { rows: 1, ...none, oneOffFacts: 1 }, 2);
   const graph = rankable("intercept-read", { rows: 6, ...none }, 3);
   const split = [formula, graph].sort(compareMethods);
   const splitBadges = assignBadges(split);
   assertBadgesDiscriminate(split, splitBadges);
   assert.deepEqual(splitBadges.get("intercept-read"), ["Least math"]);
+  // A math way never outranks a Desmos way, whatever its total.
+  const paper = rankable("quadratic-formula", { rows: 0, ...none, oneOffFacts: 1 }, 2);
+  assert.deepEqual([paper, graph].sort(compareMethods).map((method) => method.id), ["intercept-read", "quadratic-formula"]);
   assert.deepEqual(assignBadges([winner]).get("graph-both-sides"), ["Recommended"], "a lone technique is just Recommended");
 });

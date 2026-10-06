@@ -71,7 +71,7 @@ export function inputHash(input: Uint8Array | { problem: string; choices: readon
 
 /**
  * Everything that shapes a cached result: both prompts, the strategy library,
- * the training examples, the cost weights, the technique vocabulary, the
+ * the gold solutions, the cost weights, the technique vocabulary, the
  * response schemas, and the model. Any change yields a new version, so the
  * next solve of a cached problem regenerates.
  */
@@ -79,7 +79,7 @@ export function promptConfigVersion(parts: {
   candidateInstructions: string;
   explanationInstructions: string;
   strategyLibrary: string;
-  trainingExamples: string;
+  goldSolutions: string;
   candidatePrompt: string;
   costWeights: unknown;
   vocabulary: unknown;
@@ -94,6 +94,9 @@ export function promptConfigVersion(parts: {
 export const explanationSchema = z
   .object({
     why: z.string().min(1).max(1200),
+    // Any step the student does by hand beside typing the rows, named and
+    // explained; null for a pure-Desmos method. Defaults for entries cached before it existed.
+    handMath: z.string().max(600).nullable().default(null),
     readAnswer: z.string().max(1000).nullable(),
     steps: z.array(z.string().min(1).max(800)).max(5),
     purposes: z.array(z.string().min(1).max(600)).max(16),

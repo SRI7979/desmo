@@ -77,10 +77,10 @@ test("a math-heavy default that stands only because a Desmos candidate slipped t
   assert.equal(target.candidates[0].rejected?.rule, "answer-consistency");
 });
 
-test("no rescue when the default already asks little math, or the rejected technique answered a different question", () => {
-  // A low-math default (one written step) is not worth a model call.
+test("any math-way default is rescued, even a light one; a representation question never is", () => {
+  // Desmos comes first: even a one-step paper default gets one call to fix the slipped Desmos way.
   const light = selectMethods(factorResponse([slipped(), paperCandidate({ techniqueId: "direct-arithmetic", answer: "3", cost: { ...zeroCost, derivationSteps: 1 } })]) as CandidatesResponse);
-  assert.equal(desmosRescueTarget(light), null);
+  assert.deepEqual(desmosRescueTarget(light)?.candidates.map((method) => method.techniqueId), ["shared-zero"]);
   // Representation questions reject every calculator technique by design.
   const representation = selectMethods(
     candidatesResponse(

@@ -1,5 +1,5 @@
 import { parseNumber } from "./answer-consistency";
-import { isIntegerFactorExtremumQuestion, StrategySelectionError, type CandidatesResponse, type Candidate } from "./strategy-selection";
+import { findTranscriptionConflicts, isIntegerFactorExtremumQuestion, StrategySelectionError, type CandidatesResponse, type Candidate } from "./strategy-selection";
 
 type Pair = { x: number; y: number };
 
@@ -8,38 +8,16 @@ function numbers(list: string): number[] | null {
   return values.length > 0 && values.every(Number.isFinite) ? values : null;
 }
 
-/** Pulls paired x/y data from the model's Desmos rows, including a bad row that
- * accidentally put f's intercept into a list of g-values. */
-function candidatePoints(candidates: Candidate[]): Pair[] {
-  for (const candidate of candidates) {
-    let xs: number[] | null = null;
-    let ys: number[] | null = null;
-    let regressionTargets: number[] | null = null;
-    for (const row of candidate.rows) {
-      const latex = row.latex
-        .replace(/\\left|\\right/g, "")
-        .replace(/_\{([^}]+)\}/g, "_$1")
-        .replace(/\\,/g, "");
-      const xList = latex.match(/\bx_?1\s*=\s*\[([^\]]+)\]/i);
-      const yList = latex.match(/\by_?1\s*=\s*\[([^\]]+)\]/i);
-      const targetList = latex.match(/~\s*\[([^\]]+)\]/);
-      if (xList) xs = numbers(xList[1]);
-      if (yList) ys = numbers(yList[1]);
-      if (targetList) regressionTargets = numbers(targetList[1]);
-    }
-    ys ??= regressionTargets;
-    if (xs && ys && xs.length === ys.length) {
-      const points = xs.map((x, index) => ({ x, y: ys![index] }));
-      if (points.length >= 2) return points;
-    }
-  }
-  return [];
-}
-
-/** Read the table from the transcription even when every candidate is a paper method. */
+/**
+ * The table, read from the transcription only. The model's own rows are never
+ * a source of data: they may hold values it computed (f(1)=15 from g(1)=5).
+ */
 function questionPoints(question: string): Pair[] {
-  const gValues = [...question.matchAll(/\bg\s*\(\s*(-?\d+(?:\.\d+)?)\s*\)\s*=\s*(-?\d+(?:\.\d+)?)/gi)]
-    .map((match) => ({ x: Number(match[1]), y: Number(match[2]) }));
+  const gValues = [
+    ...[...question.matchAll(/\bg\s*\(\s*(-?\d+(?:\.\d+)?)\s*\)\s*=\s*(-?\d+(?:\.\d+)?)/gi)].map((match) => ({ x: Number(match[1]), y: Number(match[2]) })),
+    // "x: 1 → g(x)=5"
+    ...[...question.matchAll(/\bx\s*[:=]\s*(-?\d+(?:\.\d+)?)\s*(?:→|->|,|;|\|)\s*g\s*\(\s*x\s*\)\s*=\s*(-?\d+(?:\.\d+)?)/gi)].map((match) => ({ x: Number(match[1]), y: Number(match[2]) })),
+  ].filter((point, index, all) => all.findIndex((other) => other.x === point.x) === index);
   if (gValues.length >= 2) return gValues;
 
   const tableStart = question.search(/\b(?:table|g\s+passes\s+through)\b/i);
@@ -83,10 +61,14 @@ export function repairQuadraticRationalIntercept(response: CandidatesResponse): 
   const problem = parseProblem(response.question);
   if (!problem) return response;
 
-  const fromQuestion = questionPoints(response.question);
-  const points = fromQuestion.length >= 2
-    ? fromQuestion
-    : candidatePoints(response.candidates).filter(({ x, y }) => !(x === 0 && y === problem.intercept));
+  const conflicts = findTranscriptionConflicts(response.question);
+  if (conflicts.length) {
+    throw new StrategySelectionError(
+      `The transcription gives two different values for ${conflicts.map(({ name, input, values }) => `${name}(${input}) (${values.join(" and ")})`).join(", ")}. Transcribe each table cell once, exactly as printed under its header, and never add values you computed to the question text.`,
+      "transcription_conflict",
+    );
+  }
+  const points = questionPoints(response.question);
   if (points.length < 2) {
     throw new StrategySelectionError(
       "The table's paired x and g(x) values were not transcribed. Include every table row in question, then provide a Desmos regression method.",
@@ -123,6 +105,7 @@ export function repairQuadraticRationalIntercept(response: CandidatesResponse): 
 
   const candidate: Candidate = {
     techniqueId: "parameter-regression",
+    strategy: null,
     rung: 4,
     rows: [
       { latex: `f(x)=a x^{2}+b x${interceptTerm}`, slider: null, copiesRow: null },
@@ -171,6 +154,7 @@ export function repairQuadraticRationalIntercept(response: CandidatesResponse): 
   if (alternatives.every((other) => other.rows.length > 0) && !alternatives.some((other) => other.techniqueId === "substitution")) {
     alternatives.push({
       techniqueId: "substitution",
+      strategy: null,
       rung: 2,
       rows: [],
       answer: candidate.answer,
@@ -187,11 +171,9 @@ export function repairQuadraticRationalIntercept(response: CandidatesResponse): 
       cost: { derivationSteps: 4, newPrimitives: 0, oneOffFacts: 0, setupConstructions: 0, manualIterations: 0 },
     });
   }
-  const question = fromQuestion.length >= 2
-    ? response.question
-    : `${response.question.trim()}\nTable values: ${points.map(({ x, y }) => `g(${x})=${y}`).join("; ")}.`;
   alternatives.sort((left, right) => Number(left.rows.length > 0) - Number(right.rows.length > 0));
-  return { ...response, question, candidates: [candidate, ...alternatives].slice(0, 6), preferredTechniqueId: candidate.techniqueId };
+  // The transcription is never rewritten: the table came from it, unchanged.
+  return { ...response, candidates: [candidate, ...alternatives].slice(0, 6), preferredTechniqueId: candidate.techniqueId };
 }
 
 type FactorExtremum = { leading: number; constant: number; exponent: number; kind: "max" | "min" };
@@ -257,6 +239,7 @@ export function repairIntegerFactorExtremum(response: CandidatesResponse): Candi
 
   const candidate: Candidate = {
     techniqueId: "integer-list-filter",
+    strategy: null,
     rung: 4,
     rows: [
       { latex: `a_{1}=\\operatorname{join}([-${leading}...-1],[1...${leading}])`, slider: null, copiesRow: null },

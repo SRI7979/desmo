@@ -36,6 +36,7 @@ export function provisionalSolution(base: Solution, method: MethodSummary): Solu
     answer: method.answer,
     method: method.rows.length > 0 ? "desmos" : "algebra",
     why: "",
+    handMath: null,
     steps: [],
     readAnswer: null,
     expressions: method.rows.map((row) => ({
@@ -90,6 +91,7 @@ export function baseSolution(payload: Pick<MethodsPayload, "question" | "choices
     answer: "",
     method: "desmos",
     why: "",
+    handMath: null,
     steps: [],
     readAnswer: null,
     expressions: [],

@@ -1,12 +1,13 @@
 import { scoreExplanation } from "../../src/lib/explanation-rubric";
 import { eligibleMethods } from "../../src/lib/solve-cache";
 import type { SolveResult, SolveTrace } from "../../src/lib/solve-pipeline";
+import { methodApproach } from "../../src/lib/method-scoring";
 import type { Method } from "../../src/lib/strategy-selection";
 import { answerMatches, CLASSIFIERS } from "../classifiers";
-import type { LoadedCase } from "./case-schema";
+import type { ScorableCase } from "./case-schema";
 import { classifyStrategy, isInfraFailure, type MethodRecord, type RunRecord } from "./score";
 
-export function methodRecord(method: Pick<Method, "techniqueId" | "rows" | "cost" | "mathScore" | "total" | "mathLevel" | "family">): MethodRecord {
+export function methodRecord(method: Pick<Method, "techniqueId" | "rows" | "cost" | "mathScore" | "total" | "mathLevel" | "family" | "approach">): MethodRecord {
   return {
     techniqueId: method.techniqueId,
     rows: method.rows.length,
@@ -16,19 +17,22 @@ export function methodRecord(method: Pick<Method, "techniqueId" | "rows" | "cost
     total: method.total,
     mathLevel: method.mathLevel,
     family: method.family,
+    approach: methodApproach(method),
   };
 }
 
 /** Everything the report needs from one solve, scored against the case's labels. */
-export function recordRun(item: LoadedCase, runIndex: number, outcome: { result?: SolveResult; error?: unknown; ms: number }, trace?: SolveTrace): RunRecord {
+export function recordRun(item: ScorableCase, runIndex: number, outcome: { result?: SolveResult; error?: unknown; ms: number }, trace?: SolveTrace): RunRecord {
   const base: RunRecord = {
     caseId: item.id,
     group: item.group,
+    labelProvenance: item.labelProvenance,
     runIndex,
     ok: false,
     completeMs: outcome.ms,
     stages: trace?.stages,
     candidateOutputs: trace?.candidateOutputs,
+    library: trace?.library,
   };
   if (outcome.error !== undefined || !outcome.result) {
     const message = outcome.error instanceof Error ? `${outcome.error.name}: ${outcome.error.message}` : String(outcome.error);

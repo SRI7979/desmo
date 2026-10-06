@@ -7,6 +7,7 @@ import {
   ProseLatexError,
   sanitizeSolutionProse,
 } from "./answer-consistency";
+import { methodApproach } from "./method-scoring";
 import type { CacheEntry, Explanation } from "./solve-cache";
 import type { Solution, SolutionMethod } from "./solver-schema";
 import type { Method } from "./strategy-selection";
@@ -28,6 +29,40 @@ export function solutionMethodFor(method: Method): SolutionMethod {
 }
 
 /** The per-request input for the explanation call: facts only, all already verified. */
+/**
+ * A calculator method that still asks for hand work names it: the student
+ * should always know exactly which part is math and which part is Desmos. A
+ * paper method's written steps already are the math.
+ */
+export function needsHandMath(method: Pick<Method, "rows" | "cost">): boolean {
+  return method.rows.length > 0 && (method.cost.derivationSteps > 0 || method.cost.oneOffFacts > 0);
+}
+
+/**
+ * Decimals a row types that the question never states, after an earlier row
+ * graphs something: the student clicked that point (5.20526, the x-intercept
+ * of 3x^2-16x+2) and typed what Desmos showed. Telling the explanation call
+ * keeps it from describing a click as a hand computation.
+ */
+export function clickedValues(question: string, rows: readonly { latex: string }[]): { row: number; value: string }[] {
+  const stated = new Set((question.replace(/[\u2212\u2013]/g, "-").match(/\d+(?:\.\d+)?/g) ?? []).map((value) => Number(value)));
+  const graphs = (latex: string) => /[xy]/.test(latex.replace(/_\{[^{}]*\}/g, "")) && !/\\sim(?![A-Za-z])|~|\[/.test(latex);
+  const found: { row: number; value: string }[] = [];
+  rows.forEach((row, index) => {
+    if (!rows.slice(0, index).some((earlier) => graphs(earlier.latex))) return;
+    for (const value of row.latex.match(/\d+\.\d+/g) ?? []) {
+      if (!stated.has(Number(value))) found.push({ row: index + 1, value });
+    }
+  });
+  return found;
+}
+
+/** The hand-math line as shown: null when it is empty or only says there is none. */
+function handMathLine(text: string | null | undefined): string | null {
+  const line = text?.trim() ?? "";
+  return !line || /^(?:none|nothing|n\/a|null|no hand (?:math|steps?))\.?$/i.test(line) ? null : line;
+}
+
 export function explanationInput(entry: CacheEntry, method: Method): string {
   const choices = entry.choices?.length
     ? entry.choices.map(formatChoice).join("; ")
@@ -60,7 +95,14 @@ export function explanationInput(entry: CacheEntry, method: Method): string {
     `Readout: ${readout}`,
     `Calculator rows:\n${rows}`,
     method.answerState ? `The calculator opens with ${method.answerState.param} = ${method.answerState.value}.` : null,
+    ...clickedValues(entry.question, method.rows).map(({ row, value }) =>
+      `Line ${row} types ${value}, a number the question does not state: the student reads it by clicking the matching point (an intercept, intersection, or vertex) on the graph of an earlier line. Say that in line ${row}'s purpose; it is never a hand computation.`),
     method.conditionType ? `The question asks when the system has ${method.conditionType === "no-solution" ? "no solution" : "infinitely many solutions"}; explain how this method tells that case apart from the opposite one.` : null,
+    needsHandMath(method)
+      ? `Besides typing the rows, this method asks the student for ${method.cost.derivationSteps} hand step(s) and ${method.cost.oneOffFacts} memorized fact(s). Return handMath naming each one in plain words and why it is needed.`
+      : method.rows.length
+        ? "If the student must decide or know anything beyond typing these rows and reading the result (which given number to type for a constant, a fact the setup relies on), name it in handMath; otherwise handMath is null."
+        : "Return handMath: null; the written steps already are the math.",
     method.rows.length
       ? `Return why, readAnswer, an empty steps list, and exactly ${method.rows.length} purposes: one plain explanation per calculator row, in row order. Trace every number in a row that was calculated from the givens or an earlier row; say what operation produces it. For a regression, explain what Desmos adjusts and which supplied conditions it makes agree.`
       : `Return why, readAnswer, 1–4 written steps that reach the answer, and an empty purposes list. ${method.cost.derivationSteps >= 3 ? "Show the intermediate equation or calculation for each nontrivial change; do not compress the work into one 'solve to get the answer' sentence." : "Show any non-obvious calculation instead of skipping to the answer."}`,
@@ -75,8 +117,38 @@ export function explanationInput(entry: CacheEntry, method: Method): string {
  * compressed into a single unsupported assertion. The ordinary one-retry path
  * receives the exact reason when a model response fails.
  */
+const PAPER_ALGEBRA = /quadratic formula|discriminant|completing the square|b\s*\^?\s*2\s*-\s*4\s*ac|matching coefficients|factor theorem/gi;
+const CONTRAST = /\b(?:without|instead of|no|never|not|skip|skips|avoid|avoids|rather than|replaces?|in place of)\b[^.;]*$/i;
+
+/**
+ * THE IDEA of a Desmos way that leans on paper algebra ("the quadratic formula
+ * gives (16 ± √D)/6, so a is 16") teaches the math way with Desmos attached.
+ * Naming it as what the method avoids ("instead of the quadratic formula") is fine.
+ */
+export function leansOnPaperAlgebra(method: Pick<Method, "techniqueId" | "rows" | "approach">, why: string): string | null {
+  if (method.rows.length === 0 || methodApproach(method) === "math") return null;
+  for (const match of why.matchAll(PAPER_ALGEBRA)) {
+    const before = why.slice(Math.max(0, match.index - 60), match.index);
+    if (!CONTRAST.test(before)) return match[0];
+  }
+  return null;
+}
+
 export function validateExplanationQuality(method: Method, explanation: Explanation): void {
   const why = explanation.why.trim();
+  const paper = leansOnPaperAlgebra(method, why);
+  if (paper) {
+    throw new ExplanationError(
+      `The idea explains this Desmos way through paper algebra (${paper}). Explain the Desmos trick itself: what the student recognizes, what the graph, regression, slider, or list does, and why that answers the question. Mention ${paper} only as what this method avoids.`,
+      "explanation_quality",
+    );
+  }
+  if (needsHandMath(method) && !explanation.handMath?.trim()) {
+    throw new ExplanationError(
+      `This method asks the student for ${method.cost.derivationSteps} hand step(s) and ${method.cost.oneOffFacts} memorized fact(s) besides typing the rows. handMath must name each one and why it is needed.`,
+      "explanation_quality",
+    );
+  }
   if (/^(?:use|apply|try)\s+(?:desmos|regression|graphing|this (?:method|technique))\s*(?:to solve(?: the problem)?)?[.!]?$/i.test(why)) {
     throw new ExplanationError("The idea only names a tool. Explain why this method answers the question.", "explanation_quality");
   }
@@ -170,6 +242,7 @@ export function presentMethod(entry: CacheEntry, method: Method, explanation: Ex
     answer: consistent.answer,
     method: solutionMethodFor(method),
     why: explanation.why.trim(),
+    handMath: method.rows.length ? handMathLine(explanation.handMath) : null,
     steps: method.rows.length ? [] : explanation.steps.map((step) => step.trim()),
     readAnswer: consistent.readAnswer,
     expressions: method.rows.map((row, index) => ({
@@ -211,6 +284,7 @@ function describeRow(latex: string, slider: boolean): string {
 export function fallbackExplanation(method: Method): Explanation {
   return {
     why: `The detailed explanation for ${method.name} did not load. Retry the explanation to see how the given information leads to the answer.`,
+    handMath: needsHandMath(method) ? `Besides typing the rows, this method needs ${method.cost.derivationSteps + method.cost.oneOffFacts} short step(s) done by hand; retry the explanation to see them.` : null,
     purposes: method.rows.map((row) => describeRow(row.latex, Boolean(row.slider))),
     readAnswer: null,
     steps: method.rows.length ? [] : ["The written steps did not load. Retry the explanation to see the calculation that produces the answer."],

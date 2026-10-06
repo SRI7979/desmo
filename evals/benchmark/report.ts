@@ -1,6 +1,14 @@
-import type { Metrics, RunRecord } from "./score";
+import { METRIC_GROUPS, type MetricGroup, type Metrics, type RunRecord } from "./score";
 
-type Grouped = Record<"all" | "representative" | "hard", Metrics>;
+// A baseline recorded before a group existed has no metrics for it.
+type Grouped = Record<MetricGroup, Metrics>;
+type Baseline = Partial<Grouped>;
+const GROUP_LABELS: Record<MetricGroup, [string, string]> = {
+  all: ["All", "Δ all"],
+  representative: ["Representative", "Δ rep"],
+  hard: ["Hard", "Δ hard"],
+  gold: ["Gold", "Δ gold"],
+};
 
 const ROWS: { key: string; label: string; get: (metrics: Metrics) => number | null; better: "up" | "down"; unit?: string }[] = [
   { key: "answerAccuracy", label: "Answer accuracy", get: (m) => m.answerAccuracy, better: "up", unit: "%" },
@@ -10,6 +18,12 @@ const ROWS: { key: string; label: string; get: (metrics: Metrics) => number | nu
   { key: "unlistedRate", label: "Recommended = unlabeled strategy", get: (m) => m.unlistedRate, better: "down", unit: "%" },
   { key: "mathHeavyRate", label: "Math-heavy default (math score ≥ 2)", get: (m) => m.mathHeavyRate, better: "down", unit: "%" },
   { key: "goldListedRate", label: "Gold strategy listed (default or alternative)", get: (m) => m.goldListedRate, better: "up", unit: "%" },
+  { key: "desmosDefaultRate", label: "Default is a Desmos way", get: (m) => m.desmosDefaultRate, better: "up", unit: "%" },
+  { key: "bothWaysRate", label: "Lists both a Desmos way and a math way", get: (m) => m.bothWaysRate, better: "up", unit: "%" },
+  { key: "singleMethodRate", label: "Only one method listed", get: (m) => m.singleMethodRate, better: "down", unit: "%" },
+  { key: "genericFallbackRate", label: "Default fell back to generic (paper) math", get: (m) => m.genericFallbackRate, better: "down", unit: "%" },
+  { key: "libraryDefaultRate", label: "Default cites a library strategy", get: (m) => m.libraryDefaultRate, better: "up", unit: "%" },
+  { key: "libraryMissRate", label: "Library miss (detected trick never tried)", get: (m) => m.libraryMissRate, better: "down", unit: "%" },
   { key: "avgRows", label: "Avg Desmos rows (default)", get: (m) => m.avgRows, better: "down" },
   { key: "avgManualMath", label: "Avg manual-math score (default)", get: (m) => m.avgManualMath, better: "down" },
   { key: "avgHiddenDerivation", label: "Avg hidden derivation (calculator defaults)", get: (m) => m.avgHiddenDerivation, better: "down" },
@@ -32,10 +46,9 @@ const ROWS: { key: string; label: string; get: (metrics: Metrics) => number | nu
 
 const show = (value: number | null, unit = "") => (value === null ? "—" : `${value}${unit}`);
 
-export function metricsTable(grouped: Grouped, baseline?: Grouped): string {
-  const header = baseline
-    ? "| Metric | All | Δ all | Representative | Δ rep | Hard | Δ hard |\n|---|---|---|---|---|---|---|"
-    : "| Metric | All | Representative | Hard |\n|---|---|---|---|";
+export function metricsTable(grouped: Grouped, baseline?: Baseline): string {
+  const columns = METRIC_GROUPS.flatMap((group) => (baseline ? GROUP_LABELS[group] : [GROUP_LABELS[group][0]]));
+  const header = `| Metric | ${columns.join(" | ")} |\n|---|${columns.map(() => "---|").join("")}`;
   const delta = (now: number | null, before: number | null, better: "up" | "down") => {
     if (now === null || before === null) return "—";
     const change = Number((now - before).toFixed(2));
@@ -44,13 +57,14 @@ export function metricsTable(grouped: Grouped, baseline?: Grouped): string {
     return `${change > 0 ? "+" : ""}${change} ${good ? "✓" : "✗"}`;
   };
   const lines = ROWS.map(({ label, get, better, unit }) => {
-    const cells = (["all", "representative", "hard"] as const).flatMap((group) => {
+    const cells = METRIC_GROUPS.flatMap((group) => {
       const now = get(grouped[group]);
-      return baseline ? [show(now, unit), delta(now, get(baseline[group]), better)] : [show(now, unit)];
+      const before = baseline?.[group];
+      return baseline ? [show(now, unit), delta(now, before ? get(before) : null, better)] : [show(now, unit)];
     });
     return `| ${label} | ${cells.join(" | ")} |`;
   });
-  const runs = `Runs: ${grouped.all.runs} (${grouped.all.scoredRuns} scored; representative ${grouped.representative.runs}, hard ${grouped.hard.runs}).`;
+  const runs = `Runs: ${grouped.all.runs} (${grouped.all.scoredRuns} scored; representative ${grouped.representative.runs}, hard ${grouped.hard.runs}, gold ${grouped.gold.runs}).`;
   return `${runs}\n\n${header}\n${lines.join("\n")}`;
 }
 

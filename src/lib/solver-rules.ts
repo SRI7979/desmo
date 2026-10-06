@@ -36,17 +36,33 @@ const INEQUALITY_ONLY =
 
 export type IntegerParameterViolation = { row: number; param: string };
 
+export type IntegerEncodingOptions = {
+  /**
+   * The method never drags its sliders, so a fixed integer definition (a=16,
+   * a number the question prints) is an integer as typed.
+   */
+  fixedValuesAllowed?: boolean;
+  /**
+   * The question asks for one determined value ("what is the value of a+b?"),
+   * not which values could work or the greatest or least one. An equality fit
+   * then has a single answer, and reading the integer it rounds to
+   * (b=232.00042 → 232) is exact. Rule 2 still rejects an underdetermined fit.
+   */
+  determinedValue?: boolean;
+};
+
 export function findIntegerParameterViolations(
   expressions: ReadonlyArray<{
     latex: string;
     slider?: { min: number; max: number; step: number } | null;
   }>,
   parameters: readonly Parameter[],
+  options: IntegerEncodingOptions = {},
 ): IntegerParameterViolation[] {
   const violations: IntegerParameterViolation[] = [];
   for (const param of parameters) {
     if (!param.integer) continue;
-    const sliderDefinition = new RegExp(`^\\s*${escapeRegExp(param.name)}\\s*=\\s*-?\\d+(?:\\.\\d+)?\\s*$`);
+    const sliderDefinition = new RegExp(`^\\s*${escapeRegExp(param.name)}\\s*=\\s*(-?\\d+(?:\\.\\d+)?)\\s*$`);
     const listDefinition = new RegExp(`^\\s*${escapeRegExp(param.name)}\\s*=\\s*(?:\\\\left\\s*)?\\[`);
     let encoded = false;
     let offendingRow: number | null = null;
@@ -54,10 +70,12 @@ export function findIntegerParameterViolations(
     expressions.forEach((expression, index) => {
       if (encoded) return;
       const { latex, slider } = expression;
-      if (sliderDefinition.test(latex)) {
+      const definition = latex.match(sliderDefinition);
+      if (definition) {
         const validSlider =
           Boolean(slider) && slider!.step === 1 && Number.isInteger(slider!.min) && Number.isInteger(slider!.max);
-        if (validSlider) encoded = true;
+        const fixedInteger = options.fixedValuesAllowed === true && !slider && Number.isInteger(Number(definition[1]));
+        if (validSlider || fixedInteger) encoded = true;
         else offendingRow ??= index + 1;
         return;
       }
@@ -67,9 +85,10 @@ export function findIntegerParameterViolations(
       }
       // A regression that fits the parameter introduces it as a continuous
       // unknown: with only an inequality restriction, or with none at all,
-      // nothing makes Desmos return a whole number.
+      // nothing makes Desmos return a whole number. An unrestricted equality
+      // fit for a determined value has one answer, read as its integer.
       if (REGRESSION_OP.test(latex) && mentionsIdentifier(latex.replace(TRAILING_RESTRICTION_TEXT, ""), param.name)) {
-        offendingRow ??= index + 1;
+        if (!(options.determinedValue === true && trailingRestriction(latex) === null)) offendingRow ??= index + 1;
       } else if (REGRESSION_OP.test(latex)) {
         const restriction = trailingRestriction(latex);
         if (restriction && mentionsIdentifier(restriction, param.name) && INEQUALITY_ONLY.test(restriction)) {

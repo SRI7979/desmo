@@ -4,9 +4,10 @@ import path from "node:path";
 import { test } from "node:test";
 import { zodTextFormat } from "openai/helpers/zod";
 
+import { parseLibraryIndex } from "../src/lib/library-trace";
 import { buildCandidatePrompt, CANDIDATE_INSTRUCTIONS, EXPLANATION_INSTRUCTIONS } from "../src/lib/solver-instructions";
 import { candidateSchema, candidatesResponseSchema } from "../src/lib/strategy-selection";
-import { TECHNIQUE_ANNOTATION, TECHNIQUE_IDS, TECHNIQUES, isTechniqueId } from "../src/lib/technique-vocabulary";
+import { LIBRARY_STRATEGY_COUNT, TECHNIQUE_ANNOTATION, TECHNIQUE_IDS, TECHNIQUES, isTechniqueId } from "../src/lib/technique-vocabulary";
 import { graphCandidate } from "./method-fixtures";
 
 async function library() {
@@ -26,19 +27,23 @@ test("technique ids and display names are unique, short, and stable", () => {
   }
 });
 
-test("every one of the 77 library strategies carries a vocabulary technique tag directly under its heading", async () => {
+test("every numbered library strategy carries a vocabulary technique tag directly under its heading", async () => {
   const lines = (await library()).split("\n");
   let expected = 1;
   const tagged = new Map<number, string>();
   lines.forEach((line, index) => {
     const heading = line.match(/^(\d+)\. \S/);
-    if (!heading || Number(heading[1]) !== expected || expected > 77) return;
+    if (!heading || Number(heading[1]) !== expected || expected > LIBRARY_STRATEGY_COUNT) return;
     const tag = lines[index + 1]?.match(TECHNIQUE_ANNOTATION);
     assert.ok(tag, `strategy ${expected} ("${line}") needs a [technique: id | name] line`);
     tagged.set(expected, tag[1]);
     expected += 1;
   });
-  assert.equal(tagged.size, 77);
+  assert.equal(tagged.size, LIBRARY_STRATEGY_COUNT);
+  // The count the schema bounds citations by is the count the library has.
+  const index = parseLibraryIndex(await library());
+  assert.equal(index.length, LIBRARY_STRATEGY_COUNT);
+  assert.match(await library(), new RegExp(`across all ${LIBRARY_STRATEGY_COUNT} strategies`));
 });
 
 test("library annotations and the code vocabulary agree exactly", async () => {

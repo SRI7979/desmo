@@ -221,14 +221,15 @@ test("the engine waits for every row, ignores a stale analysis of the previous b
 
 // ---- regression tests 4, 5, 7, 8 ------------------------------------------
 
-test("regression test 4: the tangent problem lists every valid technique, and vertex of the difference is Recommended", () => {
+test("regression test 4: the tangent problem lists every Desmos way and one math way, and vertex of the difference is Recommended", () => {
   const selection = select(tangentCandidates(), TANGENT_QUESTION);
   const methods = eligible(selection.methods);
   assert.ok(methods.length >= 4, `${methods.length} techniques`);
   assert.deepEqual(
-    methods.map((method) => method.techniqueId),
-    ["vertex-of-difference", "slider-condition", "derivative-regression", "discriminant", "quadratic-formula"],
+    methods.map((method) => [method.techniqueId, method.approach]),
+    [["vertex-of-difference", "desmos"], ["slider-condition", "desmos"], ["derivative-regression", "desmos"], ["discriminant", "math"]],
   );
+  assert.equal(selection.methods.find((method) => method.techniqueId === "quadratic-formula")?.rejected?.rule, "extra-math-way", "a second math way teaches nothing new");
   assert.equal(selection.winnerId, "vertex-of-difference");
   assert.deepEqual(methods[0].badges, ["Recommended"]);
   assert.equal(methods[0].name, "Vertex of the difference");
@@ -267,7 +268,7 @@ test("regression test 7: a problem with one genuine technique gets one candidate
   const selection = select([graphCandidate()], "What is the positive solution to x² = 9?");
   assert.equal(eligible(selection.methods).length, 1);
   assert.deepEqual(selection.methods[0].badges, ["Recommended"]);
-  assert.match(CANDIDATE_INSTRUCTIONS, /If fewer than 3 valid techniques\s+genuinely exist, return fewer/);
+  assert.match(CANDIDATE_INSTRUCTIONS, /A problem with only one way is rare; claim it only\s+after checking the library/);
   assert.match(CANDIDATE_INSTRUCTIONS, /Still forbidden: inventing a technique that does not solve the problem in\s+order to pad the list/);
 });
 

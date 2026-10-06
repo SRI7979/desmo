@@ -302,7 +302,7 @@ test("the candidates call is terse, strict, cached by prefix, and sees the image
   for (const pattern of [
     /DESMO SAT MATH STRATEGY LIBRARY/,
     /\[technique: three-point-regression \| Three-point regression\]/,
-    /<training_examples>/,
+    /<gold_solutions>/,
     /"techniqueId": "identity-regression"/,
     /CANDIDATE CONTRACT/,
     /COST COMPONENTS/,
@@ -318,8 +318,9 @@ test("the candidates call is terse, strict, cached by prefix, and sees the image
   const schema = (call1.text as { format: { schema: { properties: Record<string, { items?: { properties: Record<string, unknown> } }> } } }).format.schema;
   const order = Object.keys(schema.properties);
   assert.ok(order.indexOf("structure") < order.indexOf("candidates"), "the structure is recognized before any candidate");
+  assert.ok(order.indexOf("structure") < order.indexOf("library") && order.indexOf("library") < order.indexOf("candidates"), "the library is searched after the structure and before any candidate");
   const candidateFields = Object.keys(schema.properties.candidates.items!.properties);
-  assert.deepEqual(candidateFields.slice(0, 3), ["techniqueId", "rung", "rows"]);
+  assert.deepEqual(candidateFields.slice(0, 4), ["techniqueId", "strategy", "rung", "rows"]);
   assert.ok(candidateFields.includes("cost"));
   for (const prose of ["why", "purpose", "purposes", "readAnswer", "steps", "trick", "name"]) {
     assert.equal(candidateFields.includes(prose), false, `no ${prose} prose in the candidates call`);
@@ -1041,8 +1042,8 @@ test("regression test 6: the first solve writes exactly one explanation, for the
   assert.equal(stream[0].type, "methods");
   assert.deepEqual(
     stream[0].methods.map((method: { techniqueId: string }) => method.techniqueId),
-    ["vertex-of-difference", "slider-condition", "derivative-regression", "discriminant", "quadratic-formula"],
-    "rows for every technique arrive up front",
+    ["vertex-of-difference", "slider-condition", "derivative-regression", "discriminant"],
+    "rows for every listed technique arrive up front: the Desmos ways, then one math way",
   );
   assert.ok(stream[0].methods.every((method: { rows: unknown[] }) => Array.isArray(method.rows)));
   assert.equal(requests.explanation.length, 1);
@@ -1077,7 +1078,7 @@ test("regression tests 1–3, 5: a non-default technique's explanation is writte
   assert.equal(requests.explanation.length, 2);
 
   // 5: two techniques, two different ideas; neither is the problem-level structure line.
-  const formula = explanationFromEvents(await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" }))));
+  const formula = explanationFromEvents(await events(await SWITCH(switchTo(solved.cacheKey, "slider-condition", { Accept: "application/x-ndjson" }))));
   assert.ok(formula);
   assert.notEqual(formula.why, discriminant.why);
   assert.notEqual(formula.why, solved.solution.why);
@@ -1085,20 +1086,20 @@ test("regression tests 1–3, 5: a non-default technique's explanation is writte
 });
 
 test("regression test 4: a failed explanation is a retryable failure, not a blank panel, and is never cached", async () => {
-  const failing = new Set(["Quadratic formula"]);
+  const failing = new Set(["Slider until it fits"]);
   const { requests } = tangentModel({ failing });
   const solved = await (await POST(upload())).json();
-  const failed = await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  const failed = await events(await SWITCH(switchTo(solved.cacheKey, "slider-condition", { Accept: "application/x-ndjson" })));
   assert.equal(failed[0].type, "methods", "the rows and answer still arrive");
   assert.equal(failed[0].method.answer, "25/12");
   assert.equal(failed[1].explanation, "fallback");
   assert.equal(explanationFromEvents(failed), null, "the one-line fallback counts as a failure the student can retry");
-  assert.equal(await cache.getExplanation(solved.cacheKey, "quadratic-formula"), null, "a fallback is never cached");
+  assert.equal(await cache.getExplanation(solved.cacheKey, "slider-condition"), null, "a fallback is never cached");
 
   failing.clear();
-  const retried = await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  const retried = await events(await SWITCH(switchTo(solved.cacheKey, "slider-condition", { Accept: "application/x-ndjson" })));
   assert.equal(retried[1].explanation, "model");
-  assert.equal(explanationFromEvents(retried)?.steps.length, 3);
+  assert.equal(explanationFromEvents(retried)?.expressions.length, 3);
   assert.ok(requests.explanation.length >= 3);
 });
 
@@ -1218,7 +1219,7 @@ test("regression test 2: over the daily spend ceiling new solves stop, loudly, w
   assert.equal(usage.solves.length, 1, "a refused solve does not count against the user");
 
   assert.equal((await POST(upload())).status, 200, "a cached solve is unaffected");
-  const switched = await events(await SWITCH(switchTo(first.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  const switched = await events(await SWITCH(switchTo(first.cacheKey, "slider-condition", { Accept: "application/x-ndjson" })));
   assert.ok(explanationFromEvents(switched), "method switching on a solved problem continues");
 });
 
@@ -1442,15 +1443,15 @@ test("errors: a failed solve is captured with its stack, user, solve id, and the
 });
 
 test("events: method_switched carries the problem and technique; a fallen-back explanation is captured with its cause", async () => {
-  const { requests } = tangentModel({ failing: new Set(["Quadratic formula"]) });
+  const { requests } = tangentModel({ failing: new Set(["Slider until it fits"]) });
   const solved = await (await POST(upload())).json();
   await events(await SWITCH(switchTo(solved.cacheKey, "discriminant", { Accept: "application/x-ndjson" })));
-  await events(await SWITCH(switchTo(solved.cacheKey, "quadratic-formula", { Accept: "application/x-ndjson" })));
+  await events(await SWITCH(switchTo(solved.cacheKey, "slider-condition", { Accept: "application/x-ndjson" })));
   const switched = named("method_switched");
-  assert.deepEqual(switched.map((record) => [record.context.techniqueId, record.context.explanation]), [["discriminant", "model"], ["quadratic-formula", "fallback"]]);
+  assert.deepEqual(switched.map((record) => [record.context.techniqueId, record.context.explanation]), [["discriminant", "model"], ["slider-condition", "fallback"]]);
   assert.equal(switched[0].context.cacheKey, solved.cacheKey);
   const [error] = telemetryRecords.filter((record) => record.type === "error");
-  assert.equal(error.context.techniqueId, "quadratic-formula");
+  assert.equal(error.context.techniqueId, "slider-condition");
   assert.equal(error.context.call, "explanation");
   assert.equal(error.context.cacheKey, solved.cacheKey);
   assert.ok(requests.explanation.length >= 3);

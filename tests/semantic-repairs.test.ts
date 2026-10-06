@@ -12,6 +12,7 @@ const question =
 function candidate(xList: string, yList: string) {
   return {
     techniqueId: "parameter-regression" as const,
+    strategy: null,
     rung: 0,
     rows: [
       { latex: `x_{1}=[${xList}]`, slider: null, copiesRow: null },
@@ -45,6 +46,7 @@ function response(rows: Candidate[], text = question): CandidatesResponse {
     choices: null,
     clarification: null,
     structure: "quadratic rational function",
+    library: { matched: [], skipped: [] },
     candidates: rows,
     preferredTechniqueId: "parameter-regression",
   };

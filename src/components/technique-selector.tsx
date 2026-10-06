@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { methodApproach } from "@/lib/method-scoring";
 import type { MethodSummary } from "@/lib/method-summary";
 import { navigate, selectorMode, type NavState } from "@/lib/technique-selection-ui";
 import styles from "./technique-selector.module.css";
@@ -40,6 +41,16 @@ function MathLevelDots({ level }: { level: MethodSummary["mathLevel"] }) {
           <span key={dot} className={`${styles.levelDot} ${dot <= filled ? styles.levelDotFilled : ""}`} />
         ))}
       </span>
+    </span>
+  );
+}
+
+/** "Desmos way" or "Math way": Desmos ways are listed first, the one math way last. */
+function ApproachLabel({ method }: { method: MethodSummary }) {
+  const approach = method.approach ?? methodApproach(method);
+  return (
+    <span className={`${styles.approach} ${approach === "math" ? styles.approachMath : ""}`} data-approach={approach}>
+      {approach === "math" ? "Math way" : "Desmos way"}
     </span>
   );
 }
@@ -141,6 +152,7 @@ export default function TechniqueSelector({
         <svg className={styles.strategyMark} width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 15h4l6-10h4" stroke="currentColor" strokeWidth="1.5"/><circle cx="3" cy="15" r="2" fill="currentColor"/><circle cx="17" cy="5" r="2" fill="currentColor"/></svg>
         <span className={styles.srOnly}>Solving technique:</span>
         <span className={styles.name}>{current.name}</span>
+        <ApproachLabel method={current} />
         <span className={styles.methodCount}>{methods.length > 1 ? `${selectedIndex + 1} / ${methods.length}` : "Details"}</span>
         <ChevronIcon open={nav.open} />
       </button>
@@ -189,6 +201,7 @@ export default function TechniqueSelector({
                       <span className={styles.optionNameRow}>
                         {selected && <CheckIcon />}
                         <span className={styles.optionName}>{method.name}</span>
+                        <ApproachLabel method={method} />
                       </span>
                       <MathLevelDots level={method.mathLevel} />
                     </div>

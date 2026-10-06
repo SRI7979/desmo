@@ -13,13 +13,13 @@ import { zodTextFormat } from "openai/helpers/zod";
 
 import { candidatesResponseSchema } from "../src/lib/strategy-selection";
 import { explanationSchema } from "../src/lib/solve-cache";
-import { buildCandidatePrompt, CANDIDATE_INSTRUCTIONS, EXPLANATION_INSTRUCTIONS, TRAINING_EXAMPLE_INSTRUCTIONS } from "../src/lib/solver-instructions";
-import { loadTrainingExamples } from "../src/lib/training-examples";
+import { loadGoldSolutions } from "../src/lib/gold-solutions";
+import { buildCandidatePrompt, CANDIDATE_INSTRUCTIONS, EXPLANATION_INSTRUCTIONS, GOLD_SOLUTION_INSTRUCTIONS } from "../src/lib/solver-instructions";
 import { TECHNIQUE_ANNOTATION } from "../src/lib/technique-vocabulary";
 
 const tokens = (text: string) => encode(text).length;
 const library = await readFile(path.join(process.cwd(), "src/content/desmos-tricks.md"), "utf8");
-const training = await loadTrainingExamples();
+const gold = await loadGoldSolutions();
 const candidateSchema = JSON.stringify(zodTextFormat(candidatesResponseSchema, "desmo_candidates"));
 const explanationSchemaText = JSON.stringify(zodTextFormat(explanationSchema, "desmo_explanation"));
 
@@ -37,8 +37,8 @@ const parts = {
   "candidate instructions (rules, cost model, syntax)": tokens(CANDIDATE_INSTRUCTIONS),
   "strategy library: policy preamble": tokens(preamble),
   "strategy library: numbered strategies": strategies.reduce((sum, item) => sum + item.tokens, 0),
-  "training-example instructions": tokens(TRAINING_EXAMPLE_INSTRUCTIONS),
-  "training examples": tokens(training.prompt),
+  "gold-solution instructions": tokens(GOLD_SOLUTION_INSTRUCTIONS),
+  "gold solutions": tokens(gold.prompt),
   "per-request user text": tokens(buildCandidatePrompt()),
   "candidates output schema (structured outputs)": tokens(candidateSchema),
 };

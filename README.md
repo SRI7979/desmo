@@ -1,6 +1,6 @@
 # Desmo
 
-An SAT Math workspace: upload a screenshot, get a concise answer, and watch the solution appear in an editable Desmos calculator. The solver uses the curated 76-strategy library in `src/content/desmos-tricks.md` plus reviewed training batches to choose a useful calculator method: graphing, regression, answer-choice testing, formulas, or direct arithmetic. See [PHILOSOPHY.md](PHILOSOPHY.md) for the product's Desmos-first design philosophy — read it before changing the solver's prompt, strategy library, or scoring.
+An SAT Math workspace: upload a screenshot, get a concise answer, and watch the solution appear in an editable Desmos calculator. The solver is Desmos first: it holds every method to the human-verified gold solutions in `src/content/gold-solutions`, searches the curated 78-strategy library in `src/content/desmos-tricks.md`, and lists the Desmos ways (graphing, regression, sliders, lists, answer-choice testing) ahead of one math way, which is the default only when no Desmos way works. See [PHILOSOPHY.md](PHILOSOPHY.md) for the product's Desmos-first design philosophy — read it before changing the solver's prompt, strategy library, or scoring.
 
 ## Run locally
 
@@ -92,11 +92,11 @@ On a solve or a saved problem, selecting text in the solution card (the question
 
 `tests/tutor.test.ts` covers the handler (sign-in, validation, grounding, metering, the spend ceiling, error mapping, saved tricks) with mocked OpenAI responses, and `tests/saved-tricks-database.test.ts` runs every migration on an embedded PostgreSQL to prove owner isolation, uniqueness, and the widened `model_usage` check.
 
-## Add training batches
+## Add gold solutions
 
-Put each JSON array in `src/content/training-batches` with a unique filename such as `desmo_training_batch_002.json`. Every example must contain `id`, `question`, `answer_choices`, `correct_answer`, `strategy_name`, `techniqueId` (the vocabulary id of the technique the example teaches), `trigger_pattern`, `desmos_steps`, `why_preferred`, and `needs_review`. IDs must be unique across every batch.
+Gold solutions are problems with the Desmos solution a human tutor considers the standard to teach. Add them to `src/content/gold-solutions/desmo_gold_solutions.json` (or a new `.json` array in that folder); [its README](src/content/gold-solutions/README.md) has the format and a template. Every solution must contain `id`, `question`, `answer_choices`, `correct_answer`, `strategy_name`, `techniqueId` (the vocabulary id of the technique it teaches), `trigger_pattern`, `desmos_steps`, `why_preferred`, and `needs_review`. IDs must be unique across every file.
 
-The solve route validates and loads all `.json` files in filename order. Examples with `needs_review: true` remain in the dataset but are omitted from the AI prompt until reviewed. In development, edits are read on the next solve. Rebuild a production deployment after adding a batch so Next.js includes the new file.
+The solve route validates and loads all `.json` files in filename order and puts them ahead of the strategy library in the prompt. Solutions with `needs_review: true` stay in the folder but out of the prompt and the benchmark. In development, edits are read on the next solve. Rebuild a production deployment after adding one so Next.js includes the file. `npm run bench:solver -- <label> --group=gold` runs them as a benchmark group of their own.
 
 These are few-shot method-selection examples rather than fixed answer rules. The solver is instructed to match the structure and trigger pattern, substitute the current problem's values, and verify the setup before it can select that method. Calculator steps and plain-language read instructions may share the `desmos_steps` array; the model still emits only valid expressions into Desmos. Reference forms such as `x_1` are normalized to `x_{1}` before prompting.
 
@@ -117,10 +117,10 @@ These are few-shot method-selection examples rather than fixed answer rules. The
 - `src/lib/desmos-latex.ts` normalizes declared list identifiers, their references, and named calculator built-ins to executable Desmos LaTeX before the shared solution reaches the UI, and flags rows that use letters Desmos cannot resolve.
 - `src/lib/answer-consistency.ts` derives the displayed answer from the calculator readout the model names, repairs a contradictory read instruction, and reconciles the saved answer with what the live calculator computes.
 - `src/components/calculator-verification.tsx` shares Desmos row evaluations between the calculator and the explanation on both the solver and saved-history pages.
-- `src/lib/training-examples.ts` validates every training batch, excludes examples awaiting review, and builds the few-shot method-selection context.
+- `src/lib/gold-solutions.ts` validates every gold solution, excludes drafts awaiting review, and builds the gold-solutions prompt section.
 - `src/components/desmos-calculator.tsx` loads Desmos, adds expressions, fits the graph window, reports invalid equations, and publishes each row's computed value for verification.
 - `src/content/desmos-tricks.md` is read on each solve. Edit this file to refine the strategy guide; the solver also applies domain, precision, and calculator-syntax checks in its prompt.
-- `src/content/training-batches` contains reviewed problem-to-strategy examples. Add future numbered JSON batches here.
+- `src/content/gold-solutions` holds the human-verified gold solutions, the standard every Desmos way is held to. See its README to add one.
 - `public/sample-question.png` is an original practice question with answer **C) 7**.
 - `tests/solve.test.ts` checks upload validation, both model calls' request shapes, caching (repeat solves, re-cropped screenshots, configuration changes), method switching, streaming, fallbacks, and upstream failures with mocked API responses.
 
@@ -138,7 +138,7 @@ The upload accepts exactly one field, `image`. The response contains `{ solution
 
 ### Determinism cache
 
-The same problem returns the same methods, order, and default every time. `cacheKey = sha256(normalized problem text + choices) + "." + promptConfigVersion`, where the problem text is the model's transcription (so a differently cropped screenshot of the same problem hits the same entry after one extraction call) and `promptConfigVersion` hashes both prompts, the strategy library, the training examples, the cost weights, the vocabulary, the response schemas, and the model (so any improvement regenerates cached problems). An identical re-upload maps straight to its entry and makes no model call. The cache lives in the existing Supabase project; apply [the cache migration](supabase/migrations/202609270001_solve_cache.sql) once, like the first migration.
+The same problem returns the same methods, order, and default every time. `cacheKey = sha256(normalized problem text + choices) + "." + promptConfigVersion`, where the problem text is the model's transcription (so a differently cropped screenshot of the same problem hits the same entry after one extraction call) and `promptConfigVersion` hashes both prompts, the strategy library, the gold solutions, the cost weights, the vocabulary, the response schemas, and the model (so any improvement regenerates cached problems). An identical re-upload maps straight to its entry and makes no model call. The cache lives in the existing Supabase project; apply [the cache migration](supabase/migrations/202609270001_solve_cache.sql) once, like the first migration.
 
 ### Answer consistency
 

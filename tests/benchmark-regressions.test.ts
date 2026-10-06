@@ -180,10 +180,14 @@ test("065: an approximation question matches the clearly nearest choice, and onl
   assert.ok(eligible(selectRecorded("065")).some((method) => method.techniqueId === "linear-regression"), "the fitted line is no longer rejected");
 });
 
-test("042/061/071/073: contract slips are repaired locally, so no rescue call is spent", () => {
-  for (const prefix of ["042", "061", "071", "073"]) {
+test("042/061/071/073: contract slips are repaired locally, so no rescue call is spent on a Desmos default", () => {
+  for (const prefix of ["042", "061", "071"]) {
     assert.equal(desmosRescueTarget(selectRecorded(prefix)), null, prefix);
   }
+  // 073's default types the Pythagorean theorem: a math way, so one call asks for a Desmos way.
+  const triangle = desmosRescueTarget(selectRecorded("073"));
+  assert.equal(triangle?.winner.techniqueId, "reference-formula");
+  assert.deepEqual(triangle?.candidates, []);
   assert.equal(winnerOf("042").techniqueId, "graph-inequality");
   assert.deepEqual(winnerOf("073").rows.map((row) => row.latex), ["a=\\sqrt{29^{2}-20^{2}}", "20/a"]);
   assert.equal(winnerOf("071").rows[2].latex, "\\frac{1}{2}d_{1}d_{2}");
@@ -192,7 +196,7 @@ test("042/061/071/073: contract slips are repaired locally, so no rescue call is
   assert.equal(unwrapCaption("\\tan(S)=20/a"), "20/a");
 });
 
-test("010/040: the recorded first attempts solve with a single candidates call", async () => {
+test("010/040: the recorded first attempts need no validation retry; 010's math-way default gets one Desmos rescue", async () => {
   for (const [prefix, problem] of [
     ["010", "The system of equations gx - 3y = 15 and 8x - ky = 60 has infinitely many solutions, where g and k are constants. What is the value of g/k?"],
     ["040", "4x - ky = 9\n6x + 15y = 2\nIn the given system of equations, k is a constant. If the system has no solution, what is the value of k?"],
@@ -202,7 +206,10 @@ test("010/040: the recorded first attempts solve with a single candidates call",
     const { requests } = mockModel({ candidates: caseOutput(prefix), explanation: explanation(winner.rows.length) });
     const result = await solveProblem(deps(), { kind: "text", problem, choices: null });
     assert.ok(result.kind === "solved", prefix);
-    assert.equal(requests.candidates.length, 1, `${prefix}: no validation retry`);
+    // 010's default is paper arithmetic, so the rescue asks once for a Desmos way; the
+    // recorded reply has none that passes, so the paper method is kept.
+    assert.equal(requests.candidates.length, prefix === "010" ? 2 : 1, `${prefix}: no validation retry`);
+    assert.equal(result.rescue, prefix === "010" ? "kept" : null);
     assert.equal(result.method.techniqueId, winner.techniqueId);
   }
 });
@@ -217,7 +224,8 @@ test("063: a filtered choice list's entry 1 is the value it shows, not choice A"
   // A[cost=A] displays [1080]; the model reported entry 1 as a choice position,
   // which read as A) $360 although the value and its own label both said B.
   const listing = selectSecond("063").methods.find((method) => method.techniqueId === "answer-choice-list")!;
-  assert.equal(listing.rejected, null);
+  // It passes every rule; it is only left out as a second math way next to calculator arithmetic.
+  assert.equal(listing.rejected?.rule, "extra-math-way");
   assert.equal(listing.answer, "B) $1,080");
   assert.equal(listing.result.answerFrom, "value");
   assert.equal(listing.result.listIndex, 1, "entry 1 of the filtered list is what Desmos shows");
@@ -247,7 +255,7 @@ test("033: a fit read at its graphed x-intercept is the linear regression, kept 
 });
 
 test("073: a caption Desmos cannot define is removed from any row nothing references", () => {
-  const listing = eligible(selectSecond("073")).find((method) => method.techniqueId === "answer-choice-list")!;
+  const listing = selectSecond("073").methods.find((method) => method.techniqueId === "answer-choice-list")!;
   assert.equal(listing.rows[1].latex, "20/\\sqrt{29^2-20^2}");
   // A caption another row uses is a name, so it is left for the undefined-name check.
   const named = selectMethods(candidatesResponse([graphCandidate({
@@ -269,14 +277,14 @@ test("036: a clicked boundary of 110.81 never replaces the whole-number answer 1
   assert.equal(plain.methods[0].answer, "3");
 });
 
-test("010: a given-ratio question reads g/k from the scale factor, so it is not charged a solution-count fact or rescued", () => {
-  // The rescue replaced this gold paper method with bracket regression for 26 s
-  // only because the fact made a rejected slider candidate look cheaper.
+test("010: a given-ratio question reads g/k from the scale factor, so it is not charged a solution-count fact; as a math way it gets one Desmos rescue", () => {
   const selection = selectSecond("010");
   const paper = eligible(selection)[0];
   assert.equal(paper.techniqueId, "direct-arithmetic");
   assert.equal(paper.cost.oneOffFacts, 0);
-  assert.equal(desmosRescueTarget(selection), null);
+  const target = desmosRescueTarget(selection);
+  assert.equal(target?.winner.techniqueId, "direct-arithmetic");
+  assert.ok(target!.candidates.every((method) => method.approach === "desmos"), "only Desmos ways are offered for correction");
 });
 
 test("040: a slider readout that lists the slider row among its graphs still proves no solution", () => {

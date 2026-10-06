@@ -52,17 +52,39 @@ for the problem's structure, not by dressing up an algebra solution.
 ## What "least effort" actually means
 
 The optimization target is **not** simply the fewest Desmos lines, and it is
-**not** simply "maximum Desmos usage at any cost." Both extremes are wrong:
+**not** the most Desmos rows possible. Among Desmos ways, the simplest one that
+removes the most math wins; math itself comes last:
 
 - A 5-line Desmos method requiring almost no math can beat a 2-line method
   that requires the student to understand or derive a formula. Hidden
   derivation behind a short expression is a cost, not a shortcut.
-- Do not avoid basic math at absolutely any cost. If a Desmos workaround
-  becomes insanely complicated just to avoid one trivial Algebra 1-level step,
-  the basic math step is acceptable. Small substitutions and rearrangements
-  are also acceptable when they unlock a useful Desmos technique. Always ask
-  first whether Desmos can reasonably do that step instead — but don't force
-  the answer to always be yes.
+- Math is the last resort, never a co-equal option. A Desmos way is the
+  default whenever one works; a math way is listed as the alternative and is
+  the default only when no Desmos way passes. A Desmos way may still need one
+  tiny step by hand (reading `a = 16` off the equation), and a small
+  substitution that unlocks a Desmos technique is fine, but that step is
+  always named and explained to the student, never hidden in a row.
+
+## The Desmos way and the math way
+
+This is the product's moat. A general chatbot solves the math first and uses
+Desmos only as a calculator for the formula it derived: the discriminant typed
+into a row, a substitution worked by hand. That is the **math way**. Desmo's
+job is the **Desmos way**: come at the problem from an angle Desmos can handle,
+so Desmos removes the math and the student's skill is knowing Desmos.
+
+The standard example: `3x² − 16x + 2 = 0` has a solution `(a + √b)/6`, where
+`a` and `b` are integers; find `a + b`. The math way recalls the quadratic
+formula, computes `16² − 4(3)(2) = 232`, and matches `a = 16`, `b = 232`. The
+Desmos way graphs `3x² − 16x + 2`, clicks the root `(5.20526, 0)`, types
+`(a + √b)/6 ~ 5.20526` with a slider `a = 16` (a number already printed in the
+equation), and reads `b = 232.00042` and `a + b = 248`. Desmos found the root
+and the hidden number; the student did no algebra.
+
+Before accepting any method, ask: *is this what a general chatbot would do,
+with Desmos as a calculator?* If yes, it is the math way, and the Desmos angle
+must be found too. The human-verified **gold solutions**
+(`src/content/gold-solutions`) are the standard every Desmos way is held to.
 
 ## Formula memorization
 
@@ -107,27 +129,37 @@ to reach for, not a method of last resort to apologize for.
 
 ## Method choice
 
-For each problem Desmo lists every technique that validly solves it (up to
-six; one when only one does, never padded: validity is the filter, cost only
-decides the order), each
+For each problem Desmo lists every Desmos way that validly solves it and
+**one** math way (up to six in all, never padded: validity is the filter), each
 named from a fixed vocabulary so the same technique always carries the same
-name, and each labeled with its math load and a one-line shape ("3 rows ·
-slider · no algebra"). The student may switch to any listed technique; a paper
-technique is listed whenever one genuinely exists, so a student who prefers
-algebra has an option.
+name, labeled "Desmos way" or "Math way", and labeled with its math load and a
+one-line shape ("3 rows · slider · no algebra"). Nearly every SAT problem has
+both a Desmos way and a math way; a list with only one method is rare. Several
+algebra variants of the same idea teach nothing new, so only the simplest math
+way is kept. The student may switch to any listed technique.
 
-**The default is the cheapest total cost**, and the cost function is what keeps
-the default Desmos-first: every hand derivation step costs 3, every memorized
-one-off fact costs 4, while calculator rows cost 1 and whitelisted Desmos
-primitives (graphing, sliders, lists, regression, restrictions, derivatives,
-statistics) cost nothing. Implementation: the vocabulary in
+**The default is the cheapest Desmos way.** Desmos ways always rank ahead of
+math ways; a math way is the default only when no Desmos way passes, and then
+the model gets one call asking for the Desmos angle first. Among Desmos ways,
+the cost function decides: every hand derivation step costs 3, every
+memorized one-off fact costs 4, while calculator rows cost 1 and whitelisted
+Desmos primitives (graphing, sliders, lists, regression, restrictions,
+derivatives, statistics) cost nothing. A math way is a paper technique, or
+Desmos used as a calculator: rows that only do arithmetic on the question's
+numbers, or evaluate a formula the student recalls. Implementation: the vocabulary in
 `src/lib/technique-vocabulary.ts`, the weights and labels in
 `src/lib/method-scoring.ts`, selection in `src/lib/strategy-selection.ts`.
 
 ## How the product enforces this
 
 - The model must emit `structure` (what it recognized) before any candidate;
-  the output schema orders it first. Every candidate names a `techniqueId`
+  the output schema orders it first. Next comes the `library` report: the
+  numbered strategies whose trigger fits, and why a matched one was skipped.
+  Each candidate cites the strategy it applies. A development/eval trace
+  (`src/lib/library-trace.ts`) compares that report with deterministic
+  structure detectors, flags a library trick the wording points to that was
+  never tried, and records whether the default fell back to generic math.
+  Students never see it. Every candidate names a `techniqueId`
   from the vocabulary; a free-form name fails validation, and every library
   strategy carries its id, so a technique is named the same way everywhere.
 - The student sees the recognized structure and the technique name on every
@@ -157,7 +189,20 @@ statistics) cost nothing. Implementation: the vocabulary in
   square off-screen) or a value defined by a formula in a fitted parameter
   (`a=6/m`) is rejected as hidden derivation, with the runner-up Desmos
   candidate named. The model then gets one guided retry with the exact
-  rejection reason.
+  rejection reason. A row that types a memorized formula over the givens
+  (the slope formula, the quadratic formula's `16^{2}-4(3)(2)`) is charged
+  that formula as a one-off fact, whatever the model reported.
+- Any hand step a Desmos way still needs is shown to the student on its own
+  "Math you do by hand" line, named and explained; an explanation that leaves
+  it out is rejected. A pure-Desmos method shows no such line.
+- The transcription is copied verbatim: a table cell is written once, under
+  its printed header, and never replaced by a value the model computed. Two
+  different values for the same cell stop the solve with a reason the model
+  must fix, and a data list holding a number the question never states is
+  rejected as hidden derivation, whatever its size.
+- The gold solutions are human-verified and lead the prompt; the benchmark's
+  case files are agent-written silver. Benchmark reports show the gold
+  solutions as their own group, never averaged into the others.
 
 ## The review standard
 

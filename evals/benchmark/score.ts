@@ -7,8 +7,9 @@
  * and mixing them in hid a credit outage as a 31-point accuracy drop in an
  * earlier recorded run.
  */
+import type { LibraryTrace } from "../../src/lib/library-trace";
 import { getTechnique, type TechniqueId } from "../../src/lib/technique-vocabulary";
-import type { LoadedCase } from "./case-schema";
+import type { LoadedCase, ScorableCase } from "./case-schema";
 
 export type StrategyClass = "gold" | "acceptable" | "bad" | "unlisted";
 
@@ -21,6 +22,8 @@ export type MethodRecord = {
   total: number | null;
   mathLevel: "low" | "medium" | "high" | null;
   family?: string;
+  /** Desmos way or math way; absent on records written before it existed. */
+  approach?: "desmos" | "math";
 };
 
 export type StageRecord = { stage: string; ms: number; usage?: { input: number; cached: number; output: number; reasoning: number } };
@@ -28,6 +31,8 @@ export type StageRecord = { stage: string; ms: number; usage?: { input: number; 
 export type RunRecord = {
   caseId: string;
   group: LoadedCase["group"];
+  /** Absent on records written before cases carried provenance: those are silver. */
+  labelProvenance?: LoadedCase["labelProvenance"];
   runIndex: number;
   ok: boolean;
   /** Set when the failure was the provider or network, not the solver. */
@@ -57,6 +62,8 @@ export type RunRecord = {
   /** Raw call-1 outputs, so selection can be replayed offline (evals/replay.mts). */
   candidateOutputs?: unknown[];
   rescue?: string | null;
+  /** Which library strategies the solve matched and used (fresh solves only). */
+  library?: LibraryTrace;
 };
 
 const INFRA = /\b429\b|credits?|quota|rate.?limit|timed? ?out|timeout|ECONN|ENOTFOUND|EAI_AGAIN|socket|network|fetch failed|50[234]\b|overloaded|APIConnection/i;
@@ -65,7 +72,7 @@ export function isInfraFailure(message: string): boolean {
   return INFRA.test(message);
 }
 
-export function classifyStrategy(techniqueId: string, item: Pick<LoadedCase, "gold" | "acceptable" | "bad">): StrategyClass {
+export function classifyStrategy(techniqueId: string, item: Pick<ScorableCase, "gold" | "acceptable" | "bad">): StrategyClass {
   if ((item.gold as string[]).includes(techniqueId)) return "gold";
   if ((item.acceptable as string[]).includes(techniqueId)) return "acceptable";
   if (item.bad.some((bad) => bad.technique === techniqueId)) return "bad";
@@ -108,6 +115,18 @@ export type Metrics = {
   unlistedRate: number | null;
   mathHeavyRate: number | null;
   goldListedRate: number | null;
+  /** Default is a Desmos way (records that carry the approach only). */
+  desmosDefaultRate: number | null;
+  /** Only one method listed. */
+  singleMethodRate: number | null;
+  /** The list offers both a Desmos way and a math way (records that carry the approach only). */
+  bothWaysRate: number | null;
+  /** Default is a standard paper technique: the solve fell back to generic math. */
+  genericFallbackRate: number | null;
+  /** Default cites the numbered library strategy it applies (traced runs only). */
+  libraryDefaultRate: number | null;
+  /** A structure detector pointed at a library technique the solve never tried or matched (traced runs only). */
+  libraryMissRate: number | null;
   failureRate: number | null;
   clarificationRate: number | null;
   validationRetryRate: number | null;
@@ -133,6 +152,8 @@ export function summarize(records: RunRecord[]): Metrics {
   const scored = records.filter((record) => !record.infraFailure);
   const solved = scored.filter((record) => record.ok && !record.clarification);
   const winners = solved.flatMap((record) => (record.winner ? [record.winner] : []));
+  const traced = solved.filter((record) => record.library);
+  const withApproach = solved.filter((record) => record.methods?.length && record.methods.every((method) => method.approach));
   const classes = solved.map((record) => record.strategyClass);
   const firstUseful = solved.flatMap((record) => (record.methodsMs !== undefined ? [record.methodsMs] : []));
   const complete = solved.flatMap((record) => (record.completeMs !== undefined ? [record.completeMs] : []));
@@ -150,6 +171,12 @@ export function summarize(records: RunRecord[]): Metrics {
     unlistedRate: pct(classes.filter((value) => value === "unlisted").length, solved.length),
     mathHeavyRate: pct(winners.filter(isMathHeavy).length, winners.length),
     goldListedRate: pct(solved.filter((record) => record.goldListed).length, solved.length),
+    desmosDefaultRate: pct(winners.filter((winner) => winner.approach === "desmos").length, winners.filter((winner) => winner.approach).length),
+    singleMethodRate: pct(solved.filter((record) => record.methods?.length === 1).length, solved.length),
+    bothWaysRate: pct(withApproach.filter((record) => new Set(record.methods!.map((method) => method.approach)).size === 2).length, withApproach.length),
+    genericFallbackRate: pct(winners.filter((winner) => isPaper(winner.techniqueId)).length, winners.length),
+    libraryDefaultRate: pct(traced.filter((record) => record.library!.winner?.strategy != null).length, traced.length),
+    libraryMissRate: pct(traced.filter((record) => record.library!.missed.length > 0).length, traced.length),
     failureRate: pct(scored.filter((record) => !record.ok).length, scored.length),
     clarificationRate: pct(scored.filter((record) => record.clarification).length, scored.length),
     validationRetryRate: pct(solved.filter((record) => (record.candidateCalls ?? 1) > 1).length, solved.length),
@@ -172,11 +199,19 @@ export function summarize(records: RunRecord[]): Metrics {
   };
 }
 
-/** Metrics for the whole run and per group, so hard cases cannot mask representative regressions. */
-export function summarizeByGroup(records: RunRecord[]): Record<"all" | LoadedCase["group"], Metrics> {
+export const METRIC_GROUPS = ["all", "representative", "hard", "gold"] as const;
+export type MetricGroup = (typeof METRIC_GROUPS)[number];
+
+/**
+ * Metrics for the whole run and per group, so hard cases cannot mask
+ * representative regressions and the gold solutions (human-verified, and seen
+ * in the prompt) are never averaged into the agent-labeled cases.
+ */
+export function summarizeByGroup(records: RunRecord[]): Record<MetricGroup, Metrics> {
   return {
     all: summarize(records),
     representative: summarize(records.filter((record) => record.group === "representative")),
     hard: summarize(records.filter((record) => record.group === "hard")),
+    gold: summarize(records.filter((record) => record.group === "gold")),
   };
 }

@@ -161,6 +161,7 @@ export function sanitizeSolutionProse(solution: Solution): Solution {
     question: sanitizeProse(solution.question, "question"),
     answer: sanitizeProse(solution.answer, "answer"),
     why: sanitizeProse(solution.why, "why"),
+    handMath: solution.handMath ? sanitizeProse(solution.handMath, "handMath") : null,
     readAnswer: solution.readAnswer !== null ? sanitizeProse(solution.readAnswer, "readAnswer") : null,
     structure: solution.structure !== null ? sanitizeProse(solution.structure, "structure") : null,
     trick: solution.trick !== null ? sanitizeProse(solution.trick, "trick") : null,
