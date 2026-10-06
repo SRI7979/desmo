@@ -1,0 +1,474 @@
+{
+  "label": "desmos-first-074b",
+  "format": 2,
+  "configuration": {
+    "model": "gpt-5-mini",
+    "reasoningEffort": "low",
+    "serviceTier": "priority",
+    "promptConfigVersion": "6bbee572989ac1e52c524bdf"
+  },
+  "runs": 1,
+  "caseIds": [
+    "074-arc-length-central-angle"
+  ],
+  "metrics": {
+    "all": {
+      "runs": 1,
+      "scoredRuns": 1,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 100,
+      "acceptableRate": 100,
+      "badRate": 0,
+      "unlistedRate": 0,
+      "mathHeavyRate": 0,
+      "goldListedRate": 100,
+      "desmosDefaultRate": 100,
+      "singleMethodRate": 0,
+      "bothWaysRate": 100,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 2,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 2,
+      "avgFamiliesPerSolve": 2,
+      "avgExplanationScore": 1,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 11268,
+          "p75": 11268,
+          "p95": 11268
+        },
+        "complete": {
+          "p50": 21171,
+          "p75": 21171,
+          "p95": 21171
+        }
+      },
+      "tokens": {
+        "input": 34515,
+        "cached": 0,
+        "output": 2267,
+        "reasoning": 1472
+      }
+    },
+    "representative": {
+      "runs": 1,
+      "scoredRuns": 1,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 100,
+      "acceptableRate": 100,
+      "badRate": 0,
+      "unlistedRate": 0,
+      "mathHeavyRate": 0,
+      "goldListedRate": 100,
+      "desmosDefaultRate": 100,
+      "singleMethodRate": 0,
+      "bothWaysRate": 100,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 2,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 2,
+      "avgFamiliesPerSolve": 2,
+      "avgExplanationScore": 1,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 11268,
+          "p75": 11268,
+          "p95": 11268
+        },
+        "complete": {
+          "p50": 21171,
+          "p75": 21171,
+          "p95": 21171
+        }
+      },
+      "tokens": {
+        "input": 34515,
+        "cached": 0,
+        "output": 2267,
+        "reasoning": 1472
+      }
+    },
+    "hard": {
+      "runs": 0,
+      "scoredRuns": 0,
+      "infraFailureRate": null,
+      "answerAccuracy": null,
+      "goldRate": null,
+      "acceptableRate": null,
+      "badRate": null,
+      "unlistedRate": null,
+      "mathHeavyRate": null,
+      "goldListedRate": null,
+      "desmosDefaultRate": null,
+      "singleMethodRate": null,
+      "bothWaysRate": null,
+      "genericFallbackRate": null,
+      "libraryDefaultRate": null,
+      "libraryMissRate": null,
+      "failureRate": null,
+      "clarificationRate": null,
+      "validationRetryRate": null,
+      "desmosRetryRate": null,
+      "explanationFallbackRate": null,
+      "avgRows": null,
+      "avgManualMath": null,
+      "avgHiddenDerivation": null,
+      "hiddenDerivationRejectionsPerRun": null,
+      "avgMethodsPerSolve": null,
+      "avgFamiliesPerSolve": null,
+      "avgExplanationScore": null,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        },
+        "complete": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        }
+      },
+      "tokens": {
+        "input": null,
+        "cached": null,
+        "output": null,
+        "reasoning": null
+      }
+    },
+    "gold": {
+      "runs": 0,
+      "scoredRuns": 0,
+      "infraFailureRate": null,
+      "answerAccuracy": null,
+      "goldRate": null,
+      "acceptableRate": null,
+      "badRate": null,
+      "unlistedRate": null,
+      "mathHeavyRate": null,
+      "goldListedRate": null,
+      "desmosDefaultRate": null,
+      "singleMethodRate": null,
+      "bothWaysRate": null,
+      "genericFallbackRate": null,
+      "libraryDefaultRate": null,
+      "libraryMissRate": null,
+      "failureRate": null,
+      "clarificationRate": null,
+      "validationRetryRate": null,
+      "desmosRetryRate": null,
+      "explanationFallbackRate": null,
+      "avgRows": null,
+      "avgManualMath": null,
+      "avgHiddenDerivation": null,
+      "hiddenDerivationRejectionsPerRun": null,
+      "avgMethodsPerSolve": null,
+      "avgFamiliesPerSolve": null,
+      "avgExplanationScore": null,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        },
+        "complete": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        }
+      },
+      "tokens": {
+        "input": null,
+        "cached": null,
+        "output": null,
+        "reasoning": null
+      }
+    }
+  },
+  "records": [
+    {
+      "caseId": "074-arc-length-central-angle",
+      "group": "representative",
+      "labelProvenance": "agent_generated_silver",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 21171,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 11248,
+          "usage": {
+            "input": 32836,
+            "cached": 0,
+            "output": 1710,
+            "reasoning": 1216
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 18
+        },
+        {
+          "stage": "cache_write",
+          "ms": 1
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 9898,
+          "usage": {
+            "input": 1679,
+            "cached": 0,
+            "output": 557,
+            "reasoning": 256
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 9902
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "A circle has a radius of 12 centimeters. An arc of the circle has a length of 10pi centimeters. What is the measure, in degrees, of the central angle that intercepts this arc?",
+            "choices": null,
+            "clarification": null,
+            "structure": "Circle with radius and arc length given; find central angle in degrees (use arc-length relation).",
+            "library": {
+              "matched": [
+                1,
+                35,
+                77
+              ],
+              "skipped": [
+                {
+                  "strategy": 35,
+                  "reason": "Graphing the whole circle is unnecessary; graphing the arc-length formula against the given length is simpler."
+                }
+              ]
+            },
+            "candidates": [
+              {
+                "techniqueId": "graph-both-sides",
+                "strategy": 1,
+                "rung": 1,
+                "rows": [
+                  {
+                    "latex": "y=2\\pi(12)\\frac{x}{360}",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=10\\pi",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "150",
+                "result": {
+                  "row": 1,
+                  "value": 150,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "x-coordinate of the intersection of rows 1 and 2 (degrees)",
+                  "type": "intersection",
+                  "relatedRows": [
+                    2
+                  ]
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": {
+                  "left": -10,
+                  "right": 200,
+                  "bottom": -10,
+                  "top": 50
+                },
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "calculator-arithmetic",
+                "strategy": 77,
+                "rung": 2,
+                "rows": [],
+                "answer": "150",
+                "result": {
+                  "row": null,
+                  "value": 150,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "Compute (arc length)/(radius) to get radians, convert to degrees: (10\\pi/12)*180/\\pi =150",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 2,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 1,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              }
+            ],
+            "preferredTechniqueId": "graph-both-sides"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          1,
+          35,
+          77
+        ],
+        "matched": [
+          {
+            "number": 1,
+            "title": "Graph two equations and click the intersection"
+          },
+          {
+            "number": 35,
+            "title": "Graph a circle directly"
+          },
+          {
+            "number": 77,
+            "title": "Type the arithmetic"
+          }
+        ],
+        "skipped": [
+          {
+            "number": 35,
+            "reason": "Graphing the whole circle is unnecessary; graphing the arc-length formula against the given length is simpler."
+          }
+        ],
+        "detected": [],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "graph-both-sides",
+            "techniqueId": "graph-both-sides",
+            "strategy": 1,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 2
+          },
+          {
+            "id": "calculator-arithmetic",
+            "techniqueId": "calculator-arithmetic",
+            "strategy": 77,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 10
+          }
+        ],
+        "winner": {
+          "id": "graph-both-sides",
+          "techniqueId": "graph-both-sides",
+          "strategy": 1,
+          "total": 2,
+          "mathScore": 0,
+          "reason": "lowest total cost 2 (2 rows, 0 derivation, 0 facts); next calculator-arithmetic at 10"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": []
+      },
+      "answer": "150",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "graph-both-sides",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 2,
+        "mathLevel": "low",
+        "family": "visual",
+        "approach": "desmos"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "graph-both-sides",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 2,
+          "mathLevel": "low",
+          "family": "visual",
+          "approach": "desmos"
+        },
+        {
+          "techniqueId": "calculator-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 1,
+          "mathScore": 3,
+          "total": 10,
+          "mathLevel": "high",
+          "family": "traditional",
+          "approach": "math"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 1,
+      "unexplainedJargon": [],
+      "methodsMs": 11268,
+      "rescue": null
+    }
+  ]
+}

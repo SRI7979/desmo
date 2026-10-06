@@ -1,0 +1,1042 @@
+{
+  "label": "desmos-first-gold",
+  "format": 2,
+  "configuration": {
+    "model": "gpt-5-mini",
+    "reasoningEffort": "low",
+    "serviceTier": "priority",
+    "promptConfigVersion": "fe7b8a8888c834b67c9536bd"
+  },
+  "runs": 1,
+  "caseIds": [
+    "gold/001",
+    "gold/013"
+  ],
+  "metrics": {
+    "all": {
+      "runs": 2,
+      "scoredRuns": 2,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 50,
+      "acceptableRate": 50,
+      "badRate": 0,
+      "unlistedRate": 50,
+      "mathHeavyRate": 0,
+      "goldListedRate": 100,
+      "desmosDefaultRate": 100,
+      "singleMethodRate": 0,
+      "bothWaysRate": 100,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 3,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 2.5,
+      "avgFamiliesPerSolve": 2,
+      "avgExplanationScore": 1,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 11593,
+          "p75": 18143,
+          "p95": 18143
+        },
+        "complete": {
+          "p50": 16356,
+          "p75": 22971,
+          "p95": 22971
+        }
+      },
+      "tokens": {
+        "input": 34450.5,
+        "cached": 32640,
+        "output": 3111,
+        "reasoning": 1632
+      }
+    },
+    "representative": {
+      "runs": 0,
+      "scoredRuns": 0,
+      "infraFailureRate": null,
+      "answerAccuracy": null,
+      "goldRate": null,
+      "acceptableRate": null,
+      "badRate": null,
+      "unlistedRate": null,
+      "mathHeavyRate": null,
+      "goldListedRate": null,
+      "desmosDefaultRate": null,
+      "singleMethodRate": null,
+      "bothWaysRate": null,
+      "genericFallbackRate": null,
+      "libraryDefaultRate": null,
+      "libraryMissRate": null,
+      "failureRate": null,
+      "clarificationRate": null,
+      "validationRetryRate": null,
+      "desmosRetryRate": null,
+      "explanationFallbackRate": null,
+      "avgRows": null,
+      "avgManualMath": null,
+      "avgHiddenDerivation": null,
+      "hiddenDerivationRejectionsPerRun": null,
+      "avgMethodsPerSolve": null,
+      "avgFamiliesPerSolve": null,
+      "avgExplanationScore": null,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        },
+        "complete": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        }
+      },
+      "tokens": {
+        "input": null,
+        "cached": null,
+        "output": null,
+        "reasoning": null
+      }
+    },
+    "hard": {
+      "runs": 0,
+      "scoredRuns": 0,
+      "infraFailureRate": null,
+      "answerAccuracy": null,
+      "goldRate": null,
+      "acceptableRate": null,
+      "badRate": null,
+      "unlistedRate": null,
+      "mathHeavyRate": null,
+      "goldListedRate": null,
+      "desmosDefaultRate": null,
+      "singleMethodRate": null,
+      "bothWaysRate": null,
+      "genericFallbackRate": null,
+      "libraryDefaultRate": null,
+      "libraryMissRate": null,
+      "failureRate": null,
+      "clarificationRate": null,
+      "validationRetryRate": null,
+      "desmosRetryRate": null,
+      "explanationFallbackRate": null,
+      "avgRows": null,
+      "avgManualMath": null,
+      "avgHiddenDerivation": null,
+      "hiddenDerivationRejectionsPerRun": null,
+      "avgMethodsPerSolve": null,
+      "avgFamiliesPerSolve": null,
+      "avgExplanationScore": null,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        },
+        "complete": {
+          "p50": null,
+          "p75": null,
+          "p95": null
+        }
+      },
+      "tokens": {
+        "input": null,
+        "cached": null,
+        "output": null,
+        "reasoning": null
+      }
+    },
+    "gold": {
+      "runs": 2,
+      "scoredRuns": 2,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 50,
+      "acceptableRate": 50,
+      "badRate": 0,
+      "unlistedRate": 50,
+      "mathHeavyRate": 0,
+      "goldListedRate": 100,
+      "desmosDefaultRate": 100,
+      "singleMethodRate": 0,
+      "bothWaysRate": 100,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 3,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 2.5,
+      "avgFamiliesPerSolve": 2,
+      "avgExplanationScore": 1,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 11593,
+          "p75": 18143,
+          "p95": 18143
+        },
+        "complete": {
+          "p50": 16356,
+          "p75": 22971,
+          "p95": 22971
+        }
+      },
+      "tokens": {
+        "input": 34450.5,
+        "cached": 32640,
+        "output": 3111,
+        "reasoning": 1632
+      }
+    }
+  },
+  "records": [
+    {
+      "caseId": "gold/001",
+      "group": "gold",
+      "labelProvenance": "human_verified_gold",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 16356,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 11579,
+          "usage": {
+            "input": 32755,
+            "cached": 32640,
+            "output": 1852,
+            "reasoning": 1024
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 12
+        },
+        {
+          "stage": "cache_write",
+          "ms": 1
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 4761,
+          "usage": {
+            "input": 1704,
+            "cached": 0,
+            "output": 657,
+            "reasoning": 256
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 4763
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "(12x + 28)/4 - s/13 = r(x - 8). In the given equation, s and r are constants, and s > 0. If the equation has infinitely many solutions, what is the value of s?",
+            "choices": null,
+            "clarification": null,
+            "structure": "One equation in x that must hold for all x (an identity) with two unknown constants; determine s so the identity holds.",
+            "library": {
+              "matched": [
+                59,
+                73,
+                57,
+                3
+              ],
+              "skipped": [
+                {
+                  "strategy": 73,
+                  "reason": "Covered by identity-regression (59) which is the direct regression-for-identity trick."
+                },
+                {
+                  "strategy": 57,
+                  "reason": "Slider visual method is possible but requires two-parameter manual adjustment (r and s) and is less direct than identity regression."
+                },
+                {
+                  "strategy": 3,
+                  "reason": "Graphing both sides can show overlap but does not by itself produce the numeric value of s without regression or heavy manual adjustment."
+                }
+              ]
+            },
+            "candidates": [
+              {
+                "techniqueId": "identity-regression",
+                "strategy": 59,
+                "rung": 4,
+                "rows": [
+                  {
+                    "latex": "x_{1}=[1...5]",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "(12x_{1}+28)/4 - s/13 ~ r(x_{1}-8)",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "s",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "403",
+                "result": {
+                  "row": 3,
+                  "value": 403,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "fitted parameter s from the regression (identity fit)",
+                  "type": "numeric",
+                  "relatedRows": [
+                    2
+                  ]
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "direct-arithmetic",
+                "strategy": null,
+                "rung": 2,
+                "rows": [],
+                "answer": "403",
+                "result": {
+                  "row": null,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "Paper algebra: equate coefficients for identity (3=r; 7-s/13=-8r) → s=403",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 2,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              }
+            ],
+            "preferredTechniqueId": "identity-regression"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          3,
+          57,
+          59,
+          73
+        ],
+        "matched": [
+          {
+            "number": 59,
+            "title": "Identity/coefficient questions → direct regression or strategic values"
+          },
+          {
+            "number": 73,
+            "title": "Pack several conditions into one regression"
+          },
+          {
+            "number": 57,
+            "title": "Graph answer-choice constants, sliders, and graphical conditions"
+          },
+          {
+            "number": 3,
+            "title": "Solve an equation by graphing both sides"
+          }
+        ],
+        "skipped": [
+          {
+            "number": 73,
+            "reason": "Covered by identity-regression (59) which is the direct regression-for-identity trick."
+          },
+          {
+            "number": 57,
+            "reason": "Slider visual method is possible but requires two-parameter manual adjustment (r and s) and is less direct than identity regression."
+          },
+          {
+            "number": 3,
+            "reason": "Graphing both sides can show overlap but does not by itself produce the numeric value of s without regression or heavy manual adjustment."
+          }
+        ],
+        "detected": [],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "identity-regression",
+            "techniqueId": "identity-regression",
+            "strategy": 59,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 3
+          },
+          {
+            "id": "direct-arithmetic",
+            "techniqueId": "direct-arithmetic",
+            "strategy": null,
+            "source": "generic-math",
+            "outcome": "eligible",
+            "total": 10
+          }
+        ],
+        "winner": {
+          "id": "identity-regression",
+          "techniqueId": "identity-regression",
+          "strategy": 59,
+          "total": 3,
+          "mathScore": 0,
+          "reason": "lowest total cost 3 (3 rows, 0 derivation, 0 facts); next direct-arithmetic at 10"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": []
+      },
+      "answer": "403",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "identity-regression",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 3,
+        "mathLevel": "low",
+        "family": "regression",
+        "approach": "desmos"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "identity-regression",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 3,
+          "mathLevel": "low",
+          "family": "regression",
+          "approach": "desmos"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 1,
+          "mathScore": 3,
+          "total": 10,
+          "mathLevel": "high",
+          "family": "traditional",
+          "approach": "math"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 1,
+      "unexplainedJargon": [],
+      "methodsMs": 11593,
+      "rescue": null
+    },
+    {
+      "caseId": "gold/013",
+      "group": "gold",
+      "labelProvenance": "human_verified_gold",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 22971,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 18133,
+          "usage": {
+            "input": 32742,
+            "cached": 32640,
+            "output": 3000,
+            "reasoning": 1728
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 9
+        },
+        {
+          "stage": "cache_write",
+          "ms": 0
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 4825,
+          "usage": {
+            "input": 1700,
+            "cached": 0,
+            "output": 713,
+            "reasoning": 256
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 4828
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "x + 2b is a factor of 3x^2 + 25x + 14b, where b is a positive integer constant. What is the value of b?",
+            "choices": null,
+            "clarification": null,
+            "structure": "Linear factor gives a shared zero: the polynomial equals 0 at x = -2b, and b is a positive integer.",
+            "library": {
+              "matched": [
+                17,
+                57,
+                65,
+                72,
+                75
+              ],
+              "skipped": [
+                {
+                  "strategy": 17,
+                  "reason": "will instead use identity-regression and integer-list brute force as clearer Desmos-first variants"
+                },
+                {
+                  "strategy": 57,
+                  "reason": "slider visual method is similar to shared-zero but shared-zero (integer slider) and integer-list-filter are listed separately"
+                },
+                {
+                  "strategy": 65,
+                  "reason": "kept as a direct candidate (integer-list-filter) rather than additional filtered-list variants"
+                },
+                {
+                  "strategy": 72,
+                  "reason": "identity-regression listed as a candidate; not used as primary param-regression variant"
+                },
+                {
+                  "strategy": 75,
+                  "reason": "shared-zero is listed as a candidate; retained"
+                }
+              ]
+            },
+            "candidates": [
+              {
+                "techniqueId": "shared-zero",
+                "strategy": 75,
+                "rung": 3,
+                "rows": [
+                  {
+                    "latex": "b=1",
+                    "slider": {
+                      "min": 1,
+                      "max": 10,
+                      "step": 1
+                    },
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=x+2b",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=3x^2+25x+14b",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "3",
+                "result": {
+                  "row": 1,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "slider b when the line and the parabola share an x-intercept",
+                  "type": "slider_condition",
+                  "relatedRows": [
+                    2,
+                    3
+                  ]
+                },
+                "answerState": {
+                  "param": "b",
+                  "value": 3
+                },
+                "parameters": [
+                  {
+                    "name": "b",
+                    "integer": true,
+                    "min": 1,
+                    "max": 10
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 1
+                }
+              },
+              {
+                "techniqueId": "integer-list-filter",
+                "strategy": 65,
+                "rung": 2,
+                "rows": [
+                  {
+                    "latex": "B=[1...10]",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "E=3(-2B)^2+25(-2B)+14B",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "B[E=0]",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "3",
+                "result": {
+                  "row": 3,
+                  "value": 3,
+                  "listIndex": 1,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "first entry of B that makes the polynomial zero (positive integer b)",
+                  "type": "list_entry",
+                  "relatedRows": [
+                    1,
+                    2
+                  ]
+                },
+                "answerState": null,
+                "parameters": [
+                  {
+                    "name": "B",
+                    "integer": true,
+                    "min": 1,
+                    "max": 10
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "identity-regression",
+                "strategy": 72,
+                "rung": 2,
+                "rows": [
+                  {
+                    "latex": "x_{1}=[1]",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "3(-2b)^2+25(-2b)+14b~[0]",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "b",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "3",
+                "result": {
+                  "row": 3,
+                  "value": 3,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "fitted parameter b from the identity condition polynomial(-2b)=0",
+                  "type": "numeric",
+                  "relatedRows": [
+                    2
+                  ]
+                },
+                "answerState": null,
+                "parameters": [
+                  {
+                    "name": "b",
+                    "integer": true,
+                    "min": 1,
+                    "max": 100
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "slider-condition",
+                "strategy": 57,
+                "rung": 3,
+                "rows": [
+                  {
+                    "latex": "b=1",
+                    "slider": {
+                      "min": 1,
+                      "max": 10,
+                      "step": 1
+                    },
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=x+2b",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=3x^2+25x+14b",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "3",
+                "result": {
+                  "row": 1,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "drag b until the line and parabola share an x-intercept",
+                  "type": "slider_condition",
+                  "relatedRows": [
+                    2,
+                    3
+                  ]
+                },
+                "answerState": {
+                  "param": "b",
+                  "value": 3
+                },
+                "parameters": [
+                  {
+                    "name": "b",
+                    "integer": true,
+                    "min": 1,
+                    "max": 10
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 1
+                }
+              },
+              {
+                "techniqueId": "factoring",
+                "strategy": null,
+                "rung": 2,
+                "rows": [],
+                "answer": "3",
+                "result": {
+                  "row": null,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "paper algebra: substitute x=-2b, solve 12b(b-3)=0 → b=3",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 2,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              }
+            ],
+            "preferredTechniqueId": "shared-zero"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          17,
+          57,
+          65,
+          72,
+          75
+        ],
+        "matched": [
+          {
+            "number": 17,
+            "title": "Unknown parameter regression"
+          },
+          {
+            "number": 57,
+            "title": "Graph answer-choice constants, sliders, and graphical conditions"
+          },
+          {
+            "number": 65,
+            "title": "Integer brute force with list filtering"
+          },
+          {
+            "number": 72,
+            "title": "Factorization by identity regression"
+          },
+          {
+            "number": 75,
+            "title": "Factor → shared zero"
+          }
+        ],
+        "skipped": [
+          {
+            "number": 17,
+            "reason": "will instead use identity-regression and integer-list brute force as clearer Desmos-first variants"
+          },
+          {
+            "number": 57,
+            "reason": "slider visual method is similar to shared-zero but shared-zero (integer slider) and integer-list-filter are listed separately"
+          },
+          {
+            "number": 65,
+            "reason": "kept as a direct candidate (integer-list-filter) rather than additional filtered-list variants"
+          },
+          {
+            "number": 72,
+            "reason": "identity-regression listed as a candidate; not used as primary param-regression variant"
+          },
+          {
+            "number": 75,
+            "reason": "shared-zero is listed as a candidate; retained"
+          }
+        ],
+        "detected": [
+          {
+            "detector": "factor-with-unknown",
+            "techniques": [
+              "shared-zero"
+            ]
+          }
+        ],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "integer-list-filter",
+            "techniqueId": "integer-list-filter",
+            "strategy": 65,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 3
+          },
+          {
+            "id": "shared-zero",
+            "techniqueId": "shared-zero",
+            "strategy": 75,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 4
+          },
+          {
+            "id": "factoring",
+            "techniqueId": "factoring",
+            "strategy": null,
+            "source": "generic-math",
+            "outcome": "eligible",
+            "total": 10
+          },
+          {
+            "id": "identity-regression",
+            "techniqueId": "identity-regression",
+            "strategy": 72,
+            "source": "library",
+            "outcome": "list-shape",
+            "total": 3
+          },
+          {
+            "id": "slider-condition",
+            "techniqueId": "slider-condition",
+            "strategy": 57,
+            "source": "library",
+            "outcome": "duplicate-rows",
+            "total": 4
+          }
+        ],
+        "winner": {
+          "id": "integer-list-filter",
+          "techniqueId": "integer-list-filter",
+          "strategy": 65,
+          "total": 3,
+          "mathScore": 0,
+          "reason": "lowest total cost 3 (3 rows, 0 derivation, 0 facts); next shared-zero at 4"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": []
+      },
+      "answer": "3",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "integer-list-filter",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 3,
+        "mathLevel": "low",
+        "family": "list-slider",
+        "approach": "desmos"
+      },
+      "strategyClass": "unlisted",
+      "methods": [
+        {
+          "techniqueId": "integer-list-filter",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 3,
+          "mathLevel": "low",
+          "family": "list-slider",
+          "approach": "desmos"
+        },
+        {
+          "techniqueId": "shared-zero",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 4,
+          "mathLevel": "low",
+          "family": "list-slider",
+          "approach": "desmos"
+        },
+        {
+          "techniqueId": "factoring",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 1,
+          "mathScore": 3,
+          "total": 10,
+          "mathLevel": "high",
+          "family": "traditional",
+          "approach": "math"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "identity-regression",
+          "rule": "list-shape"
+        },
+        {
+          "technique": "slider-condition",
+          "rule": "duplicate-rows"
+        }
+      ],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 1,
+      "unexplainedJargon": [],
+      "methodsMs": 18143,
+      "rescue": null
+    }
+  ]
+}

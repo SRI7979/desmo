@@ -1,0 +1,2035 @@
+{
+  "label": "library-first-targeted",
+  "format": 2,
+  "configuration": {
+    "model": "gpt-5-mini",
+    "reasoningEffort": "low",
+    "serviceTier": "priority",
+    "promptConfigVersion": "4ec7b283fdc4eedaecd53ae6"
+  },
+  "runs": 1,
+  "caseIds": [
+    "016-tangent-line-parabola",
+    "037-absolute-value-one-solution",
+    "054-factor-theorem-unknown-coefficient",
+    "074-arc-length-central-angle",
+    "087-gold-quadratic-root-radical-form"
+  ],
+  "metrics": {
+    "all": {
+      "runs": 5,
+      "scoredRuns": 5,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 80,
+      "acceptableRate": 100,
+      "badRate": 0,
+      "unlistedRate": 0,
+      "mathHeavyRate": 0,
+      "goldListedRate": 80,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 2.6,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 2.8,
+      "avgFamiliesPerSolve": 2.8,
+      "avgExplanationScore": 0.93,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 16911,
+          "p75": 19119,
+          "p95": 21330
+        },
+        "complete": {
+          "p50": 22454,
+          "p75": 25462,
+          "p95": 28463
+        }
+      },
+      "tokens": {
+        "input": 33624.6,
+        "cached": 14259.2,
+        "output": 3367.6,
+        "reasoning": 1894.4
+      }
+    },
+    "representative": {
+      "runs": 3,
+      "scoredRuns": 3,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 66.7,
+      "acceptableRate": 100,
+      "badRate": 0,
+      "unlistedRate": 0,
+      "mathHeavyRate": 0,
+      "goldListedRate": 66.7,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 2.67,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 2.33,
+      "avgFamiliesPerSolve": 2.33,
+      "avgExplanationScore": 0.94,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 16911,
+          "p75": 19119,
+          "p95": 19119
+        },
+        "complete": {
+          "p50": 22454,
+          "p75": 25462,
+          "p95": 25462
+        }
+      },
+      "tokens": {
+        "input": 33622.67,
+        "cached": 21162.67,
+        "output": 3141.33,
+        "reasoning": 1685.33
+      }
+    },
+    "hard": {
+      "runs": 2,
+      "scoredRuns": 2,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 100,
+      "acceptableRate": 100,
+      "badRate": 0,
+      "unlistedRate": 0,
+      "mathHeavyRate": 0,
+      "goldListedRate": 100,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 2.5,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 3.5,
+      "avgFamiliesPerSolve": 3.5,
+      "avgExplanationScore": 0.92,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 15067,
+          "p75": 21330,
+          "p95": 21330
+        },
+        "complete": {
+          "p50": 20470,
+          "p75": 28463,
+          "p95": 28463
+        }
+      },
+      "tokens": {
+        "input": 33627.5,
+        "cached": 3904,
+        "output": 3707,
+        "reasoning": 2208
+      }
+    },
+    "humanGold": {
+      "runs": 1,
+      "scoredRuns": 1,
+      "infraFailureRate": 0,
+      "answerAccuracy": 100,
+      "goldRate": 100,
+      "acceptableRate": 100,
+      "badRate": 0,
+      "unlistedRate": 0,
+      "mathHeavyRate": 0,
+      "goldListedRate": 100,
+      "genericFallbackRate": 0,
+      "libraryDefaultRate": 100,
+      "libraryMissRate": 0,
+      "failureRate": 0,
+      "clarificationRate": 0,
+      "validationRetryRate": 0,
+      "desmosRetryRate": 0,
+      "explanationFallbackRate": 0,
+      "avgRows": 4,
+      "avgManualMath": 0,
+      "avgHiddenDerivation": 0,
+      "hiddenDerivationRejectionsPerRun": 0,
+      "avgMethodsPerSolve": 3,
+      "avgFamiliesPerSolve": 3,
+      "avgExplanationScore": 1,
+      "latencyMs": {
+        "firstUseful": {
+          "p50": 15067,
+          "p75": 15067,
+          "p95": 15067
+        },
+        "complete": {
+          "p50": 20470,
+          "p75": 20470,
+          "p95": 20470
+        }
+      },
+      "tokens": {
+        "input": 33633,
+        "cached": 7808,
+        "output": 3037,
+        "reasoning": 1984
+      }
+    }
+  },
+  "records": [
+    {
+      "caseId": "016-tangent-line-parabola",
+      "group": "hard",
+      "labelProvenance": "agent_generated_silver",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 28463,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 21325,
+          "usage": {
+            "input": 32085,
+            "cached": 0,
+            "output": 3344,
+            "reasoning": 1728
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 4
+        },
+        {
+          "stage": "cache_write",
+          "ms": 0
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 7132,
+          "usage": {
+            "input": 1537,
+            "cached": 0,
+            "output": 1033,
+            "reasoning": 704
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 7133
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "In the xy-plane, the line y = 6x - k and the parabola y = 3x^2 + 13x + 2 intersect at exactly one point, where k is a constant. What is the value of k?",
+            "choices": null,
+            "clarification": null,
+            "structure": "a nonvertical line and a parabola that are tangent (exactly one intersection); unknown constant k makes them meet once",
+            "library": {
+              "matched": [
+                1,
+                3,
+                6,
+                8,
+                9,
+                10,
+                11,
+                12,
+                57,
+                76
+              ],
+              "skipped": [
+                {
+                  "strategy": 1,
+                  "reason": "Graph-both-sides applies but a more direct vertex-of-difference or discriminant is simpler"
+                },
+                {
+                  "strategy": 9,
+                  "reason": "Intercept-read can show zeros but requires extra algebra to get k"
+                },
+                {
+                  "strategy": 10,
+                  "reason": "Vertex-read applies to a single parabola; vertex-of-difference is the direct tangency trick"
+                }
+              ]
+            },
+            "candidates": [
+              {
+                "techniqueId": "vertex-of-difference",
+                "strategy": 76,
+                "rung": 1,
+                "rows": [
+                  {
+                    "latex": "y=3x^2+13x+2-6x",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "25/12",
+                "result": {
+                  "row": 1,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "Click the vertex of y=3x^2+7x+2; its y-coordinate is -25/12, so k=25/12",
+                  "type": "vertex",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": {
+                  "left": -5,
+                  "right": 5,
+                  "bottom": -6,
+                  "top": 6
+                },
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "discriminant",
+                "strategy": null,
+                "rung": 2,
+                "rows": [],
+                "answer": "25/12",
+                "result": {
+                  "row": null,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "Set 3x^2+13x+2=6x-k → 3x^2+7x+(2+k)=0 has one root when discriminant 7^2-4(3)(2+k)=0 → k=25/12",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 1,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 1,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "derivative-regression",
+                "strategy": 71,
+                "rung": 4,
+                "rows": [
+                  {
+                    "latex": "[6a+13,3a^2+13a+2]~[6,6a-k]",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "25/12",
+                "result": {
+                  "row": 1,
+                  "value": 25,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "the fitted parameter k (from the regression equating slope and value at tangent point)",
+                  "type": "numeric",
+                  "relatedRows": [
+                    1
+                  ]
+                },
+                "answerState": null,
+                "parameters": [
+                  {
+                    "name": "a",
+                    "integer": false,
+                    "min": -10,
+                    "max": 10
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "slider-condition",
+                "strategy": 57,
+                "rung": 3,
+                "rows": [
+                  {
+                    "latex": "k=0",
+                    "slider": {
+                      "min": -10,
+                      "max": 10,
+                      "step": 0.08333333333333333
+                    },
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=3x^2+13x+2",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=6x-k",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "25/12",
+                "result": {
+                  "row": 1,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "Drag k until the line and parabola share exactly one intersection; slider value then k=25/12",
+                  "type": "slider_condition",
+                  "relatedRows": [
+                    2,
+                    3
+                  ]
+                },
+                "answerState": {
+                  "param": "k",
+                  "value": 2.083333333333333
+                },
+                "parameters": [
+                  {
+                    "name": "k",
+                    "integer": false,
+                    "min": -10,
+                    "max": 10
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": {
+                  "left": -5,
+                  "right": 5,
+                  "bottom": -6,
+                  "top": 6
+                },
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 1
+                }
+              }
+            ],
+            "preferredTechniqueId": "vertex-of-difference"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          1,
+          3,
+          6,
+          8,
+          9,
+          10,
+          11,
+          12,
+          57,
+          71,
+          76
+        ],
+        "matched": [
+          {
+            "number": 1,
+            "title": "Graph two equations and click the intersection"
+          },
+          {
+            "number": 3,
+            "title": "Solve an equation by graphing both sides"
+          },
+          {
+            "number": 6,
+            "title": "Linear + quadratic system"
+          },
+          {
+            "number": 8,
+            "title": "Number of solutions = number of intersections"
+          },
+          {
+            "number": 9,
+            "title": "Find quadratic roots instantly"
+          },
+          {
+            "number": 10,
+            "title": "Find quadratic vertex instantly"
+          },
+          {
+            "number": 11,
+            "title": "Axis of symmetry from vertex"
+          },
+          {
+            "number": 12,
+            "title": "Maximum/minimum from graph, including bounded domains"
+          },
+          {
+            "number": 57,
+            "title": "Graph answer-choice constants, sliders, and graphical conditions"
+          },
+          {
+            "number": 76,
+            "title": "Exactly one intersection → vertex of the difference"
+          }
+        ],
+        "skipped": [
+          {
+            "number": 1,
+            "reason": "Graph-both-sides applies but a more direct vertex-of-difference or discriminant is simpler"
+          },
+          {
+            "number": 9,
+            "reason": "Intercept-read can show zeros but requires extra algebra to get k"
+          },
+          {
+            "number": 10,
+            "reason": "Vertex-read applies to a single parabola; vertex-of-difference is the direct tangency trick"
+          }
+        ],
+        "detected": [
+          {
+            "detector": "exactly-one-intersection",
+            "techniques": [
+              "vertex-of-difference",
+              "slider-condition"
+            ]
+          }
+        ],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "vertex-of-difference",
+            "techniqueId": "vertex-of-difference",
+            "strategy": 76,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 1
+          },
+          {
+            "id": "derivative-regression",
+            "techniqueId": "derivative-regression",
+            "strategy": 71,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 1
+          },
+          {
+            "id": "slider-condition",
+            "techniqueId": "slider-condition",
+            "strategy": 57,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 4
+          },
+          {
+            "id": "discriminant",
+            "techniqueId": "discriminant",
+            "strategy": null,
+            "source": "generic-math",
+            "outcome": "eligible",
+            "total": 10
+          }
+        ],
+        "winner": {
+          "id": "vertex-of-difference",
+          "techniqueId": "vertex-of-difference",
+          "strategy": 76,
+          "total": 1,
+          "mathScore": 0,
+          "reason": "lowest total cost 1 (1 rows, 0 derivation, 0 facts); next derivative-regression at 1"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": [
+          "derivative-regression cites strategy 71 (Derivative as automatic slope finder), which teaches derivative-slope"
+        ]
+      },
+      "answer": "25/12",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "vertex-of-difference",
+        "rows": 1,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 1,
+        "mathLevel": "low",
+        "family": "visual"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "vertex-of-difference",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 1,
+          "mathLevel": "low",
+          "family": "visual"
+        },
+        {
+          "techniqueId": "derivative-regression",
+          "rows": 1,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 1,
+          "mathLevel": "low",
+          "family": "regression"
+        },
+        {
+          "techniqueId": "slider-condition",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 4,
+          "mathLevel": "low",
+          "family": "list-slider"
+        },
+        {
+          "techniqueId": "discriminant",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 1,
+          "mathScore": 3,
+          "total": 10,
+          "mathLevel": "high",
+          "family": "traditional"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 0.833,
+      "unexplainedJargon": [
+        "discriminant"
+      ],
+      "structural": {
+        "acceptable": true,
+        "forbidden": false
+      },
+      "methodsMs": 21330,
+      "rescue": null
+    },
+    {
+      "caseId": "037-absolute-value-one-solution",
+      "group": "representative",
+      "labelProvenance": "agent_generated_silver",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 25462,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 19111,
+          "usage": {
+            "input": 32074,
+            "cached": 31488,
+            "output": 2982,
+            "reasoning": 1664
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 6
+        },
+        {
+          "stage": "cache_write",
+          "ms": 0
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 6341,
+          "usage": {
+            "input": 1568,
+            "cached": 0,
+            "output": 909,
+            "reasoning": 448
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 6343
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "Problem: |2x + 6| = 3k - 12\nIn the given equation, k is a constant. If the equation has exactly one solution, what is the value of k?",
+            "choices": null,
+            "clarification": null,
+            "structure": "An absolute-value equation |2x+6| = constant; exactly one solution occurs when the constant equals 0 (the vertex value).",
+            "library": {
+              "matched": [
+                3,
+                38,
+                57,
+                17,
+                77
+              ],
+              "skipped": [
+                {
+                  "strategy": 3,
+                  "reason": "Graphing both sides applies but requires a slider to vary k; the slider-condition (57) is the simpler calculator method and is listed instead."
+                },
+                {
+                  "strategy": 38,
+                  "reason": "Absolute-value intersection trick matches the structure but was implemented via slider-condition rather than a standalone entry."
+                },
+                {
+                  "strategy": 77,
+                  "reason": "Direct calculator arithmetic is possible, but the pure written direct-arithmetic paper technique is simpler and included instead."
+                }
+              ]
+            },
+            "candidates": [
+              {
+                "techniqueId": "slider-condition",
+                "strategy": 57,
+                "rung": 3,
+                "rows": [
+                  {
+                    "latex": "k=0",
+                    "slider": {
+                      "min": -10,
+                      "max": 10,
+                      "step": 1
+                    },
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=\\left|2x+6\\right|",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=3k-12",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "4",
+                "result": {
+                  "row": 1,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "slider k value at which the V-shape y=|2x+6| touches the horizontal line (exactly one intersection)",
+                  "type": "slider_condition",
+                  "relatedRows": [
+                    2,
+                    3
+                  ]
+                },
+                "answerState": {
+                  "param": "k",
+                  "value": 4
+                },
+                "parameters": [
+                  {
+                    "name": "k",
+                    "integer": false,
+                    "min": -10,
+                    "max": 10
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": {
+                  "left": -10,
+                  "right": 10,
+                  "bottom": -5,
+                  "top": 15
+                },
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 1
+                }
+              },
+              {
+                "techniqueId": "parameter-regression",
+                "strategy": 17,
+                "rung": 4,
+                "rows": [
+                  {
+                    "latex": "x_{1}=[-3]",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y_{1}=\\left|2x_{1}+6\\right|",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y_{1}\\sim 3k-12",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "4",
+                "result": {
+                  "row": 3,
+                  "value": 4,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "fitted parameter k from the regression y_{1}~3k-12 with x_{1}=-3 (gives 0=3k-12)",
+                  "type": "numeric",
+                  "relatedRows": [
+                    1,
+                    2
+                  ]
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "direct-arithmetic",
+                "strategy": null,
+                "rung": 2,
+                "rows": [],
+                "answer": "4",
+                "result": {
+                  "row": null,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "Set 3k-12=0 because |2x+6|≥0 and exactly one solution occurs when the right side is 0; solve 3k-12=0 → k=4",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 1,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              }
+            ],
+            "preferredTechniqueId": "slider-condition"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          3,
+          17,
+          38,
+          57,
+          77
+        ],
+        "matched": [
+          {
+            "number": 3,
+            "title": "Solve an equation by graphing both sides"
+          },
+          {
+            "number": 38,
+            "title": "Absolute-value equations"
+          },
+          {
+            "number": 57,
+            "title": "Graph answer-choice constants, sliders, and graphical conditions"
+          },
+          {
+            "number": 17,
+            "title": "Unknown parameter regression"
+          },
+          {
+            "number": 77,
+            "title": "Type the arithmetic"
+          }
+        ],
+        "skipped": [
+          {
+            "number": 3,
+            "reason": "Graphing both sides applies but requires a slider to vary k; the slider-condition (57) is the simpler calculator method and is listed instead."
+          },
+          {
+            "number": 38,
+            "reason": "Absolute-value intersection trick matches the structure but was implemented via slider-condition rather than a standalone entry."
+          },
+          {
+            "number": 77,
+            "reason": "Direct calculator arithmetic is possible, but the pure written direct-arithmetic paper technique is simpler and included instead."
+          }
+        ],
+        "detected": [
+          {
+            "detector": "exactly-one-intersection",
+            "techniques": [
+              "vertex-of-difference",
+              "slider-condition"
+            ]
+          }
+        ],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "slider-condition",
+            "techniqueId": "slider-condition",
+            "strategy": 57,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 4
+          },
+          {
+            "id": "direct-arithmetic",
+            "techniqueId": "direct-arithmetic",
+            "strategy": null,
+            "source": "generic-math",
+            "outcome": "eligible",
+            "total": 7
+          },
+          {
+            "id": "parameter-regression",
+            "techniqueId": "parameter-regression",
+            "strategy": 17,
+            "source": "library",
+            "outcome": "list-shape",
+            "total": 3
+          }
+        ],
+        "winner": {
+          "id": "slider-condition",
+          "techniqueId": "slider-condition",
+          "strategy": 57,
+          "total": 4,
+          "mathScore": 0,
+          "reason": "lowest total cost 4 (3 rows, 0 derivation, 0 facts); next direct-arithmetic at 7"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": []
+      },
+      "answer": "4",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "slider-condition",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 4,
+        "mathLevel": "low",
+        "family": "list-slider"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "slider-condition",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 4,
+          "mathLevel": "low",
+          "family": "list-slider"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 1,
+          "mathScore": 2,
+          "total": 7,
+          "mathLevel": "medium",
+          "family": "traditional"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [
+        {
+          "technique": "parameter-regression",
+          "rule": "list-shape"
+        }
+      ],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 1,
+      "unexplainedJargon": [],
+      "methodsMs": 19119,
+      "rescue": null
+    },
+    {
+      "caseId": "054-factor-theorem-unknown-coefficient",
+      "group": "representative",
+      "labelProvenance": "agent_generated_silver",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 22454,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 16902,
+          "usage": {
+            "input": 32087,
+            "cached": 16000,
+            "output": 2645,
+            "reasoning": 1536
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 8
+        },
+        {
+          "stage": "cache_write",
+          "ms": 0
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 5542,
+          "usage": {
+            "input": 1557,
+            "cached": 0,
+            "output": 698,
+            "reasoning": 192
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 5543
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "The function p is defined by p(x) = 2x^3 - 5x^2 + kx - 6, where k is a constant. If x - 3 is a factor of p(x), what is the value of k?",
+            "choices": null,
+            "clarification": null,
+            "structure": "a linear factor x-3 → root at x=3 gives one condition to determine k",
+            "library": {
+              "matched": [
+                17,
+                75
+              ],
+              "skipped": [
+                {
+                  "strategy": 59,
+                  "reason": "Not an identity for all x; only a single root condition applies"
+                }
+              ]
+            },
+            "candidates": [
+              {
+                "techniqueId": "parameter-regression",
+                "strategy": 17,
+                "rung": 2,
+                "rows": [
+                  {
+                    "latex": "x_{1}=[3]",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y_{1}=[0]",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y_{1}\\sim 2x_{1}^3-5x_{1}^2+kx_{1}-6",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "k",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "-1",
+                "result": {
+                  "row": 4,
+                  "value": -1,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "fitted k",
+                  "type": "numeric",
+                  "relatedRows": [
+                    3
+                  ]
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "shared-zero",
+                "strategy": 75,
+                "rung": 3,
+                "rows": [
+                  {
+                    "latex": "k=0",
+                    "slider": {
+                      "min": -10,
+                      "max": 10,
+                      "step": 1
+                    },
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "p(x)=2x^3-5x^2+kx-6",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "p(3)",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "-1",
+                "result": {
+                  "row": 1,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "drag k until p(3)=0; slider value k",
+                  "type": "slider_condition",
+                  "relatedRows": [
+                    2,
+                    3
+                  ]
+                },
+                "answerState": {
+                  "param": "k",
+                  "value": -1
+                },
+                "parameters": [
+                  {
+                    "name": "k",
+                    "integer": true,
+                    "min": -10,
+                    "max": 10
+                  }
+                ],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 1
+                }
+              },
+              {
+                "techniqueId": "direct-arithmetic",
+                "strategy": null,
+                "rung": 2,
+                "rows": [],
+                "answer": "-1",
+                "result": {
+                  "row": null,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "paper algebra: set p(3)=0 and solve for k",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 3,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              }
+            ],
+            "preferredTechniqueId": "parameter-regression"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          17,
+          59,
+          75
+        ],
+        "matched": [
+          {
+            "number": 17,
+            "title": "Unknown parameter regression"
+          },
+          {
+            "number": 75,
+            "title": "Factor → shared zero"
+          }
+        ],
+        "skipped": [
+          {
+            "number": 59,
+            "reason": "Not an identity for all x; only a single root condition applies"
+          }
+        ],
+        "detected": [
+          {
+            "detector": "factor-with-unknown",
+            "techniques": [
+              "shared-zero"
+            ]
+          }
+        ],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "shared-zero",
+            "techniqueId": "shared-zero",
+            "strategy": 75,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 4
+          },
+          {
+            "id": "direct-arithmetic",
+            "techniqueId": "direct-arithmetic",
+            "strategy": null,
+            "source": "generic-math",
+            "outcome": "eligible",
+            "total": 9
+          },
+          {
+            "id": "parameter-regression",
+            "techniqueId": "parameter-regression",
+            "strategy": 17,
+            "source": "library",
+            "outcome": "list-shape",
+            "total": 4
+          }
+        ],
+        "winner": {
+          "id": "shared-zero",
+          "techniqueId": "shared-zero",
+          "strategy": 75,
+          "total": 4,
+          "mathScore": 0,
+          "reason": "lowest total cost 4 (3 rows, 0 derivation, 0 facts); next direct-arithmetic at 9"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": []
+      },
+      "answer": "-1",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "shared-zero",
+        "rows": 3,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 4,
+        "mathLevel": "low",
+        "family": "list-slider"
+      },
+      "strategyClass": "acceptable",
+      "methods": [
+        {
+          "techniqueId": "shared-zero",
+          "rows": 3,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 4,
+          "mathLevel": "low",
+          "family": "list-slider"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 3,
+          "oneOffFacts": 0,
+          "mathScore": 3,
+          "total": 9,
+          "mathLevel": "high",
+          "family": "traditional"
+        }
+      ],
+      "goldListed": false,
+      "rejections": [
+        {
+          "technique": "parameter-regression",
+          "rule": "list-shape"
+        }
+      ],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 0.833,
+      "unexplainedJargon": [
+        "polynomial",
+        "coefficients"
+      ],
+      "methodsMs": 16911,
+      "rescue": null
+    },
+    {
+      "caseId": "074-arc-length-central-angle",
+      "group": "representative",
+      "labelProvenance": "agent_generated_silver",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 16327,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 11376,
+          "usage": {
+            "input": 32076,
+            "cached": 16000,
+            "output": 1596,
+            "reasoning": 960
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 9
+        },
+        {
+          "stage": "cache_write",
+          "ms": 1
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 4935,
+          "usage": {
+            "input": 1506,
+            "cached": 0,
+            "output": 594,
+            "reasoning": 256
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 4939
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "A circle has a radius of 12 centimeters. An arc of the circle has a length of 10\\pi centimeters. What is the measure, in degrees, of the central angle that intercepts this arc?",
+            "choices": null,
+            "clarification": null,
+            "structure": "circle radius and arc length given → find central angle (degrees)",
+            "library": {
+              "matched": [
+                3,
+                52,
+                77
+              ],
+              "skipped": []
+            },
+            "candidates": [
+              {
+                "techniqueId": "graph-both-sides",
+                "strategy": 3,
+                "rung": 1,
+                "rows": [
+                  {
+                    "latex": "y=2\\pi(12)x/360",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "y=10\\pi",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "150",
+                "result": {
+                  "row": 1,
+                  "value": 150,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "x-coordinate of the intersection of the two graphs (degrees)",
+                  "type": "intersection",
+                  "relatedRows": [
+                    2
+                  ]
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": {
+                  "left": -10,
+                  "right": 370,
+                  "bottom": -50,
+                  "top": 50
+                },
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "calculator-arithmetic",
+                "strategy": 77,
+                "rung": 2,
+                "rows": [
+                  {
+                    "latex": "(10\\pi)/(2\\pi\\cdot12)\\cdot360",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "150",
+                "result": {
+                  "row": 1,
+                  "value": 150,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "numeric evaluation of angle = arc/circumference*360",
+                  "type": "numeric",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 1,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "direct-arithmetic",
+                "strategy": null,
+                "rung": 2,
+                "rows": [],
+                "answer": "150",
+                "result": {
+                  "row": null,
+                  "value": null,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "angle = (arc length)/(circumference) * 360 = (10\\pi)/(2\\pi\\cdot12)\\cdot360 = 150°",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 1,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              }
+            ],
+            "preferredTechniqueId": "calculator-arithmetic"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          3,
+          52,
+          77
+        ],
+        "matched": [
+          {
+            "number": 3,
+            "title": "Solve an equation by graphing both sides"
+          },
+          {
+            "number": 52,
+            "title": "Area/volume direct substitution"
+          },
+          {
+            "number": 77,
+            "title": "Type the arithmetic"
+          }
+        ],
+        "skipped": [],
+        "detected": [],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "graph-both-sides",
+            "techniqueId": "graph-both-sides",
+            "strategy": 3,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 2
+          },
+          {
+            "id": "direct-arithmetic",
+            "techniqueId": "direct-arithmetic",
+            "strategy": null,
+            "source": "generic-math",
+            "outcome": "eligible",
+            "total": 3
+          },
+          {
+            "id": "calculator-arithmetic",
+            "techniqueId": "calculator-arithmetic",
+            "strategy": 77,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 4
+          }
+        ],
+        "winner": {
+          "id": "graph-both-sides",
+          "techniqueId": "graph-both-sides",
+          "strategy": 3,
+          "total": 2,
+          "mathScore": 0,
+          "reason": "lowest total cost 2 (2 rows, 0 derivation, 0 facts); next direct-arithmetic at 3"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": []
+      },
+      "answer": "150",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "graph-both-sides",
+        "rows": 2,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 2,
+        "mathLevel": "low",
+        "family": "visual"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "graph-both-sides",
+          "rows": 2,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 2,
+          "mathLevel": "low",
+          "family": "visual"
+        },
+        {
+          "techniqueId": "direct-arithmetic",
+          "rows": 0,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": 3,
+          "mathLevel": "medium",
+          "family": "traditional"
+        },
+        {
+          "techniqueId": "calculator-arithmetic",
+          "rows": 1,
+          "derivationSteps": 1,
+          "oneOffFacts": 0,
+          "mathScore": 1,
+          "total": 4,
+          "mathLevel": "medium",
+          "family": "calculator"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 1,
+      "unexplainedJargon": [],
+      "methodsMs": 11388,
+      "rescue": null
+    },
+    {
+      "caseId": "087-gold-quadratic-root-radical-form",
+      "group": "hard",
+      "labelProvenance": "human_verified_gold",
+      "runIndex": 0,
+      "ok": true,
+      "completeMs": 20470,
+      "stages": [
+        {
+          "stage": "cache_lookup",
+          "ms": 0
+        },
+        {
+          "stage": "model_candidates",
+          "ms": 15058,
+          "usage": {
+            "input": 32084,
+            "cached": 7808,
+            "output": 2321,
+            "reasoning": 1600
+          }
+        },
+        {
+          "stage": "cache_lookup_problem",
+          "ms": 0
+        },
+        {
+          "stage": "validate_select",
+          "ms": 6
+        },
+        {
+          "stage": "cache_write",
+          "ms": 0
+        },
+        {
+          "stage": "resolve",
+          "ms": 0
+        },
+        {
+          "stage": "model_explanation",
+          "ms": 5401,
+          "usage": {
+            "input": 1549,
+            "cached": 0,
+            "output": 716,
+            "reasoning": 384
+          }
+        },
+        {
+          "stage": "explanation",
+          "ms": 5403
+        }
+      ],
+      "candidateOutputs": [
+        {
+          "call": "candidates",
+          "attempt": 1,
+          "output": {
+            "status": "solved",
+            "question": "3x^2 - 16x + 2 = 0. One solution to the given equation can be written as (a + sqrt(b))/6, where a and b are constants. What is the value of a + b?",
+            "choices": null,
+            "clarification": null,
+            "structure": "quadratic with one solution given in form (a+√b)/6; find a+b",
+            "library": {
+              "matched": [
+                3,
+                9,
+                78
+              ],
+              "skipped": [
+                {
+                  "strategy": 78,
+                  "reason": "will be used as a calculator/regression candidate rather than only as a concept; other matching techniques also apply"
+                }
+              ]
+            },
+            "candidates": [
+              {
+                "techniqueId": "parameter-regression",
+                "strategy": 78,
+                "rung": 1,
+                "rows": [
+                  {
+                    "latex": "y=3x^2-16x+2",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "(a+\\sqrt{b})/6~5.205260323",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "a=16",
+                    "slider": null,
+                    "copiesRow": null
+                  },
+                  {
+                    "latex": "a+b",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "248",
+                "result": {
+                  "row": 4,
+                  "value": 248,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "a+b (fitted b from regression, a read from equation)",
+                  "type": "numeric",
+                  "relatedRows": [
+                    1,
+                    2,
+                    3
+                  ]
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 0,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 0,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "calculator-arithmetic",
+                "strategy": 77,
+                "rung": 2,
+                "rows": [
+                  {
+                    "latex": "16+(16^2-4(3)(2))",
+                    "slider": null,
+                    "copiesRow": null
+                  }
+                ],
+                "answer": "248",
+                "result": {
+                  "row": 1,
+                  "value": 248,
+                  "listIndex": null,
+                  "answerFrom": "value",
+                  "choiceLabel": null,
+                  "detail": "compute a + b via discriminant b=16^2-4(3)(2) and a=16",
+                  "type": "numeric",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 1,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 1,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              },
+              {
+                "techniqueId": "quadratic-formula",
+                "strategy": null,
+                "rung": 2,
+                "rows": [],
+                "answer": "248",
+                "result": {
+                  "row": null,
+                  "value": 248,
+                  "listIndex": null,
+                  "answerFrom": "reasoning",
+                  "choiceLabel": null,
+                  "detail": "Use quadratic formula; a = 16, b = 16^2-4(3)(2)=232, so a+b=248",
+                  "type": "written",
+                  "relatedRows": []
+                },
+                "answerState": null,
+                "parameters": [],
+                "conditionType": null,
+                "distinguishes": null,
+                "graphBounds": null,
+                "cost": {
+                  "derivationSteps": 2,
+                  "newPrimitives": 0,
+                  "oneOffFacts": 1,
+                  "setupConstructions": 0,
+                  "manualIterations": 0
+                }
+              }
+            ],
+            "preferredTechniqueId": "calculator-arithmetic"
+          },
+          "rejection": null
+        }
+      ],
+      "library": {
+        "considered": [
+          3,
+          9,
+          77,
+          78
+        ],
+        "matched": [
+          {
+            "number": 3,
+            "title": "Solve an equation by graphing both sides"
+          },
+          {
+            "number": 9,
+            "title": "Find quadratic roots instantly"
+          },
+          {
+            "number": 78,
+            "title": "Root in a given radical form → click the root, regress the unknown"
+          }
+        ],
+        "skipped": [
+          {
+            "number": 78,
+            "reason": "will be used as a calculator/regression candidate rather than only as a concept; other matching techniques also apply"
+          }
+        ],
+        "detected": [
+          {
+            "detector": "radical-form-root",
+            "techniques": [
+              "parameter-regression"
+            ]
+          }
+        ],
+        "missed": [],
+        "candidates": [
+          {
+            "id": "parameter-regression",
+            "techniqueId": "parameter-regression",
+            "strategy": 78,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 4
+          },
+          {
+            "id": "calculator-arithmetic",
+            "techniqueId": "calculator-arithmetic",
+            "strategy": 77,
+            "source": "library",
+            "outcome": "eligible",
+            "total": 8
+          },
+          {
+            "id": "quadratic-formula",
+            "techniqueId": "quadratic-formula",
+            "strategy": null,
+            "source": "generic-math",
+            "outcome": "eligible",
+            "total": 10
+          }
+        ],
+        "winner": {
+          "id": "parameter-regression",
+          "techniqueId": "parameter-regression",
+          "strategy": 78,
+          "total": 4,
+          "mathScore": 0,
+          "reason": "lowest total cost 4 (4 rows, 0 derivation, 0 facts); next calculator-arithmetic at 8"
+        },
+        "fellBackToGenericMath": false,
+        "mismatches": []
+      },
+      "answer": "248",
+      "answerCorrect": true,
+      "winner": {
+        "techniqueId": "parameter-regression",
+        "rows": 4,
+        "derivationSteps": 0,
+        "oneOffFacts": 0,
+        "mathScore": 0,
+        "total": 4,
+        "mathLevel": "low",
+        "family": "regression"
+      },
+      "strategyClass": "gold",
+      "methods": [
+        {
+          "techniqueId": "parameter-regression",
+          "rows": 4,
+          "derivationSteps": 0,
+          "oneOffFacts": 0,
+          "mathScore": 0,
+          "total": 4,
+          "mathLevel": "low",
+          "family": "regression"
+        },
+        {
+          "techniqueId": "calculator-arithmetic",
+          "rows": 1,
+          "derivationSteps": 1,
+          "oneOffFacts": 1,
+          "mathScore": 2,
+          "total": 8,
+          "mathLevel": "medium",
+          "family": "calculator"
+        },
+        {
+          "techniqueId": "quadratic-formula",
+          "rows": 0,
+          "derivationSteps": 2,
+          "oneOffFacts": 1,
+          "mathScore": 3,
+          "total": 10,
+          "mathLevel": "high",
+          "family": "traditional"
+        }
+      ],
+      "goldListed": true,
+      "rejections": [],
+      "candidateCalls": 1,
+      "desmosRetry": false,
+      "explanationSource": "model",
+      "explanationScore": 1,
+      "unexplainedJargon": [],
+      "methodsMs": 15067,
+      "rescue": null
+    }
+  ]
+}
