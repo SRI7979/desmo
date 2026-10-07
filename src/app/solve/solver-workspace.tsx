@@ -570,7 +570,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             id="question-panel"
           >
             <div className={styles.cardHeading}>
-              <h2 id="upload-title">{image ? "Question" : "Drop in a problem"}</h2>
+              <h2 id="upload-title">{image ? "Problem" : "Drop in a problem"}</h2>
               <button
                 type="button"
                 className={styles.sampleButton}

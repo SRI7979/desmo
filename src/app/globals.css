@@ -38,6 +38,7 @@
   --accent-text: #109bd0;
   --accent-ink: #087da6;
   --accent-soft: #e2f8ff;
+  --answer-surface: #f2f9fc;
   --surface: #f7f9fa;
   --surface-muted: #fbfcfd;
   --surface-raised: #ffffff;
@@ -72,6 +73,7 @@ html[data-theme="dark"] {
   --accent-text: #74cfff;
   --accent-ink: #8bd9ff;
   --accent-soft: #173747;
+  --answer-surface: #122b39;
   --surface: #111e26;
   --surface-muted: #14232c;
   --surface-raised: #192a34;
@@ -104,6 +106,7 @@ html[data-theme="dark"] {
     --accent-text: #74cfff;
     --accent-ink: #8bd9ff;
     --accent-soft: #173747;
+    --answer-surface: #122b39;
     --surface: #111e26;
     --surface-muted: #14232c;
     --surface-raised: #192a34;
