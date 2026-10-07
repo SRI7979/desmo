@@ -1,30 +1,44 @@
-.shell { min-width: 0; overflow: hidden; background: #fff; }
-.calculatorFrame { position: relative; width: 100%; height: clamp(480px, 55svh, 560px); }
+.shell { display: flex; flex-direction: column; width: 100%; height: 100%; min-width: 0; overflow: hidden; background: var(--surface-raised); }
+.calculatorFrame { position: relative; flex: 1 1 auto; width: 100%; min-height: 390px; }
 .calculator { width: 100%; height: 100%; }
-.placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-4); padding: var(--space-8); background: #fbfcfd; color: var(--muted); text-align: center; }
+.placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-4); padding: var(--space-8); background: var(--surface-muted); color: var(--muted); text-align: center; }
 .placeholder p { max-width: 340px; margin: 0; font-size: var(--text-sm); line-height: 1.6; }
-.toolbar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 48px; padding: var(--space-1) var(--space-4); border-top: 1px solid var(--border-subtle); background: #fff; font-size: var(--text-xs); }
+.toolbar { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 44px; padding: var(--space-1) var(--space-4); border-top: 1px solid var(--border-subtle); background: var(--surface-raised); font-size: var(--text-xs); }
+.graphHeader { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: var(--space-3); height: 48px; padding: 0 var(--space-3) 0 var(--space-4); border-bottom: 1px solid var(--border-subtle); background: var(--surface-raised); }
+.graphName { display: inline-flex; align-items: center; gap: 8px; font-size: .875rem; font-weight: 700; }
+.graphDot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
+.graphName[data-state="loading"] .graphDot { background: var(--subtle); }
+.graphName[data-state="error"] .graphDot { background: var(--danger); }
+.graphControls { display: flex; align-items: center; gap: 2px; }
+.graphIconButton { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--muted); }
+.graphIconButton:hover:not(:disabled) { background: var(--surface); color: var(--foreground); }
+.graphIconButton:active:not(:disabled) { background: var(--accent-soft); }
+.graphIconButton:disabled { opacity: .4; }
+.fullscreenBackdrop { position: fixed; inset: 0; z-index: 79; background: rgb(13 28 37 / 66%); backdrop-filter: blur(3px); }
+.expanded { position: fixed; inset: 24px; z-index: 80; width: auto; height: auto; border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-float); }
 .status { display: inline-flex; align-items: center; gap: var(--space-2); color: var(--muted); }
 .statusDot { width: 6px; height: 6px; flex: 0 0 auto; border-radius: 50%; background: var(--accent); }
 .errorDot { background: #bf712c; }
 .editedDot { background: var(--subtle); }
 .expressionWarning { margin: 0; padding: var(--space-3) var(--space-4); border-top: 1px solid #eadcba; background: #fffbf2; color: #80561c; font-size: var(--text-xs); line-height: 1.5; }
-.replay, .reload { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); min-height: 40px; padding: 0 var(--space-2); border: 1px solid transparent; border-radius: var(--radius-sm); background: #fff; color: var(--muted); font-size: var(--text-xs); font-weight: 650; white-space: nowrap; transition: color var(--ease-ui), background var(--ease-ui), border-color var(--ease-ui); }
+.replay, .reload { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); min-height: 40px; padding: 0 var(--space-2); border: 1px solid transparent; border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--muted); font-size: var(--text-xs); font-weight: 650; white-space: nowrap; transition: color var(--ease-ui), background var(--ease-ui), border-color var(--ease-ui); }
 .replay span { font-size: 1rem; }
 .replay:hover:not(:disabled), .reload:hover:not(:disabled) { border-color: var(--border); background: var(--surface); color: var(--foreground); }
-.replay:active:not(:disabled), .reload:active:not(:disabled) { background: #eaf1f4; }
+.replay:active:not(:disabled), .reload:active:not(:disabled) { background: var(--accent-soft); }
 .replay:disabled { opacity: .45; }
 .reload { min-height: var(--control-height); padding-inline: var(--space-4); border-color: var(--accent-hover); background: var(--accent); color: #082f43; }
 .reload:hover:not(:disabled) { background: var(--accent-hover); }
 @media (max-width: 600px) {
-  .calculatorFrame { height: 510px; min-height: 0; }
+  .expanded { inset: 8px; }
   .toolbar { padding-inline: var(--space-3); }
 }
+@media (max-width: 1020px) { .calculatorFrame { min-height: 0; } }
 /* A separate, wider breakpoint: only the tap-target sizes need fixing up to
    768px; the height/padding rules above stay scoped to their own narrower
    range unchanged. */
 @media (max-width: 768px) {
   .replay, .reload { min-height: 44px; }
+  .graphIconButton { width: 44px; height: 44px; }
 }
 
 .traceBar { display: flex; align-items: center; gap: var(--space-2); min-height: 40px; padding: 0 var(--space-4); border-bottom: 1px solid var(--border); background: var(--surface-muted); color: var(--muted); font-size: 12px; }

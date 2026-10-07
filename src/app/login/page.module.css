@@ -1,5 +1,5 @@
 .page { min-height: 100svh; padding: var(--space-10) var(--space-4) var(--space-12); background: var(--surface); }
-.card { width: min(100%, 440px); margin: auto; padding: var(--space-8); border: 1px solid var(--border); border-radius: var(--radius-xl); background: #fff; box-shadow: var(--shadow-card); }
+.card { width: min(100%, 440px); margin: auto; padding: var(--space-8); border: 1px solid var(--border); border-radius: var(--radius-xl); background: var(--surface-raised); box-shadow: var(--shadow-card); }
 .card h1 { margin: 0 0 var(--space-2); font-size: clamp(1.5rem, 3vw, 1.75rem); font-weight: 720; letter-spacing: -.04em; }
 .subtitle, .setup { margin: 0 0 var(--space-6); color: var(--muted); font-size: var(--text-sm); line-height: 1.6; }
 .form { display: grid; gap: var(--space-4); }
@@ -12,7 +12,7 @@
 .divider { display: flex; align-items: center; gap: var(--space-3); margin: var(--space-5) 0; color: var(--muted); font-size: var(--text-xs); text-align: center; }
 .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 .field { display: grid; gap: var(--space-2); color: var(--foreground); font-size: var(--text-sm); font-weight: 650; }
-.field input { width: 100%; min-height: var(--primary-height); padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: #fff; color: var(--foreground); font-size: var(--text-base); transition: border-color var(--ease-ui), box-shadow var(--ease-ui); }
+.field input { width: 100%; min-height: var(--primary-height); padding: 0 var(--space-3); border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface-raised); color: var(--foreground); font-size: var(--text-base); transition: border-color var(--ease-ui), box-shadow var(--ease-ui); }
 .field input:hover:not(:disabled) { border-color: var(--accent); }
 .field input:focus-visible { border-color: var(--accent-pressed); outline: 2px solid #b5e1f0; outline-offset: 1px; }
 .field input:disabled { background: var(--surface); }
@@ -21,13 +21,20 @@
 .button:hover:not(:disabled) { background: #304b5a; }
 .button:active:not(:disabled) { background: #0e2029; }
 .button:disabled { opacity: .55; }
-.emailButton { border-color: var(--border-strong); background: #fff; color: var(--foreground); }
+.emailButton { border-color: var(--border-strong); background: var(--surface-raised); color: var(--foreground); }
 .emailButton:hover:not(:disabled) { background: var(--surface-muted); }
 .emailButton:active:not(:disabled) { background: var(--surface); }
 .switchMode { margin: var(--space-6) 0 0; color: var(--muted); font-size: var(--text-sm); text-align: center; }
 .switchMode a { color: var(--accent-ink); font-weight: 650; text-underline-offset: 3px; }
 .error, .notice { margin: 0; padding: var(--space-3); border: 1px solid #edcece; border-radius: var(--radius-md); background: var(--danger-soft); color: var(--danger); font-size: var(--text-sm); line-height: 1.5; }
 .notice { margin-bottom: var(--space-4); border-color: var(--border-accent); background: var(--accent-soft); color: var(--accent-ink); }
+html[data-theme="dark"] .button { border-color: var(--border-strong); color: var(--background); }
+html[data-theme="dark"] .button:hover:not(:disabled) { background: #d4e9f3; }
+html[data-theme="dark"] .button:active:not(:disabled) { background: #bfdce9; }
+html[data-theme="dark"] .googleButton { color: #062436; }
+html[data-theme="dark"] .emailButton { color: var(--foreground); }
+html[data-theme="dark"] .emailButton:hover:not(:disabled) { background: var(--surface-muted); }
+html[data-theme="dark"] .emailButton:active:not(:disabled) { background: var(--surface); }
 @media (max-width: 480px) {
   .page { padding: var(--space-6) var(--space-3) var(--space-10); }
   .card { padding: var(--space-6); }

@@ -9,6 +9,7 @@ import DesmoLogo from "@/components/desmo-logo";
 import { preflight } from "@/components/preflight-gate";
 import SolutionExplanation from "@/components/solution-explanation";
 import TechniqueSelector from "@/components/technique-selector";
+import { isNewProblemShortcut, NEW_PROBLEM_EVENT } from "@/lib/workspace-events";
 import { startSolveTiming, type SolveTimer } from "@/lib/client-timing";
 import { calculatorPayload, preflightInRankOrder, reportable, type ReportedVerdict } from "@/lib/desmos-preflight";
 import type { MethodSummary } from "@/lib/method-summary";
@@ -95,6 +96,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   const [sampleLoading, setSampleLoading] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [imageZoomed, setImageZoomed] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<"solution" | "calculator">("solution");
   const [revision, setRevision] = useState(0);
   const [problemId, setProblemId] = useState<string | null>(null);
   // The solve the shown methods come from, for the tutor and saved tricks.
@@ -178,6 +180,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
       return;
     }
     setImage({ file, url: URL.createObjectURL(file) });
+    setMobilePanel("solution");
     resetResult();
     setError(null);
     setRevision((value) => value + 1);
@@ -513,13 +516,33 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
     }
   }
 
-  function clearImage() {
+  const clearImage = useCallback(() => {
     setImage(null);
     resetResult();
     setError(null);
     setRevision((value) => value + 1);
     if (fileInput.current) fileInput.current.value = "";
-  }
+  }, [resetResult]);
+
+  // "New problem" in the sidebar, or N: cancel any solve and clear the workspace in place.
+  useEffect(() => {
+    const startOver = () => {
+      request.current?.abort();
+      clearImage();
+      setMobilePanel("solution");
+    };
+    const onKey = (event: KeyboardEvent) => {
+      if (!isNewProblemShortcut(event)) return;
+      event.preventDefault();
+      startOver();
+    };
+    window.addEventListener(NEW_PROBLEM_EVENT, startOver);
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener(NEW_PROBLEM_EVENT, startOver);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [clearImage]);
 
   function switchTechnique(methodId: string) {
     if (methodId === current.current.selectedId) return;
@@ -530,19 +553,24 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
-        <DesmoLogo />
+        <div className={styles.brandSlot}><DesmoLogo /></div>
         {accountNav}
       </header>
       <main className={styles.main}>
         <h1 className={styles.srOnly}>SAT Math solver</h1>
+        <div className={styles.mobilePanels} aria-label="Workspace panels">
+          <button type="button" aria-pressed={mobilePanel === "solution"} onClick={() => setMobilePanel("solution")}>Solution</button>
+          <button type="button" aria-pressed={mobilePanel === "calculator"} onClick={() => setMobilePanel("calculator")}>Calculator</button>
+        </div>
         <CalculatorVerificationProvider>
-        <div className={styles.workspace}>
+        <div className={styles.workspace} data-mobile-panel={mobilePanel} data-empty={!image && !solution && !loading || undefined}>
           <section
             className={`${styles.card} ${styles.uploadCard}`}
             aria-labelledby="upload-title"
+            id="question-panel"
           >
             <div className={styles.cardHeading}>
-              <h2 id="upload-title">Question</h2>
+              <h2 id="upload-title">{image ? "Question" : "Drop in a problem"}</h2>
               <button
                 type="button"
                 className={styles.sampleButton}
@@ -710,6 +738,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             className={`${styles.card} ${styles.resultCard}`}
             aria-labelledby="result-title"
             aria-busy={loading}
+            id="explanation-panel"
           >
             <div className={styles.resultHeading}>
               <h2 id="result-title">Explanation</h2>
@@ -755,10 +784,10 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
           <section
             className={`${styles.card} ${styles.calculatorCard}`}
             aria-labelledby="calculator-title"
+            id="calculator-panel"
           >
-            <div className={styles.calculatorHeading}>
-              <h2 id="calculator-title">Calculator</h2>
-            </div>
+            {/* The calculator's own Desmos bar is the visible header. */}
+            <h2 id="calculator-title" className={styles.srOnly}>Calculator</h2>
             <DesmosCalculator
               expressions={
                 solution?.status === "solved"

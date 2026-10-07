@@ -2,8 +2,9 @@
 
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "./theme-provider";
 import type { RowEvaluation } from "@/lib/answer-consistency";
-import { MATH_OPTIONS, type DesmosCalculatorInstance } from "@/lib/desmos-engine";
+import { displayColor, MATH_OPTIONS, type DesmosCalculatorInstance } from "@/lib/desmos-engine";
 import { ROW_ID_PREFIX, verdictFromAnalysis, type DesmosAnalysis } from "@/lib/desmos-preflight";
 import type { AnswerState } from "@/lib/solver-schema";
 import {
@@ -64,6 +65,8 @@ function collectRows(analysis: DesmosAnalysis, key: string): CalculatorRows {
   return { key, rows };
 }
 
+const isDark = () => document.documentElement.dataset.theme === "dark";
+
 function validBounds(bounds: Bounds | null): Bounds {
   return bounds &&
     Object.values(bounds).every(Number.isFinite) &&
@@ -87,6 +90,9 @@ export default function DesmosCalculator({
   const [entriesEdited, setEntriesEdited] = useState(false);
   const [replay, setReplay] = useState(0);
   const [lineCount, setLineCount] = useState(0);
+  const [expanded, setExpanded] = useState(false);
+  const expandButtonRef = useRef<HTMLButtonElement>(null);
+  const { resolvedTheme } = useTheme();
   // Rows this component pulled after the visible calculator flagged them.
   const [blockedKey, setBlockedKey] = useState<string | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_DESMOS_API_KEY?.trim();
@@ -103,7 +109,7 @@ export default function DesmosCalculator({
   // The analysis observer is registered once; it reads the latest batch here.
   // Once the student edits a loaded row, its values no longer describe the
   // explanation, so verification stops until the entries are restored.
-  const loaded = useRef<{ key: string; rows: string; payloadKey: string; ids: string[] } | null>(null);
+  const loaded = useRef<{ key: string; rows: string; payloadKey: string; ids: string[]; colors: string[] } | null>(null);
 
   useEffect(() => {
     if (!apiKey || scriptReady) return;
@@ -132,6 +138,7 @@ export default function DesmosCalculator({
         settingsMenu: true,
         keypad: true,
         fontSize: 17,
+        invertedColors: isDark(),
       });
       calculatorRef.current = instance;
       instance.observe("selectedExpressionId.trace", () => {
@@ -212,6 +219,29 @@ export default function DesmosCalculator({
     };
   }, [scriptReady, publishRows, select]);
 
+  // Change only the visible calculator's palette. The hidden pre-flight math
+  // instance stays untouched, and no expressions are cleared or revalidated:
+  // the loaded rows are recolored in place, so a student's edits survive.
+  useEffect(() => {
+    const calculator = calculatorRef.current;
+    const dark = resolvedTheme === "dark";
+    calculator?.updateSettings?.({ invertedColors: dark });
+    const rows = loaded.current;
+    if (!calculator?.setExpression || !rows) return;
+    rows.ids.forEach((id, index) => calculator.setExpression!({ id, color: displayColor(rows.colors[index], dark) }));
+  }, [resolvedTheme, scriptReady]);
+
+  useEffect(() => {
+    if (!expanded) return;
+    const close = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setExpanded(false);
+      expandButtonRef.current?.focus();
+    };
+    window.addEventListener("keydown", close);
+    return () => window.removeEventListener("keydown", close);
+  }, [expanded]);
+
   useEffect(() => {
     const calculator = calculatorRef.current;
     if (!scriptReady || !calculator) return;
@@ -239,7 +269,8 @@ export default function DesmosCalculator({
       if (!insertable || payload.items.length === 0) return;
 
       try {
-        calculator.setExpressions(payload.items);
+        const dark = isDark();
+        calculator.setExpressions(payload.items.map((item) => ({ ...item, color: displayColor(item.color, dark) })));
         // Keep the public key tied to the canonical solution. loadedRows still
         // proves that the actual sanitized calculator rows were not edited.
         loaded.current = {
@@ -247,6 +278,7 @@ export default function DesmosCalculator({
           rows: loadedRows(calculator),
           payloadKey: payload.key,
           ids: payload.items.map((item) => item.id),
+          colors: payload.items.map((item) => item.color),
         };
         calculator.setMathBounds(validBounds(bounds));
         setLineCount(payload.items.length);
@@ -280,7 +312,20 @@ export default function DesmosCalculator({
             : "Ready";
 
   return (
-    <div className={styles.shell} data-testid="desmos-calculator">
+    <>
+    {expanded && <div className={styles.fullscreenBackdrop} aria-hidden="true" onClick={() => setExpanded(false)} />}
+    <div className={`${styles.shell} ${expanded ? styles.expanded : ""}`} data-testid="desmos-calculator">
+      <div className={styles.graphHeader}>
+        <div className={styles.graphName} data-state={unavailableMessage ? "error" : scriptReady ? "ready" : "loading"}><span className={styles.graphDot} aria-hidden="true" />Desmos</div>
+        <div className={styles.graphControls}>
+          <button type="button" className={styles.graphIconButton} title="Reset graph view" aria-label="Reset graph view" disabled={!scriptReady || !!unavailableMessage} onClick={() => calculatorRef.current?.setMathBounds(validBounds(bounds))}>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11a8 8 0 1 1 2.1 6.6M4 5v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </button>
+          <button ref={expandButtonRef} type="button" className={styles.graphIconButton} title={expanded ? "Exit full screen" : "Full screen"} aria-label={expanded ? "Exit full screen" : "Full screen"} aria-pressed={expanded} onClick={() => setExpanded((value) => !value)}>
+            {expanded ? <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 3v6H3m12 12v-6h6M3 9l6-6m6 18 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg> : <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 3H3v6m12 12h6v-6M3 3l6 6m12 12-6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
+          </button>
+        </div>
+      </div>
       <div className={styles.traceBar}>
         <span className={styles.traceMark} aria-hidden="true">↳</span>
         {selection && selection.key === expressionsKey(expressions) && !entriesEdited && insertable && lineCount > 0 ? (
@@ -365,5 +410,6 @@ export default function DesmosCalculator({
         </p>
       )}
     </div>
+    </>
   );
 }

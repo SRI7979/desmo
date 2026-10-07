@@ -293,7 +293,11 @@ test("every path that shows calculator rows goes through the pre-flight gate", (
   // The visible calculator inserts rows in exactly one place, only for a clean verdict.
   assert.equal(calculator.match(/\.setExpressions\(/g)?.length, 1);
   assert.match(calculator, /const insertable = gate\.status === "clean" && !blocked;/);
-  assert.match(calculator, /if \(!insertable \|\| payload\.items\.length === 0\) return;\s+try \{\s+calculator\.setExpressions\(payload\.items\);/);
+  // The checked batch itself is inserted; dark mode changes only each row's display color.
+  assert.match(calculator, /if \(!insertable \|\| payload\.items\.length === 0\) return;\s+try \{\s+const dark = isDark\(\);\s+calculator\.setExpressions\(payload\.items\.map\(\(item\) => \(\{ \.\.\.item, color: displayColor\(item\.color, dark\) \}\)\)\);/);
+  // A theme change recolors the loaded rows in place and touches nothing else about them.
+  assert.equal(calculator.match(/\.setExpression!?\(/g)?.length, 1);
+  assert.match(calculator, /calculator\.setExpression!\(\{ id, color: displayColor\(rows\.colors\[index\], dark\) \}\)/);
   // The explanation's copyable rows render only in the branch after the gate is clean.
   const pending = explanation.indexOf('gate.status === "pending"');
   const withheld = explanation.indexOf('gate.status !== "clean"');

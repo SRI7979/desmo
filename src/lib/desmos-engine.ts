@@ -15,9 +15,24 @@ export type DesmosCalculatorInstance = {
   setBlank: () => void;
   setExpressions: (expressions: CalculatorItem[]) => void;
   setMathBounds: (bounds: { left: number; right: number; bottom: number; top: number }) => void;
+  /** Display settings only. The hidden pre-flight calculator never uses this. */
+  updateSettings?: (settings: Record<string, unknown>) => void;
+  /** Updates one existing row's display properties (its color for the theme); visible calculator only. */
+  setExpression?: (expression: { id: string; color?: string }) => void;
   resize: () => void;
   destroy: () => void;
 };
+
+/**
+ * Desmos's dark mode (invertedColors) inverts every color it draws, which
+ * turns the Desmo cyan orange. The visible calculator pre-inverts its row
+ * colors in dark mode so they render as the colors the light theme shows.
+ */
+export function displayColor(color: string, dark: boolean): string {
+  const hex = /^#([0-9a-f]{6})$/i.exec(color)?.[1];
+  if (!dark || !hex) return color;
+  return `#${(0xffffff - Number.parseInt(hex, 16)).toString(16).padStart(6, "0")}`;
+}
 
 export type DesmosApi = {
   GraphingCalculator: (container: HTMLElement, options: Record<string, unknown>) => DesmosCalculatorInstance;

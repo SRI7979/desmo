@@ -59,6 +59,70 @@
   --trace-line: #b8dce8;
 }
 
+/* A user-selected theme is applied before the page paints in RootLayout. */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #0c141a;
+  --foreground: #eef5f8;
+  --muted: #a8bac4;
+  --subtle: #91a8b4;
+  --accent: #74cfff;
+  --accent-hover: #91dcff;
+  --accent-pressed: #47b9ee;
+  --accent-text: #74cfff;
+  --accent-ink: #8bd9ff;
+  --accent-soft: #173747;
+  --surface: #111e26;
+  --surface-muted: #14232c;
+  --surface-raised: #192a34;
+  --border: #354954;
+  --border-subtle: #2a3d47;
+  --border-strong: #4b626e;
+  --border-accent: #326581;
+  --danger: #ffaaa6;
+  --danger-soft: #3b2328;
+  --success: #9de8bd;
+  --success-soft: #1b342b;
+  --shadow-card: 0 4px 18px rgb(0 0 0 / 16%);
+  --shadow-float: 0 12px 30px rgb(0 0 0 / 30%);
+  --shadow-button: inset 0 1px 0 rgb(255 255 255 / 18%);
+  --panel-header: #172d3b;
+  --trace-line: #43697b;
+}
+
+/* The system preference also works before JavaScript and when it is disabled. */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme]) {
+    color-scheme: dark;
+    --background: #0c141a;
+    --foreground: #eef5f8;
+    --muted: #a8bac4;
+    --subtle: #91a8b4;
+    --accent: #74cfff;
+    --accent-hover: #91dcff;
+    --accent-pressed: #47b9ee;
+    --accent-text: #74cfff;
+    --accent-ink: #8bd9ff;
+    --accent-soft: #173747;
+    --surface: #111e26;
+    --surface-muted: #14232c;
+    --surface-raised: #192a34;
+    --border: #354954;
+    --border-subtle: #2a3d47;
+    --border-strong: #4b626e;
+    --border-accent: #326581;
+    --danger: #ffaaa6;
+    --danger-soft: #3b2328;
+    --success: #9de8bd;
+    --success-soft: #1b342b;
+    --shadow-card: 0 4px 18px rgb(0 0 0 / 16%);
+    --shadow-float: 0 12px 30px rgb(0 0 0 / 30%);
+    --shadow-button: inset 0 1px 0 rgb(255 255 255 / 18%);
+    --panel-header: #172d3b;
+    --trace-line: #43697b;
+  }
+}
+
 * { box-sizing: border-box; }
 html, body { margin: 0; min-height: 100%; }
 
@@ -82,6 +146,7 @@ a { color: inherit; }
 }
 
 ::selection { background: #ceeffa; color: var(--foreground); }
+html[data-theme="dark"] ::selection { background: #305c70; color: #fff; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
