@@ -151,8 +151,11 @@ export default function TechniqueSelector({
       >
         <svg className={styles.strategyMark} width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3 15h4l6-10h4" stroke="currentColor" strokeWidth="1.5"/><circle cx="3" cy="15" r="2" fill="currentColor"/><circle cx="17" cy="5" r="2" fill="currentColor"/></svg>
         <span className={styles.srOnly}>Solving technique:</span>
-        <span className={styles.name}>{current.name}</span>
-        <ApproachLabel method={current} />
+        {/* The name and its label wrap together; the count and chevron stay on the first line. */}
+        <span className={styles.nameGroup}>
+          <span className={styles.name}>{current.name}</span>
+          <ApproachLabel method={current} />
+        </span>
         <span className={styles.methodCount}>{methods.length > 1 ? `${selectedIndex + 1} / ${methods.length}` : "Details"}</span>
         <ChevronIcon open={nav.open} />
       </button>

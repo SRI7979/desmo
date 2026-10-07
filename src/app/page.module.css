@@ -24,6 +24,7 @@
 .secondaryButton { min-height: var(--control-height); padding-inline: var(--space-4); border-color: var(--border); background: var(--surface-raised); color: var(--foreground); }
 .secondaryButton:hover { border-color: var(--border-strong); background: var(--surface); }
 .secondaryButton:active { background: #eaf1f4; }
+html[data-theme="dark"] .secondaryButton:active { background: var(--surface-muted); }
 
 .hero { padding: 64px 0 56px; text-align: center; }
 .hero h1 { margin: 0; color: var(--foreground); font-family: var(--font-display); font-size: clamp(3.5rem, 6vw, 5.4rem); font-weight: 400; line-height: 1.02; letter-spacing: -.055em; }

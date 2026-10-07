@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { signOut } from "@/app/auth/actions";
+import { NEW_PROBLEM_EVENT } from "@/lib/workspace-events";
 import DesmoLogo from "./desmo-logo";
 import { ThemeToggle } from "./theme-toggle";
 import styles from "./account-nav.module.css";
@@ -133,7 +134,19 @@ export default function AccountNav({ email, avatarUrl, active }: { email?: strin
     <div className={styles.root}>
       <aside className={styles.desktopSidebar} aria-label="Workspace sidebar">
         <div className={styles.sidebarBrand}><DesmoLogo /></div>
-        <a className={styles.newProblem} href="/solve"><Icon name="plus" />New problem</a>
+        <a
+          className={styles.newProblem}
+          href="/solve"
+          onClick={(event) => {
+            // On the solver, start over in place instead of reloading the page and Desmos.
+            if (active !== "solve") return;
+            event.preventDefault();
+            window.dispatchEvent(new Event(NEW_PROBLEM_EVENT));
+          }}
+        >
+          <Icon name="plus" />New problem
+          {active === "solve" && <kbd className={styles.shortcut} aria-label="Shortcut: N">N</kbd>}
+        </a>
         <nav className={styles.sidebarLinks} aria-label="Main navigation">
           <span className={styles.sidebarLabel}>Workspace</span>
           {links.map((item) => (

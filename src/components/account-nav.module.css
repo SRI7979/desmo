@@ -44,6 +44,7 @@
 }
 
 .newProblem:hover { background: var(--accent-soft); }
+.shortcut { margin-left: auto; padding: 0 6px; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font: 600 10px/1.6 var(--font-mono); }
 .newProblem:active { transform: translateY(1px); }
 .sidebarLinks { display: grid; align-content: start; gap: 3px; }
 .sidebarLabel { padding: 0 12px 8px; color: var(--muted); font-size: .75rem; font-weight: 600; }

@@ -57,9 +57,8 @@ export default async function SavedProblemPage({ params }: { params: Promise<{ i
           {!problem.imageUrl && solution.question && <p className={styles.questionText}><MathText>{solution.question}</MathText></p>}
         </section>
         <section className={`${workspace.card} ${workspace.calculatorCard}`} aria-labelledby="calculator-title">
-          <div className={workspace.calculatorHeading}>
-            <h2 id="calculator-title">Calculator</h2>
-          </div>
+          {/* The calculator's own Desmos bar is the visible header. */}
+          <h2 id="calculator-title" className={workspace.srOnly}>Calculator</h2>
           <DesmosCalculator expressions={solution.status === "solved" ? solution.expressions : []} bounds={solution.status === "solved" ? solution.graphBounds : null} answerState={solution.status === "solved" ? solution.answerState : null} revision={0} />
         </section>
         <section className={`${workspace.card} ${workspace.resultCard}`} aria-labelledby="result-title">
