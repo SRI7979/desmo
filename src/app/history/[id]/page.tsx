@@ -23,7 +23,7 @@ export default async function SavedProblemPage({ params }: { params: Promise<{ i
     problem = await getProblem(user.id, id);
   } catch {
     return (
-      <HistoryShell email={user.email} avatarUrl={user.avatarUrl}>
+      <HistoryShell email={user.email} avatarUrl={user.avatarUrl} name={user.name}>
         <div className={styles.empty} role="alert">
           <h1>This problem couldn’t load</h1>
           <p>Your saved work has not been changed.</p>
@@ -36,7 +36,7 @@ export default async function SavedProblemPage({ params }: { params: Promise<{ i
   if (!problem) notFound();
   const { solution } = problem;
   return (
-    <HistoryShell email={user.email} avatarUrl={user.avatarUrl}>
+    <HistoryShell email={user.email} avatarUrl={user.avatarUrl} name={user.name}>
       <div className={styles.heading}>
         <div>
           <Link href="/history" className={styles.backLink}>← History</Link>
