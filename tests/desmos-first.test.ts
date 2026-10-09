@@ -51,11 +51,11 @@ const goldWay = (): Candidate =>
     techniqueId: "parameter-regression",
     strategy: 78,
     rung: 4,
-    rows: [row("3x^{2}-16x+2"), row("(a+\\sqrt{b})/6\\sim5.20526"), row("a=16"), row("a+b")],
+    rows: [row("3x^{2}-16x+2"), row("[(a+\\sqrt{b})/6,(a-\\sqrt{b})/6]\\sim[5.20526,0.128073]"), row("a+b")],
     answer: "C) 248",
-    result: numeric(4, 248, "a + b from the fitted b", "C"),
+    result: numeric(3, 248, "a + b from both fitted parameters", "C"),
     graphBounds: null,
-    cost: { ...zeroCost, derivationSteps: 1 },
+    cost: { ...zeroCost },
   });
 const typedDiscriminant = (): Candidate =>
   graphCandidate({
@@ -77,7 +77,7 @@ const select = (input: CandidatesResponseInput) => selectMethods(candidatesRespo
 
 afterEach(() => mock.restoreAll());
 
-test("the real quadratic-root question: the clicked-root regression survives 'a and b are integers' and is the default", () => {
+test("the real quadratic-root question: fitting both clicked roots survives 'a and b are integers' and is the default", () => {
   const selection = select(quadraticResponse([formula(), typedDiscriminant(), goldWay()]));
   const listed = selection.methods.filter((method) => !method.rejected);
   assert.equal(selection.winnerId, "parameter-regression");
@@ -88,12 +88,12 @@ test("the real quadratic-root question: the clicked-root regression survives 'a 
 });
 
 test("an integer unknown may be fitted when the question asks for one determined value, never for 'could be' or an extreme", () => {
-  const fitted = [{ latex: "(a+\\sqrt{b})/6\\sim5.20526" }, { latex: "a=16" }];
+  const fitted = [{ latex: "[(a+\\sqrt{b})/6,(a-\\sqrt{b})/6]\\sim[5.20526,0.128073]" }];
   const integers = [{ name: "a", integer: true, min: -1000, max: 1000 }, { name: "b", integer: true, min: -1000, max: 1000 }];
   assert.deepEqual(findIntegerParameterViolations(fitted, integers), [{ row: 1, param: "a" }, { row: 1, param: "b" }], "strict by default");
   assert.deepEqual(findIntegerParameterViolations(fitted, integers, { determinedValue: true, fixedValuesAllowed: true }), []);
   assert.deepEqual(findIntegerParameterViolations([{ latex: "y_{1}\\sim ax_{1}\\left\\{a>1\\right\\}" }], integers, { determinedValue: true }), [{ row: 1, param: "a" }], "an inequality restriction still cannot pin an integer");
-  assert.deepEqual(findIntegerParameterViolations([{ latex: "a=16", slider: { min: 0, max: 20, step: 0.5 } }], integers, { fixedValuesAllowed: true }), [{ row: 1, param: "a" }], "a dragged slider still needs step 1");
+  assert.deepEqual(findIntegerParameterViolations([{ latex: "q=7", slider: { min: 0, max: 20, step: 0.5 } }], [{ name: "q", integer: true, min: 0, max: 20 }], { fixedValuesAllowed: true }), [{ row: 1, param: "q" }], "a dragged slider still needs step 1");
   assert.equal(asksForDeterminedValue(QUADRATIC), true);
   for (const question of ["Which of the following could be the value of a + b?", "What is the greatest possible value of k?", "How many integer values of k work?", "Which is NOT a possible value of k?"]) {
     assert.equal(asksForDeterminedValue(question), false, question);
@@ -124,7 +124,7 @@ test("a math-way default asks once for a Desmos way, naming the library strategi
   const index = parseLibraryIndex(await readFile(path.join(process.cwd(), "src/content/desmos-tricks.md"), "utf8"));
   const { requests } = mockModel({
     candidates: (_body: Record<string, unknown>, call: number) => (call === 1 ? quadraticResponse([formula()]) : quadraticResponse([goldWay(), formula()])),
-    explanation: explanation(4, { handMath: "a = 16 is the number already printed in the equation outside the root." }),
+    explanation: explanation(3),
   });
   const deps: PipelineDeps = {
     client: new OpenAI({ apiKey: "unit-test-key", maxRetries: 0 }),
@@ -143,7 +143,7 @@ test("a math-way default asks once for a Desmos way, naming the library strategi
   assert.equal(requests.candidates.length, 2);
   assert.match(JSON.stringify(requests.candidates[1].input), /You listed no Desmos way/);
   assert.match(JSON.stringify(requests.candidates[1].input), /78 teach parameter-regression/);
-  assert.equal(result.solution.handMath, "a = 16 is the number already printed in the equation outside the root.");
+  assert.equal(result.solution.handMath, null);
 });
 
 test("a Desmos way with a hand step names it; a pure-Desmos method shows no math line", () => {
@@ -153,13 +153,16 @@ test("a Desmos way with a hand step names it; a pure-Desmos method shows no math
     version: 1, cacheKey: "k", promptConfigVersion: "v", question: selection.question, choices: selection.choices, structure: null,
     methods: selection.methods, winnerId: selection.winnerId, modelPreference: null, retryOf: null, createdAt: new Date(0).toISOString(),
   };
-  assert.equal(needsHandMath(gold), true);
-  const without = explanation(4);
-  assert.throws(() => validateExplanationQuality(gold, without), (error: unknown) => error instanceof ExplanationError && /handMath must name each one/.test(error.message));
-  const named = explanation(4, { handMath: "a = 16: the number already printed in the equation outside the root." });
-  validateExplanationQuality(gold, named);
-  assert.equal(presentMethod(entry, gold, named).handMath, "a = 16: the number already printed in the equation outside the root.");
-  assert.match(fallbackExplanation(gold).handMath ?? "", /done by hand/);
+  assert.equal(needsHandMath(gold), false);
+  assert.equal(presentMethod(entry, gold, explanation(3)).handMath, null);
+
+  const handWorked = { ...gold, cost: { ...gold.cost, derivationSteps: 1 } };
+  const without = explanation(3);
+  assert.throws(() => validateExplanationQuality(handWorked, without), (error: unknown) => error instanceof ExplanationError && /handMath must name each one/.test(error.message));
+  const named = explanation(3, { handMath: "Choose the plus form for the larger root and the minus form for the smaller root." });
+  validateExplanationQuality(handWorked, named);
+  assert.equal(presentMethod(entry, handWorked, named).handMath, "Choose the plus form for the larger root and the minus form for the smaller root.");
+  assert.match(fallbackExplanation(handWorked).handMath ?? "", /done by hand/);
 
   const pure = select(candidatesResponse([graphCandidate()])).methods[0];
   assert.equal(needsHandMath(pure), false);
@@ -227,7 +230,7 @@ test("a data list must hold the question's numbers exactly as printed, at any si
 
 test("a decimal typed after a graph is a clicked point, and the explanation call is told so", async () => {
   const { clickedValues, explanationInput } = await import("../src/lib/method-presentation");
-  assert.deepEqual(clickedValues(QUADRATIC, goldWay().rows), [{ row: 2, value: "5.20526" }]);
+  assert.deepEqual(clickedValues(QUADRATIC, goldWay().rows), [{ row: 2, value: "5.20526" }, { row: 2, value: "0.128073" }]);
   assert.deepEqual(clickedValues("A price of 1.15 per pound.", [row("y=1.15x"), row("1.15(4)")]), [], "a stated decimal is a given");
   assert.deepEqual(clickedValues(QUADRATIC, [row("a=5.20526")]), [], "nothing was graphed to click");
   const selection = select(quadraticResponse([goldWay(), formula()]));
@@ -235,15 +238,15 @@ test("a decimal typed after a graph is a clicked point, and the explanation call
     version: 1, cacheKey: "k", promptConfigVersion: "v", question: selection.question, choices: selection.choices, structure: null,
     methods: selection.methods, winnerId: selection.winnerId, modelPreference: null, retryOf: null, createdAt: new Date(0).toISOString(),
   };
-  assert.match(explanationInput(entry, selection.methods[0]), /Line 2 types 5\.20526[\s\S]*clicking the matching point[\s\S]*never a hand computation/);
+  assert.match(explanationInput(entry, selection.methods[0]), /Line 2 types 5\.20526[\s\S]*clicking the matching point[\s\S]*Line 2 types 0\.128073[\s\S]*clicking the matching point[\s\S]*never a hand computation/);
 });
 
 test("THE IDEA of a Desmos way may name paper algebra only as what it avoids", async () => {
   const { leansOnPaperAlgebra } = await import("../src/lib/method-presentation");
   const gold = select(quadraticResponse([goldWay(), formula()])).methods[0];
   assert.equal(leansOnPaperAlgebra(gold, "The quadratic formula gives (16 +/- sqrt(discriminant))/6, so a is 16."), "quadratic formula");
-  assert.equal(leansOnPaperAlgebra(gold, "Instead of the quadratic formula, click the root and let a regression find b."), null);
-  assert.equal(leansOnPaperAlgebra(gold, "Click the root and let Desmos find b; no discriminant needed."), null);
+  assert.equal(leansOnPaperAlgebra(gold, "Instead of the quadratic formula, click both roots and let one regression find a and b."), null);
+  assert.equal(leansOnPaperAlgebra(gold, "Click both roots and let Desmos fit both unknowns; no discriminant needed."), null);
   const paper = select(quadraticResponse([formula()])).methods[0];
   assert.equal(leansOnPaperAlgebra(paper, "The quadratic formula gives both roots."), null, "the math way is allowed to be math");
   assert.throws(() => validateExplanationQuality(gold, explanation(4, { why: "The quadratic formula gives (16 ± √232)/6.", handMath: "a = 16" })), /through paper algebra \(quadratic formula\)/);

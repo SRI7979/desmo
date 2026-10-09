@@ -1702,29 +1702,29 @@ lets Desmos do the setup too: graph both sides of the relationship instead of
 inverting it by hand, mean(repeat(...)) instead of a weighted-mean formula.
 Scalar rows with no function are this technique, not function evaluation.
 
-78. Root in a given radical form → click the root, slider the visible number, regress the hidden one
+78. Root in a given radical form → click both roots and fit both forms together
 [technique: parameter-regression | Parameter regression]
 
 Use when: an equation is given and the question says one solution can be
 written in a form with unknown constants, such as (a+√b)/6 or a+b√3, then asks
-for a, b, or a combination of them. This is the model Desmos way: the graph
-finds the root and a regression finds the hidden number, so the student does
-no algebra at all.
+for a, b, or a combination of them. Graph the equation and click both
+x-intercepts. When the two roots match conjugate forms, put both forms and
+both clicked values into one bracket regression so Desmos fits all unknown
+parameters together; the student does not have to infer a parameter from the
+equation first.
 
 3x^2-16x+2=0 has a solution (a+√b)/6, where a and b are integers; find a+b:
 3x^{2}-16x+2
-(a+\sqrt{b})/6\sim5.20526
-a=16
+[(a+\sqrt{b})/6,(a-\sqrt{b})/6]\sim[5.20526,0.128073]
 a+b
 
-Graph the expression and click both x-intercepts, (0.12808, 0) and
-(5.20526, 0); the form with a plus sign is the larger root. Keep a as a slider
-at 16, the number already printed in the equation outside any root. The
-regression shows b=232.00042 and the last row 248.0004: a and b are integers,
-so b=232 and a+b=248. A regression fits a continuous value, so read the
-integer it rounds to; that is the integer the question asks for.
-If the outside number is not evident, click both x-intercepts and fit both
-conjugates at once: [(a+\sqrt{b})/6,(a-\sqrt{b})/6]\sim[5.20526,0.12808].
+Graph the expression and click both x-intercepts, (0.128073, 0) and
+(5.20526, 0). Match the plus form to the larger root and the minus form to the
+smaller root. This single bracket regression fits a≈16 and b≈232 at once;
+because the question says both are integers, read those integer values and
+then the final row gives a+b=248. The two clicked roots provide two conditions,
+so the regression can solve both unknowns without first setting either one by
+hand.
 
 BAD, the math way dressed up as Desmos: typing (16+\sqrt{16^{2}-4(3)(2)})/6
 or 16^{2}-4(3)(2) is the quadratic formula and its discriminant with a

@@ -38,15 +38,15 @@ export type IntegerParameterViolation = { row: number; param: string };
 
 export type IntegerEncodingOptions = {
   /**
-   * The method never drags its sliders, so a fixed integer definition (a=16,
-   * a number the question prints) is an integer as typed.
+   * The method never drags its sliders, so a fixed integer definition (for
+   * example, q=7 when the question prints 7) is an integer as typed.
    */
   fixedValuesAllowed?: boolean;
   /**
    * The question asks for one determined value ("what is the value of a+b?"),
    * not which values could work or the greatest or least one. An equality fit
-   * then has a single answer, and reading the integer it rounds to
-   * (b=232.00042 → 232) is exact. Rule 2 still rejects an underdetermined fit.
+   * then has a single answer, and reading the nearby integer values it fits is
+   * exact. Rule 2 still rejects an underdetermined fit.
    */
   determinedValue?: boolean;
 };

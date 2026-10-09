@@ -65,7 +65,7 @@ const SINGLE_LETTER = /(?:^|[^a-z])[a-z](?:[^a-z]|$)/i;
  */
 export const STRUCTURE_DETECTORS: readonly Detector[] = [
   {
-    // "One solution is (a+√b)/6": click the root, fit the unknown (strategy 78).
+    // "One solution is (a+√b)/6": click both roots and fit both unknowns (strategy 78).
     id: "radical-form-root",
     techniques: ["parameter-regression"],
     test: (question) => /\b(?:solutions?|roots?|zeros?)\b/i.test(question) && (RADICAL_FORM.test(question) || (STATED_FORM.test(question) && new RegExp(ROOT, "i").test(question))),

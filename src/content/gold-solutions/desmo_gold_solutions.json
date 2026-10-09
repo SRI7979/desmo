@@ -289,18 +289,16 @@
       "D": "296"
     },
     "correct_answer": "C",
-    "strategy_name": "Root in a given radical form - click the root, slider for the visible number, regression for the hidden one",
-    "trigger_pattern": "An equation is given and the question says one solution can be written in a form with unknown constants, such as (a + sqrt(b))/c, then asks for a, b, or a combination of them. Graph the equation, click its root, and let a regression fit the unknown inside the root to that clicked value.",
+    "strategy_name": "Root in a given radical form - click both roots and fit both forms together",
+    "trigger_pattern": "An equation is given and the question says one solution can be written in a form with unknown constants, such as (a + sqrt(b))/c, then asks for a, b, or a combination of them. Graph the equation, click both x-intercepts, and use one bracket regression to fit the plus and minus forms to both roots at once.",
     "desmos_steps": [
       "3x^2-16x+2",
-      "Click both x-intercepts of the graph: (0.12808, 0) and (5.20526, 0). The form (a+sqrt(b))/6 with a plus sign is the larger one, 5.20526.",
-      "(a+\\sqrt{b})/6~5.20526",
-      "a=16",
-      "Keep a as a slider at 16, the number already in the equation outside any root.",
+      "Click both x-intercepts of the graph: (0.128073, 0) and (5.20526, 0). Match the plus form to the larger root and the minus form to the smaller root.",
+      "[(a+\\sqrt{b})/6,(a-\\sqrt{b})/6]~[5.20526,0.128073]",
       "a+b",
-      "Read b = 232.00042 under the regression and a+b = 248.0004 on the last row. a and b are integers, so b = 232 and a + b = 248: choice C."
+      "The bracket regression fits both parameters at once and shows a approximately 16 and b approximately 232. Since a and b are integers, use 16 and 232; the last row gives a+b=248, choice C."
     ],
-    "why_preferred": "Desmos does all of the math: the graph finds the root, and the regression finds b by matching the given form to that root. The student never recalls the quadratic formula, computes a discriminant, or simplifies a radical; the only thing read off the equation is a = 16, a number already printed in it. Typing the discriminant 16^2-4(3)(2) into Desmos would be the quadratic formula with a calculator, the math-first approach this replaces.",
+    "why_preferred": "The graph supplies both roots, and one bracket regression matches both conjugate forms to those roots so Desmos fits a and b together. The student does not have to infer a from the equation, calculate a discriminant, or simplify a radical; they only read the two fitted integer values and add them. Typing the discriminant 16^2-4(3)(2) into Desmos would be the quadratic formula with a calculator, the math-first approach this replaces.",
     "needs_review": false,
     "techniqueId": "parameter-regression"
   }

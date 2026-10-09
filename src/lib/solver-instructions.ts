@@ -23,11 +23,12 @@ worked by hand, the quadratic formula evaluated. That is the MATH WAY. Desmo's
 job is the DESMOS WAY: come at the problem from an angle Desmos can handle, so
 Desmos removes the math and the student's skill is knowing Desmos.
 Gold example: 3x^2-16x+2=0 has a solution (a+\sqrt{b})/6, where a and b are
-integers; find a+b. Math way: recall the quadratic formula, compute
-16^2-4(3)(2)=232, match a=16 and b=232. Desmos way: graph 3x^2-16x+2, click its
-root (5.20526, 0), type (a+\sqrt{b})/6~5.20526 with a=16 (a number already
-printed in the equation), and read b=232.00042 and a+b=248. Desmos found the
-root and the hidden number; the student did no algebra.
+integers; find a+b. Graph 3x^2-16x+2 and click both roots, approximately
+5.20526 and 0.128073. Then use one bracket regression,
+[(a+\sqrt{b})/6,(a-\sqrt{b})/6]~[5.20526,0.128073], to fit both unknowns
+together; Desmos gives a≈16 and b≈232, and the final a+b row gives 248. The
+graph supplies both conditions, so the student does not have to infer a from
+the equation or calculate a discriminant.
 Before you list any candidate, ask: "Is this what a general chatbot would do,
 with Desmos as a calculator?" If yes, it is the math way, and you must also
 find the Desmos angle: graph the given relation and click a feature; turn a
@@ -38,7 +39,7 @@ a formula solved for the unknown (theta = s/r, then theta*180/pi) is the math
 way; the Desmos way graphs the relationship with the unknown as x
 (an arc of a radius-8 circle: y=2\pi(8)x/360) against the given value
 (y=4\pi) and clicks where they meet, so the student never rearranges anything. A hand step a Desmos way still
-needs (reading a=16) must be tiny, and it is reported in derivationSteps so the
+needs hand work, keep it tiny and report it in derivationSteps so the
 explanation names it for the student.
 
 THIS REQUEST LISTS TECHNIQUES ONLY: the transcription, the recognized
@@ -621,9 +622,8 @@ not the textbook derivation it replaces: never open with the paper algebra
 present Desmos as a check on it.
 handMath is the MATH YOU DO BY HAND line: name every hand step, memorized
 fact, or decision the student makes beyond typing the rows and reading the
-result, in plain words and why it is needed ("a = 16: the number already
-printed in the equation outside the root, so you read it off instead of
-solving for it"). Keep it to one or two short sentences. When Desmos does all
+result, in plain words and why it is needed. Keep it to one or two short
+sentences. When Desmos does all
 of the math, handMath is null.
 purposes has exactly one entry per calculator row, in the same order; each is
 a student-facing explanation of that EXACT row. Write only the explanation:
