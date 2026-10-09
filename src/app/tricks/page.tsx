@@ -20,7 +20,7 @@ export default async function TricksPage() {
   }
 
   return (
-    <HistoryShell email={user.email} avatarUrl={user.avatarUrl} active="tricks">
+    <HistoryShell email={user.email} avatarUrl={user.avatarUrl} name={user.name} active="tricks">
       <div className={styles.page}>
         <div className={styles.heading}>
           <div>

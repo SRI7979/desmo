@@ -32,17 +32,17 @@ const written = (detail: string): Candidate["result"] => ({
 const RADICAL_QUESTION =
   "3x^2 - 16x + 2 = 0. One solution to the given equation can be written as (a + sqrt(b))/6, where a and b are constants. What is the value of a + b?";
 
-/** The human-verified gold method: click the root, read a, regress b. */
-const clickedRootRegression = (overrides: Partial<Candidate> = {}): Candidate =>
+/** The human-verified gold method: click both roots and regress both unknowns together. */
+const twoRootBracketRegression = (overrides: Partial<Candidate> = {}): Candidate =>
   graphCandidate({
     techniqueId: "parameter-regression",
     strategy: 78,
     rung: 4,
-    rows: [row("y=3x^{2}-16x+2"), row("a=16"), row("(a+\\sqrt{b})/6\\sim5.20526"), row("a+b")],
+    rows: [row("y=3x^{2}-16x+2"), row("[(a+\\sqrt{b})/6,(a-\\sqrt{b})/6]\\sim[5.20526,0.128073]"), row("a+b")],
     answer: "248",
-    result: numeric(4, 248, "a+b from the fitted b"),
+    result: numeric(3, 248, "a+b from both fitted parameters"),
     graphBounds: null,
-    cost: { ...zeroCost, derivationSteps: 1 },
+    cost: { ...zeroCost },
     ...overrides,
   });
 const paperFormula = (): Candidate =>
@@ -96,12 +96,12 @@ test("every candidates prompt carries the Desmo standard, the gold solutions, th
   assert.match(instructions, /Measure the student's effort\s+BEFORE the calculator row/);
   const gold = instructions.slice(instructions.indexOf("\n<gold_solutions>\n"), instructions.indexOf("</gold_solutions>"));
   assert.match(gold, /"id": "015"/);
-  assert.match(gold, /\(a\+\\\\sqrt\{b\}\)\/6~5\.20526/, "the quadratic-root rows, as typed");
+  assert.match(gold, /\[\(a\+\\\\sqrt\{b\}\)\/6,\(a-\\\\sqrt\{b\}\)\/6\]~\[5\.20526,0\.128073\]/, "the quadratic-root rows, as typed");
   assert.equal(context.libraryIndex?.length, LIBRARY_STRATEGY_COUNT);
 });
 
 test("the library report is part of the schema, after the structure, and its strategy numbers are bounded", () => {
-  const parsed = candidatesResponseSchema.parse(candidatesResponse([clickedRootRegression()], {
+  const parsed = candidatesResponseSchema.parse(candidatesResponse([twoRootBracketRegression()], {
     library: { matched: [78, 61], skipped: [{ strategy: 61, reason: "no data table; one clicked root is enough" }] },
   }));
   assert.deepEqual(parsed.library.matched, [78, 61]);
@@ -111,13 +111,13 @@ test("the library report is part of the schema, after the structure, and its str
   assert.deepEqual(legacy.library, { matched: [], skipped: [] });
   assert.equal(legacy.candidates[0].strategy, null);
   for (const bad of [0, LIBRARY_STRATEGY_COUNT + 1, 2.5]) {
-    assert.equal(candidatesResponseSchema.safeParse(candidatesResponse([clickedRootRegression({ strategy: bad })])).success, false, `strategy ${bad}`);
+    assert.equal(candidatesResponseSchema.safeParse(candidatesResponse([twoRootBracketRegression({ strategy: bad })])).success, false, `strategy ${bad}`);
     assert.equal(candidatesResponseSchema.safeParse(candidatesResponse(undefined, { library: { matched: [bad], skipped: [] } })).success, false, `matched ${bad}`);
   }
 });
 
-test("human-verified gold: the clicked root and a regression beat the quadratic formula, typed or written; one math way stays listed", async () => {
-  const { response, selection } = solve([paperFormula(), typedFormula(), clickedRootRegression()], { library: { matched: [78], skipped: [] } });
+test("human-verified gold: one regression over both clicked roots beats the quadratic formula, typed or written; one math way stays listed", async () => {
+  const { response, selection } = solve([paperFormula(), typedFormula(), twoRootBracketRegression()], { library: { matched: [78], skipped: [] } });
   const eligible = selection.methods.filter((method) => !method.rejected);
   assert.equal(selection.winnerId, "parameter-regression");
   assert.deepEqual(eligible.map((method) => [method.techniqueId, method.approach]), [["parameter-regression", "desmos"], ["calculator-arithmetic", "math"]]);
@@ -130,12 +130,12 @@ test("human-verified gold: the clicked root and a regression beat the quadratic 
   assert.ok(typed.total > eligible[0].total);
   // The floor reads the formula, not any square minus a 4: graphs of x^2-4x and (x-2)^2-4(x+1) carry no fact.
   for (const latex of ["y=x^{2}-4x+1", "y=(x-2)^{2}-4(x+1)", "y=3x^{2}-16x+2"]) {
-    const { selection: graphed } = solve([clickedRootRegression({ rows: [row(latex), row("a=16"), row("(a+\\sqrt{b})/6\\sim5.20526"), row("a+b")] })]);
+    const { selection: graphed } = solve([twoRootBracketRegression({ rows: [row(latex), row("[(a+\\sqrt{b})/6,(a-\\sqrt{b})/6]\\sim[5.20526,0.128073]"), row("a+b")] })]);
     assert.equal(graphed.methods[0].cost.oneOffFacts, 0, latex);
   }
   for (const rows of [["\\sqrt{(-16)^{2}-4(3)(2)}"], ["16+16^{2}-4\\cdot3\\cdot2"], ["a=3", "b=-16", "c=2", "-b+\\sqrt{b^{2}-4ac}"]]) {
     const candidate = { ...typedFormula(), rows: rows.map(row), result: numeric(rows.length, 248, "a + b from the formula's numbers") };
-    const { selection: typedAgain } = solve([candidate, clickedRootRegression()]);
+    const { selection: typedAgain } = solve([candidate, twoRootBracketRegression()]);
     const method = typedAgain.methods.find((item) => item.techniqueId === "calculator-arithmetic");
     assert.equal(method?.rejected, null, `${rows.at(-1)} is a valid row`);
     assert.equal(method?.cost.oneOffFacts, 1, rows.join(" | "));
@@ -145,7 +145,7 @@ test("human-verified gold: the clicked root and a regression beat the quadratic 
   assert.deepEqual(trace.detected.map((item) => item.detector), ["radical-form-root"]);
   assert.deepEqual(trace.missed, []);
   assert.deepEqual(trace.considered, [77, 78]);
-  assert.deepEqual(trace.matched, [{ number: 78, title: "Root in a given radical form → click the root, slider the visible number, regress the hidden one" }]);
+  assert.deepEqual(trace.matched, [{ number: 78, title: "Root in a given radical form → click both roots and fit both forms together" }]);
   assert.deepEqual(trace.winner && { techniqueId: trace.winner.techniqueId, strategy: trace.winner.strategy }, { techniqueId: "parameter-regression", strategy: 78 });
   assert.match(trace.winner!.reason, /lowest total cost .*; next calculator-arithmetic at/);
   assert.equal(trace.fellBackToGenericMath, false);
@@ -162,7 +162,7 @@ test("a solve that skips the library is visible: the default is generic math and
 });
 
 test("a cited strategy that does not teach the candidate's technique is logged as a mismatch", async () => {
-  const { response, selection } = solve([clickedRootRegression({ strategy: 1 })]);
+  const { response, selection } = solve([twoRootBracketRegression({ strategy: 1 })]);
   const trace = libraryTrace(response, selection, parseLibraryIndex(await library()));
   assert.equal(trace.mismatches.length, 1);
   assert.match(trace.mismatches[0], /cites strategy 1 \(Graph two equations and click the intersection\)/);
@@ -210,10 +210,10 @@ test("a fresh solve records the library trace for evals and logs it only when di
     diagnosticId: "library-trace",
     trace: createTrace(),
   });
-  const reply = candidatesResponse([clickedRootRegression(), paperFormula()], { question: RADICAL_QUESTION, library: { matched: [78], skipped: [] } });
+  const reply = candidatesResponse([twoRootBracketRegression(), paperFormula()], { question: RADICAL_QUESTION, library: { matched: [78], skipped: [] } });
   const info = mock.method(console, "info", () => {});
 
-  mockModel({ candidates: reply, explanation: explanation(4) });
+  mockModel({ candidates: reply, explanation: explanation(3) });
   const quiet = deps();
   const result = await solveProblem(quiet, { kind: "text", problem: RADICAL_QUESTION, choices: null });
   assert.equal(result.kind, "solved");
@@ -227,7 +227,7 @@ test("a fresh solve records the library trace for evals and logs it only when di
   mock.restoreAll();
   const logged = mock.method(console, "info", () => {});
   process.env.DESMO_DIAGNOSTICS = "1";
-  mockModel({ candidates: reply, explanation: explanation(4) });
+  mockModel({ candidates: reply, explanation: explanation(3) });
   await solveProblem(deps(), { kind: "text", problem: RADICAL_QUESTION, choices: null });
   const line = logged.mock.calls.find((call) => call.arguments[0] === "[desmo:library]");
   assert.ok(line, "logged in development and eval diagnostics");

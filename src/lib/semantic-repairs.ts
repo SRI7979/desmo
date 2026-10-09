@@ -232,7 +232,22 @@ export function expectedIntegerFactorExtremumAnswer(question: string): number | 
 export function repairIntegerFactorExtremum(response: CandidatesResponse): CandidatesResponse {
   if (response.status !== "solved") return response;
   const problem = parseIntegerFactorExtremum(response.question);
-  if (!problem) return response;
+  if (!problem) {
+    // In screenshot questions, the polynomial is often printed above the
+    // prose. A model can infer its coefficients for an answer while leaving
+    // that entire line out of `question`. In that case neither the semantic
+    // check nor the student can verify the work. The pipeline retries with
+    // the original image; a second omission fails instead of caching a guess.
+    const refersToDisplayedExpression = /\b(?:expression|polynomial|equation)\s+(?:above|shown)\b/i.test(response.question);
+    const transcribedMiddleTerm = /\bk\s*(?:\\cdot\s*|\*\s*)?x\s*(?:\^|[⁰¹²³⁴⁵⁶⁷⁸⁹])/i.test(response.question);
+    if (isIntegerFactorExtremumQuestion(response.question) && refersToDisplayedExpression && !transcribedMiddleTerm) {
+      throw new StrategySelectionError(
+        "The transcription refers to an expression above but omits the polynomial containing k. Read the original image again and copy the complete polynomial, including every coefficient and exponent, into question exactly as printed. Do not infer missing terms from a candidate answer or explanation.",
+        "semantic_inputs",
+      );
+    }
+    return response;
+  }
   const { leading, constant, kind } = problem;
   const answer = expectedIntegerFactorExtremumAnswer(response.question);
   if (answer === null) return response;

@@ -1,0 +1,110 @@
+@import "tailwindcss/utilities";
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--ui-muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-brand: var(--brand);
+  --color-brand-soft: var(--brand-soft);
+  --color-success: var(--success);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --shadow-card: var(--shadow-card);
+  --shadow-pop: var(--shadow-pop);
+  --radius-sm: calc(var(--radius) - 6px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+}
+
+.desmo-shell {
+  --background: #f7f9fc;
+  --foreground: #0b0b0d;
+  --card: #ffffff;
+  --card-foreground: #0b0b0d;
+  --popover: #ffffff;
+  --popover-foreground: #0b0b0d;
+  --primary: #74cfff;
+  --primary-foreground: #071b29;
+  --muted-foreground: #536877;
+  --ui-muted: #eff7fc;
+  --secondary: #eaf6ff;
+  --secondary-foreground: #0b0b0d;
+  --muted: #eff7fc;
+  --muted-foreground: #536877;
+  --subtle: #708696;
+  --accent: #e1f2ff;
+  --accent-foreground: #0b0b0d;
+  --brand: #0879b5;
+  --brand-soft: #e4f4ff;
+  --success: #0879b5;
+  --destructive: #e5484d;
+  --border: #d5e5f0;
+  --input: #cadfeb;
+  --ring: #0879b5;
+  --radius: 0.625rem;
+  --shadow-card: 0 0 0 1px #1118270f;
+  --shadow-pop: 0 24px 48px -12px #0b0b0d29, 0 0 0 1px #0b0b0d14;
+  --font-math: var(--font-stix), "Cambria Math", Cambria, serif;
+  min-height: 100dvh;
+  color-scheme: light;
+  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  color: var(--foreground);
+  background: var(--background);
+}
+
+html[data-theme="dark"] .desmo-shell {
+  --background: #0c1015;
+  --foreground: #edf2f7;
+  --card: #141a22;
+  --card-foreground: #edf2f7;
+  --popover: #141418;
+  --popover-foreground: #edf2f7;
+  --primary: #74cfff;
+  --primary-foreground: #071b29;
+  --muted-foreground: #a0b3c1;
+  --ui-muted: #16212a;
+  --secondary: #17232c;
+  --secondary-foreground: #edf2f7;
+  --muted: #16212a;
+  --muted-foreground: #a0b3c1;
+  --subtle: #8197a7;
+  --accent: #1b3040;
+  --accent-foreground: #edf2f7;
+  --brand: #74cfff;
+  --brand-soft: #142d3e;
+  --success: #74cfff;
+  --border: #293943;
+  --input: #344954;
+  --ring: #74cfff;
+  --shadow-card: 0 0 0 1px #ffffff0d;
+  --shadow-pop: 0 24px 64px -12px #000000b3, 0 0 0 1px #ffffff14;
+  color-scheme: dark;
+}
+
+.desmo-shell .font-sans { font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif; }
+.desmo-shell .font-mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+.desmo-shell button { cursor: pointer; }
+.desmo-shell button:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .desmo-shell *, .desmo-shell *::before, .desmo-shell *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

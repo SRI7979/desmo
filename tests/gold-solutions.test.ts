@@ -95,16 +95,17 @@ test("every gold solution's calculator rows are executable under the syntax-safe
   }
 });
 
-test("the quadratic-root gold solution is the clicked root, a slider for a, and a regression for b", () => {
+test("the quadratic-root gold solution clicks both roots and fits both unknowns in one bracket regression", () => {
   const quadratic = (gold as GoldSolution[]).find((item) => item.id === "015")!;
   assert.match(quadratic.question, /where a and b are integers/, "the real wording, which the integer rule must allow");
   assert.equal(quadratic.answer_choices[quadratic.correct_answer], "248");
   assert.equal(quadratic.techniqueId, "parameter-regression");
-  assert.deepEqual(quadratic.desmos_steps.filter((step) => !/^[A-Z]/.test(step)), ["3x^2-16x+2", "(a+\\sqrt{b})/6~5.20526", "a=16", "a+b"]);
+  assert.deepEqual(quadratic.desmos_steps.filter((step) => !/^[A-Z]/.test(step)), ["3x^2-16x+2", "[(a+\\sqrt{b})/6,(a-\\sqrt{b})/6]~[5.20526,0.128073]", "a+b"]);
   assert.doesNotMatch(quadratic.desmos_steps.join(" "), /4\(3\)\(2\)|b\^2-4ac|quadratic formula/i, "no formula in the Desmos way");
-  // The rows reproduce the answer: the clicked root is the larger one, and the fitted b rounds to 232.
+  // The two clicked roots determine the two parameters; the integer values sum to the answer.
   assert.equal(((16 + Math.sqrt(232)) / 6).toFixed(5), "5.20526");
-  assert.equal(Math.round(16 + (6 * 5.20526 - 16) ** 2), 248);
+  assert.ok(Math.abs((16 - Math.sqrt(232)) / 6 - 0.128073) < 0.00001, "the smaller clicked root is approximately 0.128073");
+  assert.equal(16 + 232, 248);
 });
 
 test("gold solutions become their own benchmark group, scored on the choice text, and only on request", async () => {

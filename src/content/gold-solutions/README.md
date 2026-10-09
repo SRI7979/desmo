@@ -31,8 +31,9 @@ holding an array. Ids must be unique across every file.
   "trigger_pattern": "What in a question tells the student to reach for this trick.",
   "desmos_steps": [
     "3x^2-16x+2",
-    "Click the positive x-intercept: 5.20526.",
-    "(a+\\sqrt{b})/6~5.20526"
+    "Click both x-intercepts: 0.128073 and 5.20526.",
+    "[(a+\\sqrt{b})/6,(a-\\sqrt{b})/6]~[5.20526,0.128073]",
+    "a+b"
   ],
   "why_preferred": "Why this Desmos way beats the math way, and any hand step it still needs.",
   "needs_review": false

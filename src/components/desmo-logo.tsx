@@ -1,11 +1,11 @@
 import Link from "next/link";
 import styles from "./desmo-logo.module.css";
 
-export default function DesmoLogo({ centered = false }: { centered?: boolean }) {
+export default function DesmoLogo({ centered = false, variant = "default" }: { centered?: boolean; variant?: "default" | "workspace" }) {
   return (
     <Link
       href="/"
-      className={`${styles.logo}${centered ? ` ${styles.centered}` : ""}`}
+      className={`${styles.logo}${centered ? ` ${styles.centered}` : ""}${variant === "workspace" ? ` ${styles.workspaceLogo}` : ""}`}
       aria-label="Desmo home"
     >
       <span className={styles.mark} aria-hidden="true">

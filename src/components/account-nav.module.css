@@ -15,29 +15,29 @@
   display: flex;
   flex-direction: column;
   width: 240px;
-  padding: 17px 12px 15px;
+  padding: 16px 12px 14px;
   border-right: 1px solid var(--border);
   background: var(--background);
 }
 
-.sidebarBrand { padding: 0 8px 20px; }
-.sidebarBrand :global(a) { font-size: 21px; }
-.sidebarBrand :global(a > span:first-child) { width: 36px; height: 36px; border-radius: 11px; }
-.sidebarBrand :global(svg) { width: 23px; height: 23px; }
+.sidebarBrand { display: flex; align-items: center; height: 36px; margin-bottom: 24px; padding: 0 8px; }
+.sidebarBrand :global(a) { gap: 8px; font-size: 15px; font-weight: 600; letter-spacing: -.025em; }
+.sidebarBrand :global(a > span:first-child) { width: 28px; height: 28px; border-radius: 8px; }
+.sidebarBrand :global(svg) { width: 16px; height: 16px; }
 
 .newProblem {
   display: flex;
   align-items: center;
   gap: 10px;
   width: 100%;
-  min-height: 42px;
-  margin-bottom: 26px;
+  min-height: 40px;
+  margin-bottom: 24px;
   padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: var(--radius-md);
+  border-radius: 14px;
   background: var(--surface-raised);
   color: var(--foreground);
-  font-weight: 700;
+  font-weight: 600;
   text-decoration: none;
   box-shadow: var(--shadow-card);
   transition: background var(--ease-ui), transform var(--ease-ui);
@@ -47,16 +47,16 @@
 .shortcut { margin-left: auto; padding: 0 6px; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font: 600 10px/1.6 var(--font-mono); }
 .newProblem:active { transform: translateY(1px); }
 .sidebarLinks { display: grid; align-content: start; gap: 3px; }
-.sidebarLabel { padding: 0 12px 8px; color: var(--muted); font-size: .75rem; font-weight: 600; }
+.sidebarLabel { padding: 0 12px 8px; color: var(--muted); font-size: .75rem; font-weight: 400; }
 .sidebarLinks a {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 40px;
+  min-height: 36px;
   padding: 0 12px;
   border-radius: var(--radius-md);
   color: var(--muted);
-  font-weight: 600;
+  font-weight: 550;
   text-decoration: none;
   transition: color var(--ease-ui), background var(--ease-ui);
 }
@@ -64,7 +64,7 @@
 .sidebarLinks a[aria-current="page"] { background: var(--surface-raised); color: var(--foreground); box-shadow: var(--shadow-card); }
 .sidebarLinks a[aria-current="page"] svg { color: var(--accent-ink); }
 .sidebarLinks svg, .newProblem svg { flex: none; }
-.sidebarFooter { margin-top: auto; padding: 12px 8px 0; border-top: 1px solid var(--border); }
+.sidebarFooter { margin-top: auto; padding: 0; }
 
 .breadcrumb {
   display: inline-flex;
@@ -74,38 +74,42 @@
   color: var(--muted);
   white-space: nowrap;
 }
-.breadcrumb strong { overflow: hidden; color: var(--foreground); font-weight: 650; text-overflow: ellipsis; }
+.breadcrumb strong { overflow: hidden; color: var(--foreground); font-weight: 600; text-overflow: ellipsis; }
 .headerActions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 
 .account { position: relative; flex: none; }
-.sidebarAccount { width: fit-content; }
+.sidebarAccount { width: 100%; }
 .headerAccount { display: none; }
 .avatarButton {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 2px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 44px;
+  padding: 6px 8px;
   border: 1px solid transparent;
-  border-radius: 50%;
+  border-radius: var(--radius-md);
   background: transparent;
   color: var(--foreground);
+  text-align: left;
 }
 .avatarButton:hover, .avatarButton[aria-expanded="true"] { border-color: var(--border-accent); background: var(--accent-soft); }
 .avatar {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
   overflow: hidden;
-  border: 1px solid var(--border-accent);
+  border: 1px solid var(--border);
   border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent-ink);
-  font-size: 1rem;
-  font-weight: 750;
+  background: var(--surface);
+  color: var(--foreground);
+  font-size: .9rem;
+  font-weight: 600;
   line-height: 1;
 }
+.accountName { overflow: hidden; color: var(--foreground); font-size: .875rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
 .avatarImage { display: block; width: 100%; height: 100%; object-fit: cover; }
 .menu {
   position: absolute;
@@ -121,7 +125,7 @@
 }
 .menu[hidden] { display: none; }
 .identity { display: grid; gap: 3px; padding: 8px 12px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--muted); font-size: var(--text-xs); }
-.identity strong { overflow: hidden; color: var(--foreground); font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.identity strong { overflow: hidden; color: var(--foreground); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .menu a, .menu button {
   display: flex;
   align-items: center;
@@ -133,7 +137,7 @@
   background: transparent;
   color: var(--foreground);
   font: inherit;
-  font-weight: 650;
+  font-weight: 550;
   text-align: left;
   text-decoration: none;
 }
@@ -145,6 +149,7 @@
   .desktopSidebar, .breadcrumb { display: none; }
   .root { flex: none; margin-left: auto; }
   .headerAccount { display: block; }
+  .headerAccount .avatarButton { width: 44px; min-height: 44px; padding: 3px; border-radius: 50%; }
   .headerAccount .menu { top: 100%; right: 0; bottom: auto; left: auto; width: min(260px, calc(100vw - 24px)); }
   .mobileNavigation {
     position: fixed;

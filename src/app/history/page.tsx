@@ -25,7 +25,7 @@ export default async function HistoryPage({ searchParams }: {
   }
 
   return (
-    <HistoryShell email={user.email} avatarUrl={user.avatarUrl}>
+    <HistoryShell email={user.email} avatarUrl={user.avatarUrl} name={user.name}>
       <div className={styles.heading}>
         <div><h1>Your problems</h1><p>Saved questions, answers, and Desmos entries</p></div>
         <Link href="/solve" className={styles.button}>New question</Link>

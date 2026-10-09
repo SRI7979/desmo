@@ -155,6 +155,17 @@ test("integer-factor search handles another coefficient pair and ignores unrelat
   assert.equal(selectMethods(repaired).methods[0].answer, "61");
   const latex = factorQuestion.replace(/\^18/g, "^{18}").replace(/\^9/g, "^{9}");
   assert.equal(selectMethods(repairIntegerFactorExtremum(response([candidate("1,4", "5,7")], latex))).methods[0].answer, "421");
+  const superscripts = factorQuestion.replace(/\^18/g, "¹⁸").replace(/\^9/g, "⁹");
+  assert.equal(selectMethods(repairIntegerFactorExtremum(response([candidate("1,4", "5,7")], superscripts))).methods[0].answer, "421");
   assert.equal(expectedIntegerFactorExtremumAnswer(factorQuestion.replace("maximum", "minimum")), -421);
   assert.equal(repairIntegerFactorExtremum(response([candidate("1,4", "5,7")], question)).candidates[0].answer, "5.2");
+});
+
+test("an integer-factor question cannot omit a referenced polynomial from the transcription", () => {
+  const incomplete = "The expression above has factors ax^9 + b and cx^9 + d, where a, b, c, and d are all integer constants. What is the maximum value of k?";
+  assert.throws(
+    () => repairIntegerFactorExtremum(response([candidate("1,4", "5,7")], incomplete)),
+    /omits the polynomial containing k/,
+  );
+  assert.equal(selectMethods(repairIntegerFactorExtremum(response([candidate("1,4", "5,7")], factorQuestion))).methods[0].answer, "421");
 });

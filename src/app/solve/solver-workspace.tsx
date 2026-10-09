@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Plus } from "lucide-react";
 import { CalculatorVerificationProvider } from "@/components/calculator-verification";
 import DesmosCalculator from "@/components/desmos-calculator";
 import DesmoLogo from "@/components/desmo-logo";
@@ -84,7 +85,7 @@ function isEvent(value: unknown): value is Record<string, unknown> & { type: str
   return Boolean(value) && typeof value === "object" && typeof (value as { type?: unknown }).type === "string";
 }
 
-export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode }) {
+export default function SolverWorkspace({ accountNav, fontClassName = "" }: { accountNav: ReactNode; fontClassName?: string }) {
   const [image, setImage] = useState<{ file: File; url: string } | null>(null);
   const [solution, setSolution] = useState<Solution | null>(null);
   const [methods, setMethods] = useState<MethodSummary[]>(NO_METHODS);
@@ -551,35 +552,34 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
   }
 
   return (
-    <div className={styles.shell}>
+    <div className={`${styles.shell} desmo-shell ${fontClassName}`}>
       <header className={styles.header}>
-        <div className={styles.brandSlot}><DesmoLogo /></div>
+        <div className={`${styles.brandSlot} ${styles.mobileBrand}`}><DesmoLogo variant="workspace" /></div>
         {accountNav}
+        <button
+          type="button"
+          className={styles.headerNewProblem}
+          aria-label="New problem"
+          onClick={() => window.dispatchEvent(new Event(NEW_PROBLEM_EVENT))}
+        >
+          <Plus aria-hidden="true" />
+        </button>
       </header>
       <main className={styles.main}>
         <h1 className={styles.srOnly}>SAT Math solver</h1>
-        <div className={styles.mobilePanels} aria-label="Workspace panels">
-          <button type="button" aria-pressed={mobilePanel === "solution"} onClick={() => setMobilePanel("solution")}>Solution</button>
-          <button type="button" aria-pressed={mobilePanel === "calculator"} onClick={() => setMobilePanel("calculator")}>Calculator</button>
+        <div className={styles.mobilePanels} role="tablist" aria-label="Workspace panels">
+          <button type="button" role="tab" aria-selected={mobilePanel === "solution"} onClick={() => setMobilePanel("solution")}>Explanation</button>
+          <button type="button" role="tab" aria-selected={mobilePanel === "calculator"} onClick={() => setMobilePanel("calculator")}>Calculator</button>
         </div>
         <CalculatorVerificationProvider>
         <div className={styles.workspace} data-mobile-panel={mobilePanel} data-empty={!image && !solution && !loading || undefined}>
+          <div className={styles.questionSolutionPanel}>
           <section
             className={`${styles.card} ${styles.uploadCard}`}
             aria-labelledby="upload-title"
             id="question-panel"
           >
-            <div className={styles.cardHeading}>
-              <h2 id="upload-title">{image ? "Problem" : "Drop in a problem"}</h2>
-              <button
-                type="button"
-                className={styles.sampleButton}
-                onClick={loadSample}
-                disabled={busy}
-              >
-                {sampleLoading ? "Loading…" : "Use sample"}
-              </button>
-            </div>
+            {image ? <div className={styles.cardHeading}><h2 id="upload-title">Problem</h2></div> : <h2 id="upload-title" className={styles.srOnly}>Drop in a problem</h2>}
             <input
               ref={fileInput}
               id="question-image"
@@ -593,8 +593,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                 event.target.value = "";
               }}
             />
-            <label
-              htmlFor="question-image"
+            <div
               className={`${styles.uploadZone} ${image ? styles.hasImage : ""} ${dragging ? styles.dragging : ""} ${busy ? styles.uploadDisabled : ""}`}
               onDragOver={(event) => {
                 event.preventDefault();
@@ -611,7 +610,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
               }}
             >
               {image ? (
-                <>
+                <label htmlFor="question-image" className={styles.previewPick}>
                   <Image
                     src={image.url}
                     width={900}
@@ -621,7 +620,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                     className={styles.preview}
                   />
                   <span className={styles.replaceHint}>Replace image</span>
-                </>
+                </label>
               ) : (
                 <>
                   <span className={styles.uploadIcon} aria-hidden="true">
@@ -640,12 +639,19 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                       />
                     </svg>
                   </span>
-                  <strong>Upload one math question</strong>
-                  <span><span className={styles.browseLink}>Choose image</span> · drag or paste</span>
+                  <strong>Drop in a problem</strong>
+                  <span>Screenshot it, drop it here, and get the clever route.</span>
+                  <button type="button" className={styles.chooseImage} onClick={() => fileInput.current?.click()} disabled={busy}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.3" /><path d="m4 17 5-5 3 3 3-3 5 5" /></svg>
+                    Choose image
+                  </button>
                   <small>PNG, JPG, or WebP · up to 8 MB</small>
+                  <button type="button" className={styles.sampleLink} onClick={loadSample} disabled={busy}>
+                    {sampleLoading ? "Loading…" : "Try the sample problem"}<span aria-hidden="true">→</span>
+                  </button>
                 </>
               )}
-            </label>
+            </div>
             {image && (
               <>
                 <div className={styles.fileDetails}>
@@ -741,10 +747,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
             id="explanation-panel"
           >
             <div className={styles.resultHeading}>
-              <h2 id="result-title">Explanation</h2>
-              {solution?.status === "solved" && listed.length > 0 && selectedMethodId && (
-                <TechniqueSelector methods={listed} selectedId={selectedMethodId} onSelect={switchTechnique} />
-              )}
+              <h2 id="result-title" className={styles.srOnly}>Explanation</h2>
             </div>
             <div className={styles.resultBody}>
               {loading ? (
@@ -762,6 +765,9 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
                 <>
                   <SolutionExplanation
                     solution={solution}
+                    techniqueSelector={listed.length > 0 && selectedMethodId ? (
+                      <TechniqueSelector methods={listed} selectedId={selectedMethodId} onSelect={switchTechnique} />
+                    ) : undefined}
                     explanationStatus={explanationStatus}
                     onRetryExplanation={retryExplanation}
                     tutorSource={solution.status === "solved" && cacheKey && selectedMethodId ? { kind: "solve", cacheKey, methodId: selectedMethodId } : undefined}
@@ -781,6 +787,7 @@ export default function SolverWorkspace({ accountNav }: { accountNav: ReactNode 
               )}
             </div>
           </section>
+          </div>
           <section
             className={`${styles.card} ${styles.calculatorCard}`}
             aria-labelledby="calculator-title"
