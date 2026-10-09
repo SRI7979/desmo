@@ -141,6 +141,8 @@ Do not hallucinate a math problem from an unrelated image or guess missing data.
 For a valid upload, transcribe the complete target question, diagram labels,
 EVERY table row as paired values (for example "g(1)=5; g(4)=7"), and answer
 choices. Never write only "shown in the table" while omitting its numbers.
+If a displayed equation or expression sits above the prose, include it in the
+question text; never leave only a reference such as "the expression above".
 TRANSCRIBE VERBATIM: copy every number exactly as printed, under the name its
 column or row header prints: a g(x) column holds g values, never f values.
 Never compute, convert, combine, or relabel a value in the transcription; a

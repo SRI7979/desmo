@@ -490,6 +490,39 @@ test("integer factor maximum returns 421 through the shared solve API, not one r
   assert.equal(data.solution.expressions[5].latex, "\\operatorname{max}(k_{1})");
 });
 
+test("an omitted displayed polynomial retries against the original image and only saves a complete Desmos solution", async () => {
+  const incomplete = "The expression above has factors ax^9 + b and cx^9 + d, where a, b, c, and d are all integer constants. What is the maximum value of k?";
+  const complete = `12x^18 + kx^9 + 35. ${incomplete}`;
+  const generated = (question: string) => candidatesResponse([paperCandidate({ answer: "421" })], { question });
+  const { requests } = mockModel({
+    candidates: (_body: unknown, call: number) => generated(call === 1 ? incomplete : complete),
+    explanation: explanation(6, { why: "The list checks every signed integer factor pair.", readAnswer: "Line 6 gives 421." }),
+  });
+  const response = await POST(upload());
+  const data = await response.json();
+  assert.equal(response.status, 200);
+  assert.equal(requests.candidates.length, 2);
+  const retry = JSON.stringify(requests.candidates[1].input);
+  assert.match(retry, /semantic_inputs/);
+  assert.match(retry, /omits the polynomial containing k/);
+  assert.match(retry, /data:image\/png;base64/, "the retry reads the source image again");
+  assert.equal(data.selectedMethodId, "integer-list-filter");
+  assert.equal(data.solution.answer, "421");
+  assert.equal(data.solution.expressions.length, 6);
+  assert.match(data.question, /12x\^18\s*\+\s*kx\^9\s*\+\s*35/);
+});
+
+test("an omitted displayed polynomial on both attempts fails without saving a guessed answer", async () => {
+  const incomplete = "The expression above has factors ax^9 + b and cx^9 + d, where a, b, c, and d are all integer constants. What is the maximum value of k?";
+  const { requests } = mockModel({ candidates: candidatesResponse([paperCandidate({ answer: "421" })], { question: incomplete }) });
+  const save = mock.method(dependencies, "saveProblem");
+  const response = await POST(upload());
+  assert.equal(response.status, 502);
+  assert.equal(requests.candidates.length, 2);
+  assert.equal(requests.explanation.length, 0);
+  assert.equal(save.mock.callCount(), 0);
+});
+
 test("regression test 3: a prompt configuration change is a cache miss and regenerates", async () => {
   const { requests } = mockModel({ candidates: candidatesResponse() });
   const first = await (await POST(upload())).json();
