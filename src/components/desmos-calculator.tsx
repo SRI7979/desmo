@@ -316,7 +316,7 @@ export default function DesmosCalculator({
     {expanded && <div className={styles.fullscreenBackdrop} aria-hidden="true" onClick={() => setExpanded(false)} />}
     <div className={`${styles.shell} ${expanded ? styles.expanded : ""}`} data-testid="desmos-calculator">
       <div className={styles.graphHeader}>
-        <div className={styles.graphName} data-state={unavailableMessage ? "error" : scriptReady ? "ready" : "loading"}><span className={styles.graphDot} aria-hidden="true" />Desmos</div>
+        <div className={styles.graphName}><span className={styles.graphStatusDot} aria-hidden="true" />Desmos</div>
         <div className={styles.graphControls}>
           <button type="button" className={styles.graphIconButton} title="Reset graph view" aria-label="Reset graph view" disabled={!scriptReady || !!unavailableMessage} onClick={() => calculatorRef.current?.setMathBounds(validBounds(bounds))}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11a8 8 0 1 1 2.1 6.6M4 5v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -373,7 +373,7 @@ export default function DesmosCalculator({
           </div>
         )}
       </div>
-      <div className={styles.toolbar}>
+      {(lineCount > 0 || expressions.length > 0 || entriesEdited || unavailableMessage || withheld || expressionError) && <div className={styles.toolbar}>
         <span
           className={styles.status}
           role="status"
@@ -396,7 +396,7 @@ export default function DesmosCalculator({
         >
           <span aria-hidden="true">↻</span> Restore entries
         </button>
-      </div>
+      </div>}
       {withheld && !unavailableMessage && scriptReady && (
         <p className={styles.expressionWarning} role="status" data-testid="rows-withheld">
           {gate.status === "unverified"

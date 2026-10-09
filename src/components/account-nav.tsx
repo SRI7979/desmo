@@ -28,12 +28,15 @@ function Icon({ name }: { name: IconName }) {
   );
 }
 
-function AccountMenu({ email, avatarUrl, active, placement }: { email?: string; avatarUrl?: string; active: View; placement: "sidebar" | "header" }) {
+function AccountMenu({ email, avatarUrl, name, active, placement }: { email?: string; avatarUrl?: string; name?: string; active: View; placement: "sidebar" | "header" }) {
   const [open, setOpen] = useState(false);
   const [photoFailed, setPhotoFailed] = useState(false);
   const accountRef = useRef<HTMLDivElement>(null);
   const openedOnHoverOrFocus = useRef(false);
-  const avatarInitial = email?.trim().charAt(0).toUpperCase();
+  const displayName = name || email?.split("@")[0] || "Account";
+  const avatarInitial = name
+    ? name.trim().split(/\s+/).slice(0, 2).map((part) => part.charAt(0).toUpperCase()).join("")
+    : email?.trim().charAt(0).toUpperCase();
   const menuId = "account-menu-" + placement;
 
   useEffect(() => {
@@ -87,7 +90,7 @@ function AccountMenu({ email, avatarUrl, active, placement }: { email?: string; 
       <button
         type="button"
         className={styles.avatarButton}
-        aria-label="Account menu"
+        aria-label={`${displayName} account menu`}
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => {
@@ -111,13 +114,14 @@ function AccountMenu({ email, avatarUrl, active, placement }: { email?: string; 
             </svg>
           )}
         </span>
+        {placement === "sidebar" && <span className={styles.accountName} title={displayName}>{displayName}</span>}
       </button>
       <div id={menuId} className={styles.menu} aria-label="Account options" hidden={!open}>
         {email ? (
           <>
             <div className={styles.identity}>
-              <span>Signed in as</span>
-              <strong title={email}>{email}</strong>
+              <strong>{displayName}</strong>
+              <span title={email}>{email}</span>
             </div>
             <Link href="/settings" aria-current={active === "settings" ? "page" : undefined} onClick={() => setOpen(false)}>Settings</Link>
             <form action={signOut}><button type="submit">Sign out</button></form>
@@ -128,12 +132,12 @@ function AccountMenu({ email, avatarUrl, active, placement }: { email?: string; 
   );
 }
 
-export default function AccountNav({ email, avatarUrl, active }: { email?: string; avatarUrl?: string; active: View }) {
+export default function AccountNav({ email, avatarUrl, name, active }: { email?: string; avatarUrl?: string; name?: string; active: View }) {
   const title = active === "solve" ? "Solver" : active === "history" ? "History" : active === "tricks" ? "Saved tricks" : "Settings";
   return (
     <div className={styles.root}>
       <aside className={styles.desktopSidebar} aria-label="Workspace sidebar">
-        <div className={styles.sidebarBrand}><DesmoLogo /></div>
+        <div className={styles.sidebarBrand}><DesmoLogo variant="workspace" /></div>
         <a
           className={styles.newProblem}
           href="/solve"
@@ -155,13 +159,13 @@ export default function AccountNav({ email, avatarUrl, active }: { email?: strin
             </Link>
           ))}
         </nav>
-        <div className={styles.sidebarFooter}><AccountMenu email={email} avatarUrl={avatarUrl} active={active} placement="sidebar" /></div>
+        <div className={styles.sidebarFooter}><AccountMenu email={email} avatarUrl={avatarUrl} name={name} active={active} placement="sidebar" /></div>
       </aside>
 
       <div className={styles.breadcrumb}><span>Workspace</span><span aria-hidden="true">/</span><strong>{title}</strong></div>
       <div className={styles.headerActions}>
-        <ThemeToggle />
-        <AccountMenu email={email} avatarUrl={avatarUrl} active={active} placement="header" />
+        <ThemeToggle compact />
+        <AccountMenu email={email} avatarUrl={avatarUrl} name={name} active={active} placement="header" />
       </div>
       <nav className={styles.mobileNavigation} aria-label="Main navigation">
         {links.map((item) => (

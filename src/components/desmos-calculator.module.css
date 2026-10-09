@@ -5,10 +5,8 @@
 .placeholder p { max-width: 340px; margin: 0; font-size: var(--text-sm); line-height: 1.6; }
 .toolbar { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: var(--space-3); min-height: 44px; padding: var(--space-1) var(--space-4); border-top: 1px solid var(--border-subtle); background: var(--surface-raised); font-size: var(--text-xs); }
 .graphHeader { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: var(--space-3); height: 48px; padding: 0 var(--space-3) 0 var(--space-4); border-bottom: 1px solid var(--border-subtle); background: var(--surface-raised); }
-.graphName { display: inline-flex; align-items: center; gap: 8px; font-size: .875rem; font-weight: 700; }
-.graphDot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); }
-.graphName[data-state="loading"] .graphDot { background: var(--subtle); }
-.graphName[data-state="error"] .graphDot { background: var(--danger); }
+.graphName { display: inline-flex; align-items: center; gap: 8px; font-size: .875rem; font-weight: 600; }
+.graphStatusDot { width: 7px; height: 7px; flex: 0 0 auto; border-radius: 50%; background: #0879b5; }
 .graphControls { display: flex; align-items: center; gap: 2px; }
 .graphIconButton { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: var(--radius-sm); background: transparent; color: var(--muted); }
 .graphIconButton:hover:not(:disabled) { background: var(--surface); color: var(--foreground); }
@@ -41,7 +39,7 @@
   .graphIconButton { width: 44px; height: 44px; }
 }
 
-.traceBar { display: flex; align-items: center; gap: var(--space-2); min-height: 40px; padding: 0 var(--space-4); border-bottom: 1px solid var(--border); background: var(--surface-muted); color: var(--muted); font-size: 12px; }
+.traceBar { display: flex; align-items: center; gap: var(--space-2); min-height: 32px; padding: 0 var(--space-4); border-bottom: 1px solid var(--border); background: var(--surface-raised); color: var(--muted); font-size: 12px; }
 .traceMark { color: var(--accent-ink); font-size: 20px; }
 .traceBar button { display: flex; align-items: center; gap: var(--space-3); min-height: 40px; padding: 0; border: 0; background: transparent; color: var(--accent-ink); font: 12px var(--font-mono); text-align: left; }
 .traceBar button > span { font-family: var(--font-sans); }

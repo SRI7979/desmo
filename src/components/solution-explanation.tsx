@@ -24,11 +24,14 @@ const checkStyles: Record<"contradicted", string> = {
 // The current solve and saved history render the same canonical solution.
 export default function SolutionExplanation({
   solution,
+  techniqueSelector,
   explanationStatus = "ready",
   onRetryExplanation,
   tutorSource,
 }: {
   solution: Solution;
+  /** The live solver's selectable, preflight-verified routes. */
+  techniqueSelector?: React.ReactNode;
   /**
    * "pending": this technique's explanation is being written, so its prose
    * shows as a skeleton; "failed": it did not arrive, so the panel offers a
@@ -113,6 +116,7 @@ export default function SolutionExplanation({
         </div>
         <div className={styles.answerValue}><MathText>{formattedAnswer.text}</MathText></div>
       </div>
+      {techniqueSelector}
       {check.status === "contradicted" && (
         <p
           className={`${styles.calculatorCheck} ${checkStyles.contradicted}`}
