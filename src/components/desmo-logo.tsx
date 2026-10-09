@@ -9,7 +9,13 @@ export default function DesmoLogo({ centered = false, variant = "default" }: { c
       aria-label="Desmo home"
     >
       <span className={styles.mark} aria-hidden="true">
-        <svg width="27" height="27" viewBox="0 0 24 24" fill="none" focusable="false">
+        <svg
+          width={variant === "workspace" ? "16" : "27"}
+          height={variant === "workspace" ? "16" : "27"}
+          viewBox={variant === "workspace" ? "0 0 16 16" : "0 0 24 24"}
+          fill="none"
+          focusable="false"
+        >
           <path
             d={variant === "workspace" ? "M2 11.5c2.2 0 2.6-7 6-7s3.8 7 6 7" : "M3 17c5 0 4-10 9-10s4 10 9 10M3 12h18"}
             stroke="currentColor"
