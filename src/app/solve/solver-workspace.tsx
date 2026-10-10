@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { Plus } from "lucide-react";
+import { ArrowRight, ImageIcon, Plus, Upload } from "lucide-react";
+import { WorkspaceAppearance } from "@/components/appearance-provider";
 import { CalculatorVerificationProvider } from "@/components/calculator-verification";
 import DesmosCalculator from "@/components/desmos-calculator";
 import DesmoLogo from "@/components/desmo-logo";
@@ -552,25 +553,27 @@ export default function SolverWorkspace({ accountNav, fontClassName = "" }: { ac
   }
 
   return (
-    <div className={`${styles.shell} desmo-shell ${fontClassName}`}>
+    <WorkspaceAppearance className={`${styles.shell} ${fontClassName}`}>
       <header className={styles.header}>
         <div className={`${styles.brandSlot} ${styles.mobileBrand}`}><DesmoLogo variant="workspace" /></div>
         {accountNav}
         <button
           type="button"
+          data-primary
           className={styles.headerNewProblem}
           aria-label="New problem"
           onClick={() => window.dispatchEvent(new Event(NEW_PROBLEM_EVENT))}
         >
           <Plus aria-hidden="true" />
+          <span className="hidden sm:inline">New</span>
         </button>
       </header>
-      <main className={styles.main}>
-        <h1 className={styles.srOnly}>SAT Math solver</h1>
         <div className={styles.mobilePanels} role="tablist" aria-label="Workspace panels">
           <button type="button" role="tab" aria-selected={mobilePanel === "solution"} onClick={() => setMobilePanel("solution")}>Explanation</button>
           <button type="button" role="tab" aria-selected={mobilePanel === "calculator"} onClick={() => setMobilePanel("calculator")}>Calculator</button>
         </div>
+      <main className={styles.main}>
+        <h1 className={styles.srOnly}>SAT Math solver</h1>
         <CalculatorVerificationProvider>
         <div className={styles.workspace} data-mobile-panel={mobilePanel} data-empty={!image && !solution && !loading || undefined}>
           <div className={styles.questionSolutionPanel}>
@@ -624,30 +627,19 @@ export default function SolverWorkspace({ accountNav, fontClassName = "" }: { ac
               ) : (
                 <>
                   <span className={styles.uploadIcon} aria-hidden="true">
-                    <svg
-                      width="25"
-                      height="25"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <path
-                        d="M12 16V4m-4 4 4-4 4 4M4 15v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4"
-                        stroke="currentColor"
-                        strokeWidth="1.6"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    <Upload size={24} />
                   </span>
-                  <strong>Drop in a problem</strong>
-                  <span>Screenshot it, drop it here, and get the clever route.</span>
-                  <button type="button" className={styles.chooseImage} onClick={() => fileInput.current?.click()} disabled={busy}>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9" r="1.3" /><path d="m4 17 5-5 3 3 3-3 5 5" /></svg>
+                  <div className={styles.uploadIntro}>
+                    <strong>Drop in a problem</strong>
+                    <span>Screenshot it, drop it here, and get the clever route.</span>
+                  </div>
+                  <button type="button" data-primary className={styles.chooseImage} onClick={() => fileInput.current?.click()} disabled={busy}>
+                    <ImageIcon size={16} aria-hidden="true" />
                     Choose image
                   </button>
                   <small>PNG, JPG, or WebP · up to 8 MB</small>
                   <button type="button" className={styles.sampleLink} onClick={loadSample} disabled={busy}>
-                    {sampleLoading ? "Loading…" : "Try the sample problem"}<span aria-hidden="true">→</span>
+                    {sampleLoading ? "Loading…" : "Try the sample problem"}<ArrowRight size={14} aria-hidden="true" />
                   </button>
                 </>
               )}
@@ -698,6 +690,7 @@ export default function SolverWorkspace({ accountNav, fontClassName = "" }: { ac
               </>
             )}
             <button
+              data-primary
               className={styles.solveButton}
               type="button"
               disabled={!image || busy || cooldownSeconds > 0 || needsSignIn}
@@ -813,6 +806,6 @@ export default function SolverWorkspace({ accountNav, fontClassName = "" }: { ac
         </div>
         </CalculatorVerificationProvider>
       </main>
-    </div>
+    </WorkspaceAppearance>
   );
 }

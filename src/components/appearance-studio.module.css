@@ -1,0 +1,52 @@
+/* The workspace imports Tailwind utilities without its global preflight. */
+@layer base {
+  .dialog {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .dialog :where(h2, h3, p, fieldset) { margin: 0; }
+  .dialog :where(h2, h3) { font-size: inherit; font-weight: inherit; }
+  .dialog fieldset { min-width: 0; border: 0; padding: 0; }
+  .dialog legend { padding: 0; }
+  .dialog button, .iconTrigger, .themeOption {
+    border-width: 0;
+    border-style: solid;
+    border-color: var(--border);
+    padding: 0;
+    background-color: transparent;
+    background-image: none;
+    color: inherit;
+    line-height: inherit;
+  }
+  .dialog :where(input[type="radio"]) { margin: 0; padding: 0; }
+  .dialog :where(svg), .iconTrigger svg, .themeOption svg { display: block; }
+  .dialog :where(:global(.border), :global(.border-b), :global(.border-t)) { border-color: var(--border); }
+}
+
+/* App-wide form font inheritance otherwise takes precedence over utilities. */
+.dialog button:global(.text-sm) { font-size: .875rem; line-height: 1.25rem; }
+.dialog button:global(.font-medium) { font-weight: 500; }
+.dialog h2:global(.text-xl) { margin: 0; font-size: 1.25rem; font-weight: 600; line-height: 1.75rem; }
+
+.iconTrigger { flex-shrink: 0; }
+.dialog { border-color: var(--border); }
+.themeOption { font-size: .875rem; }
+
+.settingsTrigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  color: var(--foreground);
+  text-align: left;
+}
+.settingsTrigger > svg { flex: none; color: var(--muted-foreground); }
+.settingsTrigger > span { display: flex; flex-direction: column; gap: 4px; }
+.settingsTrigger strong { font-size: .875rem; font-weight: 500; }
+.settingsTrigger > span > span { color: var(--muted-foreground); font-size: .75rem; line-height: 1.5; }
+.settingsTrigger:hover { border-color: var(--brand); }

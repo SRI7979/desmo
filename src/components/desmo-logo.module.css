@@ -39,9 +39,9 @@
 }
 
 .workspaceLogo { gap: 8px; font-size: 15px; font-weight: 600; letter-spacing: -.025em; }
-.workspaceLogo .mark { width: 28px; height: 28px; border-radius: 8px; background: #e2f8ff; color: #109bd0; }
+.workspaceLogo .mark { width: 28px; height: 28px; border: 0; border-radius: var(--radius-lg); background: var(--primary); color: var(--primary-foreground); }
 .workspaceLogo .mark svg { width: 16px; height: 16px; }
-.workspaceLogo .wordmark { text-transform: none; }
+.workspaceLogo .wordmark { text-transform: lowercase; }
 
 @media (max-width: 600px) {
   .logo {
@@ -62,3 +62,5 @@
     margin-bottom: 28px;
   }
 }
+
+@media (max-width: 600px) { .workspaceLogo { min-height: 0; font-size: 15px; } }
