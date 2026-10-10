@@ -5,7 +5,7 @@
   flex: 1;
   min-width: 0;
   gap: 16px;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
 }
 
 .desktopSidebar {
@@ -16,13 +16,12 @@
   flex-direction: column;
   width: 240px;
   padding: 16px 12px 14px;
-  border-right: 1px solid var(--border);
   background: var(--background);
 }
 
 .sidebarBrand { display: flex; align-items: center; height: 36px; margin-bottom: 24px; padding: 0 8px; }
 .sidebarBrand :global(a) { gap: 8px; font-size: 15px; font-weight: 600; letter-spacing: -.025em; }
-.sidebarBrand :global(a > span:first-child) { width: 28px; height: 28px; border-radius: 8px; }
+.sidebarBrand :global(a > span:first-child) { width: 28px; height: 28px; border-radius: var(--radius-lg); }
 .sidebarBrand :global(svg) { width: 16px; height: 16px; }
 
 .newProblem {
@@ -34,10 +33,10 @@
   margin-bottom: 24px;
   padding: 0 12px;
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: var(--radius-xl);
   background: var(--surface-raised);
   color: var(--foreground);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: none;
   box-shadow: var(--shadow-card);
   transition: background var(--ease-ui), transform var(--ease-ui);
@@ -46,22 +45,22 @@
 .newProblem:hover { background: var(--accent-soft); }
 .shortcut { margin-left: auto; padding: 0 6px; border: 1px solid var(--border); border-radius: 6px; color: var(--muted); font: 600 10px/1.6 var(--font-mono); }
 .newProblem:active { transform: translateY(1px); }
-.sidebarLinks { display: grid; align-content: start; gap: 3px; }
+.sidebarLinks { display: grid; align-content: start; gap: 2px; }
 .sidebarLabel { padding: 0 12px 8px; color: var(--muted); font-size: .75rem; font-weight: 400; }
 .sidebarLinks a {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-height: 36px;
   padding: 0 12px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-xl);
   color: var(--muted);
-  font-weight: 550;
+  font-weight: 400;
   text-decoration: none;
   transition: color var(--ease-ui), background var(--ease-ui);
 }
 .sidebarLinks a:hover { background: var(--accent-soft); color: var(--foreground); }
-.sidebarLinks a[aria-current="page"] { background: var(--surface-raised); color: var(--foreground); box-shadow: var(--shadow-card); }
+.sidebarLinks a[aria-current="page"] { font-weight: 500; background: var(--surface-raised); color: var(--foreground); box-shadow: var(--shadow-card); }
 .sidebarLinks a[aria-current="page"] svg { color: var(--accent-ink); }
 .sidebarLinks svg, .newProblem svg { flex: none; }
 .sidebarFooter { margin-top: auto; padding: 0; }
@@ -74,7 +73,7 @@
   color: var(--muted);
   white-space: nowrap;
 }
-.breadcrumb strong { overflow: hidden; color: var(--foreground); font-weight: 600; text-overflow: ellipsis; }
+.breadcrumb strong { overflow: hidden; color: var(--foreground); font-weight: 500; text-overflow: ellipsis; }
 .headerActions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
 
 .account { position: relative; flex: none; }
@@ -124,7 +123,7 @@
   box-shadow: var(--shadow-float);
 }
 .menu[hidden] { display: none; }
-.identity { display: grid; gap: 3px; padding: 8px 12px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--muted); font-size: var(--text-xs); }
+.identity { display: grid; gap: 2px; padding: 8px 12px 12px; border-bottom: 1px solid var(--border-subtle); color: var(--muted); font-size: var(--text-xs); }
 .identity strong { overflow: hidden; color: var(--foreground); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
 .menu a, .menu button {
   display: flex;
@@ -137,11 +136,11 @@
   background: transparent;
   color: var(--foreground);
   font: inherit;
-  font-weight: 550;
+  font-weight: 400;
   text-align: left;
   text-decoration: none;
 }
-.menu a:hover, .menu button:hover, .menu a[aria-current="page"] { background: var(--accent-soft); color: var(--accent-ink); }
+.menu a:hover, .menu button:hover, .menu a[aria-current="page"] { font-weight: 500; background: var(--accent-soft); color: var(--accent-ink); }
 .menu form { margin: 0; }
 .mobileNavigation { display: none; }
 
@@ -180,5 +179,5 @@
     transition: background var(--ease-ui), color var(--ease-ui);
   }
   .mobileNavigation a:hover { background: var(--surface); color: var(--foreground); }
-  .mobileNavigation a[aria-current="page"] { background: var(--accent-soft); color: var(--accent-ink); }
+  .mobileNavigation a[aria-current="page"] { font-weight: 500; background: var(--accent-soft); color: var(--accent-ink); }
 }

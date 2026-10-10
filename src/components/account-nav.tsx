@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { signOut } from "@/app/auth/actions";
 import { NEW_PROBLEM_EVENT } from "@/lib/workspace-events";
 import DesmoLogo from "./desmo-logo";
-import { ThemeToggle } from "./theme-toggle";
+import { AppearanceStudio, AppearanceThemeToggle } from "./appearance-studio";
 import styles from "./account-nav.module.css";
 
 type View = "solve" | "history" | "tricks" | "settings";
@@ -164,7 +164,8 @@ export default function AccountNav({ email, avatarUrl, name, active }: { email?:
 
       <div className={styles.breadcrumb}><span>Workspace</span><span aria-hidden="true">/</span><strong>{title}</strong></div>
       <div className={styles.headerActions}>
-        <ThemeToggle compact />
+        <AppearanceThemeToggle />
+        <AppearanceStudio />
         <AccountMenu email={email} avatarUrl={avatarUrl} name={name} active={active} placement="header" />
       </div>
       <nav className={styles.mobileNavigation} aria-label="Main navigation">

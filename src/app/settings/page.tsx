@@ -1,7 +1,7 @@
 import { requireUser } from "@/lib/auth";
 import HistoryShell from "@/app/history/history-shell";
 import PasswordForm from "./password-form";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { AppearanceStudio } from "@/components/appearance-studio";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -22,8 +22,8 @@ export default async function SettingsPage() {
         </section>
         <section className={styles.card} aria-labelledby="appearance-heading">
           <h2 id="appearance-heading">Appearance</h2>
-          <p>Choose your theme</p>
-          <ThemeToggle showLabels />
+          <p>Palettes, typography, buttons, corners, and color mode</p>
+          <AppearanceStudio settings />
         </section>
         <section className={styles.card} aria-labelledby="password-heading">
           <h2 id="password-heading">Password</h2>

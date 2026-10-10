@@ -326,7 +326,7 @@ export default function DesmosCalculator({
           </button>
         </div>
       </div>
-      <div className={styles.traceBar}>
+      {expressions.length > 0 && <div className={styles.traceBar}>
         <span className={styles.traceMark} aria-hidden="true">↳</span>
         {selection && selection.key === expressionsKey(expressions) && !entriesEdited && insertable && lineCount > 0 ? (
           <button type="button" onClick={() => {
@@ -335,7 +335,7 @@ export default function DesmosCalculator({
             row?.focus({ preventScroll: true });
           }}>Line {String(selection.row).padStart(2, "0")} <span>View its explanation</span> <span aria-hidden="true">↗</span></button>
         ) : <span>Select a calculator line to trace its reasoning</span>}
-      </div>
+      </div>}
       {apiKey && (
         <Script
           id="desmo-desmos-api"
