@@ -1,4 +1,5 @@
 .shell {
+  --workspace-sidebar-width: 240px;
   --text-xs: .75rem;
   --text-sm: .875rem;
   --text-base: 1rem;
@@ -76,7 +77,7 @@
 }
 .uploadZone:hover, .dragging { border-color: var(--brand); background: var(--brand-soft); }
 .dragging { outline: 2px solid var(--ring); outline-offset: 2px; }
-.uploadZone strong { margin-top: 4px; font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
+.uploadZone strong { margin-top: 4px; font-size: 1rem; font-weight: 500; letter-spacing: -.01em; }
 .uploadZone > span:not(.uploadIcon) { max-width: 260px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .uploadZone small { margin-top: 4px; color: var(--subtle); font-size: var(--text-xs); }
 .uploadIcon { display: grid; place-items: center; width: 56px; height: 56px; margin-bottom: 4px; border-radius: var(--radius-2xl); background: var(--surface); color: var(--muted); }
@@ -154,9 +155,10 @@
 @keyframes spin { to { transform: rotate(360deg); } }
 
 .resultHeading { flex-wrap: wrap; }
-.emptyResult p:first-of-type { color: var(--foreground); font-weight: 600; font-size: var(--text-base); }
+.emptyResult p:first-of-type { color: var(--foreground); font-weight: 500; font-size: var(--text-base); }
 @media (min-width: 1024px) {
-  .shell { padding-left: 240px; }
+  .shell { padding-left: var(--workspace-sidebar-width); }
+  .shell:has([data-sidebar-collapsed="true"]) { --workspace-sidebar-width: 72px; }
   /* The sidebar lives inside the header for shared navigation. A backdrop
      filter would turn that header into the containing block for `position:
      fixed`, shifting the sidebar over the solver instead of pinning it left. */
@@ -213,7 +215,7 @@
 
 .historyMain { display: block; }
 
-.workspace[data-empty="true"] .uploadZone strong { margin: 0; font-size: 20px; line-height: 28px; font-weight: 600; letter-spacing: -.025em; }
+.workspace[data-empty="true"] .uploadZone strong { margin: 0; font-size: 20px; line-height: 28px; font-weight: 500; letter-spacing: -.025em; }
 .workspace[data-empty="true"] .uploadZone > span:not(.uploadIcon) { font-size: 14px; }
 .workspace[data-empty="true"] .uploadZone small { margin: 0; color: var(--muted); }
 .workspace[data-empty="true"] .chooseImage { margin: 0; }

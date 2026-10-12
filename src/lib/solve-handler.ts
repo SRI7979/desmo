@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ACCEPTED_IMAGE_TYPES, type Solution } from "@/lib/solver-schema";
 import { classifyOpenAIError } from "@/lib/openai-errors";
 import { eligibleMethods, preflightRecordSchema, type SolveCache } from "@/lib/solve-cache";
+import { repairCachedDesmosNativePlans } from "@/lib/desmos-native-plans";
 import { SolveValidationError } from "@/lib/solve-output";
 import {
   createTrace,
@@ -737,7 +738,8 @@ export function createPreflightHandler(dependencies: MethodDependencies) {
       const body = preflightRequestSchema.safeParse(await request.json().catch(() => null));
       if (!body.success) return errorResponse("Send the Desmos check for a method from this solve.", 400);
       const cache = dependencies.getCache();
-      const entry = await cache.getEntry(body.data.cacheKey);
+      const cachedEntry = await cache.getEntry(body.data.cacheKey);
+      const entry = cachedEntry ? repairCachedDesmosNativePlans(cachedEntry) : null;
       if (!entry) return errorResponse("This solve is no longer available. Solve it again.", 404);
       const rowCounts = new Map(eligibleMethods(entry).map((method) => [method.id, method.rows.length]));
       await Promise.all(

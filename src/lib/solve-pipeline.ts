@@ -60,6 +60,7 @@ import type { Meter, ModelCall } from "./spend";
 import { TECHNIQUES } from "./technique-vocabulary";
 import { loadGoldSolutions } from "./gold-solutions";
 import { expectedIntegerFactorExtremumAnswer, repairIntegerFactorExtremum, repairQuadraticRationalIntercept } from "./semantic-repairs";
+import { desmosNativePlan, repairCachedDesmosNativePlans, repairDesmosNativePlans } from "./desmos-native-plans";
 
 /** One guided correction per call, shared by both calls. */
 export const MAX_ATTEMPTS = 2;
@@ -297,6 +298,7 @@ export class PreflightFailedError extends Error {
  * method errored, the entry's Desmos retry (if it ran) takes its place.
  */
 export async function resolveEntry(cache: SolveCache, entry: CacheEntry, options: { fresh?: boolean } = {}): Promise<ResolvedEntry> {
+  entry = repairCachedDesmosNativePlans(entry);
   const verdicts = options.fresh ? {} : await cache.getPreflight(entry.cacheKey);
   const surviving = eligibleMethods(entry).filter((method) => verdicts[method.id]?.status !== "error");
   if (surviving.length > 0) {
@@ -664,6 +666,13 @@ export async function explainMethod(
   calls: CallCounts = { candidates: 0, explanation: 0 },
 ): Promise<{ solution: Solution; source: "cache" | "model" | "fallback"; failure?: unknown }> {
   deps.meter?.setCacheKey(entry.cacheKey);
+  const factorPlan = desmosNativePlan(entry.question);
+  if (factorPlan && method.techniqueId === factorPlan.candidate.techniqueId &&
+      JSON.stringify(method.rows.map(row => row.latex)) === JSON.stringify(factorPlan.candidate.rows.map(row => row.latex))) {
+    validateExplanationQuality(method, factorPlan.explanation);
+    await deps.cache.putExplanation(entry.cacheKey, method.id, factorPlan.explanation);
+    return { solution: presentMethod(entry, method, factorPlan.explanation), source: "cache" };
+  }
   const cached = await deps.cache.getExplanation(entry.cacheKey, method.id);
   if (cached) {
     try {
@@ -834,7 +843,7 @@ export async function solveProblem(
       try {
         const selectStarted = performance.now();
         const { parsed: rawParsed, repairs: metadataRepairs } = validateCandidatesResponse(response);
-        const parsed = repairIntegerFactorExtremum(repairQuadraticRationalIntercept(rawParsed));
+        const parsed = repairDesmosNativePlans(repairIntegerFactorExtremum(repairQuadraticRationalIntercept(rawParsed)));
         if (parsed.status === "needs_clarification") {
           recordCandidateOutput(deps, "candidates", attempt, response, null);
           const elapsed = performance.now() - started;

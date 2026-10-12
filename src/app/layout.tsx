@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import { Analytics } from "@vercel/analytics/next";
 import ThemeProvider from "@/components/theme-provider";
 import AppearanceProvider from "@/components/appearance-provider";
 import { workspaceFonts } from "@/components/workspace-fonts";
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={workspaceFonts} suppressHydrationWarning>
       <head><script dangerouslySetInnerHTML={{ __html: themeInit }} /></head>
-      <body><ThemeProvider><AppearanceProvider>{children}</AppearanceProvider></ThemeProvider></body>
+      <body><ThemeProvider><AppearanceProvider>{children}</AppearanceProvider></ThemeProvider><Analytics /></body>
     </html>
   );
 }
