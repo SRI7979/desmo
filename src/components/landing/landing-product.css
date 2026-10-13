@@ -1,0 +1,177 @@
+/* The product showcase: a small, live copy of the Desmo solver in its default
+   Tidal palette (the --app-* colors come from src/lib/appearance.ts). */
+.product-showcase { padding: 75px 0 110px; scroll-margin-top: 30px; }
+.showcase-intro { text-align: center; margin: 0 auto 48px; }
+.product-eyebrow { font-size: 10px; letter-spacing: .18em; font-weight: 600; color: #698094; }
+.showcase-intro h2 { font-size: clamp(36px, 5.6vw, 66px); letter-spacing: -.055em; line-height: 1.06; font-weight: 550; margin: 24px 0; color: #182632; }
+.showcase-intro h2 span { color: #83919e; }
+.showcase-intro p { font-size: 15px; line-height: 1.8; color: #71808e; }
+.showcase-stage { padding: 28px; border-radius: 22px; background: radial-gradient(ellipse at 15% 0%, #d5eaf7, transparent 65%), linear-gradient(145deg, #eaf2f8, #c5d8ed 65%, #e2eafa); box-shadow: inset 0 1px 0 #fff; }
+
+.showcase-app { overflow: hidden; border: 1px solid var(--app-border); border-radius: 11px; background: var(--app-bg); box-shadow: 0 20px 45px -20px #1f375c55, 0 1px 4px #122b4110; color: var(--app-fg); }
+.showcase-toolbar { height: 57px; padding: 0 18px; display: flex; align-items: center; gap: 35px; border-bottom: 1px solid var(--app-border); background: var(--app-card); }
+.showcase-brand { display: flex; gap: 7px; align-items: center; font-weight: 700; letter-spacing: -.05em; font-size: 19px; }
+.showcase-brand .provided-mark { width: 28px; height: 28px; }
+.showcase-brand .provided-mark img { width: 51px; max-width: none; }
+.showcase-breadcrumb { font-size: 10px; color: var(--app-muted); display: flex; gap: 10px; }
+.showcase-breadcrumb b { color: var(--app-fg); font-weight: 600; }
+.showcase-theme { margin-left: auto; display: flex; gap: 2px; padding: 2px; border-radius: 999px; background: var(--app-soft); color: var(--app-muted); }
+.showcase-theme > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 999px; }
+.showcase-theme > span[data-on] { background: var(--app-card); color: var(--app-fg); box-shadow: 0 1px 2px #0000001a; }
+.showcase-toolbar > a { color: var(--app-muted); }
+
+/* The solver's fixed-height workspace: the explanation scrolls inside its panel. */
+.showcase-layout { position: relative; display: grid; grid-template-columns: 46px minmax(0, 1fr) minmax(0, 1.18fr); height: 720px; }
+.showcase-panels { display: none; }
+.showcase-rail { display: flex; align-items: center; flex-direction: column; gap: 16px; padding: 18px 0; background: var(--app-bg); border-right: 1px solid var(--app-border); color: var(--app-muted); }
+.showcase-rail a { padding: 6px; background: var(--app-card); border: 1px solid var(--app-border); border-radius: 8px; color: var(--app-fg); }
+.showcase-rail > span[data-on] { padding: 6px; border-radius: 8px; background: var(--app-card); color: var(--app-brand); box-shadow: 0 1px 2px #0000000f; }
+.rail-line { width: 18px; height: 1px; background: var(--app-border); }
+.rail-avatar { margin-top: auto; background: var(--app-soft); color: var(--app-brand); border-radius: 50%; width: 25px; height: 25px; display: grid; place-items: center; font-size: 10px; font-weight: 600; }
+
+.showcase-reasoning { padding: 22px; display: flex; flex-direction: column; gap: 16px; min-width: 0; min-height: 0; overflow-y: auto; scrollbar-width: thin; background: var(--app-card); }
+.document-label { display: flex; justify-content: space-between; gap: 10px; font-size: 8px; letter-spacing: .1em; color: var(--app-muted); font-weight: 600; }
+.document-label > span { letter-spacing: 0; font-weight: 400; font-family: var(--font-geist-mono), monospace; }
+.showcase-equation { font-size: 15px; overflow-x: auto; overflow-y: hidden; }
+.showcase-equation .katex-display { margin: 10px 0; }
+
+/* The uploaded screenshot, as the solver shows it. */
+.question-shot { margin-top: 9px; padding: 14px 16px; border: 1px solid var(--app-border); border-radius: 8px; background: #f8f7f4; color: #1d1d1d; }
+.question-shot > p { font-size: 11px; line-height: 1.85; }
+.question-shot > p .katex { font-size: 1.05em; }
+.question-choices { display: grid; gap: 5px; margin-top: 10px; }
+.question-choices li { display: flex; align-items: center; gap: 10px; padding: 5px 9px; border: 1.5px solid #1d1d1d; border-radius: 7px; background: #fff; box-shadow: 0 2px 0 #1d1d1d; font-family: var(--font-stix), Georgia, serif; font-size: 12px; }
+.question-choices li > span { display: grid; place-items: center; width: 17px; height: 17px; border: 1.5px solid #1d1d1d; border-radius: 50%; font: 600 8px var(--font-geist), sans-serif; }
+
+/* "Choose your route": the solver's technique selector. */
+.showcase-routes { display: grid; gap: 8px; }
+.route-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.route-heading h3 { font-size: 12px; font-weight: 550; letter-spacing: -.01em; }
+.route-heading > span { font-size: 10px; color: var(--app-muted); }
+.route-list { display: flex; gap: 3px; padding: 3px; border-radius: 12px; background: var(--app-soft); }
+.route-list button { flex: 1 1 0; min-width: 0; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 7px 6px; border-radius: 9px; color: var(--app-muted); font-size: 10px; white-space: nowrap; transition: background .15s, color .15s, box-shadow .15s; }
+.route-list button[aria-selected=true] { background: var(--app-card); color: var(--app-fg); box-shadow: 0 1px 3px #0000001a; }
+.route-name { font-weight: 500; }
+.route-labels { display: flex; align-items: center; gap: 5px; }
+.route-recommended { flex: none; color: var(--app-brand); font-size: 8px; font-weight: 650; }
+.route-approach { flex: none; padding: 1px 5px; border-radius: 999px; background: var(--app-soft); color: var(--app-brand); font-size: 8px; font-weight: 600; }
+.route-list button[data-approach=math] .route-approach { background: var(--app-bg); color: var(--app-muted); }
+.route-details { display: grid; gap: 6px; padding: 0 2px; }
+.route-details > p { font-size: 10px; color: var(--app-muted); }
+.route-details dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding-top: 6px; border-top: 1px solid var(--app-border); }
+.route-details dl > div + div { padding-left: 8px; border-left: 1px solid var(--app-border); }
+.route-details dt { font-size: 8px; color: var(--app-muted); }
+.route-details dd { margin-top: 1px; font: 600 10px var(--font-geist-mono), monospace; }
+
+.showcase-answer { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 9px; background: var(--app-soft); }
+.showcase-answer > span { font-size: 8px; letter-spacing: .12em; font-weight: 700; color: var(--app-brand); }
+.answer-choice { margin-left: 8px; letter-spacing: 0; font-weight: 500; color: var(--app-muted); }
+.showcase-answer strong { font-size: 24px; font-weight: 600; letter-spacing: -.03em; }
+
+.showcase-idea { display: grid; gap: 7px; }
+.idea-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.showcase-idea h4, .lines-heading h4 { font-size: 12px; font-weight: 600; }
+.save-trick { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border: 1px solid var(--app-border); border-radius: 999px; font-size: 9px; color: var(--app-fg); }
+.showcase-idea > p, .showcase-lines li p, .read-result p, .hand-math p { font-size: 11px; line-height: 1.75; color: var(--app-muted); }
+.hand-math { padding: 8px 10px; border-left: 2px solid var(--app-brand); border-radius: 0 7px 7px 0; background: var(--app-bg); }
+.hand-math h5, .read-result h5 { font-size: 10px; font-weight: 650; color: var(--app-fg); }
+
+.showcase-lines { display: grid; gap: 9px; }
+.lines-heading { display: flex; align-items: baseline; justify-content: space-between; }
+.lines-heading > span { font-size: 9px; color: var(--app-muted); }
+.showcase-lines > ol { display: grid; border-left: 1px solid var(--app-border); margin-left: 7px; }
+.showcase-lines > ol > li { padding: 8px 0 10px 12px; border-top: 1px solid var(--app-border); }
+.showcase-lines > ol > li:first-child { border-top: 0; }
+.line-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 5px; font-size: 9px; color: var(--app-muted); }
+.line-heading > span:first-child { display: flex; align-items: center; gap: 6px; }
+.line-heading b { display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid var(--app-border); border-radius: 5px; font: 600 8px var(--font-geist-mono), monospace; }
+.line-copy { display: inline-flex; align-items: center; gap: 3px; }
+.line-equation { overflow-x: auto; overflow-y: hidden; padding: 6px 9px; border: 1px solid var(--app-border); border-radius: 6px; background: var(--app-bg); font-size: 12px; }
+.read-result { display: flex; gap: 8px; padding: 10px 12px; border-radius: 8px; background: var(--app-soft); color: var(--app-brand); }
+.read-result > svg { flex: none; margin-top: 2px; }
+.walkthrough { display: grid; gap: 10px; }
+.showcase-lines > ol.walkthrough { border-left: 0; margin-left: 0; }
+.showcase-lines > ol.walkthrough > li { display: flex; gap: 10px; padding: 0; border-top: 0; }
+.walkthrough b { display: grid; place-items: center; flex: none; width: 18px; height: 18px; border: 1px solid var(--app-border); border-radius: 5px; font: 600 8px var(--font-geist-mono), monospace; color: var(--app-muted); }
+.walkthrough .showcase-equation { font-size: 12px; }
+
+/* The calculator panel: Desmos bar, trace hint, calculator, row count. */
+.showcase-calculator { border-left: 1px solid var(--app-border); background: var(--app-card); display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.calculator-bar { display: flex; align-items: center; justify-content: space-between; padding: 13px 15px; border-bottom: 1px solid var(--app-border); font-size: 10px; font-weight: 600; }
+.calculator-bar > span:first-child { display: flex; align-items: center; gap: 6px; }
+.calculator-icons { display: flex; gap: 12px; color: var(--app-muted); }
+.showcase-app .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--app-brand); }
+.trace-bar { display: flex; align-items: center; gap: 7px; padding: 8px 15px; border-bottom: 1px solid var(--app-border); background: var(--app-bg); font-size: 9px; color: var(--app-muted); }
+.trace-bar > span { color: var(--app-brand); font-size: 12px; }
+.calculator-live { position: relative; flex: 1; min-height: 0; overflow: hidden; background: #fff; }
+.calculator-host { position: absolute; inset: 0; }
+/* Until Desmos loads: the solver's own capture, cropped to the calculator. */
+.calculator-placeholder { position: absolute; top: 0; left: 0; width: 102.4%; max-width: none; height: auto; margin: -2.3% 0 0 -2.4%; }
+.calculator-empty-note { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(240px, 80%); padding: 10px 12px; border: 1px solid var(--app-border); border-radius: 8px; background: var(--app-card); box-shadow: 0 6px 18px -10px #1f375c55; font-size: 10px; line-height: 1.6; color: var(--app-muted); text-align: center; pointer-events: none; }
+.calculator-live:not([data-ready]):has(.calculator-empty-note) { background-image: linear-gradient(#eef1f3 1px, transparent 1px), linear-gradient(90deg, #eef1f3 1px, transparent 1px); background-size: 28px 28px; }
+.calculator-foot { display: flex; align-items: center; gap: 7px; padding: 10px 15px; border-top: 1px solid var(--app-border); font-size: 9px; color: var(--app-muted); }
+
+.showcase-under { display: flex; justify-content: space-between; gap: 16px; padding: 21px 8px; font-size: 10px; color: #8a97a3; }
+.showcase-under a { display: flex; align-items: center; gap: 8px; color: #315e7d; }
+
+.personalization-story { display: grid; grid-template-columns: 1fr 1.15fr; gap: 70px; align-items: center; padding: 70px 0 120px; border-top: 1px solid #edf0f3; scroll-margin-top: 30px; }
+.personalization-copy h2 { font-size: clamp(35px, 4.7vw, 55px); line-height: 1.06; letter-spacing: -.05em; font-weight: 500; color: #233542; margin: 25px 0; }
+.personalization-copy > p { font-size: 14px; line-height: 1.9; color: #7a8894; max-width: 340px; }
+.personalization-copy > a { display: flex; align-items: center; gap: 8px; font-size: 12px; margin-top: 32px; color: #375e79; }
+.palette-switches { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; max-width: 360px; }
+.palette-switches button { display: flex; align-items: center; gap: 6px; border: 1px solid transparent; padding: 8px; font-size: 10px; border-radius: 6px; color: #6b7e8c; cursor: pointer; }
+.palette-switches button[aria-pressed=true] { border-color: #dae3e9; background: #f7f9fb; }
+.palette-switches button > span { width: 11px; height: 11px; border-radius: 50%; }
+.personalization-scene { padding: 45px 25px 20px; border-radius: 15px; transition: background .25s, color .25s; min-width: 0; }
+.appearance-mini { background: #ffffffd9; border: 1px solid #ffffff; border-radius: 12px; padding: 25px; box-shadow: 0 18px 40px -25px #25364b55; transform: rotate(-3deg); }
+.appearance-mini header { display: flex; gap: 9px; align-items: center; font-size: 11px; font-weight: 600; }
+.appearance-mini small { display: block; margin-top: 4px; font-size: 9px; opacity: .75; }
+.appearance-swatches { display: flex; margin-top: 22px; height: 64px; border-radius: 7px; overflow: hidden; }
+.appearance-swatches span { flex: 1; }
+.appearance-type { font-size: 28px; line-height: 1.3; letter-spacing: -.045em; font-weight: 500; margin: 25px 0; }
+.appearance-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 8px; }
+.appearance-bottom > span:last-child { display: flex; gap: 4px; align-items: center; padding: 7px; border-radius: 5px; }
+.scene-caption { display: block; text-align: center; font-size: 8px; letter-spacing: .17em; margin-top: 36px; opacity: .7; }
+
+.desmo-landing .refined-faq { border-top: 1px solid #edf0f3; padding-top: 65px; padding-bottom: 75px; }
+.desmo-landing .refined-faq h2 { font-family: inherit; font-size: 38px; letter-spacing: -.04em; }
+.desmo-landing .quiet-cta { background: #f3f7fb; border: 1px solid #e8eef4; border-radius: 16px; padding: 50px; margin: 35px 0 70px; }
+.desmo-landing .quiet-cta h2 { font-family: inherit; font-size: 36px; letter-spacing: -.045em; font-weight: 500; }
+.desmo-landing .section-index { letter-spacing: .13em; font-size: 9px; }
+
+@media (min-width: 1200px) {
+  .showcase-reasoning { padding: 27px; }
+  .showcase-idea > p, .showcase-lines li p, .read-result p, .hand-math p, .question-shot > p { font-size: 12px; }
+}
+
+@media (max-width: 700px) {
+  .product-showcase { padding: 40px 0 60px; }
+  .showcase-intro { margin-bottom: 30px; }
+  .showcase-intro p { font-size: 13px; }
+  .showcase-stage { padding: 9px; border-radius: 14px; }
+  .showcase-toolbar { gap: 15px; padding: 0 12px; }
+  .showcase-breadcrumb { font-size: 8px; }
+  .showcase-panels { display: flex; gap: 3px; margin: 10px 12px 0; padding: 3px; border-radius: 12px; background: var(--app-soft); }
+  .showcase-panels button { flex: 1; padding: 8px; border-radius: 9px; font-size: 11px; color: var(--app-muted); }
+  .showcase-panels button[aria-selected=true] { background: var(--app-card); color: var(--app-fg); box-shadow: 0 1px 3px #0000001a; }
+  .showcase-layout { grid-template-columns: minmax(0, 1fr); height: 640px; margin-top: 10px; border-top: 1px solid var(--app-border); }
+  .showcase-rail { display: none; }
+  .showcase-layout[data-panel=calculator] .showcase-reasoning { display: none; }
+  /* Kept laid out (not display: none) so Desmos keeps its size, as the solver does. */
+  .showcase-layout[data-panel=explanation] .showcase-calculator { position: absolute; inset: 0; visibility: hidden; pointer-events: none; }
+  .showcase-reasoning { padding: 18px; }
+  .route-list { flex-direction: column; }
+  .route-list button { justify-content: flex-start; padding: 8px 10px; }
+  .showcase-calculator { border-left: 0; }
+  .showcase-under { flex-direction: column; align-items: center; font-size: 9px; }
+  .personalization-story { grid-template-columns: 1fr; gap: 35px; padding: 55px 0 65px; }
+  .personalization-copy > p { max-width: 350px; }
+  .personalization-scene { padding: 35px 25px 20px; }
+  .desmo-landing .quiet-cta { padding: 28px; gap: 25px; }
+  .desmo-landing .quiet-cta h2 { font-size: 28px; }
+  .desmo-landing .refined-faq h2 { font-size: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .personalization-scene { transition: none; }
+}
