@@ -39,7 +39,7 @@ test("Vercel production auth callbacks use the public origin when configured for
     process.env.VERCEL_ENV = "production";
     for (const url of ["http://localhost:3000", "http://127.0.0.1:3000", "http://[::1]:3000"]) {
       process.env.NEXT_PUBLIC_SITE_URL = url;
-      assert.equal(getSiteOrigin(), "https://desmo-one.vercel.app");
+      assert.equal(getSiteOrigin(), "https://desmomath.com");
     }
 
     process.env.NEXT_PUBLIC_SITE_URL = "https://custom.example.com/path";

@@ -1,3 +1,5 @@
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme" layer(theme);
 @import "tailwindcss/utilities";
 
 @theme inline {
@@ -32,79 +34,141 @@
   --radius-2xl: calc(var(--radius) + 8px);
 }
 
+
 .desmo-shell {
-  --background: #f7f9fc;
-  --foreground: #0b0b0d;
-  --card: #ffffff;
-  --card-foreground: #0b0b0d;
-  --popover: #ffffff;
-  --popover-foreground: #0b0b0d;
-  --primary: #74cfff;
-  --primary-foreground: #071b29;
-  --muted-foreground: #536877;
-  --ui-muted: #eff7fc;
-  --secondary: #eaf6ff;
-  --secondary-foreground: #0b0b0d;
-  --muted: #eff7fc;
-  --muted-foreground: #536877;
-  --subtle: #708696;
-  --accent: #e1f2ff;
-  --accent-foreground: #0b0b0d;
-  --brand: #0879b5;
-  --brand-soft: #e4f4ff;
-  --success: #0879b5;
-  --destructive: #e5484d;
-  --border: #d5e5f0;
-  --input: #cadfeb;
-  --ring: #0879b5;
-  --radius: 0.625rem;
-  --shadow-card: 0 0 0 1px #1118270f;
-  --shadow-pop: 0 24px 48px -12px #0b0b0d29, 0 0 0 1px #0b0b0d14;
+  --background: var(--appearance-light-background);
+  --card: var(--appearance-light-card);
+  --foreground: var(--appearance-light-foreground);
+  --popover: var(--appearance-light-popover);
+  --card-foreground: var(--appearance-light-card-foreground);
+  --popover-foreground: var(--appearance-light-popover-foreground);
+  --primary: var(--appearance-light-primary);
+  --primary-foreground: var(--appearance-light-primary-foreground);
+  --secondary: var(--appearance-light-secondary);
+  --secondary-foreground: var(--appearance-light-secondary-foreground);
+  --muted: var(--appearance-light-muted);
+  --ui-muted: var(--appearance-light-ui-muted);
+  --muted-foreground: var(--appearance-light-muted-foreground);
+  --subtle: var(--appearance-light-subtle);
+  --accent: var(--appearance-light-accent);
+  --accent-foreground: var(--appearance-light-accent-foreground);
+  --brand: var(--appearance-light-brand);
+  --brand-soft: var(--appearance-light-brand-soft);
+  --success: var(--appearance-light-success);
+  --border: var(--appearance-light-border);
+  --input: var(--appearance-light-input);
+  --ring: var(--appearance-light-ring);
+  --radius: var(--appearance-light-radius);
+  --radius-sm: var(--appearance-light-radius-sm);
+  --radius-md: var(--appearance-light-radius-md);
+  --radius-lg: var(--appearance-light-radius-lg);
+  --radius-xl: var(--appearance-light-radius-xl);
+  --radius-2xl: var(--appearance-light-radius-2xl);
+  --surface: var(--appearance-light-surface);
+  --surface-raised: var(--appearance-light-surface-raised);
+  --surface-muted: var(--appearance-light-surface-muted);
+  --accent-ink: var(--appearance-light-accent-ink);
+  --accent-text: var(--appearance-light-accent-text);
+  --accent-soft: var(--appearance-light-accent-soft);
+  --accent-hover: var(--appearance-light-accent-hover);
+  --accent-pressed: var(--appearance-light-accent-pressed);
+  --answer-surface: var(--appearance-light-answer-surface);
+  --border-subtle: var(--appearance-light-border-subtle);
+  --border-strong: var(--appearance-light-border-strong);
+  --border-accent: var(--appearance-light-border-accent);
+  --success-soft: var(--appearance-light-success-soft);
+  --panel-header: var(--appearance-light-panel-header);
+  --trace-line: var(--appearance-light-trace-line);
+  --danger: var(--appearance-light-danger);
+  --danger-soft: var(--appearance-light-danger-soft);
+  --destructive: var(--appearance-light-destructive);
+  --shadow-card: var(--appearance-light-shadow-card);
+  --shadow-pop: var(--appearance-light-shadow-pop);
+  --shadow-float: var(--appearance-light-shadow-float);
+  --font-sans: var(--appearance-light-font-sans);
+  --font-mono: var(--appearance-light-font-mono);
   --font-math: var(--font-stix), "Cambria Math", Cambria, serif;
   min-height: 100dvh;
-  color-scheme: light;
-  font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11';
   color: var(--foreground);
   background: var(--background);
+  line-height: 1.5;
 }
-
+.desmo-shell { color-scheme: light; }
 html[data-theme="dark"] .desmo-shell {
-  --background: #0c1015;
-  --foreground: #edf2f7;
-  --card: #141a22;
-  --card-foreground: #edf2f7;
-  --popover: #141418;
-  --popover-foreground: #edf2f7;
-  --primary: #74cfff;
-  --primary-foreground: #071b29;
-  --muted-foreground: #a0b3c1;
-  --ui-muted: #16212a;
-  --secondary: #17232c;
-  --secondary-foreground: #edf2f7;
-  --muted: #16212a;
-  --muted-foreground: #a0b3c1;
-  --subtle: #8197a7;
-  --accent: #1b3040;
-  --accent-foreground: #edf2f7;
-  --brand: #74cfff;
-  --brand-soft: #142d3e;
-  --success: #74cfff;
-  --border: #293943;
-  --input: #344954;
-  --ring: #74cfff;
-  --shadow-card: 0 0 0 1px #ffffff0d;
-  --shadow-pop: 0 24px 64px -12px #000000b3, 0 0 0 1px #ffffff14;
+  --background: var(--appearance-dark-background);
+  --card: var(--appearance-dark-card);
+  --foreground: var(--appearance-dark-foreground);
+  --popover: var(--appearance-dark-popover);
+  --card-foreground: var(--appearance-dark-card-foreground);
+  --popover-foreground: var(--appearance-dark-popover-foreground);
+  --primary: var(--appearance-dark-primary);
+  --primary-foreground: var(--appearance-dark-primary-foreground);
+  --secondary: var(--appearance-dark-secondary);
+  --secondary-foreground: var(--appearance-dark-secondary-foreground);
+  --muted: var(--appearance-dark-muted);
+  --ui-muted: var(--appearance-dark-ui-muted);
+  --muted-foreground: var(--appearance-dark-muted-foreground);
+  --subtle: var(--appearance-dark-subtle);
+  --accent: var(--appearance-dark-accent);
+  --accent-foreground: var(--appearance-dark-accent-foreground);
+  --brand: var(--appearance-dark-brand);
+  --brand-soft: var(--appearance-dark-brand-soft);
+  --success: var(--appearance-dark-success);
+  --border: var(--appearance-dark-border);
+  --input: var(--appearance-dark-input);
+  --ring: var(--appearance-dark-ring);
+  --radius: var(--appearance-dark-radius);
+  --radius-sm: var(--appearance-dark-radius-sm);
+  --radius-md: var(--appearance-dark-radius-md);
+  --radius-lg: var(--appearance-dark-radius-lg);
+  --radius-xl: var(--appearance-dark-radius-xl);
+  --radius-2xl: var(--appearance-dark-radius-2xl);
+  --surface: var(--appearance-dark-surface);
+  --surface-raised: var(--appearance-dark-surface-raised);
+  --surface-muted: var(--appearance-dark-surface-muted);
+  --accent-ink: var(--appearance-dark-accent-ink);
+  --accent-text: var(--appearance-dark-accent-text);
+  --accent-soft: var(--appearance-dark-accent-soft);
+  --accent-hover: var(--appearance-dark-accent-hover);
+  --accent-pressed: var(--appearance-dark-accent-pressed);
+  --answer-surface: var(--appearance-dark-answer-surface);
+  --border-subtle: var(--appearance-dark-border-subtle);
+  --border-strong: var(--appearance-dark-border-strong);
+  --border-accent: var(--appearance-dark-border-accent);
+  --success-soft: var(--appearance-dark-success-soft);
+  --panel-header: var(--appearance-dark-panel-header);
+  --trace-line: var(--appearance-dark-trace-line);
+  --danger: var(--appearance-dark-danger);
+  --danger-soft: var(--appearance-dark-danger-soft);
+  --destructive: var(--appearance-dark-destructive);
+  --shadow-card: var(--appearance-dark-shadow-card);
+  --shadow-pop: var(--appearance-dark-shadow-pop);
+  --shadow-float: var(--appearance-dark-shadow-float);
+  --font-sans: var(--appearance-dark-font-sans);
+  --font-mono: var(--appearance-dark-font-mono);
   color-scheme: dark;
 }
-
-.desmo-shell .font-sans { font-family: var(--font-geist), ui-sans-serif, system-ui, sans-serif; }
-.desmo-shell .font-mono { font-family: var(--font-geist-mono), ui-monospace, monospace; }
+.desmo-shell .font-sans { font-family: var(--font-sans); }
+.desmo-shell .font-mono { font-family: var(--font-mono); }
 .desmo-shell button { cursor: pointer; }
-.desmo-shell button:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; }
-
+.desmo-shell button:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.desmo-shell ::selection { background: var(--brand-soft); color: var(--foreground); }
+.desmo-shell :is(button[data-primary], button.bg-primary) { background: var(--primary); color: var(--primary-foreground); }
+.desmo-shell[data-button="outline"] :is(button[data-primary], button.bg-primary):not(:disabled) {
+  background: transparent; color: var(--brand); border: 1px solid var(--brand);
+}
+.desmo-shell[data-button="raised"] :is(button[data-primary], button.bg-primary):not(:disabled) {
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--primary), black 35%);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+.desmo-shell[data-button="raised"] :is(button[data-primary], button.bg-primary):active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--primary), black 35%);
+}
 @media (prefers-reduced-motion: reduce) {
   .desmo-shell *, .desmo-shell *::before, .desmo-shell *::after {
-    animation: none !important;
-    transition: none !important;
+    animation: none !important; transition: none !important;
   }
 }

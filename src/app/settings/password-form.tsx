@@ -18,7 +18,7 @@ export default function PasswordForm() {
       </label>
       {state.error && <p className={styles.error} role="alert">{state.error}</p>}
       {state.message && <p className={styles.success} role="status">{state.message}</p>}
-      <button type="submit" disabled={pending}>{pending ? "Updating…" : "Update password"}</button>
+      <button type="submit" data-primary disabled={pending}>{pending ? "Updating…" : "Update password"}</button>
     </form>
   );
 }

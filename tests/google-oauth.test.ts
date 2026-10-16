@@ -6,7 +6,7 @@ import { authCallbackDestination, exchangeGoogleCode, googleAuthorizationUrl } f
 import { createMemoryUsageStore, createMeter, DailyCapError } from "../src/lib/spend";
 
 const supabaseOrigin = "https://auth.example.test";
-const siteOrigin = "https://desmo-one.vercel.app";
+const siteOrigin = "https://desmomath.com";
 
 function mockedAuth(userId: string, providers = ["google"], email = "student@example.com") {
   const user = {

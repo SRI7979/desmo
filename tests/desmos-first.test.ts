@@ -122,8 +122,11 @@ test("a math-way default asks once for a Desmos way, naming the library strategi
   assert.equal(desmosRescueTarget(translation), null);
 
   const index = parseLibraryIndex(await readFile(path.join(process.cwd(), "src/content/desmos-tricks.md"), "utf8"));
+  // Exercise the model rescue on an unrecognized variant. The verified
+  // integer gold now receives an authored two-root repair without a rescue call.
+  const rescueQuestion = QUADRATIC.replace("integers", "constants");
   const { requests } = mockModel({
-    candidates: (_body: Record<string, unknown>, call: number) => (call === 1 ? quadraticResponse([formula()]) : quadraticResponse([goldWay(), formula()])),
+    candidates: (_body: Record<string, unknown>, call: number) => ({ ...(call === 1 ? quadraticResponse([formula()]) : quadraticResponse([goldWay(), formula()])), question: rescueQuestion }),
     explanation: explanation(3),
   });
   const deps: PipelineDeps = {
@@ -134,7 +137,7 @@ test("a math-way default asks once for a Desmos way, naming the library strategi
     diagnosticId: "desmos-first",
     trace: createTrace(),
   };
-  const result = await solveProblem(deps, { kind: "text", problem: QUADRATIC, choices: QUADRATIC_CHOICES.map((choice) => choice.text) });
+  const result = await solveProblem(deps, { kind: "text", problem: rescueQuestion, choices: QUADRATIC_CHOICES.map((choice) => choice.text) });
   assert.equal(result.kind, "solved");
   if (result.kind !== "solved") return;
   assert.equal(result.rescue, "applied");

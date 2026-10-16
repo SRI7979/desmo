@@ -8,7 +8,7 @@ export type ResolvedTheme = "light" | "dark";
 const STORAGE_KEY = "desmo-theme";
 const MEDIA_QUERY = "(prefers-color-scheme: dark)";
 const CHANGE_EVENT = "desmo-theme-change";
-const SERVER_SNAPSHOT = "system:light";
+const SERVER_SNAPSHOT = "light:light";
 let memoryPreference: ThemePreference | null = null;
 
 type ThemeContextValue = {
@@ -23,9 +23,9 @@ function storedTheme(): ThemePreference {
   if (memoryPreference) return memoryPreference;
   try {
     const value = window.localStorage.getItem(STORAGE_KEY);
-    return value === "light" || value === "dark" ? value : "system";
+    return value === "light" || value === "dark" || value === "system" ? value : "light";
   } catch {
-    return "system";
+    return "light";
   }
 }
 
@@ -68,8 +68,7 @@ function subscribe(onStoreChange: () => void) {
 function setTheme(next: ThemePreference) {
   memoryPreference = next;
   try {
-    if (next === "system") window.localStorage.removeItem(STORAGE_KEY);
-    else window.localStorage.setItem(STORAGE_KEY, next);
+    window.localStorage.setItem(STORAGE_KEY, next);
   } catch {
     // Private browsing may disable storage; the current page still updates.
   }

@@ -61,7 +61,7 @@ removes the most math wins; math itself comes last:
 - Math is the last resort, never a co-equal option. A Desmos way is the
   default whenever one works; a math way is listed as the alternative and is
   the default only when no Desmos way passes. A Desmos way may still need one
-  tiny step by hand (reading `a = 16` off the equation), and a small
+  tiny step by hand (changing the sign of a clicked vertex height), and a small
   substitution that unlocks a Desmos technique is fine, but that step is
   always named and explained to the student, never hidden in a row.
 
@@ -76,10 +76,12 @@ so Desmos removes the math and the student's skill is knowing Desmos.
 The standard example: `3x² − 16x + 2 = 0` has a solution `(a + √b)/6`, where
 `a` and `b` are integers; find `a + b`. The math way recalls the quadratic
 formula, computes `16² − 4(3)(2) = 232`, and matches `a = 16`, `b = 232`. The
-Desmos way graphs `3x² − 16x + 2`, clicks the root `(5.20526, 0)`, types
-`(a + √b)/6 ~ 5.20526` with a slider `a = 16` (a number already printed in the
-equation), and reads `b = 232.00042` and `a + b = 248`. Desmos found the root
-and the hidden number; the student did no algebra.
+Desmos way graphs `3x² − 16x + 2`, clicks both roots `(5.20526, 0)` and
+`(0.128073, 0)`, and types
+`[(a + √b)/6, (a − √b)/6] ~ [5.20526, 0.128073]`.
+Desmos fits both unknowns, `a ≈ 16` and `b ≈ 232`; evaluating `a + b` gives
+248 (rounding the fit's tiny root-click error). There is no need to infer
+`a` manually or recall the quadratic formula.
 
 Before accepting any method, ask: *is this what a general chatbot would do,
 with Desmos as a calculator?* If yes, it is the math way, and the Desmos angle

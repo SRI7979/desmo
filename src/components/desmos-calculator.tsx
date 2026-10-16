@@ -316,7 +316,6 @@ export default function DesmosCalculator({
     {expanded && <div className={styles.fullscreenBackdrop} aria-hidden="true" onClick={() => setExpanded(false)} />}
     <div className={`${styles.shell} ${expanded ? styles.expanded : ""}`} data-testid="desmos-calculator">
       <div className={styles.graphHeader}>
-        <div className={styles.graphName}><span className={styles.graphStatusDot} aria-hidden="true" />Desmos</div>
         <div className={styles.graphControls}>
           <button type="button" className={styles.graphIconButton} title="Reset graph view" aria-label="Reset graph view" disabled={!scriptReady || !!unavailableMessage} onClick={() => calculatorRef.current?.setMathBounds(validBounds(bounds))}>
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11a8 8 0 1 1 2.1 6.6M4 5v6h6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -326,8 +325,7 @@ export default function DesmosCalculator({
           </button>
         </div>
       </div>
-      <div className={styles.traceBar}>
-        <span className={styles.traceMark} aria-hidden="true">↳</span>
+      {expressions.length > 0 && <div className={styles.traceBar}>
         {selection && selection.key === expressionsKey(expressions) && !entriesEdited && insertable && lineCount > 0 ? (
           <button type="button" onClick={() => {
             const row = document.getElementById(`${traceId}-row-${selection.row}`);
@@ -335,7 +333,7 @@ export default function DesmosCalculator({
             row?.focus({ preventScroll: true });
           }}>Line {String(selection.row).padStart(2, "0")} <span>View its explanation</span> <span aria-hidden="true">↗</span></button>
         ) : <span>Select a calculator line to trace its reasoning</span>}
-      </div>
+      </div>}
       {apiKey && (
         <Script
           id="desmo-desmos-api"
@@ -380,9 +378,6 @@ export default function DesmosCalculator({
           aria-live="polite"
           data-testid="desmos-status"
         >
-          <span
-            className={`${styles.statusDot} ${unavailableMessage ? styles.errorDot : entriesEdited ? styles.editedDot : ""}`}
-          />
           {status}
         </span>
         <button

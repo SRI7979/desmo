@@ -1,15 +1,33 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { signOut } from "@/app/auth/actions";
 import { NEW_PROBLEM_EVENT } from "@/lib/workspace-events";
 import DesmoLogo from "./desmo-logo";
-import { ThemeToggle } from "./theme-toggle";
+import { AppearanceStudio, AppearanceThemeToggle } from "./appearance-studio";
 import styles from "./account-nav.module.css";
 
 type View = "solve" | "history" | "tricks" | "settings";
 type IconName = "solve" | "history" | "tricks" | "plus";
+
+const SIDEBAR_STORAGE_KEY = "desmo-sidebar-collapsed";
+const SIDEBAR_CHANGE_EVENT = "desmo-sidebar-change";
+let sidebarCollapsed = false;
+function subscribeSidebar(callback: () => void) {
+  window.addEventListener(SIDEBAR_CHANGE_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(SIDEBAR_CHANGE_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+function getSidebarSnapshot() {
+  try { return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === "true"; }
+  catch { return sidebarCollapsed; }
+}
+const getServerSidebarSnapshot = () => false;
 
 const links: { href: string; label: string; view: View; icon: IconName }[] = [
   { href: "/solve", label: "Solver", view: "solve", icon: "solve" },
@@ -133,14 +151,23 @@ function AccountMenu({ email, avatarUrl, name, active, placement }: { email?: st
 }
 
 export default function AccountNav({ email, avatarUrl, name, active }: { email?: string; avatarUrl?: string; name?: string; active: View }) {
+  const collapsed = useSyncExternalStore(subscribeSidebar, getSidebarSnapshot, getServerSidebarSnapshot);
+  function toggleSidebar() {
+    sidebarCollapsed = !collapsed;
+    try { window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(sidebarCollapsed)); }
+    catch { /* Keep the toggle working when browser storage is unavailable. */ }
+    window.dispatchEvent(new Event(SIDEBAR_CHANGE_EVENT));
+  }
   const title = active === "solve" ? "Solver" : active === "history" ? "History" : active === "tricks" ? "Saved tricks" : "Settings";
   return (
-    <div className={styles.root}>
-      <aside className={styles.desktopSidebar} aria-label="Workspace sidebar">
+    <div className={styles.root} data-sidebar-collapsed={collapsed}>
+      <aside id="workspace-sidebar" className={`${styles.desktopSidebar} ${collapsed ? styles.collapsed : ""}`} aria-label="Workspace sidebar">
         <div className={styles.sidebarBrand}><DesmoLogo variant="workspace" /></div>
         <a
           className={styles.newProblem}
           href="/solve"
+          aria-label="New problem"
+          title={collapsed ? "New problem (N)" : undefined}
           onClick={(event) => {
             // On the solver, start over in place instead of reloading the page and Desmos.
             if (active !== "solve") return;
@@ -148,23 +175,29 @@ export default function AccountNav({ email, avatarUrl, name, active }: { email?:
             window.dispatchEvent(new Event(NEW_PROBLEM_EVENT));
           }}
         >
-          <Icon name="plus" />New problem
+          <Icon name="plus" /><span className={styles.navText}>New problem</span>
           {active === "solve" && <kbd className={styles.shortcut} aria-label="Shortcut: N">N</kbd>}
         </a>
         <nav className={styles.sidebarLinks} aria-label="Main navigation">
           <span className={styles.sidebarLabel}>Workspace</span>
           {links.map((item) => (
-            <Link key={item.href} href={item.href} aria-current={active === item.view ? "page" : undefined}>
-              <Icon name={item.icon} />{item.label}
+            <Link key={item.href} href={item.href} aria-label={item.label} title={collapsed ? item.label : undefined} aria-current={active === item.view ? "page" : undefined}>
+              <Icon name={item.icon} /><span className={styles.navText}>{item.label}</span>
             </Link>
           ))}
         </nav>
         <div className={styles.sidebarFooter}><AccountMenu email={email} avatarUrl={avatarUrl} name={name} active={active} placement="sidebar" /></div>
       </aside>
 
-      <div className={styles.breadcrumb}><span>Workspace</span><span aria-hidden="true">/</span><strong>{title}</strong></div>
+      <div className={styles.breadcrumb}>
+        <button type="button" className={styles.sidebarToggle} onClick={toggleSidebar} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"} title={collapsed ? "Expand sidebar" : "Collapse sidebar"} aria-expanded={!collapsed} aria-controls="workspace-sidebar">
+          {collapsed ? <PanelLeftOpen size={18} aria-hidden="true" /> : <PanelLeftClose size={18} aria-hidden="true" />}
+        </button>
+        <span>Workspace</span><span aria-hidden="true">/</span><strong>{title}</strong>
+      </div>
       <div className={styles.headerActions}>
-        <ThemeToggle compact />
+        <AppearanceThemeToggle />
+        <AppearanceStudio />
         <AccountMenu email={email} avatarUrl={avatarUrl} name={name} active={active} placement="header" />
       </div>
       <nav className={styles.mobileNavigation} aria-label="Main navigation">
